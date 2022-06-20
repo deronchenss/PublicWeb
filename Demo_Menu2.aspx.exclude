@@ -1,0 +1,266 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Demo_Menu2.aspx.cs" Inherits="Demo_Menu2" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <style type="text/css">
+        @import url('https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient( #243545, #243545 var(--line-offset), #dedede var(--line-offset) );
+            width: 100vw;
+            height: 100vh;
+            color: #878787;
+            --menu-item-size: 50px;
+            --green-color: #329680;
+            --blue-color: #099c95;
+            --dark-green-color: #175b52;
+            --white-color: #FFF;
+            --gray-color: #EDEDED;
+            --container-width: 700px;
+            --container-height: 400px;
+            --line-offset: calc((100% - var(--container-height))/ 2 + var(--menu-item-size) + 0.6em);
+        }
+
+
+        .container {
+            width: var(--container-width);
+            height: var(--container-height);
+            margin-left: -350px;
+            margin-top: -200px;
+            top: 50%;
+            left: 50%;
+            position: absolute;
+            z-index: 1;
+        }
+
+        .main-menu2 {
+            display: flex;
+            list-style: none;
+            margin: auto 0;
+            padding: 0.6em 0 0 0;
+        }
+            .main-menu2 > menuitem {
+                box-sizing: border-box;
+                height: var(--menu-item-size);
+                width: calc(3.5 * var(--menu-item-size));
+                line-height: var(--menu-item-size);
+                padding: 0 2em;
+                margin: 1px;
+                transition: 0.5s linear all;
+                background: var(--green-color);
+                color: var(--dark-green-color);
+                cursor: pointer;
+                font-size: 16px;
+                user-select: none;
+            }
+
+                .main-menu2 > menuitem:not(.with-submenu2) {
+                    clip-path: polygon(10% 0%, 0% 100%, 95% 100%, 100% 50%, 95% 0%);
+                    /*shape-outside: polygon(10% 0%, 0% 100%, 95% 100%, 100% 50%, 95% 0%);*/
+                }
+                
+                .main-menu2 > menuitem:nth-child(2) {
+                    transform: translateX(-5%);
+                }
+                .main-menu2 > menuitem:nth-child(3) {
+                    transform: translateX(-10%);
+                }
+                .main-menu2 > menuitem:nth-child(4) {
+                    transform: translateX(-15%);
+                }
+                .main-menu2 > menuitem:nth-child(5) {
+                    transform: translateX(-20%);
+                }
+
+                .main-menu2 > li:hover i:not(li.active) {
+                    color: #175c58;
+                }
+
+
+        article {
+            background: var(--gray-color);
+            padding: 1em;
+            border-radius: 0 0 5px 5px;
+            box-shadow: 5px 5px 5px #CCC;
+            position: relative;
+            z-index: -1;
+        }
+
+        h1 {
+            font-size: 115%;
+            margin: 1em 2em;
+            padding: 0;
+            position: relative;
+            color: #777;
+        }
+
+        .content {
+            padding: 0 0 0 3em;
+            font-size: 16px;
+        }
+        
+        .submenu2 {
+            opacity: 1;
+            position: absolute;
+            z-index: 10;
+            margin: 0;
+            padding: 0;
+        }
+        .with-submenu2 {
+            position: relative;
+            display: inline-block;
+            clip-path: polygon(10% 0%, 0% 100%, 0% 500%, 95% 500%, 95% 100%, 100% 50%, 95% 0%);
+            shape-outside: polygon(10% 0%, 0% 100%, 95% 100%, 100% 50%, 95% 0%);
+        }
+         /*   .with-submenu2:hover .submenu2 {
+                display: block;
+            }*/
+
+        nav menuitem {
+            position: relative;
+            display: block;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+            nav menuitem > menu {
+                position: absolute;
+                pointer-events: none;
+            }
+
+        nav > menu {
+            display: flex;
+        }
+
+            nav > menu > menuitem {
+                pointer-events: all;
+                opacity: 1;
+            }
+
+        menu menuitem a {
+            white-space: nowrap;
+            display: block;
+        }
+
+        menuitem:hover > menu {
+            pointer-events: initial;
+        }
+
+        nav > menu > menuitem menuitem menu {
+            transform: translateX(100%);
+            top: 0;
+            right: 0;
+        }
+
+
+        nav > menu > menuitem > menu > menuitem {
+            transition: transform 0.6s, opacity 0.6s;
+            transform: translateY(150%);
+            opacity: 0;
+        }
+
+        nav > menu > menuitem:hover > menu > menuitem {
+            transform: translateY(0%);
+            opacity: 1;
+            /*background: var(--gray-color);*/
+            background-color:#CCC;
+            min-width:auto;
+        }
+
+        menuitem > menu > menuitem > menu > menuitem {
+            transition: transform 0.6s, opacity 0.6s;
+            transform: translateX(195px) translateY(0%);
+            opacity: 0;
+        }
+
+        menuitem > menu > menuitem:hover > menu > menuitem {
+            transform: translateX(0) translateY(0%);
+            opacity: 1;
+            /*background: var(--gray-color);*/
+            background-color:aqua;
+            min-width: calc(3.5 * var(--menu-item-size) - 5%);
+        }
+    </style>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div class="container">
+            <nav class="menu">
+                <menu class="main-menu2">
+                    <menuitem class="with-submenu2" id="demo1">
+                        <a>基本檔</a>
+                        <menu class="submenu2">
+                            <menuitem>
+                                <a>廠商</a>
+                                <menu class="submenu2">
+                                    <menuitem><a>廠商查詢</a></menuitem>
+                                    <menuitem><a>廠商維護</a></menuitem>
+                                    <menuitem><a>廠商類別設定</a></menuitem>
+                                </menu>
+                            </menuitem>
+                            <menuitem>
+                                <a>客戶</a>
+                                <menu class="submenu2">
+                                    <menuitem><a>客戶查詢</a></menuitem>
+                                    <menuitem><a>客戶維護</a></menuitem>
+                                </menu>
+                            </menuitem>
+                        </menu>
+                    </menuitem>
+                    <menuitem class="with-submenu2" id="demo2">
+                        <a>訂單</a>
+                        <menu class="submenu2">
+                            <menuitem>
+                                <a>訂單</a>
+                                <menu class="submenu2">
+                                    <menuitem><a>訂單主檔維護</a></menuitem>
+                                    <menuitem><a>訂單明細新增</a></menuitem>
+                                    <menuitem><a>訂單明細維護</a></menuitem>
+                                </menu>
+                            </menuitem>
+                            <menuitem>
+                                <a>SHOPIFY</a>
+                                <menu class="submenu2">
+                                    <menuitem><a>ISP明細維護</a></menuitem>
+                                    <menuitem><a>ISP備貨與申請</a></menuitem>
+                                    <menuitem><a>ISP放行作業</a></menuitem>
+                                </menu>
+                            </menuitem>
+                        </menu>
+                    </menuitem>
+                    <menuitem><a>採購</a></menuitem>
+                    <menuitem><a>TEST4</a></menuitem>
+                    <menuitem><a>TEST5</a></menuitem>
+                </menu>
+            </nav>
+            <article>
+                <h1>Home</h1>
+                <div class="content">
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda, et!
+                    Veniam, cum. Necessitatibus consectetur, alias facere, cum omnis officia
+                    ad architecto dolore rerum voluptatum fuga. Provident, voluptate voluptas? Dolor, blanditiis.
+                    </p>
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda, et!
+                    Veniam, cum. Necessitatibus consectetur, alias facere, cum omnis officia
+                    ad architecto dolore rerum voluptatum fuga. Provident, voluptate voluptas? Dolor, blanditiis.
+                    </p>
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda, et!
+                    Veniam, cum. Necessitatibus consectetur, alias facere, cum omnis officia
+                    ad architecto dolore rerum voluptatum fuga. Provident, voluptate voluptas? Dolor, blanditiis.
+                    </p>
+
+                </div>
+            </article>
+        </div>
+    </form>
+</body>
+</html>

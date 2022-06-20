@@ -1,0 +1,304 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="MP.master.cs" Inherits="MP"%>
+
+<!DOCTYPE html>
+
+<html>
+<head runat="server">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <%--<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />--%>
+
+    <title>MP</title>
+    <link rel="shortcut icon" type="image/jpg" href="/images/ivan_logo.ico"/>
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+    <link rel="stylesheet" href="/fonts/icomoon/style.css">
+    <link rel="stylesheet" href="/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+
+    <style type="text/css">
+        .dataTables_length, .dataTables_length select{ font-size: 13px;}
+        .table_th{
+            background-color:#e1d6c7;
+            background: -moz-linear-gradient(top,  #e1d6c7 0%, #cfa367 90%, #cc9b58 100%); 
+            background: -webkit-linear-gradient(top,  #e1d6c7 0%,#cfa367 90%,#cc9b58 100%); 
+            background: linear-gradient(to bottom,  #e1d6c7 0%,#cfa367 90%,#cc9b58 100%); 
+            width:98%;
+            font-size : 15px;
+            border-radius: 5px;
+            text-align: center; 
+            margin: 0 auto;
+        }
+
+        .table_td {
+            font-size: 15px;
+            border-color: #A6C9E2;
+            color: #2E6E9E
+        }
+        .ATD{
+            width:10%;
+            text-wrap:none;
+        }
+        
+        .BTN{
+            font-size:20px;
+            cursor:pointer;
+            background-color: cadetblue;
+            padding: 8px 10px;
+            border-radius: 10px;
+
+            display: block;
+            color: white;
+            font-weight: bold;
+            border: 1px solid #999;
+        }
+        .BTN:hover {
+            opacity: 0.8;
+        }
+
+
+    </style>
+
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <%--<script src="js/jquery-3.3.1.min.js"></script>--%>
+
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/jquery.sticky.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/jquery-ui.js"></script>
+    <%--<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>--%>
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div class="site-mobile-menu site-navbar-target">
+            <div class="site-mobile-menu-header">
+                <div class="site-mobile-menu-close mt-3">
+                    <span class="icon-close2 js-menu-toggle"></span>
+                </div>
+            </div>
+            <div class="site-mobile-menu-body"></div>
+        </div>
+
+
+        <header class="site-navbar js-sticky-header site-navbar-target" role="banner">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-6 col-xl-2">
+                        <h1 class="mb-0 site-logo">
+                            <a href="\IDX1.aspx">
+                                <img src="\images/IVAN_250x150.jpeg" height="60" />
+                            </a>
+                        </h1>
+                    </div>
+                    
+                    <div class="col-12 col-md-10 d-none d-xl-block">
+                        <nav class="site-navigation position-relative text-right" role="navigation">
+                            <ul class="site-menu main-menu js-clone-nav mr-auto d-none d-lg-block">
+                                <%--<li><a href="#home-section" class="nav-link">Home</a></li>--%>
+                                <li class="has-children">
+                                    <a href="#" class="nav-link" style="vertical-align:sub;" IVM_PERMISSIONS="1"><%=Resources.MP.Base%><%--基本檔--%></a>
+                                    <ul class="dropdown">
+                                        <li class="has-children">
+                                            <a href="#" IVM_PERMISSIONS="23"><%--廠商--%><%=Resources.MP.Supplier%>
+                                            </a>
+                                            <ul class="dropdown">
+                                                <li><a href="/Supplier/Supplier1.aspx" IVM_PERMISSIONS="24"><%--廠商查詢--%><%=Resources.MP.Supplier%><%=Resources.MP.Speace%><%=Resources.MP.Search%>
+                                                    </a></li>
+                                                <li><a href="/Supplier/Supplier2.aspx" IVM_PERMISSIONS="25"><%--廠商維護--%><%=Resources.MP.Supplier%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
+                                                    </a></li>
+                                                <li><a href="#" IVM_PERMISSIONS="26"><%--廠商類別設定--%><%=Resources.MP.Supplier%><%=Resources.MP.Speace%><%=Resources.MP.Type%><%=Resources.MP.Speace%><%=Resources.MP.Settings%>(還沒做)
+                                                    </a></li>
+                                            </ul>
+                                        </li>
+                                        <li class="has-children">
+                                            <a href="#" IVM_PERMISSIONS="22"><%--客戶--%><%=Resources.MP.Customer%>
+                                            </a>
+                                            <ul class="dropdown">
+                                                <li><a href="/Customer/Customer1.aspx" IVM_PERMISSIONS="27"><%--客戶查詢--%><%=Resources.MP.Customer%><%=Resources.MP.Speace%><%=Resources.MP.Search%>
+                                                    </a></li>
+                                                <li><a href="/Customer/Customer2.aspx" IVM_PERMISSIONS="28"><%--客戶維護--%><%=Resources.MP.Customer%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
+                                                    </a></li>
+                                            </ul>
+                                        </li>
+                                        <li class="has-children">
+                                            <a href="#" IVM_PERMISSIONS="29"><%=Resources.MP.Product%>
+                                            </a>
+                                            <ul class="dropdown">
+                                                <li><a href="/Cost/Cost1.aspx" IVM_PERMISSIONS="30"><%=Resources.MP.Product%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
+                                                    </a></li>
+                                                <li><a href="/Cost/Cost_Apply.aspx" IVM_PERMISSIONS="33"><%=Resources.MP.Product%><%=Resources.MP.Speace%><%=Resources.MP.Applyopen%>
+                                                    </a></li>
+                                                <li><a href="/Cost/Cost_Approve.aspx" IVM_PERMISSIONS="34"><%=Resources.MP.Product%><%=Resources.MP.Speace%><%=Resources.MP.Approve%>
+                                                    </a></li>
+                                            </ul>
+                                        </li>
+                                        <li class="has-children">
+                                            <a href="#" IVM_PERMISSIONS="35">Price
+                                            </a>
+                                            <ul class="dropdown">
+                                                <li><a href="/Price/Price_MT.aspx" IVM_PERMISSIONS="36">Price<%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
+                                                    </a></li>
+                                            </ul>
+                                        </li>
+                                        <li class="has-children">
+                                            <a href="#" IVM_PERMISSIONS="31">BOM
+                                            </a>
+                                            <ul class="dropdown">
+                                                <li><a href="/BOM/BOM1.aspx" IVM_PERMISSIONS="32">BOM<%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
+                                                    </a></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="has-children">
+                                    <a href="#about-section" class="nav-link" style="vertical-align:sub;" IVM_PERMISSIONS="2"><%--訂單--%><%=Resources.MP.Order%>(x)</a>
+                                    <ul class="dropdown">
+                                        <li class="has-children">
+                                            <a href="#"><%--訂單處理--%><%=Resources.MP.Order%></a>
+                                            <ul class="dropdown">
+                                                <li><a href="#"><%--訂單主檔維護--%><%=Resources.MP.Order%><%=Resources.MP.Speace%><%=Resources.MP.Master%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%></a></li>
+                                                <li><a href="#"><%--訂單明細新增--%><%=Resources.MP.Order%><%=Resources.MP.Speace%><%=Resources.MP.Detail%><%=Resources.MP.Speace%><%=Resources.MP.Add%></a></li>
+                                                <li><a href="#"><%--訂單明細維護--%><%=Resources.MP.Order%><%=Resources.MP.Speace%><%=Resources.MP.Detail%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%></a></li>
+                                            </ul>
+                                        </li>
+                                        <li class="has-children">
+                                            <a href="#">SHOPIFY</a>
+                                            <ul class="dropdown">
+                                                <li><a href="#">ISP明細維護</a></li>
+                                                <li><a href="#">ISP備貨與申請</a></li>
+                                                <li><a href="#">ISP放行作業</a></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="has-children">
+                                    <a href="#about-section" class="nav-link" style="vertical-align:sub;" IVM_PERMISSIONS="3">採購(x)</a>
+                                    <ul class="dropdown">
+                                        <li class="has-children">
+                                            <a href="#">採購作業</a>
+                                            <ul class="dropdown">
+                                                <li><a href="#">採購1</a></li>
+                                                <li><a href="#">採購2</a></li>
+                                                <li><a href="#">採購3</a></li>
+                                            </ul>
+                                        </li>
+                                        <li class="has-children">
+                                            <a href="#">裝配作業</a>
+                                            <ul class="dropdown">
+                                                <li><a href="#">裝配1</a></li>
+                                                <li><a href="#">裝配2</a></li>
+                                                <li><a href="#">裝配3</a></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="has-children">
+                                    <a href="#about-section" class="nav-link" style="vertical-align:sub;">Test4</a>
+                                </li>
+                                <li class="has-children">
+                                    <a href="#about-section" class="nav-link" style="vertical-align:sub;">Test5</a>
+                                </li>
+                                <li class="has-children">
+                                    <a href="#"><%=Resources.MP.More%></a>
+                                    <ul class="dropdown">
+                                        <li class="has-children">
+                                            <a href="#" ivm_permissions="22"><%=Resources.MP.Language%></a>
+                                            <ul class="dropdown">
+                                                <li>
+                                                    <a href="#" onclick="document.cookie='Language=';javascript:location.reload();">中文</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#1" onclick="document.cookie='Language=EN';javascript:location.reload();">English</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <%--<li>
+                                            <a href="#" onclick="document.cookie='Language=';javascript:location.reload();">中文</a>
+                                        </li>
+                                        <li>
+                                            <a href="#1" onclick="document.cookie='Language=EN';javascript:location.reload();">English</a>
+                                        </li>--%>
+                                        <li>
+                                            <a href="\Login.aspx"><%=Resources.MP.Logout%></a>&nbsp;
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </nav>
+                                
+                    </div>
+                    <div class="col-6 d-inline-block d-xl-none ml-md-0 py-3" style="position: relative; top: 3px;"><a href="#" class="site-menu-toggle js-menu-toggle float-right"><span class="icon-menu h3"></span></a></div>
+                </div>
+            </div>
+        </header>
+        <div class="hero" style="height: 10px;width:100%;margin:auto">
+            <%--<span style="font-size:small;text-wrap:none;">&nbsp;User: <%=(Request.Cookies.Get("SE") == null) ? "Demo" : Request.Cookies.Get("SE").Value %></span>--%>
+            &nbsp;<span style="font-size:small;text-wrap:none;" id="Session_User"></span>
+            <%--if無Session時退回首頁--%>
+            <%--<div style="float:right;">
+                <a href="\Login2.aspx">Logout</a>&nbsp;
+            </div>--%>
+            <br />
+                        <%--<input type="submit" style="z-index:99999999;position: relative" id="Change_SS" value="Change_Session_Fatial" onclick="document.cookie='SE=Fatial'" />
+                        <input type="submit" style="z-index:99999999;position: relative" id="Change_SS2" value="Change_Session_Eric" onclick="document.cookie='SE=Eric'" />--%>
+        </div>
+        <%--<br />
+        <br />--%>
+        <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+        </asp:ContentPlaceHolder>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('.hero').css('height', $('header:nth-child(1)').css('height'));
+
+                //Demo_權限(正式上線解除)
+               <%-- var Username = '<%= Session["Account"] %>';
+                $('#Session_User').text(" User: " + Username);
+
+                let IVM_PERMISSIONS = String("<%= Session["IVM_PERMISSIONS"] %>");
+                let PERMISSIONS_ALL = IVM_PERMISSIONS.split(',');
+                $('a[IVM_PERMISSIONS]').css('display', 'none');
+
+                PERMISSIONS_ALL.forEach(function (j) {
+                    $('a[IVM_PERMISSIONS=' + j.trim() + ']').css('display', '');
+                });
+                let IVMD_PERMISSIONS = String("<%= Session["IVMD_PERMISSIONS"] %>");
+                let D_PERMISSIONS_ALL = IVMD_PERMISSIONS.split(',');
+                $('[IVMD_PERMISSIONS]').css('display', 'none');
+
+                D_PERMISSIONS_ALL.forEach(function (j) {
+                    $('[IVMD_PERMISSIONS=' + j.trim() + ']').css('display', '');
+                })--%>
+
+
+
+                /* Cookie版權限
+                let Cookie_ALL = document.cookie.split(';');
+                var PERMISSIONS;
+                Cookie_ALL.forEach(function (i) {
+                    if (i.indexOf("IVM_PERMISSIONS=") > 0) {
+                        PERMISSIONS = i.trim().substr("IVM_PERMISSIONS=".length, i.length);
+                    }
+                });
+                console.warn(PERMISSIONS);
+
+                let PERMISSIONS_ALL = PERMISSIONS.split(',');
+                $('a[IVM_PERMISSIONS]').css('display', 'none');
+
+                PERMISSIONS_ALL.forEach(function (j) {
+                    console.warn(j.trim());
+                    $('a[IVM_PERMISSIONS=' + j.trim() + ']').css('display', '');
+                })
+                */
+
+            });
+        </script>
+
+    </form>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+
+    <link rel="stylesheet" href="fonts/icomoon/style.css">
+
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <!-- Style -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <title>Website Menu #1</title>
+</head>
+<body>
+
+
+    <div class="site-mobile-menu site-navbar-target">
+        <div class="site-mobile-menu-header">
+            <div class="site-mobile-menu-close mt-3">
+                <span class="icon-close2 js-menu-toggle"></span>
+            </div>
+        </div>
+        <div class="site-mobile-menu-body"></div>
+    </div>
+
+
+    <header class="site-navbar js-sticky-header site-navbar-target" role="banner">
+
+        <div class="container">
+            <div class="row align-items-center">
+
+                <div class="col-6 col-xl-2">
+                    <h1 class="mb-0 site-logo">
+                        <a href="index.html">
+                            <img src="images/IVAN_250x150.jpeg" />
+                        </a>
+                    </h1>
+                    <!--<h1 class="mb-0 site-logo">
+                        <a href="index.html">
+                            Brand<span class="text-primary">.</span>
+                        </a>
+                    </h1>-->
+                </div>
+
+                <div class="topnav" style="display:none;">
+                    <a class="active" href="#home">Home</a>
+                    <a href="#">基本檔</a>
+                    <ul>
+                        <li style="color:white;">
+                            <a href="#"></a>
+                            <ul>
+                                <li style="color:white;">
+                                    廠商資料查詢
+                                </li>
+                            </ul>
+                        </li>
+                        <li style="color:white;">
+                            <a href="#">客戶</a>
+                            <ul>
+                                <li style="color:white;">
+                                    客戶資料查詢
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <a href="#">訂單</a>
+                    <ul>
+                        <li style="color:white;">
+                            客戶資料查詢
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-12 col-md-10 d-none d-xl-block">
+                    <nav class="site-navigation position-relative text-right" role="navigation">
+
+                        <ul class="site-menu main-menu js-clone-nav mr-auto d-none d-lg-block">
+                            <li><a href="#home-section" class="nav-link">Home</a></li>
+                            <li class="has-children">
+                                <a href="#about-section" class="nav-link">基本檔</a>
+                                <ul class="dropdown">
+                                    <li class="has-children">
+                                        <a href="#">廠商</a>
+                                        <ul class="dropdown">
+                                            <li><a href="#">廠商查詢</a></li>
+                                            <li><a href="#">廠商維護</a></li>
+                                            <li><a href="#">廠商類別設定</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="has-children">
+                                        <a href="#">客戶</a>
+                                        <ul class="dropdown">
+                                            <li><a href="#">客戶查詢</a></li>
+                                            <li><a href="#">客戶維護</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="#about-section" class="nav-link">訂單</a>
+                                <ul class="dropdown">
+                                    <li class="has-children">
+                                        <a href="#">訂單處理</a>
+                                        <ul class="dropdown">
+                                            <li><a href="#">訂單主檔維護</a></li>
+                                            <li><a href="#">訂單明細新增</a></li>
+                                            <li><a href="#">訂單明細維護</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="has-children">
+                                        <a href="#">SHOPIFY</a>
+                                        <ul class="dropdown">
+                                            <li><a href="#">ISP明細維護</a></li>
+                                            <li><a href="#">ISP備貨與申請</a></li>
+                                            <li><a href="#">ISP放行作業</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="#about-section" class="nav-link">採購</a>
+                                <ul class="dropdown">
+                                    <li class="has-children">
+                                        <a href="#">採購作業</a>
+                                        <ul class="dropdown">
+                                            <li><a href="#">採購1</a></li>
+                                            <li><a href="#">採購2</a></li>
+                                            <li><a href="#">採購3</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="has-children">
+                                        <a href="#">裝配作業</a>
+                                        <ul class="dropdown">
+                                            <li><a href="#">裝配1</a></li>
+                                            <li><a href="#">裝配2</a></li>
+                                            <li><a href="#">裝配3</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!--<li><a href="#blog-section" class="nav-link">Blog</a></li>
+                            <li><a href="#contact-section" class="nav-link">Contact</a></li>-->
+                        </ul>
+                    </nav>
+                </div>
+
+
+                <div class="col-6 d-inline-block d-xl-none ml-md-0 py-3" style="position: relative; top: 3px;"><a href="#" class="site-menu-toggle js-menu-toggle float-right"><span class="icon-menu h3"></span></a></div>
+
+            </div>
+        </div>
+
+    </header>
+
+    <div class="hero"></div>
+
+
+
+
+
+
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.sticky.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

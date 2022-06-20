@@ -1,0 +1,232 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Demo_Menu1.aspx.cs" Inherits="Demo_Menu1" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    
+    <style type="text/css">
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+        }
+
+        .navbar {
+            overflow: hidden;
+            background-color: #333;
+        }
+
+            .navbar a {
+                float: left;
+                font-size: 14px;
+                color: white;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+            }
+            
+        .subnav {
+            float: left;
+            overflow: hidden;
+        }
+
+            .subnav .subnavbtn {
+                font-size: 14px;
+                border: none;
+                outline: none;
+                color: white;
+                padding: 8px 8px;
+                background-color: inherit;
+                font-family: inherit;
+                margin: 0;
+            }
+
+            .navbar a:hover, .subnav:hover .subnavbtn {
+                background-color: #984B4B;
+            }
+            
+        .subnav2 {
+            float: left;
+            overflow: hidden;
+        }
+        
+            .subnav2 .subnavbtn2 {
+                font-size: 14px;
+                border: none;
+                outline: none;
+                color: white;
+                padding: 8px 8px;
+                background-color: inherit;
+                font-family: inherit;
+                margin: 0;
+            }
+        
+            .subnav2:hover .subnavbtn2 {
+                background-color: #D9B3B3;
+            }
+
+
+        .subnav-content {
+            display: none;
+            position: absolute;
+            left: 0;
+            background-color: #984B4B;
+            width: 100%;
+            z-index: 1;
+        }
+            .subnav-content a {
+                float: left;
+                color: white;
+                text-decoration: none;
+            }
+
+                .subnav-content a:hover {
+                    background-color: #eee;
+                    color: black;
+                }
+                
+        .subnav-content2 {
+            display: none;
+            position: absolute;
+            left: 0;
+            background-color: #D9B3B3;
+            width: 100%;
+            z-index: 1;
+        }
+            .subnav-content2 a {
+                float: left;
+                color: white;
+                text-decoration: none;
+            }
+                .subnav-content2 a:hover {
+                    background-color: #eee;
+                    color: black;
+                }
+                
+        .subnav:hover .subnav-content {
+            display: block;
+        }
+        .subnav2:hover .subnav-content2 {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    
+    <form id="form1" runat="server">
+
+
+        <div class="navbar">
+            <a href="#home">Home</a>
+            <%--<div class="subnav">
+                <button class="subnavbtn">廠商▼</button>
+                <div class="subnav-content">
+                    <a href="#company">廠商查詢</a>
+                    <a href="#team">廠商維護</a>
+                    <a href="#careers">廠商類別設定</a>
+                </div>
+            </div>--%>
+
+            
+            <div class="subnav">
+                <button class="subnavbtn">基本檔▼</button>
+                <div class="subnav-content">
+                    <div class="subnav2">
+                        <button class="subnavbtn2">廠商</button>
+                        <div class="subnav-content2">
+                            <a href="#S1">廠商查詢</a>
+                            <a href="#S2">廠商維護</a>
+                            <a href="#S3">廠商類別設定</a>
+                        </div>
+                    </div>
+                    <div class="subnav2">
+                        <button class="subnavbtn2">客戶</button>
+                        <div class="subnav-content2">
+                            <a href="#C1">客戶查詢</a>
+                            <a href="#C2">客戶維護</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="subnav">
+                <button class="subnavbtn">訂單▼</button>
+                <div class="subnav-content">
+                    <div class="subnav2">
+                        <button class="subnavbtn2">訂單處理</button>
+                        <div class="subnav-content2">
+                            <a href="#TC1">訂單主檔維護</a>
+                            <a href="#TC2">訂單明細新增</a>
+                            <a href="#TC3">訂單明細維護</a>
+                        </div>
+                    </div>
+                    <div class="subnav2">
+                        <button class="subnavbtn2">SHOPIFY</button>
+                        <div class="subnav-content2">
+                            <a href="#I1">ISP明細維護</a>
+                            <a href="#I2">ISP備貨與申請</a>
+                            <a href="#I3">ISP放行作業</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="subnav">
+                <button class="subnavbtn">採購▼</button>
+                <div class="subnav-content">
+                    <div class="subnav2">
+                        <button class="subnavbtn2">採購作業</button>
+                        <div class="subnav-content2">
+                            <a href="#TC1">採購1</a>
+                            <a href="#TC2">採購2</a>
+                            <a href="#TC3">採購3</a>
+                        </div>
+                    </div>
+                    <div class="subnav2">
+                        <button class="subnavbtn2">裝配作業</button>
+                        <div class="subnav-content2">
+                            <a href="#I1">裝配1</a>
+                            <a href="#I2">裝配2</a>
+                            <a href="#I3">裝配3</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a href="#contact">Contact</a>
+        </div>
+
+        <div id="head_area">
+            <div id="header">
+                <table style="width:100%">
+                    <tr>
+                        <td style="text-align:right;width:100%">
+                            <a style="text-decoration:none;" onclick="TO_TC">中文</a>
+                            <%--href="/Tool/SetCulture/ja-JP" --%>
+                            <a href="#" style="text-decoration:none;">English</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right;">
+                            <a id="登出" href="#" style="text-decoration:none;">Logout</a>
+                        </td>
+                    </tr>
+                </table>
+                
+            
+            </div>
+        </div>
+
+
+        <br />
+        <div id="footer_area" style="display:none;">
+            <div id="footer">
+                [Dept]
+                [User]
+                <p>頤坊</p>
+            </div>
+        </div>
+    </form>
+</body>
+</html>
