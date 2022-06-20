@@ -132,7 +132,7 @@ h2{
         display: block;
         text-align: center;
     }
-}
+} 
     </style>
 
     <style type="text/css">
