@@ -32,14 +32,10 @@
                         $('.Div_D').css('display', 'none');
                         $('#Div_M2').css('display', '');
 
-                        $('#Div_Detail_Form table input[type=number]').val(0);
-
-                        $('#BT_New, #BT_Search, #BT_Detail_Search').css('display', '');
                         $('.M2_For_U').css('display', 'none');
                         break;
                     case "New_M":
                         //$('.M_BT').not($('#BT_Cancel')).css('display', 'none');
-                        //$('.M2_For_U').css('display', 'none');
                         //$('.ED_BT').css('display', 'none');
                         //$('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', false);
 
@@ -54,42 +50,21 @@
                                             //$('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
                         break;
                     case "Search_M":
-                        $('#BT_Cancel').css('display', '');
-                        $('.M_BT').not($('#BT_Cancel')).css('display', 'none');
-                        $('#Div_DT_View').css('display', '');
-                        $('.V_BT').not($('#V_BT_Master')).css('display', '');
-
                         $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
-                        $('#BT_ED_Edit, #BT_Cancel, #Div_DT_View').css('display', '');
-                        $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
-
-                        $('#BT_Cancel').css('display', '');
-                        $('.M_BT').not($('#BT_Cancel')).css('display', 'none');
-                        $('#Div_DT_View').css('display', '');
-                        $('.V_BT').not($('#V_BT_Master')).css('display', '');
-
-
-
-
-                        $('#BT_Cancel').css('display', '');
-                        $('.M_BT').not($('#BT_Cancel')).css('display', 'none');
-                        $('#Div_DT_View').css('display', '');
-                        $('.V_BT').not($('#V_BT_Master')).css('display', '');
+                        $('#BT_New, #BT_Search, #BT_Detail_Search, #BT_ED_Save, #BT_ED_Cancel, #BT_ED_Edit').css('display', 'none');
+                        $('#BT_Cancel, #Div_DT_View').css('display', '');
+                        $('.V_BT').css('display', '');
                         break;
                     case "Search_D":
-                        $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
-                        $('#BT_ED_Edit, #BT_Cancel, #Div_DT_View').css('display', '');
-                        $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
-
                         $('.M2_For_U').css('display', '');
                         $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
-                        $('#BT_ED_Edit').css('display', '');
+                        $('#BT_ED_Edit, #BT_ED_Copy, #BT_Cancel, #Div_DT_View').css('display', '');
                         $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
                         break;
                     case "Edit_M":
-                        $('#BT_ED_Edit, #BT_Cancel, #Div_DT_View').css('display', 'none');
+                        $('#BT_ED_Edit, #BT_ED_Copy, #BT_Cancel, #Div_DT_View').css('display', 'none');
                         $('#BT_ED_Save, #BT_ED_Cancel').css('display', '');
-                        $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').not('#TB_M2_Update_User, #TB_M2_Update_Date, #TB_M2_SEQ').attr('disabled', false);
+                        $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').not('#TB_M2_Update_User, #TB_M2_Update_Date, #TB_M2_SEQ, .S_Name').attr('disabled', false);
                         break;
                 }
             }
@@ -112,17 +87,17 @@
                                 "Sample_PN": $('#TB_M2_Sample_P_No').val(),
                                 "Unit": $('#TB_M2_Unit').val(),
                                 "PI": $('#TB_M2_P_IM').val(),
-                                "P_TWD": parseInt($('#TB_M2_TWD_1').val()),
-                                "P_USD": parseInt($('#TB_M2_USD').val()),
-                                "P_TWD_2": parseInt($('#TB_M2_TWD_2').val()),
-                                "P_TWD_3": parseInt($('#TB_M2_TWD_2').val()),
-                                "MIN_1": parseInt($('#TB_M2_MIN_1').val()),
-                                "MIN_2": parseInt($('#TB_M2_MIN_2').val()),
-                                "MIN_3": parseInt($('#TB_M2_MIN_3').val()),
+                                "P_TWD": parseInt($('#TB_M2_TWD_1').val()) || 0,
+                                "P_USD": parseInt($('#TB_M2_USD').val()) || 0,
+                                "P_TWD_2": parseInt($('#TB_M2_TWD_2').val()) || 0,
+                                "P_TWD_3": parseInt($('#TB_M2_TWD_2').val()) || 0,
+                                "MIN_1": parseInt($('#TB_M2_MIN_1').val()) || 0,
+                                "MIN_2": parseInt($('#TB_M2_MIN_2').val()) || 0,
+                                "MIN_3": parseInt($('#TB_M2_MIN_3').val()) || 0,
                                 "Curr": $('#TB_M2_Currency').val(),
-                                "P_Curr": parseInt($('#TB_M2_PC_1').val()),
-                                "P_Curr_2": parseInt($('#TB_M2_PC_2').val()),
-                                "P_Curr_3": parseInt($('#TB_M2_PC_3').val()),
+                                "P_Curr": parseInt($('#TB_M2_PC_1').val()) || 0,
+                                "P_Curr_2": parseInt($('#TB_M2_PC_2').val()) || 0,
+                                "P_Curr_3": parseInt($('#TB_M2_PC_3').val()) || 0,
                                 "DS_P": $('#DDL_M2_DP').val(),
                                 "DS_IM": $('#TB_M2_DI').val(),
                                 "RP": $('#TB_M2_RP').val(),
@@ -179,10 +154,7 @@
             });
 
             $('#BT_ED_Edit').on('click', function () {
-                //Edit_M
-                $('#BT_ED_Edit, #BT_ED_Copy, #BT_Cancel, #Div_DT_View').css('display', 'none');
-                $('#BT_ED_Save, #BT_ED_Cancel').css('display', '');
-                $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').not('#TB_M2_Update_User, #TB_M2_Update_Date, #TB_M2_SEQ, .S_Name').attr('disabled', false);
+                Form_Mode_Change("Edit_M");
             });
 
             $('#BT_ED_Save').on('click', function () {
@@ -200,17 +172,17 @@
                                 "Unit": $('#TB_M2_Unit').val(),
                                 "PI": $('#TB_M2_P_IM').val(),
                                 "PID": $('#TB_M2_P_ID').val(),
-                                "P_TWD": parseInt($('#TB_M2_TWD_1').val()),
-                                "P_USD": parseInt($('#TB_M2_USD').val()),
-                                "P_TWD_2": parseInt($('#TB_M2_TWD_2').val()),
-                                "P_TWD_3": parseInt($('#TB_M2_TWD_2').val()),
-                                "MIN_1": parseInt($('#TB_M2_MIN_1').val()),
-                                "MIN_2": parseInt($('#TB_M2_MIN_2').val()),
-                                "MIN_3": parseInt($('#TB_M2_MIN_3').val()),
+                                "P_TWD": parseInt($('#TB_M2_TWD_1').val()) || 0,
+                                "P_USD": parseInt($('#TB_M2_USD').val()) || 0,
+                                "P_TWD_2": parseInt($('#TB_M2_TWD_2').val()) || 0,
+                                "P_TWD_3": parseInt($('#TB_M2_TWD_2').val()) || 0,
+                                "MIN_1": parseInt($('#TB_M2_MIN_1').val()) || 0,
+                                "MIN_2": parseInt($('#TB_M2_MIN_2').val()) || 0,
+                                "MIN_3": parseInt($('#TB_M2_MIN_3').val()) || 0,
                                 "Curr": $('#TB_M2_Currency').val(),
-                                "P_Curr": parseInt($('#TB_M2_PC_1').val()),
-                                "P_Curr_2": parseInt($('#TB_M2_PC_2').val()),
-                                "P_Curr_3": parseInt($('#TB_M2_PC_3').val()),
+                                "P_Curr": parseInt($('#TB_M2_PC_1').val()) || 0,
+                                "P_Curr_2": parseInt($('#TB_M2_PC_2').val()) || 0,
+                                "P_Curr_3": parseInt($('#TB_M2_PC_3').val()) || 0,
                                 "DS_P": $('#DDL_M2_DP').val(),
                                 "DS_IM": $('#TB_M2_DI').val(),
                                 "DPN": $('#TB_M2_DPN').val(),
@@ -219,24 +191,24 @@
                                 "RD": $('#TB_M2_RD').val(),
 
                                 "MS": $('#TB_MR_MS').val(),
-                                "WH": parseInt($('#TB_P_WH').val()),
-                                "IBC": parseInt($('#TB_P_IBC').val()),
-                                "OBNo": parseInt($('#TB_P_OBNo').val()),
-                                "NW": parseInt($('#TB_P_NW').val()),
-                                "OBL": parseInt($('#TB_P_OBL').val()),
-                                "GW": parseInt($('#TB_P_GW').val()),
-                                "IA": parseInt($('#TB_P_IA').val()),
-                                "OBW": parseInt($('#TB_P_OBW').val()),
-                                "OBH": parseInt($('#TB_P_OBH').val()),
-                                "IA2": parseInt($('#TB_P_IA2').val()),
-                                "P_NW": parseInt($('#TB_P_P_NW').val()),
-                                "P_GW": parseInt($('#TB_P_P_GW').val()),
-                                "PL": parseInt($('#TB_P_PL').val()),
-                                "PW": parseInt($('#TB_P_PW').val()),
-                                "PH": parseInt($('#TB_P_PH').val()),
-                                "PGL": parseInt($('#TB_P_PGL').val()),
-                                "PGW": parseInt($('#TB_P_PGW').val()),
-                                "PGH": parseInt($('#TB_P_PGH').val()),
+                                "WH": parseInt($('#TB_P_WH').val()) || 0,
+                                "IBC": parseInt($('#TB_P_IBC').val()) || 0,
+                                "OBNo": parseInt($('#TB_P_OBNo').val()) || 0,
+                                "NW": parseInt($('#TB_P_NW').val()) || 0,
+                                "OBL": parseInt($('#TB_P_OBL').val()) || 0,
+                                "GW": parseInt($('#TB_P_GW').val()) || 0,
+                                "IA": parseInt($('#TB_P_IA').val()) || 0,
+                                "OBW": parseInt($('#TB_P_OBW').val()) || 0,
+                                "OBH": parseInt($('#TB_P_OBH').val()) || 0,
+                                "IA2": parseInt($('#TB_P_IA2').val()) || 0,
+                                "P_NW": parseInt($('#TB_P_P_NW').val()) || 0,
+                                "P_GW": parseInt($('#TB_P_P_GW').val()) || 0,
+                                "PL": parseInt($('#TB_P_PL').val()) || 0,
+                                "PW": parseInt($('#TB_P_PW').val()) || 0,
+                                "PH": parseInt($('#TB_P_PH').val()) || 0,
+                                "PGL": parseInt($('#TB_P_PGL').val()) || 0,
+                                "PGW": parseInt($('#TB_P_PGW').val()) || 0,
+                                "PGH": parseInt($('#TB_P_PGH').val()) || 0,
                                 "Call_Type": "Cost_Update"
                             },
                             cache: false,
@@ -250,10 +222,7 @@
                                 }
                                 else {
                                     alert("<%=Resources.MP.Update_Success%>");
-                                    //Search_M?
-                                    $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
-                                    $('#BT_ED_Edit, #BT_Cancel, #Div_DT_View').css('display', '');
-                                    $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
+                                    Form_Mode_Change("Search_D");
                                     Search_Cost();
                                 }
                             },
@@ -268,10 +237,7 @@
             });
 
             $('#BT_ED_Cancel').on('click', function () {
-                //Search_D
-                $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
-                $('#BT_ED_Edit, #BT_ED_Copy, #BT_Cancel, #Div_DT_View').css('display', '');
-                $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
+                Form_Mode_Change("Search_D");
             });
 
             function Save_Check() {
@@ -660,17 +626,17 @@
                                         "Sample_PN": $('#TB_M2_Sample_P_No').val(),
                                         "Unit": $('#TB_M2_Unit').val(),
                                         "PI": $('#TB_M2_P_IM').val(),
-                                        "P_TWD": parseInt($('#TB_M2_TWD_1').val()),
-                                        "P_USD": parseInt($('#TB_M2_USD').val()),
-                                        "P_TWD_2": parseInt($('#TB_M2_TWD_2').val()),
-                                        "P_TWD_3": parseInt($('#TB_M2_TWD_2').val()),
-                                        "MIN_1": parseInt($('#TB_M2_MIN_1').val()),
-                                        "MIN_2": parseInt($('#TB_M2_MIN_2').val()),
-                                        "MIN_3": parseInt($('#TB_M2_MIN_3').val()),
+                                        "P_TWD": parseInt($('#TB_M2_TWD_1').val()) || 0,
+                                        "P_USD": parseInt($('#TB_M2_USD').val()) || 0,
+                                        "P_TWD_2": parseInt($('#TB_M2_TWD_2').val()) || 0,
+                                        "P_TWD_3": parseInt($('#TB_M2_TWD_3').val()) || 0,
+                                        "MIN_1": parseInt($('#TB_M2_MIN_1').val()) || 0,
+                                        "MIN_2": parseInt($('#TB_M2_MIN_2').val()) || 0,
+                                        "MIN_3": parseInt($('#TB_M2_MIN_3').val()) || 0,
                                         "Curr": $('#TB_M2_Currency').val(),
-                                        "P_Curr": parseInt($('#TB_M2_PC_1').val()),
-                                        "P_Curr_2": parseInt($('#TB_M2_PC_2').val()),
-                                        "P_Curr_3": parseInt($('#TB_M2_PC_3').val()),
+                                        "P_Curr": parseInt($('#TB_M2_PC_1').val()) || 0,
+                                        "P_Curr_2": parseInt($('#TB_M2_PC_2').val()) || 0,
+                                        "P_Curr_3": parseInt($('#TB_M2_PC_3').val()) || 0,
                                         "DS_P": $('#DDL_M2_DP').val(),
                                         "DS_IM": $('#TB_M2_DI').val(),
                                         "RP": $('#TB_M2_RP').val(),

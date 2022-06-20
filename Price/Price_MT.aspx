@@ -11,62 +11,59 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var From_Mode;
+            ATC();
+            DDL_Bind();
+            Dialog();
 
             function Form_Mode_Change(Form_Mode) {
                 switch (Form_Mode) {
                     case "Base":
-                        $('#Div_Detail_Form table input, textarea').not('[type=button], #TB_Dia_Where, #TB_E_Example, #TB_Dia_Where, [type=number]').val('');
-                        $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').not('#TB_E_Example').css('background-color', '');
+                        $('#Div_Detail_Form table input, textarea').not('[type=button], #TB_Dia_Where, [type=number]').val('');
+                        $('#Div_Detail_Form table input[type=number]').val(0);
+                        $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').css('background-color', '');
                         $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
-
                         $('#BT_New, #BT_Search, #BT_Detail_Search').css('display', '');
                         $('#BT_New_Save, #BT_Cancel').css('display', 'none');
                         $('.ED_BT').css('display', 'none');
-
-                        $('.M2_For_N, .M2_For_U').css('display', 'none');
                         $('#Div_DT_View').css('display', 'none');
-
                         $('.V_BT').not($('#V_BT_Master')).css('display', 'none');
                         $('.V_BT').not($('#V_BT_Master')).attr('disabled', false);
                         $('#V_BT_Master').attr('disabled', 'disabled');
-
                         $('.Div_D').css('display', 'none');
-                        $('#Div_M2').css('display', '')
+                        $('#Div_M2').css('display', '');
 
+                        $('.M2_For_U').css('display', 'none');
                         break;
                     case "New_M":
-                        $('#BT_Cancel, #BT_New_Save').css('display', '');
-                        $('.M_BT').not($('#BT_Cancel')).css('display', 'none');
-                        $('.M2_For_N').css('display', '');
+                        //$('.M_BT').not($('#BT_Cancel')).css('display', 'none');
+                        //$('.ED_BT').css('display', 'none');
+
+                        $('input[required], select[required]').css('background-color', 'yellow');
                         $('.M2_For_U').css('display', 'none');
-                        $('.ED_BT').css('display', 'none');
-                        $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', false);
+                        $('#BT_New, #BT_Search, #BT_Detail_Search').css('display', 'none');
+                        $('#BT_Cancel, #BT_New_Save').css('display', '');
+                        $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').not('.S_Name').attr('disabled', false);
+
+                        //By Copy Save
+                        //$('#BT_ED_Edit, #BT_Cancel, #Div_DT_View').css('display', '');
+                        //$('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
                         break;
                     case "Search_M":
-                        $('#BT_Cancel').css('display', '');
-                        $('.M_BT').not($('#BT_Cancel')).css('display', 'none');
-                        $('#Div_DT_View').css('display', '');
-                        $('.V_BT').not($('#V_BT_Master')).css('display', '');
-
                         $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
-                        $('#BT_ED_Edit, #BT_Cancel, #Div_DT_View').css('display', '');
-                        $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
+                        $('#BT_New, #BT_Search, #BT_Detail_Search, #BT_ED_Save, #BT_ED_Cancel, #BT_ED_Edit').css('display', 'none');
+                        $('#BT_Cancel, #Div_DT_View').css('display', '');
+                        $('.V_BT').css('display', '');
                         break;
                     case "Search_D":
-                        $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
-                        $('#BT_ED_Edit, #BT_Cancel, #Div_DT_View').css('display', '');
-                        $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
-
-                        $('.M2_For_N').css('display', 'none');
                         $('.M2_For_U').css('display', '');
                         $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
-                        $('#BT_ED_Edit').css('display', '');
+                        $('#BT_ED_Edit, #BT_ED_Copy, #BT_Cancel, #Div_DT_View').css('display', '');
                         $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
                         break;
                     case "Edit_M":
-                        $('#BT_ED_Edit, #BT_Cancel, #Div_DT_View').css('display', 'none');
+                        $('#BT_ED_Edit, #BT_ED_Copy, #BT_Cancel, #Div_DT_View').css('display', 'none');
                         $('#BT_ED_Save, #BT_ED_Cancel').css('display', '');
-                        $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').not('#TB_M2_Update_User, #TB_M2_Update_Date, #TB_M2_SEQ, #TB_E_Example').attr('disabled', false);
+                        $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').not('#TB_M2_Update_User, #TB_M2_Update_Date, #TB_M2_SEQ, .S_Name').attr('disabled', false);
                         break;
                 }
             }
@@ -80,31 +77,31 @@
                 if (confirm("<%=Resources.MP.Save_Alert%>")) {
                     if (Save_Check()) {
                         $.ajax({
-                            url: "/Customer/Customer_Save.ashx",
+                            url: "/Cost/Cost_Save.ashx",
                             data: {
-                                "C_No": $('#TB_M2_C_No').val(),
-                                "C_SName": $('#TB_M2_C_SName').val(),
-                                "C_Name": $('#TB_M2_C_Name').val(),
-                                "Principal": $('#TB_M2_Principal').val(),
-                                "Nation": $('#TB_M2_C_Nation').val(),
-                                "Quote_Class": $('#DDL_M2_Quoted').val(),
-                                "Payment_Terms": $('#TB_M2_Payment_Terms').val(),
-                                "Price_Condition": $('#TB_M2_Price_condition').val(),
-                                "Person_Commodity": $('#TB_M2_Person_Commodity').val(),
-                                "Person_Sample": $('#TB_M2_Person_Sample').val(),
-                                "Tel": $('#TB_M2_C_Tel').val(),
-                                "Fax": $('#TB_M2_Fax').val(),
-                                "Web": $('#TB_M2_Web').val(),
-                                "Mail": $('#TB_M2_Mail').val(),
-                                "MailEDM": $('#TB_M2_EDMMail').val(),
-                                "Company_Address": $('#TB_M2_Company_Address').val(),
-                                "Factory_Address": $('#TB_M2_Factory_Address').val(),
-                                "Delivery_Address": $('#TB_M2_Delivery_Address').val(),
-                                "Currency": $('#DDL_M2_Currency').val(),
-                                "IV_Address": $('#DDL_IVPK').val(),
-                                "Costomer_Source": $('#DDL_M2_C_Source').val(),
-                                "Reference_Number": $('#TB_M2_RF_No').val(),
-                                "Call_Type": "Customer2_New"
+                                "IM": $('#TB_M2_IM').val(),
+                                "SM": $('#TB_M2_SM').val(),
+                                "S_No": $('#TB_M2_S_No').val(),
+                                "S_SName": $('#TB_M2_S_SName').val(),
+                                "Sample_PN": $('#TB_M2_Sample_P_No').val(),
+                                "Unit": $('#TB_M2_Unit').val(),
+                                "PI": $('#TB_M2_P_IM').val(),
+                                "P_TWD": parseInt($('#TB_M2_TWD_1').val()) || 0,
+                                "P_USD": parseInt($('#TB_M2_USD').val()) || 0,
+                                "P_TWD_2": parseInt($('#TB_M2_TWD_2').val()) || 0,
+                                "P_TWD_3": parseInt($('#TB_M2_TWD_3').val()) || 0,
+                                "MIN_1": parseInt($('#TB_M2_MIN_1').val()) || 0,
+                                "MIN_2": parseInt($('#TB_M2_MIN_2').val()) || 0,
+                                "MIN_3": parseInt($('#TB_M2_MIN_3').val()) || 0,
+                                "Curr": $('#TB_M2_Currency').val(),
+                                "P_Curr": parseInt($('#TB_M2_PC_1').val()) || 0,
+                                "P_Curr_2": parseInt($('#TB_M2_PC_2').val()) || 0,
+                                "P_Curr_3": parseInt($('#TB_M2_PC_3').val()) || 0,
+                                "DS_P": $('#DDL_M2_DP').val(),
+                                "DS_IM": $('#TB_M2_DI').val(),
+                                "RP": $('#TB_M2_RP').val(),
+                                "RD": $('#TB_M2_RD').val(),
+                                "Call_Type": "Cost_New"
                             },
                             cache: false,
                             type: "POST",
@@ -125,87 +122,23 @@
                                 return false;
                             }
                         });
-
-                        <%--alert("<%=Resources.Customer.Add_Success%>");
-                        $('#Div_Detail_Form table input,textarea').not('[type=button], #TB_E_Example, #TB_Dia_Where').val('');
-                        //Demo暫不清除
-
-                        $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').not('#TB_E_Example').css('background-color', '');
-                        $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
-                        $('#BT_New, #BT_Search, #BT_Detail_Search').css('display', '');
-                        $('#BT_New_Save, #BT_Cancel').css('display', 'none');--%>
-                        //after complete change to search?
                     }
                 }
             });
 
             $('#BT_Search').on('click', function () {
-                Search_Customer();
+                Search_Cost();
                 From_Mode = "Search";
                 Form_Mode_Change("Search_M");
             });
 
             $('#BT_Detail_Search').on('click', function () {
-                $("#dialog").dialog({
-                    modal: true,
-                    title: "查詢條件",
-                    width: 800,//=Div寬度$
-                    overlay: 0.5,
-                    focus: true,
-                    buttons: {
-                        "Search": function () {
-                            $("#dialog").dialog('close');
-                            var Where_Text = "";
+                $("#dialog").dialog('open');
+            });
 
-                            switch ($('#Dia_BT_Simple_Change').prop('disabled')) {
-                                case true://Simple
-                                    //console.warn(($('#Dia_TB1_C_No').val() == "") ? "A" : "B");
-
-                                    switch ($('#Dia_TB1_Operator1').val()) {
-                                        case "%LIKE%":
-                                            Where_Text += " [客戶編號] LIKE '%" + $('#Dia_TB1_C_No').val() + "%'";
-                                            break;
-                                        case "LIKE%":
-                                            Where_Text += " [客戶編號] LIKE '" + $('#Dia_TB1_C_No').val() + "%'";;
-                                            break;
-                                        case "%LIKE":
-                                            Where_Text += " [客戶編號] LIKE '%" + $('#Dia_TB1_C_No').val() + "'";;
-                                            break;
-                                        default:
-                                            Where_Text += " [客戶編號] " + $('#Dia_TB1_Operator1').val() + " '" + $('#Dia_TB1_C_No').val() + "'";
-                                            break;
-                                    }
-                                    switch ($('#Dia_TB1_Operator2').val()) {
-                                        case "%LIKE%":
-                                            Where_Text += " AND [客戶簡稱] LIKE '%" + $('#Dia_TB1_C_SName').val() + "%'";
-                                            break;
-                                        case "LIKE%":
-                                            Where_Text += " AND [客戶簡稱] LIKE '" + $('#Dia_TB1_C_SName').val() + "%'";;
-                                            break;
-                                        case "%LIKE":
-                                            Where_Text += " AND [客戶簡稱] LIKE '%" + $('#Dia_TB1_C_SName').val() + "'";;
-                                            break;
-                                        default:
-                                            Where_Text += " AND [客戶簡稱] " + $('#Dia_TB1_Operator2').val() + " '" + $('#Dia_TB1_C_SName').val() + "'";
-                                            break;
-                                    }
-                                    console.warn(Where_Text);
-                                    Search_Customer(Where_Text);
-                                    break;
-                                case false://Multiple
-                                    Where_Text += $('#TB_Dia_Where').val();
-                                    console.warn(Where_Text);
-                                    Search_Customer(Where_Text);
-                                    break;
-                            }
-                            From_Mode = "Detail_Search";
-                            Form_Mode_Change("Search_M");
-                        },
-                        "Cancel": function () {
-                            $("#dialog").dialog('close');
-                        }
-                    }
-                });
+            $('#BT_ED_Copy').on('click', function () {
+                $('#TB_CD_IM, #TB_CD_S_No').css('background-color', '');
+                $("#Copy_Dialog").dialog('open');
             });
 
             $('#BT_Cancel').on('click', function () {
@@ -213,7 +146,6 @@
                 if (From_Mode == "New") {
                     Confirm_Check = confirm("<%=Resources.MP.Cancel_Alert%>");
                 }
-
                 if (Confirm_Check) {
                     From_Mode = "Cancel";
                     Form_Mode_Change("Base");
@@ -228,36 +160,55 @@
                 if (confirm("<%=Resources.MP.Edit_Alert%>")) {
                     if (Save_Check()) {
                         $.ajax({
-                            url: "/Customer/Customer_Save.ashx",
+                            url: "/Cost/Cost_Save.ashx",
                             data: {
                                 "SEQ": $('#TB_M2_SEQ').val(),
-                                "C_No": $('#TB_M2_C_No').val(),
-                                "C_SName": $('#TB_M2_C_SName').val(),
-                                "C_Name": $('#TB_M2_C_Name').val(),
-                                "Nation": $('#TB_M2_C_Nation').val(),
-                                "Quote_Class": $('#DDL_M2_Quoted').val(),
-                                "Payment_Terms": $('#TB_M2_Payment_Terms').val(),
-                                "Person_Commodity": $('#TB_M2_Person_Commodity').val(),
-                                "Person_Sample": $('#TB_M2_Person_Sample').val(),
-                                "Tel": $('#TB_M2_C_Tel').val(),
-                                "Fax": $('#TB_M2_Fax').val(),
-                                "EIN": $('#TB_M_EIN').val(),
-                                "Web": $('#TB_M2_Web').val(),
-                                "Mail": $('#TB_M2_Mail').val(),
-                                "Price_Condition": $('#TB_M2_Price_condition').val(),
-                                "Company_Address": $('#TB_M2_Company_Address').val(),
-                                "Factory_Address": $('#TB_M2_Factory_Address').val(),
-                                "Delivery_Address": $('#TB_M2_Delivery_Address').val(),
-                                "Remark": $('#TB_RM_Remark').val(),
-                                "Mail_Group": "",//$('#TB_M2_C_No').val(),
-                                "Center_Use": "",//$('#TB_M2_C_No').val(),
-                                "Currency": $('#DDL_M2_Currency').val(),
-                                "Principal": $('#TB_M2_Principal').val(),
-                                "MailEDM": $('#TB_M2_EDMMail').val(),
-                                "IV_Address": $('#DDL_IVPK').val(),
-                                "Shipping_Notes": $('#TB_CC_Shipping_Notes').val(),
+                                "IM": $('#TB_M2_IM').val(),
+                                "SM": $('#TB_M2_SM').val(),
+                                "S_No": $('#TB_M2_S_No').val(),
+                                "S_SName": $('#TB_M2_S_SName').val(),
+                                "Sample_PN": $('#TB_M2_Sample_P_No').val(),
+                                "Unit": $('#TB_M2_Unit').val(),
+                                "PI": $('#TB_M2_P_IM').val(),
+                                "PID": $('#TB_M2_P_ID').val(),
+                                "P_TWD": parseInt($('#TB_M2_TWD_1').val()) || 0,
+                                "P_USD": parseInt($('#TB_M2_USD').val()) || 0,
+                                "P_TWD_2": parseInt($('#TB_M2_TWD_2').val()) || 0,
+                                "P_TWD_3": parseInt($('#TB_M2_TWD_3').val()) || 0,
+                                "MIN_1": parseInt($('#TB_M2_MIN_1').val()) || 0,
+                                "MIN_2": parseInt($('#TB_M2_MIN_2').val()) || 0,
+                                "MIN_3": parseInt($('#TB_M2_MIN_3').val()) || 0,
+                                "Curr": $('#TB_M2_Currency').val(),
+                                "P_Curr": parseInt($('#TB_M2_PC_1').val()) || 0,
+                                "P_Curr_2": parseInt($('#TB_M2_PC_2').val()) || 0,
+                                "P_Curr_3": parseInt($('#TB_M2_PC_3').val()) || 0,
+                                "DS_P": $('#DDL_M2_DP').val(),
+                                "DS_IM": $('#TB_M2_DI').val(),
+                                "DPN": $('#TB_M2_DPN').val(),
+                                "PS": $('#DDL_M2_PS').val(),
+                                "RP": $('#TB_M2_RP').val(),
+                                "RD": $('#TB_M2_RD').val(),
 
-                                "Call_Type": "Customer2_Update"
+                                "MS": $('#TB_MR_MS').val(),
+                                "WH": parseInt($('#TB_P_WH').val()) || 0,
+                                "IBC": parseInt($('#TB_P_IBC').val()) || 0,
+                                "OBNo": parseInt($('#TB_P_OBNo').val()) || 0,
+                                "NW": parseInt($('#TB_P_NW').val()) || 0,
+                                "OBL": parseInt($('#TB_P_OBL').val()) || 0,
+                                "GW": parseInt($('#TB_P_GW').val()) || 0,
+                                "IA": parseInt($('#TB_P_IA').val()) || 0,
+                                "OBW": parseInt($('#TB_P_OBW').val()) || 0,
+                                "OBH": parseInt($('#TB_P_OBH').val()) || 0,
+                                "IA2": parseInt($('#TB_P_IA2').val()) || 0,
+                                "P_NW": parseInt($('#TB_P_P_NW').val()) || 0,
+                                "P_GW": parseInt($('#TB_P_P_GW').val()) || 0,
+                                "PL": parseInt($('#TB_P_PL').val()) || 0,
+                                "PW": parseInt($('#TB_P_PW').val()) || 0,
+                                "PH": parseInt($('#TB_P_PH').val()) || 0,
+                                "PGL": parseInt($('#TB_P_PGL').val()) || 0,
+                                "PGW": parseInt($('#TB_P_PGW').val()) || 0,
+                                "PGH": parseInt($('#TB_P_PGH').val()) || 0,
+                                "Call_Type": "Cost_Update"
                             },
                             cache: false,
                             type: "POST",
@@ -270,8 +221,8 @@
                                 }
                                 else {
                                     alert("<%=Resources.MP.Update_Success%>");
-                                    Search_Customer();
-                                    Form_Mode_Change("Search_M");
+                                    Form_Mode_Change("Search_D");
+                                    Search_Cost();
                                 }
                             },
                             error: function (ex) {
@@ -291,24 +242,103 @@
             function Save_Check() {
                 var Check_Item = true;
                 var Alert_Message = "";
-                if ($('#TB_M2_C_No').val().length < 4 || $('#TB_M2_C_No').val().length > 8) {
-                    Alert_Message += "請輸入4~8碼客戶編號";
-                    $('#TB_M2_C_No').css('background-color', 'red');
+                //if ($('#TB_M2_S_No').val().length < 4 || $('#TB_M2_S_No').val().length > 8) {
+                //    Alert_Message += "請輸入4~8碼廠商編號";
+                //    $('#TB_M2_S_No').css('background-color', 'red');
+                //    Check_Item = false;
+                //}
+                //if ($('#TB_M2_S_SName').val().length === 0) {
+                //    Alert_Message += "\r\n請輸入廠商簡稱";
+                //    $('#TB_M2_S_SName').css('background-color', 'red');
+                //    Check_Item = false;
+                //}
+                //if ($('#TB_M2_S_Nation').val().length === 0) {
+                //    Alert_Message += "\r\n請輸入國名";
+                //    $('#TB_M2_S_Nation').css('background-color', 'red');
+                //    Check_Item = false;
+                //}
+                //if (!Check_Item) {
+                //    alert(Alert_Message);
+                //}
+                return Check_Item;
+            };
+            function Copy_Check() {
+                var Check_Item = true;
+                var Alert_Message = "";
+                if ($('#TB_CD_IM').val().length === 0) {
+                    Alert_Message += "請輸入頤坊型號";
+                    $('#TB_CD_IM').css('background-color', 'red');
                     Check_Item = false;
                 }
-                if ($('#TB_M2_Mail').val().length === 0) {
-                    Alert_Message += "\r\n請輸入Mail";
-                    $('#TB_M2_Mail').css('background-color', 'red');
+                else {
+                    $('#TB_CD_IM').css('background-color', '');
+                }
+
+                if ($('#TB_CD_S_No').val().length === 0) {
+                    Alert_Message += "\r\n請輸入廠商編號";
+                    $('#TB_CD_S_No').css('background-color', 'red');
                     Check_Item = false;
                 }
-                if ($('#TB_M2_C_Nation').val().length === 0) {
-                    Alert_Message += "\r\n請輸入國名";
-                    $('#TB_M2_C_Nation').css('background-color', 'red');
-                    Check_Item = false;
+                if (Check_Item) {
+                    $.ajax({
+                        url: "/Cost/Cost_Search.ashx",
+                        data: {
+                            "S_No": $('#TB_CD_S_No').val(),
+                            "Call_Type": "Supplier_No_Check"
+                        },
+                        cache: false,
+                        async: false,
+                        type: "POST",
+                        datatype: "json",
+                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                        success: function (response) {
+                            if (response.length === 0) {
+                                Alert_Message += "\r\n廠商編號不存在";
+                                $('#TB_CD_S_No').css('background-color', 'red');
+                                Check_Item = false;
+                            }
+                            else {
+                                $.ajax({
+                                    url: "/Cost/Cost_Search.ashx",
+                                    data: {
+                                        "IM": $('#TB_CD_IM').val(),
+                                        "S_No": $('#TB_CD_S_No').val(),
+                                        "Call_Type": "Copy_ALL_Check"
+                                    },
+                                    cache: false,
+                                    async: false,
+                                    type: "POST",
+                                    datatype: "json",
+                                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                                    success: function (response) {
+                                        if (response.length > 0) {
+                                            Alert_Message += "\r\n已存在相同頤坊型號&廠商編號";
+                                            $('#TB_CD_IM').css('background-color', 'red');
+                                            $('#TB_CD_S_No').css('background-color', 'red');
+                                            Check_Item = false;
+                                        }
+                                        else {
+                                            $('#TB_CD_IM').css('background-color', '');
+                                            $('#TB_CD_S_No').css('background-color', '');
+                                        }
+                                    },
+                                    error: function (ex) {
+                                        alert(ex);
+                                    }
+                                });
+
+                            }
+                        },
+                        error: function (ex) {
+                            alert(ex);
+                        }
+                    });
                 }
+
                 if (!Check_Item) {
                     alert(Alert_Message);
                 }
+                // 1. 型號 or 編號 不為空, 2.編號需存在DB 3. 型號+編號 不可重複DB,
                 return Check_Item;
             };
 
@@ -317,113 +347,141 @@
                 $('.V_BT').not($(this)).attr('disabled', false);
             });
 
-            $('#TB_M2_C_SName ,#TB_RM_C_SName, #TB_CC_C_NO, #TB_M_C_SName, #TB_RF_C_SName').on('change', function () {
-                $('#TB_M2_C_SName ,#TB_RM_C_SName, #TB_CC_C_NO, #TB_M_C_SName, #TB_RF_C_SName').val($(this).val());
+            $('#TB_M2_IM, #TB_I_IM, #TB_CL_IM, #TB_MR_IM').on('change', function () {
+                $('#TB_M2_IM, #TB_I_IM, #TB_CL_IM, #TB_MR_IM').val($(this).val());
+            });
+            $('#TB_M2_S_No, #TB_I_S_No, #TB_CL_S_No, #TB_MR_S_No').on('change', function () {
+                $('#TB_M2_S_No, #TB_I_S_No, #TB_CL_S_No, #TB_MR_S_No').val($(this).val());
+            });
+            $('#TB_M2_P_IM, #TB_I_P_IM, #TB_CL_P_IM, #TB_MR_P_IM').on('change', function () {
+                $('#TB_M2_P_IM, #TB_I_P_IM, #TB_CL_P_IM, #TB_MR_P_IM').val($(this).val());
             });
 
-            //Will combine
             $('#Table_Search_Customer').on('click', 'tbody tr', function () {
-                Table_Tr_Click($(this));
-            });
+                $(this).parent().find('tr').css('background-color', '');
+                $(this).parent().find('tr').css('color', 'black');
+                $(this).css('background-color', '#5a1400');
+                $(this).css('color', 'white');
 
-            function Table_Tr_Click(Click_tr) {
-                $(Click_tr).parent().find('tr').css('background-color', '');
-                $(Click_tr).parent().find('tr').css('color', 'black');
-                $(Click_tr).css('background-color', '#5a1400');
-                $(Click_tr).css('color', 'white');
+                var SEQ = $(this).find('td:nth-child(1)').text().toString().trim();
 
-                var C_No = $(Click_tr).find('td:nth-child(1)').text().toString().trim();
-                Form_Mode_Change("Search_D");
+                $('.M2_For_U').css('display', '');
+                $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
+                $('#BT_ED_Edit, #BT_ED_Copy').css('display', '');
+                $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
+
                 $.ajax({
-                    url: "/Customer/Customer_Search.ashx",
+                    url: "/Cost/Cost_Search.ashx",
                     data: {
-                        "C_No": C_No,
-                        "Call_Type": "Customer2_Selected"
+                        "SEQ": SEQ,
+                        "Call_Type": "Cost1_Selected"
                     },
                     cache: false,
                     type: "POST",
                     datatype: "json",
                     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                     success: function (response) {
-                        $('#TB_M2_SEQ').val(String(response[0].C_SEQ ?? ""));
-                        $('#TB_M2_C_No').val(C_No);
-                        $('#TB_M2_C_SName').val(String(response[0].C_SName ?? ""));
-                        $('#TB_M2_C_Name').val(String(response[0].C_Name ?? ""));
-                        $('#TB_M2_C_Nation').val(String(response[0].C_Nation ?? ""));
-                        $('#DDL_M2_Currency').val(String(response[0].C_Currency ?? ""));
-                        $('#DDL_M2_Quoted').val(String(response[0].C_Quote ?? ""));
-                        $('#TB_M2_Payment_Terms').val(String(response[0].C_Payment_Terms ?? ""));
-                        $('#DDL_M2_Mail_Group').val(String(response[0].C_Mailgroup ?? ""));
-                        $('#TB_M2_Principal').val(String(response[0].C_Principal ?? ""));
-                        $('#TB_M2_Person_Commodity').val(String(response[0].C_Person_Commodity ?? ""));
-                        $('#TB_M2_Person_Sample').val(String(response[0].C_Person_Sample ?? ""));
-                        $('#TB_M2_C_Tel').val(String(response[0].C_Tel ?? ""));
-                        $('#TB_M2_Fax').val(String(response[0].C_Fax ?? ""));
-                        $('#TB_M2_Web').val(String(response[0].C_Web ?? ""));
-                        $('#TB_M2_Mail').val(String(response[0].C_Mail ?? ""));
-                        $('#TB_M2_EDMMail').val(String(response[0].C_MailEDM ?? ""));
-                        $('TB_M2_Price_condition').val(String(response[0].C_Price_Condition ?? ""));
-                        $('#DDL_IVPK').val(String(response[0].C_IV_Address ?? ""));
-                        $('#TB_M2_Company_Address').val(String(response[0].C_Company_Address ?? ""));
-                        $('#TB_M2_Factory_Address').val(String(response[0].C_Factory_Address ?? ""));
-                        $('#TB_M2_Delivery_Address').val(String(response[0].C_Delivery_Address ?? ""));
-                        $('#TB_M2_Update_User').val(String(response[0].C_Update_User ?? ""));
-                        $('#TB_M2_Update_Date').val(String(response[0].C_Update_Date ?? ""));
+                        $('#TB_M2_IM').val(String(response[0].IM ?? ""));
+                        $('#TB_M2_SM').val(String(response[0].SM ?? ""));
+                        $('#TB_M2_S_No').val(String(response[0].S_No ?? ""));
+                        $('#TB_M2_S_SName').val(String(response[0].S_SName ?? ""));
+                        $('#TB_M2_Sample_P_No').val(String(response[0].Sample_PN ?? ""));
+                        $('#TB_M2_Unit').val(String(response[0].Unit ?? ""));
+                        $('#TB_M2_P_IM').val(String(response[0].PI ?? ""));
 
-                        $('#TB_RM_C_SName').val(String(response[0].C_SName ?? ""));
-                        $('#TB_RM_Remark').val(String(response[0].C_Remark ?? ""));
+                        $('#LB_CD_IM').text(String(response[0].IM ?? ""));
+                        $('#LB_M2_SM').text(String(response[0].SM ?? ""));
+                        $('#LB_CD_S_No').text(String(response[0].S_No ?? ""));
+                        $('#LB_CD_S_SName').text(String(response[0].S_SName ?? ""));
+                        $('#LB_CD_P_IM').text(String(response[0].PI ?? ""));
 
-                        $('#TB_CC_C_NO').val(String(response[0].C_SName ?? ""));
-                        $('#TB_CC_Shipping_Notes').val(String(response[0].C_Shipping_Notes ?? ""));
-                        $('#TB_CC_Customs_Broker').val(String(response[0].C_Customs_Broker ?? ""));
-                        $('#TB_CC_TW_Air_Shipping_Agent').val(String(response[0].C_TW_Air_Shipping_Agent ?? ""));
-                        $('#TB_CC_TW_Shipping_Agent').val(String(response[0].C_TW_Shipping_Agent ?? ""));
-                        $('#TB_CC_TW_Shipping_Schedule').val(String(response[0].C_TW_Shipping_Schedule ?? ""));
-                        $('#TB_CC_HK_Air_Shipping_Agent').val(String(response[0].C_HK_Air_Shipping_Agent ?? ""));
-                        $('#TB_CC_HK_Shipping_Agent').val(String(response[0].C_HK_Shipping_Agent ?? ""));
-                        $('#TB_CC_HK_Shipping_Schedule').val(String(response[0].C_HK_Shipping_Schedule ?? ""));
+                        $('#TB_M2_P_ID').val(String(response[0].PID ?? ""));
+                        $('#TB_M2_TWD_1').val(String(response[0].P_TWD ?? ""));
+                        $('#TB_M2_USD').val(String(response[0].P_USD ?? ""));
+                        $('#TB_M2_TWD_2').val(String(response[0].P_TWD_2 ?? ""));
+                        $('#TB_M2_TWD_3').val(String(response[0].P_TWD_3 ?? ""));
+                        $('#TB_M2_MIN_1').val(String(response[0].MIN_1 ?? ""));
+                        $('#TB_M2_MIN_2').val(String(response[0].MIN_2 ?? ""));
+                        $('#TB_M2_MIN_3').val(String(response[0].MIN_3 ?? ""));
+                        $('#TB_M2_Currency').val(String(response[0].Curr ?? ""));
+                        $('#TB_M2_PC_1').val(String(response[0].P_Curr ?? ""));
+                        $('#TB_M2_PC_2').val(String(response[0].P_Curr_2 ?? ""));
+                        $('#TB_M2_PC_3').val(String(response[0].P_Curr_3 ?? ""));
+                        $('#DDL_M2_DP').val(String(response[0].DS_P ?? ""));
+                        $('#TB_M2_DI').val(String(response[0].DS_IM ?? ""));
+                        $('#TB_M2_RP').val(String(response[0].RP ?? ""));
+                        $('#TB_M2_RD').val(String(response[0].RD ?? ""));
+                        $('#TB_M2_DPN').val(String(response[0].DPN ?? ""));
+                        $('#DDL_M2_PS').val(String(response[0].PS ?? ""));
+                        $('#TB_M2_SD').val(String(response[0].SDate ?? ""));
+                        $('#TB_M2_SEQ').val(String(response[0].SEQ ?? ""));
+                        $('#TB_M2_Update_User').val(String(response[0].Update_User ?? ""));
+                        $('#TB_M2_Update_Date').val(String(response[0].Update_Date ?? ""));
 
-                        $('#TB_M_C_SName').val(String(response[0].C_SName ?? ""));
-                        $('#TB_M_Port').val(String(response[0].C_Port ?? ""));
-                        //C_Marks_File_Name = sdr["麥頭檔名"],
-                        $('#DDL_M_Marks').val(String(response[0].C_Marks_File_Name ?? ""));
-                        $('#IMG_M_MIMG').attr('src', "/MR/" + String(response[0].C_Marks_File_Name ?? "") + ".jpg");
-                        //IMG_M_MIMG
-                        //C_Marks_1 = sdr["麥頭_1"],
-                        //C_Marks_2 = sdr["麥頭_2"],
-                        //C_Marks_Shape = sdr["麥頭型狀"],
-                        //C_Marks_Word = sdr["麥頭字"],
-                        $('#TB_M_Packag_Request').val(String(response[0].C_Packag_Request ?? ""));
-                        $('#TB_M_Special_Document').val(String(response[0].C_Special_Document ?? ""));
-                        $('#TB_M_Express_Delivery_Account').val(String(response[0].C_Express_Delivery_Account ?? ""));
-                        $('#TB_M_EIN').val(String(response[0].C_EIN ?? ""));
+                        $('#TB_I_IM').val(String(response[0].IM ?? ""));
+                        $('#TB_I_S_No').val(String(response[0].S_No ?? ""));
+                        $('#TB_I_S_SName').val(String(response[0].S_SName ?? ""));
+                        $('#TB_I_P_IM').val(String(response[0].PI ?? ""));
 
-                        $('#TB_RF_C_SName').val(String(response[0].C_SName ?? ""));
-                        $('#TB_RF_RF_No').val(String(response[0].C_Reference_Number ?? ""));
-                        $('#DDL_RF_C_Source').val(String(response[0].C_Costomer_Source ?? ""));
-                        $('#TB_RF_First_Contact').val(String(response[0].C_First_Contact ?? ""));
-                        $('#TB_RF_Person_Purchase').val(String(response[0].C_Person_Purchase ?? ""));
-                        $('#TB_RF_Person_Finance').val(String(response[0].C_Person_Finance ?? ""));
-                        $('#TB_RF_Finance_Mail').val(String(response[0].C_Finance_Mail ?? ""));
-                        $('#TB_RF_Aging_Shipping').val(String(response[0].C_Aging_Shipping ?? ""));
-                        $('#TB_RF_Aging_Other').val(String(response[0].C_Aging_Other ?? ""));
-                        $('#CB_RF_Stop_Date').prop('checked', (response[0].C_Stop_Date != null) ? true : false)
-                        $('#TB_RF_Stop_Date').val(String(response[0].C_Stop_Date ?? ""));
-                        $('#CB_RF_Center_Use').val(String(response[0].C_Center_Use ?? ""));
+                        var IMG_View = (response[0].IMG == null);
+                        $('#IMG_I_IMG').css('display', (IMG_View) ? 'none' : '');
+                        $('#IMG_I_IMG_Hint').css('display', (IMG_View) ? '' : 'none');
+                        var binary = '';
+                        var bytes = new Uint8Array(response[0].IMG);
+                        var len = bytes.byteLength;
+                        for (var i = 0; i < len; i++) {
+                            binary += String.fromCharCode(bytes[i]);
+                        }
+                        $('#IMG_I_IMG').attr('src', 'data:image/png;base64,' + window.btoa(binary));
 
+                        $('#TB_CL_IM').val(String(response[0].IM ?? ""));
+                        $('#TB_CL_S_No').val(String(response[0].S_No ?? ""));
+                        $('#TB_CL_S_SName').val(String(response[0].S_SName ?? ""));
+                        $('#TB_CL_P_IM').val(String(response[0].PI ?? ""));
+                        $('#TB_CL_CL').val(String(response[0].CL ?? ""));
+
+                        $('#TB_MR_IM').val(String(response[0].IM ?? ""));
+                        $('#TB_MR_S_No').val(String(response[0].S_No ?? ""));
+                        $('#TB_MR_S_SName').val(String(response[0].S_SName ?? ""));
+                        $('#TB_MR_P_IM').val(String(response[0].PI ?? ""));
+                        $('#TB_MR_DPN').prop('checked', Boolean(String(response[0].DPN ?? "") == "Y"));
+                        $('#TB_MR_MS').val(String(response[0].MS ?? ""));
+
+                        $('#TB_P_IM').val(String(response[0].IM ?? ""));
+                        $('#TB_P_S_No').val(String(response[0].S_No ?? ""));
+                        $('#TB_P_S_SName').val(String(response[0].S_SName ?? ""));
+                        $('#TB_P_P_IM').val(String(response[0].PI ?? ""));
+                        $('#TB_P_WH').val(String(response[0].WH ?? ""));
+                        $('#TB_P_Unit').val(String(response[0].Unit ?? ""));
+                        $('#TB_P_IBC').val(String(response[0].IBC ?? ""));
+                        $('#TB_P_OBNo').val(String(response[0].OBNo ?? ""));
+                        $('#TB_P_NW').val(String(response[0].NW ?? ""));
+                        $('#TB_P_OBL').val(String(response[0].OBL ?? ""));
+                        $('#TB_P_GW').val(String(response[0].GW ?? ""));
+                        $('#TB_P_IA').val(String(response[0].IA ?? ""));
+                        $('#TB_P_OBW').val(String(response[0].OBW ?? ""));
+                        $('#TB_P_OBH').val(String(response[0].OBH ?? ""));
+                        $('#TB_P_IA2').val(String(response[0].IA2 ?? ""));
+                        $('#TB_P_P_NW').val(String(response[0].P_NW ?? ""));
+                        $('#TB_P_P_GW').val(String(response[0].P_GW ?? ""));
+                        $('#TB_P_PL').val(String(response[0].PL ?? ""));
+                        $('#TB_P_PW').val(String(response[0].PW ?? ""));
+                        $('#TB_P_PH').val(String(response[0].PH ?? ""));
+                        $('#TB_P_PGL').val(String(response[0].PGL ?? ""));
+                        $('#TB_P_PGW').val(String(response[0].PGW ?? ""));
+                        $('#TB_P_PGH').val(String(response[0].PGH ?? ""));
                     },
                     error: function (ex) {
                         alert(ex);
                     }
                 });
-            };
+            });
 
-            function Search_Customer(Search_Where) {
+            function Search_Cost(Search_Where) {
                 $.ajax({
-                    url: "/Customer/Customer_Search.ashx",
+                    url: "/Cost/Cost_Search.ashx",
                     data: {
-                        "C_No": "",//$('#TB_Search_C_No').val(),
-                        "Call_Type": "Customer2_Search",
+                        "Call_Type": "Cost1_Search",
                         "Search_Where": Search_Where ?? ""
                     },
                     cache: false,
@@ -434,39 +492,33 @@
                         $('#Table_Search_Customer').DataTable({
                             "data": response,
                             "destroy": true,
-                            "order": [[23, "desc"]],
+                            "order": [[17, "desc"]],
                             "lengthMenu": [
                                 [5, 10, 20, -1],
                                 [5, 10, 20, "All"],
                             ],
                             "columns": [
-                                { data: "C_No", title: "<%=Resources.Customer.Customer_No%>" },
-                                { data: "C_Tel", title:"<%=Resources.Customer.Tel%>" },
-                                { data: "C_SName", title: "<%=Resources.Customer.Customer_Short_Name%>" },
-                                { data: "C_Fax", title: "<%=Resources.Customer.Fax%>" },
-                                { data: "C_Name", title: "<%=Resources.Customer.Customer_Name%>" },
-                                { data: "C_Nation", title: "<%=Resources.Customer.Nation%>" },
-                                { data: "C_Principal", title: "<%=Resources.Customer.Principal%>" },
-                                { data: "C_Payment_Terms", title: "<%=Resources.Customer.Payment_Terms%>" },
-                                { data: "C_Person_Commodity", title: "<%=Resources.Customer.Person_Commodity%>" },
-                                { data: "C_Quote", title: "<%=Resources.Customer.Quote_Class%>" },
-                                { data: "C_Currency", title: "<%=Resources.Customer.Currency%>" },
-                                { data: "C_Person_Sample", title: "<%=Resources.Customer.Person_Sample%>" },
-                                { data: "C_Price_Condition", title: "<%=Resources.Customer.Price_Condition%>" },
-                                { data: "C_Web", title: "<%=Resources.Customer.Web%>" },
-                                { data: "C_Mail", title: "Mail" },
-                                { data: "C_IV_Address", title: "<%=Resources.Customer.IV_Address%>" },
-                                { data: "C_Costomer_Source", title: "<%=Resources.Customer.Costomer_Source%>" },
-                                { data: "C_Reference_Number", title: "<%=Resources.Customer.Reference_Number%>" },
-                                { data: "C_Company_Address", title: "<%=Resources.Customer.Company_Address%>" },
-                                { data: "C_Factory_Address", title: "<%=Resources.Customer.Factory_Address%>" },
-                                { data: "C_Delivery_Address", title: "<%=Resources.Customer.Delivery_Address%>" },
-                                { data: "C_MailEDM", title: "MailEDM" },
-                                { data: "C_Update_User", title: "<%=Resources.Customer.Update_User%>" },
-                                { data: "C_Update_Date", title: "<%=Resources.Customer.Update_Date%>" },
-                                { data: "C_SEQ", title: "<%=Resources.Customer.SEQ%>" }
+                                { data: "SEQ", title: "<%=Resources.Cost.SEQ%>" },
+                                { data: "IM", title: "<%=Resources.Cost.Ivan_Model%>" },
+                                { data: "SM", title: "<%=Resources.Cost.Supplier_Model%>" },
+                                { data: "S_No", title: "<%=Resources.Cost.Supplier_Short_Name%>" },
+                                { data: "S_SName", title: "<%=Resources.Cost.Supplier_Short_Name%>" },
+                                { data: "Sample_PN", title: "<%=Resources.Cost.Sample_Product_No%>" },
+                                { data: "Unit", title: "<%=Resources.Cost.Unit%>" },
+                                { data: "TWD_P", title: "<%=Resources.Cost.Price_TWD%>" },
+                                { data: "USD_P", title: "<%=Resources.Cost.Price_USD%>" },
+                                { data: "Curr", title: "<%=Resources.Cost.Currency%>" },
+                                { data: "Curr_P", title: "<%=Resources.Cost.Price_Curr%>" },
+                                { data: "MIN_1", title: "MIN_1" },
+                                { data: "LSTP_Day", title: "<%=Resources.Cost.Last_Price_Day%>" },
+                                { data: "PI", title: "<%=Resources.Cost.Product_Information%>" },
+                                { data: "Create_Date", title: "<%=Resources.Cost.Create_Date%>" },
+                                { data: "IMG_Enabele", title: "<%=Resources.Cost.IMG_Enable%>" },
+                                { data: "S_Update_User", title: "<%=Resources.Cost.Update_User%>" },
+                                { data: "S_Update_Date", title: "<%=Resources.Cost.Update_Date%>" }
                             ],
                         });
+
                         $('#Table_Search_Customer').css('white-space', 'nowrap');
                         $('#Table_Search_Customer thead th').css('text-align', 'center');
                     },
@@ -482,51 +534,234 @@
                 }
             });
 
-            $('#TB_M2_C_Nation').autocomplete({
-                autoFocus: true,
-                source: function (request, response) {
-                    $.ajax({
-                        url: "/Web_Service/AutoComplete.asmx/Serach_Nation",
-                        cache: false,
-                        data: "{'Nation': '" + request.term + "'}",
-                        dataType: "json",
-                        type: "POST",
-                        contentType: "application/json; charset=utf-8",
-                        success: function (data) {
-                            var Json_Response = JSON.parse(data.d);
-                            response($.map(Json_Response, function (item) { return { label: item.Nation } }));
-                        },
-                        error: function (response) {
-                            alert(response.responseText);
-                        },
-                    });
+            $('#TB_M2_S_No').on('change', function () {
+                if ($.trim($(this).val()) == "") {
+                    $('#Search_TB_S_Name').val('');
                 }
             });
-            $('#TB_Search_C_No').autocomplete({
-                autoFocus: true,
-                source: function (request, response) {
-                    $.ajax({
-                        url: "/Web_Service/AutoComplete.asmx/Serach_Customer_No_Name",
-                        cache: false,
-                        data: "{'C_No': '" + request.term + "'}",
-                        dataType: "json",
-                        type: "POST",
-                        contentType: "application/json; charset=utf-8",
-                        success: function (data) {
-                            var Json_Response = JSON.parse(data.d);
-                            response($.map(Json_Response, function (item) { return { label: item.C_No + " - " + item.C_Name, value: item.C_No, name: item.C_Name } }));
+
+            function Dialog() {
+                $("#dialog").dialog({
+                    autoOpen: false,
+                    modal: true,
+                    title: "<%=Resources.MP.Search_Confition%>",
+                    width: 800,//=Div寬度$
+                    overlay: 0.5,
+                    focus: true,
+                    buttons: {
+                        "Search": function () {
+                            $("#dialog").dialog('close');
+                            var Where_Text = "";
+
+                            switch ($('#Dia_BT_Simple_Change').prop('disabled')) {
+                                case true://Simple
+                                    switch ($('#Dia_TB1_Operator1').val()) {
+                                        case "%LIKE%":
+                                            Where_Text += " [頤坊型號] LIKE '%" + $('#Dia_TB1_IM').val() + "%'";
+                                            break;
+                                        case "LIKE%":
+                                            Where_Text += " [頤坊型號] LIKE '" + $('#Dia_TB1_IM').val() + "%'";;
+                                            break;
+                                        case "%LIKE":
+                                            Where_Text += " [頤坊型號] LIKE '%" + $('#Dia_TB1_IM').val() + "'";;
+                                            break;
+                                        default:
+                                            Where_Text += " [頤坊型號] " + $('#Dia_TB1_Operator1').val() + " '" + $('#Dia_TB1_IM').val() + "'";
+                                            break;
+                                    }
+                                    switch ($('#Dia_TB1_Operator2').val()) {
+                                        case "%LIKE%":
+                                            Where_Text += " AND [廠商編號] LIKE '%" + $('#Dia_TB1_S_No').val() + "%'";
+                                            break;
+                                        case "LIKE%":
+                                            Where_Text += " AND [廠商編號] LIKE '" + $('#Dia_TB1_S_No').val() + "%'";;
+                                            break;
+                                        case "%LIKE":
+                                            Where_Text += " AND [廠商編號] LIKE '%" + $('#Dia_TB1_S_No').val() + "'";;
+                                            break;
+                                        default:
+                                            Where_Text += " AND [廠商編號] " + $('#Dia_TB1_Operator2').val() + " '" + $('#Dia_TB1_S_No').val() + "'";
+                                            break;
+                                    }
+                                    console.warn(Where_Text);
+                                    Search_Cost(Where_Text);
+                                    break;
+                                case false://Multiple
+                                    Where_Text += $('#TB_Dia_Where').val();
+                                    console.warn(Where_Text);
+                                    Search_Cost(Where_Text);
+                                    break;
+                            }
+
+                            From_Mode = "Detail_Search";
+                            Form_Mode_Change("Search_M");
                         },
-                        error: function (response) {
-                            alert(response.responseText);
+                        "Cancel": function () {
+                            $("#dialog").dialog('close');
+                        }
+                    }
+                });
+
+                $("#Copy_Dialog").dialog({
+                    autoOpen: false,
+                    modal: true,
+                    title: "<%=Resources.MP.Copy_Condition%>",
+                    width: 800,
+                    overlay: 0.5,
+                    buttons: {
+                        "Copy": function () {
+                            if (Copy_Check()) {
+                                $("#Copy_Dialog").dialog('close');
+                                $.ajax({
+                                    url: "/Cost/Cost_Save.ashx",
+                                    data: {
+                                        "IM": $('#TB_CD_IM').val(),
+                                        "SM": $('#TB_M2_SM').val(),
+                                        "S_No": $('#TB_CD_S_No').val(),
+                                        "S_SName": $('#HDN_CD_S_SName').val(),
+                                        "Sample_PN": $('#TB_M2_Sample_P_No').val(),
+                                        "Unit": $('#TB_M2_Unit').val(),
+                                        "PI": $('#TB_M2_P_IM').val(),
+                                        "P_TWD": parseInt($('#TB_M2_TWD_1').val()) || 0,
+                                        "P_USD": parseInt($('#TB_M2_USD').val()) || 0,
+                                        "P_TWD_2": parseInt($('#TB_M2_TWD_2').val()) || 0,
+                                        "P_TWD_3": parseInt($('#TB_M2_TWD_3').val()) || 0,
+                                        "MIN_1": parseInt($('#TB_M2_MIN_1').val()) || 0,
+                                        "MIN_2": parseInt($('#TB_M2_MIN_2').val()) || 0,
+                                        "MIN_3": parseInt($('#TB_M2_MIN_3').val()) || 0,
+                                        "Curr": $('#TB_M2_Currency').val(),
+                                        "P_Curr": parseInt($('#TB_M2_PC_1').val()) || 0,
+                                        "P_Curr_2": parseInt($('#TB_M2_PC_2').val()) || 0,
+                                        "P_Curr_3": parseInt($('#TB_M2_PC_3').val()) || 0,
+                                        "DS_P": $('#DDL_M2_DP').val(),
+                                        "DS_IM": $('#TB_M2_DI').val(),
+                                        "RP": $('#TB_M2_RP').val(),
+                                        "RD": $('#TB_M2_RD').val(),
+                                        "Call_Type": "Cost_New"
+                                    },
+                                    cache: false,
+                                    type: "POST",
+                                    datatype: "json",
+                                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                                    success: function (response) {
+                                        console.warn(response);
+                                        if (String(response).indexOf("UNIQUE KEY") > 0) {
+                                            alert(response);
+                                        }
+                                        else {
+                                            alert("<%=Resources.MP.Copy_Success%>");
+                                            Search_Cost();
+                                            Form_Mode_Change("Search_M");
+                                        }
+                                    },
+                                    error: function (ex) {
+                                        alert(ex);
+                                        return false;
+                                    }
+                                });
+                            }
                         },
-                    });
-                },
-                select: function (event, ui) {
-                    $('#TB_Search_C_No').val(ui.item.value);
-                    $('#TB_Search_C_SName').val(ui.item.name);
-                    Search_Customer();
-                },
-            });
+                        "Cancel": function () {
+                            $("#Copy_Dialog").dialog('close');
+                        }
+                    }
+                });
+            };
+
+            function ATC() {
+                $('#Dia_TB1_S_No, #TB_CD_S_No').autocomplete({
+                    autoFocus: true,
+                    source: function (request, response) {
+                        $.ajax({
+                            url: "/Web_Service/AutoComplete.asmx/Serach_Supplier_No_Name",
+                            cache: false,
+                            data: "{'S_No': '" + request.term + "'}",
+                            dataType: "json",
+                            type: "POST",
+                            contentType: "application/json; charset=utf-8",
+                            success: function (data) {
+                                //$('[style*="z-index: 2147483647"]').css('z-index')
+                                $('.ui-autocomplete').css('z-index', $('#Copy_Dialog').parent().css('z-index') + 1);
+                                var Json_Response = JSON.parse(data.d);
+                                response($.map(Json_Response, function (item) { return { label: item.S_No + " - " + item.S_Name, value: item.S_No, name: item.S_Name } }));
+                            },
+                            error: function (response) {
+                                alert(response.responseText);
+                            },
+                        });
+                    },
+                    select: function (event, ui) {
+                        $('#TB_CD_S_No').val(ui.item.value);
+                        $('#HDN_CD_S_SName').val(ui.item.name)
+                    },
+                });
+
+                $('#TB_M2_S_No, #TB_I_S_No, #TB_CL_S_No, #TB_MR_S_No, #TB_P_S_No').autocomplete({
+                    autoFocus: true,
+                    source: function (request, response) {
+                        $.ajax({
+                            url: "/Web_Service/AutoComplete.asmx/Serach_Supplier_No_Name",
+                            cache: false,
+                            data: "{'S_No': '" + request.term + "'}",
+                            dataType: "json",
+                            type: "POST",
+                            contentType: "application/json; charset=utf-8",
+                            success: function (data) {
+                                var Json_Response = JSON.parse(data.d);
+                                response($.map(Json_Response, function (item) { return { label: item.S_No + " - " + item.S_Name, value: item.S_No, name: item.S_Name } }));
+                                //will add just select ddl item check
+                            },
+                            error: function (response) {
+                                alert(response.responseText);
+                            },
+                        });
+                    },
+                    select: function (event, ui) {
+                        $('#TB_M2_S_No,     #TB_I_S_No,     #TB_CL_S_No,    #TB_MR_S_No,    #TB_P_S_No').val(ui.item.value);
+                        $('#TB_M2_S_SName,  #TB_I_S_SName,  #TB_CL_S_SName, #TB_MR_S_SName, #TB_P_S_SName').val(ui.item.name);
+                    },
+                });
+            };
+            function DDL_Bind() {
+                $.ajax({
+                    url: "/Web_Service/DDL_DataBind.asmx/Product_Status",
+                    cache: false,
+                    dataType: "json",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        var Json_Response = JSON.parse(data.d);
+                        var DDL_Option = "";
+
+                        $.each(Json_Response, function (i, value) {
+                            DDL_Option += '<option value="' + value.val + '">' + value.txt + '</option>';
+                        });
+                        $('#DDL_M2_PS').html(DDL_Option);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    },
+                });
+                $.ajax({
+                    url: "/Web_Service/DDL_DataBind.asmx/Design_Person",
+                    cache: false,
+                    dataType: "json",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        var Json_Response = JSON.parse(data.d);
+                        var DDL_Option = "";
+
+                        $.each(Json_Response, function (i, value) {
+                            DDL_Option += '<option value="' + value.val + '">' + value.txt + '</option>';
+                        });
+                        $('#DDL_M2_DP').html(DDL_Option);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    },
+                });
+            };
         });
     </script>
     <style type="text/css">
@@ -581,6 +816,7 @@
             color: white;
         }
     </style>
+
     <div id="dialog" style="display: none;">
         <div style="width: 100%; text-align: center;">
             <input type="button" id="Dia_BT_Simple_Change" value="Simple" style="width: 20%" disabled="disabled" />
@@ -589,7 +825,7 @@
         <br />
         <table border="0" style="margin: 0 auto;" id="Dia_Table_Simple">
             <tr style="text-align: right;">
-                <td style="width: 20%;"><%=Resources.Customer.Customer_No%></td>
+                <td style="width: 20%;"><%=Resources.Cost.Ivan_Model%></td>
                 <td style="width: 30%;">
                     <select style="width: 90%; height: 25px;" id="Dia_TB1_Operator1">
                         <option>=</option>
@@ -599,11 +835,11 @@
                     </select>
                 </td>
                 <td style="width: 50%;">
-                    <input style="width: 90%; height: 25px;" id="Dia_TB1_C_No" />
+                    <input style="width: 90%; height: 25px;" id="Dia_TB1_IM" />
                 </td>
             </tr>
             <tr style="text-align: right;">
-                <td style="width: 20%;"><%=Resources.Customer.Customer_Short_Name%></td>
+                <td style="width: 20%;"><%=Resources.Cost.Supplier_No%></td>
                 <td style="width: 30%;">
                     <select style="width: 90%; height: 25px;" id="Dia_TB1_Operator2">
                         <option>=</option>
@@ -613,7 +849,7 @@
                     </select>
                 </td>
                 <td style="width: 50%;">
-                    <input style="width: 90%; height: 25px;" id="Dia_TB1_C_SName" />
+                    <input style="width: 90%; height: 25px;" id="Dia_TB1_S_No" placeholder="<%=Resources.MP.S_No_ATC_Hint%>" />
                 </td>
             </tr>
         </table>
@@ -622,23 +858,17 @@
                 <td style="width: 40%;">
                     <%--Where Column--%>
                     <select style="width: 90%; height: 25px;" id="DDL_Dia_Filter">
-                        <option value="[客戶編號]" selected="selected"><%=Resources.Customer.Customer_No%></option>
-                        <option value="[客戶簡稱]"><%=Resources.Customer.Customer_Short_Name%></option>
-                        <option value="[國名]"><%=Resources.Customer.Nation%></option>
-                        <option value="[客戶來源]"><%=Resources.Customer.Costomer_Source%></option>
-                        <option value="[報價等級]"><%=Resources.Customer.Quote_Class%></option>
-                        <option value="[參考號碼]"><%=Resources.Customer.Reference_Number%></option>
-                        <option value="[初接觸日]"><%=Resources.Customer.First_Contact%></option>
-                        <option value="[電話]"><%=Resources.Customer.Tel%></option>
-                        <option value="[傳真]"><%=Resources.Customer.Fax%></option>
-                        <option value="[負責人]"><%=Resources.Customer.Principal%></option>
-                        <option value="[連絡人大貨]"><%=Resources.Customer.Person_Commodity%></option>
-                        <option value="[連絡人樣本]"><%=Resources.Customer.Person_Sample%></option>
-                        <option value="[統一編號]"><%=Resources.Customer.EIN%></option>
-                        <option value="[序號]"><%=Resources.Customer.SEQ%></option>
-                        <option value="[更新人員]"><%=Resources.Customer.Update_User%></option>
-                        <option value="[更新日期]"><%=Resources.Customer.Update_Date%></option>
-                        <option value="[公司地址]"><%=Resources.MP.Address%></option>
+                        <option value="[頤坊型號]" selected="selected"><%=Resources.Cost.Ivan_Model%></option>
+                        <option value="[廠商編號]"><%=Resources.Cost.Supplier_No%></option>
+                        <option value="[廠商型號]"><%=Resources.Cost.Supplier_Model%></option>
+                        <option value="[暫時型號]"><%=Resources.Cost.Sample_Product_No%></option>
+                        <option value="[廠商簡稱]"><%=Resources.Cost.Supplier_Short_Name%></option>
+                        <option value="[最後價日]"><%=Resources.Cost.Last_Price_Day%></option>
+                        <option value="[產品說明]"><%=Resources.Cost.Product_Information%></option>
+                        <option value="[新增日期]"><%=Resources.Cost.Add_Date%></option>
+                        <option value="[序號]"><%=Resources.Cost.SEQ%></option>
+                        <option value="[更新人員]"><%=Resources.Cost.Update_User%></option>
+                        <option value="[更新日期]"><%=Resources.Cost.Update_Date%></option>
                     </select>
                 </td>
                 <td style="width: 20%;">
@@ -692,10 +922,6 @@
                             $('#Dia_BT_Multiple_Change').attr('disabled', 'disabled');
                         });
 
-                        //權限辨別Demo
-                        //var AA = ["10114D153", "23456", "45678"];
-                        //alert(String(AA.includes("234756")));
-
                         $('#BT_Dia_Join').on('click', function () {
                             if ($('#TB_Dia_Operand').val() != "") {
                                 var Where_Text = $('#DDL_Dia_Filter').val();
@@ -728,29 +954,56 @@
                 </td>
             </tr>
         </table>
-
     </div>
+    
+    <div id="Copy_Dialog" style="display:none;">
+        <table border="0" style="margin: 0 auto;" id="CD_Table">
+            <tr style="background-color:lightgray;">
+                <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Old%><%=Resources.Cost.Ivan_Model%></td>
+                <td style="text-align: left; width: 15%;">
+                    <span id="LB_CD_IM"></span>
+                </td>
+                <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Old%><%=Resources.Cost.Supplier_Model%></td>
+                <td style="text-align: left; width: 15%;">
+                    <span id="LB_M2_SM"></span>
+                </td>
+            </tr>
+            <tr style="background-color:lightgray;">
+                <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Old%><%=Resources.Cost.Supplier_No%></td>
+                <td style="text-align: left; width: 15%;">
+                    <span id="LB_CD_S_No"></span>
+                </td>
+                <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Old%><%=Resources.Cost.Supplier_Short_Name%></td>
+                <td style="text-align: left; width: 15%;">
+                    <span id="LB_CD_S_SName"></span>
+                </td>
+            </tr>
+            <tr style="background-color:lightgray;">
+                <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Old%><%=Resources.Cost.Product_Information%></td>
+                <td style="text-align: left; width: 15%;" colspan="3">
+                    <span id="LB_CD_P_IM"></span>
+                </td>
+            </tr>
+
+            <tr>
+                <td style="text-align:right;"><%=Resources.Cost.New%><%=Resources.Cost.Ivan_Model%></td>
+                <td style="text-align:left;" colspan="3">
+                    <input style="width: 90%; height: 25px;" id="TB_CD_IM" />
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:right;"><%=Resources.Cost.New%><%=Resources.Cost.Supplier_No%></td>
+                <td style="text-align:left;" colspan="3">
+                    <input style="width: 90%; height: 25px;" id="TB_CD_S_No" placeholder="<%=Resources.MP.S_No_ATC_Hint%>" />
+                    <input type="hidden" id="HDN_CD_S_SName" />
+                </td>
+            </tr>
+        </table>
+    </div>
+
     <table class="table_th" style="text-align:left;">
         <tr>
             <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
-        </tr>
-        <tr style="display:none;">
-            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Customer_No%></td>
-            <td style="text-align: left; width: 15%;">
-                <input id="TB_Search_C_No" name="TB_Search_C_No" placeholder="<%=Resources.MP.C_No_ATC_Hint%>" type="text" style="width: 100%;" />
-            </td>
-
-            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Update_Date%></td>
-            <td style="text-align: left; width: 15%;">
-                <input id="TB_Search_Update_Date" style="width: 100%;" type="date" /></td>
-            <td></td>
-            <td></td>
-            <td style="width: 10%;"></td>
-            <td rowspan="4" style="text-align: center;">
-                <div style="display: flex; justify-content: center; align-items: center;">
-                    <input id="" class="BTN" type="button" value="<%=Resources.MP.Search%>" />
-                </div>
-            </td>
         </tr>
         <tr>
             <td style="width: 10%;"></td>
@@ -761,7 +1014,7 @@
                 <input type="button" id="BT_Search" class="M_BT" value="<%=Resources.MP.Search%>" />
             </td>
             <td style="width:10%;">
-                <input type="button" id="BT_Detail_Search" class="M_BT" value="<%=Resources.Customer.Detail_Search%>" />
+                <input type="button" id="BT_Detail_Search" class="M_BT" value="<%=Resources.MP.Detail_Search%>" />
             </td>
             <td style="width:10%;">
                 <input type="button" id="BT_Cancel" class="M_BT" value="<%=Resources.MP.Cancel%>" style="display:none;" />
@@ -779,222 +1032,190 @@
             <thead></thead>
             <tbody></tbody>
         </table>
-    </div>
+    </div> 
     <div id="Div_Edit_Area" style="width: 99%; margin: 0 auto; background-color: white;">
         &nbsp;
         <input type="button" id="BT_ED_Edit" class="ED_BT" value="<%=Resources.MP.Edit%>" style="display:none;" />
+        <input type="button" id="BT_ED_Copy" class="ED_BT" value="<%=Resources.MP.Copy%>" style="display:none;" />
         <input type="button" id="BT_ED_Save" class="ED_BT" value="<%=Resources.MP.Save%>" style="display:none;" />
         <input type="button" id="BT_ED_Cancel" class="ED_BT" value="<%=Resources.MP.Cancel%>" style="display:none;" />
     </div>
     <div style="width: 99%; margin: 0 auto; background-color: white;">
         &nbsp;
-        <input id="V_BT_Master" type="button" class="V_BT" value="<%=Resources.Customer.Master%>" onclick="$('.Div_D').css('display','none');$('#Div_M2').css('display','');" disabled="disabled" />
-        <input type="button" class="V_BT" style="display:none;" value="<%=Resources.Customer.Remark%>" onclick="$('.Div_D').css('display','none');$('#Div_Remark').css('display','');" />
-        <input type="button" class="V_BT" style="display:none;" value="<%=Resources.Customer.Customs_Clearance%>" onclick="$('.Div_D').css('display','none');$('#Div_Customs_Clearance').css('display','');" />
-        <input type="button" class="V_BT" style="display:none;" value="<%=Resources.Customer.Marks%>" onclick="$('.Div_D').css('display','none');$('#Div_Marks').css('display','');" />
-        <input type="button" class="V_BT" style="display:none;" value="<%=Resources.Customer.Reference%>" onclick="$('.Div_D').css('display','none');$('#Div_Reference').css('display','');" />
-        <input type="button" class="V_BT" style="display:none;" value="<%=Resources.Customer.Example%>" onclick="$('.Div_D').css('display','none');$('#Div_Example').css('display','');" />
+        <input id="V_BT_Master" type="button" class="V_BT" value="<%=Resources.MP.Master%>" onclick="$('.Div_D').css('display','none');$('#Div_M2').css('display','');" disabled="disabled" />
+        <input type="button" class="V_BT" style="display:none;" value="<%=Resources.Cost.Image%>" onclick="$('.Div_D').css('display','none');$('#Div_Image').css('display','');" />
+        <input type="button" class="V_BT" style="display:none;" value="<%=Resources.Cost.Change_Log%>" onclick="$('.Div_D').css('display','none');$('#Div_Change_Log').css('display','');" />
+        <input type="button" class="V_BT" style="display:none;" value="<%=Resources.MP.Sample%>" onclick="$('.Div_D').css('display','none');$('#Div_More').css('display','');" />
     </div>
     <div style="width: 100%;" id="Div_Detail_Form">
         <div id="Div_M2" class="Div_D">
             <table style="font-size: 15px; border-collapse: separate; border-spacing: 0px 8px;">
                 <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Customer_No%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M2_C_No" type="text" disabled="disabled" style="width: 100%;" pattern="^([a-zA-Z]+\d+|\d+[a-zA-Z]+)[a-zA-Z0-9]*$" minlength="4" maxlength="8" title="客戶編號僅能4至8碼" />
+                    <td style="text-align: right; text-wrap: none; width: 10%;" ><%=Resources.Cost.Ivan_Model%></td>
+                    <td style="text-align: left; width: 15%;" colspan="3">
+                        <input id="TB_M2_IM" autocomplete="off" required="required" disabled="disabled" style="width: 100%;" />
                     </td>
 
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Tel%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M2_C_Tel" disabled="disabled" style="width: 100%;" maxlength="20" />
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Supplier_Model%></td>
+                    <td style="text-align: left; width: 15%;" colspan="3">
+                        <input id="TB_M2_SM" autocomplete="off" disabled="disabled" style="width: 100%;" />
                     </td>
                 </tr>
                 <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Customer_Short_Name%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M2_C_SName" disabled="disabled" style="width: 100%;" maxlength="35" />
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Supplier_No%></td>
+                    <td style="text-align: left; width: 15%;" colspan="3">
+                        <input id="TB_M2_S_No" autocomplete="off" required="required" disabled="disabled" style="width: 100%;" placeholder="<%=Resources.MP.S_No_ATC_Hint%>" />
                     </td>
 
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Fax%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M2_Fax" disabled="disabled" style="width: 100%;" maxlength="20" />
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Supplier_Short_Name%></td>
+                    <td style="text-align: left; width: 15%;" colspan="3">
+                        <input id="TB_M2_S_SName" class="S_Name" disabled="disabled" style="width: 100%;" />
                     </td>
                 </tr>
                 <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Customer_Name%></td>
-                    <td style="text-align: left; width: 40%;" colspan="3">
-                        <input id="TB_M2_C_Name" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Nation%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M2_C_Nation" disabled="disabled" style="width: 100%;" />
-
-                        <%--<select id="DDL_M2_Nation" disabled="disabled" style="width: 100%;">
-                            <option>大洋洲</option>
-                            <option>ZIMBABWE</option>
-                            <option>VIETNAM</option>
-                            <option>USA</option>
-                            <option>URUGUAY</option>
-                            <option>UNITED ARAB EMIRATES</option>
-                            <option>UKRAINE</option>
-                            <option>U.K.</option>
-                            <option>TW</option>
-                        </select>--%>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Sample_Product_No%></td>
+                    <td style="text-align: left; width: 15%;" colspan="3">
+                        <input id="TB_M2_Sample_P_No" autocomplete="off" disabled="disabled" style="width: 100%;" />
                     </td>
 
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Principal%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M2_Principal" disabled="disabled" style="width: 100%;" />
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Unit%></td>
+                    <td style="text-align: left; width: 15%;" colspan="3">
+                        <input id="TB_M2_Unit" disabled="disabled" style="width: 100%;" />
                     </td>
                 </tr>
                 <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Currency%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <select id="DDL_M2_Currency" disabled="disabled" style="width: 100%;" >
-                            <option>USD</option>
-                            <option>NTD</option>
-                            <option>EUR</option>
-                            <option>RMB</option>
-                            <option>YEN</option>
-                        </select>
-                    </td>
-
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Mail_Group%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <select id="DDL_M2_Mail_Group" disabled="disabled" style="width: 100%;" >
-                            <option>Test</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Payment_Terms%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M2_Payment_Terms" disabled="disabled" style="width: 100%;" maxlength="12" />
-                    </td>
-
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Person_Commodity%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M2_Person_Commodity" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Quote_Class%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <select id="DDL_M2_Quoted" disabled="disabled" style="width: 100%;" >
-                            <option value="R">R-Retail</option>
-                            <option value="W">W-WholeSale</option>
-                            <option value="B">B-Business</option>
-                            <option value="D">D-Distributor</option>
-                            <option value="MD">MD-M.Distributor</option>
-                            <option value="G">G-成品客戶</option>
-                            <option value="F">F-五階之外</option>
-                        </select>
-                    </td>
-
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Person_Sample%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M2_Person_Sample" disabled="disabled" style="width: 100%;" maxlength="35" />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Price_Condition%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M2_Price_condition" disabled="disabled" style="width: 100%;" maxlength="35" />
-                    </td>
-
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Web%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M2_Web" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;">E-Mail</td>
-                    <td style="text-align: left; width: 40%;" colspan="3">
-                        <input id="TB_M2_Mail" disabled="disabled" style="width: 100%;" maxlength="50" />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;">EDM-Mail</td>
-                    <td style="text-align: left; width: 40%;" colspan="3">
-                        <textarea id="TB_M2_EDMMail" style="width: 100%;" disabled="disabled"></textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.IV_Address%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <select id="DDL_IVPK" disabled="disabled" style="width: 100%;" >
-                            <option>公司</option>
-                            <option>工廠</option>
-                            <option>送貨</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Company_Address%></td>
-                    <td colspan="3" style="text-align: left; width: 15%;">
-                        <textarea id="TB_M2_Company_Address" style="width: 100%;" disabled="disabled"></textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Factory_Address%></td>
-                    <td colspan="3" style="text-align: left; width: 15%;">
-                        <textarea id="TB_M2_Factory_Address" style="width: 100%;" disabled="disabled"></textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Delivery_Address%></td>
-                    <td colspan="3" style="text-align: left; width: 15%;">
-                        <textarea id="TB_M2_Delivery_Address" style="width: 100%;" disabled="disabled"></textarea>
-                    </td>
-                </tr>
-                <tr class="M2_For_N" style="display:none;">
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Reference_Number%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M2_RF_No" disabled="disabled" style="width: 100%;" maxlength="20" />
-                    </td>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Costomer_Source%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <select id="DDL_M2_C_Source" disabled="disabled" style="width: 100%;">
-                            <option>01-外銷網站</option>
-                            <option>02-內銷網站</option>
-                            <option>03-APLF</option>
-                            <option>04-客戶介紹</option>
-                            <option>05-日本雜誌</option>
-                            <option value="06-BOSS EMAIL">06-Boss Email</option>
-                            <option value="07-BOSS 拜訪">07-Boss 拜訪</option>
-                            <option>08-禮品展</option>
-                            <option>09-印尼展</option>
-                            <option>10-越南展</option>
-                            <option value="11-SHOPIFY">11-Shopify</option>
-                            <option value="12-CRAFTPLUS">12-CraftPlus</option>
-                            <option value="13-BUSINESS">13-Business</option>
-                            <option>14-SP-Etsy</option>
-                            <option>98-其他</option>
-                            <option value="99-NONE">99-None</option>
-                        </select>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Product_Information%></td>
+                    <td style="text-align: left; width: 15%;" colspan="7">
+                        <input id="TB_M2_P_IM" autocomplete="off" disabled="disabled" style="width: 100%;" />
                     </td>
                 </tr>
                 <tr class="M2_For_U" style="display:none;">
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Update_User%></td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Product_Information_Detail%></td>
+                    <td style="text-align: left; width: 15%;" colspan="7">
+                        <textarea id="TB_M2_P_ID" style="width: 100%; height: 250px;" maxlength="560" disabled="disabled"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Price_TWD%></td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_M2_TWD_1" disabled="disabled" type="number" value="0" style="width: 100%;text-align:right;" />
+                    </td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Price_USD%></td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_M2_USD" disabled="disabled" type="number" value="0" style="width: 100%;text-align:right;" />
+                    </td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Price_TWD%>_2</td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_M2_TWD_2" disabled="disabled" type="number" value="0" style="width: 100%;text-align:right;" />
+                    </td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Price_TWD%>_3</td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_M2_TWD_3" disabled="disabled" type="number" value="0" style="width: 100%;text-align:right;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;">MIN_1</td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_M2_MIN_1" disabled="disabled" type="number" value="0" style="width: 100%;text-align:right;" />
+                    </td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;">MIN_2</td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_M2_MIN_2" disabled="disabled" type="number" value="0" style="width: 100%;text-align:right;" />
+                    </td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;">MIN_3</td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_M2_MIN_3" disabled="disabled" type="number" value="0" style="width: 100%;text-align:right;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Currency%></td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_M2_Currency" disabled="disabled" style="width: 100%;" />
+                    </td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Price_Curr%></td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_M2_PC_1" disabled="disabled" type="number" value="0" style="width: 100%;text-align:right;" />
+                    </td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Price_Curr%>_2</td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_M2_PC_2" disabled="disabled" type="number" value="0" style="width: 100%;text-align:right;" />
+                    </td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Price_Curr%>_3</td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_M2_PC_3" disabled="disabled" type="number" value="0" style="width: 100%;text-align:right;" />
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Design_Person%></td>
+                    <td style="text-align: left; width: 15%;" colspan="3">
+                        <select id="DDL_M2_DP" disabled="disabled" style="width: 100%;" >
+
+                        </select>
+                    </td>
+                    
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Design_Image%></td>
+                    <td style="text-align: left; width: 15%;" colspan="3">
+                        <input id="TB_M2_DI" disabled="disabled" style="width: 100%;" />
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Remark_Purchase%></td>
+                    <td style="text-align: left; width: 15%;" colspan="7">
+                        <input id="TB_M2_RP" disabled="disabled" style="width: 100%;" />
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Remark_Develop%></td>
+                    <td style="text-align: left; width: 15%;" colspan="7">
+                        <input id="TB_M2_RD" disabled="disabled" style="width: 100%;" />
+                    </td>
+                </tr>
+
+
+                <tr class="M2_For_U" style="display:none;">
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Developing%></td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_M2_DPN" disabled="disabled" style="width: 100%;" />
+                    </td>
+                    
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Combination%></td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_M2_COM" disabled="disabled" style="width: 100%;" />
+                    </td>
+
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Product_Status%></td>
+                    <td style="text-align: left; width: 15%;">
+                        <select id="DDL_M2_PS" disabled="disabled" style="width: 100%;" >
+                        </select>
+                    </td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Stop_Date%></td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_M2_SD" type="datetime" disabled="disabled" style="width: 100%;" />
+                    </td>
+                </tr>                
+                <tr class="M2_For_U" style="display:none;">
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.SEQ%></td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_M2_SEQ" disabled="disabled" style="width: 100%;" />
+                    </td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Update_User%></td>
                     <td style="text-align: left; width: 15%;">
                         <input id="TB_M2_Update_User" disabled="disabled" style="width: 100%;" />
                     </td>
 
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Update_Date%></td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Update_Date%></td>
                     <td style="text-align: left; width: 15%;">
                         <input id="TB_M2_Update_Date" disabled="disabled" style="width: 100%;" />
                     </td>
                 </tr>
-                <tr class="M2_For_U" style="display:none;">
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.SEQ%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M2_SEQ" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>
+
                 <tr>
-                    <td colspan="5" style="margin: auto;">
+                    <td colspan="8" style="margin: auto;">
                         <div style="display: flex; justify-content: center; align-items: center;">
                             <input id="BT_New_Save" class="BTN" style="display:none;" type="button" value="<%=Resources.MP.Save%>" />
                         </div>
@@ -1003,299 +1224,110 @@
             </table>
         </div>
 
-        <div id="Div_Remark" class="Div_D" style="display: none; overflow: auto;">
+        <div id="Div_Image" class="Div_D" style="display: none; overflow: auto;">
+            <table style="font-size: 15px; border-collapse: separate; border-spacing: 0px 8px;">
+                <tr>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Ivan_Model%></td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_I_IM" autocomplete="off" disabled="disabled" style="width: 100%;" />
+                    </td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Supplier_No%></td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_I_S_No" autocomplete="off" disabled="disabled" style="width: 100%;" placeholder="<%=Resources.MP.S_No_ATC_Hint%>" />
+                    </td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Supplier_Short_Name%></td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_I_S_SName" class="S_Name" disabled="disabled" style="width: 100%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Product_Information%></td>
+                    <td style="text-align: left; width: 15%;" colspan="7">
+                        <input id="TB_I_P_IM" autocomplete="off" disabled="disabled" style="width: 100%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center; width: 15%;" colspan="8">
+                        <img id="IMG_I_IMG" src=""  />
+                        <span id="IMG_I_IMG_Hint" style="display:none;"><%=Resources.Cost.Image_NotExists%></span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="Div_Change_Log" class="Div_D" style="display: none; overflow: auto;">
             <table style="font-size: 15px; border-collapse: separate; border-spacing: 0px 10px;">
                 <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Customer_Short_Name%></td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Ivan_Model%></td>
                     <td style="text-align: left; width: 15%;">
-                        <input id="TB_RM_C_SName" disabled="disabled" style="width: 100%;" />
+                        <input id="TB_CL_IM" autocomplete="off" disabled="disabled" style="width: 100%;" />
                     </td>
-                    <td style="width: 10%;"></td>
-                    <td style="width: 15%;"></td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Supplier_No%></td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_CL_S_No" autocomplete="off" disabled="disabled" style="width: 100%;" placeholder="<%=Resources.MP.S_No_ATC_Hint%>" />
+                    </td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Supplier_Short_Name%></td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_CL_S_SName" class="S_Name" disabled="disabled" style="width: 100%;" />
+                    </td>
                 </tr>
                 <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Remark%></td>
-                    <td style="text-align: left;" colspan="3">
-                        <textarea id="TB_RM_Remark" style="width: 100%; height: 250px;" disabled="disabled"></textarea>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Product_Information%></td>
+                    <td style="text-align: left; width: 15%;" colspan="7">
+                        <input id="TB_CL_P_IM" autocomplete="off" disabled="disabled" style="width: 100%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Change_Log%></td>
+                    <td style="text-align: left; width: 15%;" colspan="7">
+                        <textarea id="TB_CL_CL" style="width: 100%; height: 250px;" maxlength="560" disabled="disabled"></textarea>
                     </td>
                 </tr>
             </table>
         </div>
 
-        <div id="Div_Customs_Clearance" class="Div_D" style="display: none; overflow: auto;">
+        <div id="Div_More" class="Div_D" style="display: none; overflow: auto">
             <table style="font-size: 15px; border-collapse: separate; border-spacing: 0px 10px;">
                 <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Customer_Short_Name%></td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Ivan_Model%></td>
                     <td style="text-align: left; width: 15%;">
-                        <input id="TB_CC_C_NO" disabled="disabled" style="width: 100%; " />
+                        <input id="TB_MR_IM" autocomplete="off" disabled="disabled" style="width: 100%;" />
                     </td>
-                    <td style="width: 10%;"></td>
-                    <td style="width: 15%;"></td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Customs_Broker%></td>
-                    <td style="text-align: left;" colspan="3">
-                        <textarea id="TB_CC_Customs_Broker" style="width: 100%; height: 150px;" disabled="disabled"></textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2" style="text-align:center;">TW</td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Air_Shipping_Agent%></td>
-                    <td style="text-align: left;" colspan="3">
-                        <textarea id="TB_CC_TW_Air_Shipping_Agent" style="width: 100%; height: 150px;" disabled="disabled"></textarea>
-                    </td>
-                </tr>
-                
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Shipping_Agent%></td>
-                    <td style="text-align: left;" colspan="3">
-                        <textarea id="TB_CC_TW_Shipping_Agent" style="width: 100%; height: 150px;" disabled="disabled"></textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Shipping_Schedule%></td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Supplier_No%></td>
                     <td style="text-align: left; width: 15%;">
-                        <input id="TB_CC_TW_Shipping_Schedule" disabled="disabled" style="width: 100%; " />
+                        <input id="TB_MR_S_No" autocomplete="off" disabled="disabled" style="width: 100%;" placeholder="<%=Resources.MP.S_No_ATC_Hint%>" />
                     </td>
-                </tr>
-                <tr>
-                    <td colspan="2" style="text-align:center;">HK</td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Air_Shipping_Agent%></td>
-                    <td style="text-align: left;" colspan="3">
-                        <textarea id="TB_CC_HK_Air_Shipping_Agent" style="width: 100%; height: 150px;" disabled="disabled"></textarea>
-                    </td>
-                </tr>
-                
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Shipping_Agent%></td>
-                    <td style="text-align: left;" colspan="3">
-                        <textarea id="TB_CC_HK_Shipping_Agent" style="width: 100%; height: 150px;" disabled="disabled"></textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Shipping_Schedule%></td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Supplier_Short_Name%></td>
                     <td style="text-align: left; width: 15%;">
-                        <input id="TB_CC_HK_Shipping_Schedule" disabled="disabled" style="width: 100%; " />
+                        <input id="TB_MR_S_SName" class="S_Name" disabled="disabled" style="width: 100%;" />
                     </td>
                 </tr>
-                <tr><td><br /></td></tr>
                 <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Shipping_Notes%></td>
-                    <td style="text-align: left;" colspan="3">
-                        <textarea id="TB_CC_Shipping_Notes" style="width: 100%; height: 150px;" disabled="disabled"></textarea>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Product_Information%></td>
+                    <td style="text-align: left; width: 15%;" colspan="7">
+                        <input id="TB_MR_P_IM" autocomplete="off" disabled="disabled" style="width: 100%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Manufacture_Spec%></td>
+                    <td style="text-align: left; width: 15%;" colspan="7">
+                        <textarea id="TB_MR_MS" style="width: 100%; height: 250px;" maxlength="560" disabled="disabled"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Add_Date%></td>
+                    <td style="text-align: left; width: 15%;">
+                        <input id="TB_MR_Add_Date" type="datetime" disabled="disabled" style="width: 100%;" />
+                    </td>
+                    <td style="text-align: center; width: 25%;text-wrap: none;" colspan="2">
+                        <input id="TB_MR_DPN" type="checkbox" disabled="disabled" />
+                        <label for="TB_MR_DPN"><%=Resources.Cost.Developing%></label>
                     </td>
                 </tr>
             </table>
         </div>
+        
 
-        <div id="Div_Marks" class="Div_D" style="display: none; overflow: auto;">
-            <table style="font-size: 15px; border-collapse: separate; border-spacing: 0px 10px;">
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Customer_Short_Name%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M_C_SName" disabled="disabled" style="width: 100%;" />
-                    </td>
-                    <td style="width: 5%;"></td>
-                    <td style="width: 15%;"></td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Port%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M_Port" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Marks%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <select id="DDL_M_Marks" disabled="disabled" style="width: 100%;" >
-                            <option value="M00">M00 空白</option>
-                            <option value="M01">M01 IVAN三角</option>
-                            <option value="M02">M02 IVAN菱形</option>
-                            <option value="M03">M03 IVANT長方</option>
-                            <option value="M99">M99 依客戶編號</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <%--<td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Marks%>-1</td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M_Marks1" disabled="disabled" style="width: 100%;" />
-                    </td>
-
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Marks%>-2</td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M_Marks2" disabled="disabled" style="width: 100%;" />
-                    </td>
-                    <td></td>--%>
-                    <td></td>
-                    <td colspan="3">
-                        <img id="IMG_M_MIMG" src="" />
-                    </td>
-                </tr>
-                <%--<tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Marks_Shape%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M_Marks_Shape" disabled="disabled" style="width: 100%;" />
-                    </td>
-
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Marks_Word%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M_Marks_Word" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>--%>
-                
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Packag_Request%></td>
-                    <td style="text-align: left;" colspan="3">
-                        <textarea id="TB_M_Packag_Request" style="width: 100%; height: 150px;" disabled="disabled"></textarea>
-                    </td>
-                </tr>
-                
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Special_Document%></td>
-                    <td style="text-align: left;" colspan="3">
-                        <textarea id="TB_M_Special_Document" style="width: 100%; height: 150px;" disabled="disabled"></textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Express_Delivery_Account%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M_Express_Delivery_Account" disabled="disabled" style="width: 100%;" />
-                    </td>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.EIN%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_M_EIN" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-        <div id="Div_Reference" class="Div_D" style="display: none; overflow: auto;">
-            <table style="font-size: 15px; border-collapse: separate; border-spacing: 0px 20px;">
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Customer_Short_Name%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_RF_C_SName" disabled="disabled" style="width: 100%;" />
-                    </td>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Reference_Number%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_RF_RF_No" disabled="disabled" style="width: 100%;" maxlength="20" />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Costomer_Source%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <select id="DDL_RF_C_Source" disabled="disabled" style="width: 100%;" >
-                            <option>01-外銷網站</option>
-                            <option>02-內銷網站</option>
-                            <option>03-APLF</option>
-                            <option>04-客戶介紹</option>
-                            <option>05-日本雜誌</option>
-                            <option value="06-BOSS EMAIL">06-Boss Email</option>
-                            <option value="07-BOSS 拜訪">07-Boss 拜訪</option>
-                            <option>08-禮品展</option>
-                            <option>09-印尼展</option>
-                            <option>10-越南展</option>
-                            <option value="11-SHOPIFY">11-Shopify</option>
-                            <option value="12-CRAFTPLUS">12-CraftPlus</option>
-                            <option value="13-BUSINESS">13-Business</option>
-                            <option>14-SP-Etsy</option>
-                            <option>98-其他</option>
-                            <option value="99-NONE">99-None</option>
-                        </select>
-                    </td>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.First_Contact%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_RF_First_Contact" type="date" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Person_Finance%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_RF_Person_Finance" disabled="disabled" style="width: 100%;" />
-                    </td>
-                    <td style="text-align: right; text-wrap: none; width: 10%;color:red;"><%=Resources.Customer.Person_Purchase%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_RF_Person_Purchase" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>                
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Finance_Mail%></td>
-                    <td style="text-align: left;" colspan="3">
-                        <input id="TB_RF_Finance_Mail" type="email" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>
-                
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;color:red;">海運帳齡</td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_RF_Aging_Shipping" disabled="disabled" style="width: 100%;" />
-                    </td>
-                    <td style="text-align: right; text-wrap: none; width: 10%;color:red;">非海運帳齡</td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_RF_Aging_Other" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>
-                
-                <tr>
-                    <td></td>
-                    <td style="text-align: left; text-wrap: none;">
-                        <input id="CB_RF_Stop_Date" type="checkbox" />
-                        <label for="CB_RF_Stop_Date">停用日期</label>
-                        <br />
-                        <input id="TB_RF_Stop_Date" type="date" disabled="disabled" style="width: 100%;" />
-                        <br />
-                        <span style="color:red;">會計維護(帳齡預設30天)</span>
-                    </td>
-                    <td></td>
-                    <td style="text-align: left; text-wrap: none;">
-                        <input type="checkbox" id="CB_RF_Center_Use" />
-                        <label for="CB_RF_Center_Use">發貨中心使用</label>
-                    </td>
-                </tr>
-
-            </table>
-        </div>
-
-        <div id="Div_Example" class="Div_D" style="display: none; overflow: auto">
-            <table style="font-size: 15px; width:80%;">
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"></td>
-                    <td style="text-align: left; width: 15%;"></td>
-                    <td style="width: 10%;"></td>
-                    <td style="width: 15%;"></td>
-                </tr>
-                <tr>
-                    <td style="width: 10%;">&nbsp;</td>
-                    <td colspan="3">
-                        <textarea id="TB_E_Example" style="width: 100%; height: 450px;background-color:yellowgreen;" disabled="disabled">
-正式客戶編號 (5~6碼)
-
-1XXXXy : 第1碼:1字頭  第2-5碼:區域+序號  第6碼:y部門
-1AXXX ~ 1ZXXX 不分區(尚未開放)
-
-**********************************************************
-
-開發中客戶編號 (6碼)
-
-CXXXXX : 來自外銷網站單號C 第1碼:C字頭  第2-6碼:流水序號 
-MXXXXX : 開發中客戶需輸入訂單 第1碼:M字頭  第2-6碼:流水序號 
-NXXXXX : Shopify專用客戶 第1碼:N字頭  第2-6碼:流水序號 
-
-2000~9999 : 舊開發中客戶,需使用可變更成1XXXX,再建立訂單
-
-**********************************************************
-檔案關聯參考:
-Be120/Be850/ColSetBC
-                        </textarea>
-                    </td>
-                </tr>
-            </table>
-        </div>
     </div>
     <br />
     <br />
