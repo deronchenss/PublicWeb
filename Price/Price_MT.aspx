@@ -35,21 +35,24 @@
                         $('.M2_For_U').css('display', 'none');
                         break;
                     case "New_M":
+                        //$('.M_BT').not($('#BT_Cancel')).css('display', 'none');
+                        //$('.ED_BT').css('display', 'none');
+
                         $('input[required], select[required]').css('background-color', 'yellow');
                         $('.M2_For_U').css('display', 'none');
                         $('#BT_New, #BT_Search, #BT_Detail_Search').css('display', 'none');
                         $('#BT_Cancel, #BT_New_Save').css('display', '');
                         $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').not('.S_Name').attr('disabled', false);
+
+                        //By Copy Save
+                        //$('#BT_ED_Edit, #BT_Cancel, #Div_DT_View').css('display', '');
+                        //$('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
                         break;
                     case "Search_M":
                         $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
                         $('#BT_New, #BT_Search, #BT_Detail_Search, #BT_ED_Save, #BT_ED_Cancel, #BT_ED_Edit').css('display', 'none');
                         $('#BT_Cancel, #Div_DT_View').css('display', '');
                         $('.V_BT').css('display', '');
-
-                        //$('.ED_BT').css('display', 'none');
-                        //$('#BT_ED_Edit, #BT_Cancel, #Div_DT_View').css('display', '');
-                        //$('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
                         break;
                     case "Search_D":
                         $('.M2_For_U').css('display', '');

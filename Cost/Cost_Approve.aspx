@@ -109,8 +109,6 @@
                                 + '</th><th>' + '<%=Resources.Cost.Currency%>'
                                 + '</th><th>' + '<%=Resources.Cost.Price_Curr%>'
                                 + '</th><th>' + 'MSRP'
-                                + '</th><th>' + 'Cost'
-                                + '</th><th>' + 'GP'
                                 + '</th><th>' + '<%=Resources.Cost.Last_Price_Day%>'
                                 + '</th><th>' + '<%=Resources.Cost.Supplier_No%>'
                                 + '</th><th>' + '<%=Resources.Cost.SEQ%>'
@@ -157,8 +155,6 @@
                                     '</td><td>' + String(response[i].Curr ?? "") +
                                     '</td><td>' + String(response[i].Curr_P ?? "") +
                                     '</td><td>' + String(response[i].MSRP ?? "") +
-                                    '</td><td>' + String(response[i].Cost ?? "") +
-                                    '</td><td>' + String(response[i].GP ?? "") +
                                     '</td><td>' + String(response[i].LSTP_Day ?? "") +
                                     '</td><td>' + String(response[i].S_No ?? "") +
                                     '</td><td class="SEQ">' + String(response[i].SEQ ?? "") +

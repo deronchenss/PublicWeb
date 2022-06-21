@@ -7,6 +7,64 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Ivan_Login</title>
     <link rel="shortcut icon" type="image/jpg" href="/images/ivan_logo.ico"/>
+
+    <script src="/js/jquery-3.6.0.min.js"></script>
+     <script type="text/javascript">
+         function Check_FN() {
+             if ($('#user').val() === "") {
+                 alert('Please input UserName.');
+                 return false;
+             }
+             if ($('#pass').val() === "") {
+                 //Add 例外
+                 if (String($('#user').val()).toUpperCase() === "ERIC") {
+                     return true;
+                 }
+                 alert('Please input Password.');
+                 return false;
+             }
+             return true;
+         };
+
+         function Login_Ajax() {
+             if (Check_FN()) {
+                 var Account = $('#user').val();
+                 var Password = $('#pass').val();
+
+                 $.ajax({
+                     url: "/Web_Service/Login_Call.asmx/Login_FN",
+                     cache: false,
+                     data: "{'Login_Account': '" + Account + "', 'Login_Password' : '" + Password + "'}",
+                     dataType: "json",
+                     type: "POST",
+                     contentType: "application/json; charset=utf-8",
+                     success: function (data) {
+                         switch (data.d) {
+                             case "Account_Not_Exists":
+                                 alert("User Name Error!");
+                                 return false;
+                                 break;
+                             case "Password_Error":
+                                 alert("Password Error!");
+                                 return false;
+                                 break;
+                         }
+
+                         var Json_Response = JSON.parse(data.d);
+                         //console.warn(data.d);
+                         alert(Json_Response[0].Response_Account + " - Login");
+                         //window.open("IDX1.aspx");
+                         window.location.assign("IDX1.aspx");
+
+                     },
+                     error: function (response) {
+                         alert(response.responseText);
+                     },
+                 });
+             }
+         };
+     </script>
+
     <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
@@ -86,8 +144,6 @@
 </head>
 <body>
     
-    <script src="/js/jquery-3.6.0.min.js"></script>
-
     <br />
     <div style="text-align:center;"><h2 style="margin:0 auto;">Login_Demo_1</h2></div>
     <br />
@@ -117,62 +173,7 @@
             <%--<button type="button" class="cancelbtn">Cancel</button>--%>
             <span class="psw">Forgot <a href="#">password?</a></span>
         </div>
-        
-    <script type="text/javascript">
-        function Check_FN() {
-            if ($('#user').val() === "") {
-                alert('Please input UserName.');
-                return false;
-            }
-            if ($('#pass').val() === "") {
-                //Add 例外
-                if (String($('#user').val()).toUpperCase() === "ERIC") {
-                    return true;
-                }
-                alert('Please input Password.');
-                return false;
-            }
-            return true;
-        };
-
-        function Login_Ajax() {
-            if (Check_FN()) {
-                var Account = $('#user').val();
-                var Password = $('#pass').val();
-
-                $.ajax({
-                    url: "/Web_Service/Login_Call.asmx/Login_FN",
-                    cache: false,
-                    data: "{'Login_Account': '" + Account + "', 'Login_Password' : '" + Password + "'}",
-                    dataType: "json",
-                    type: "POST",
-                    contentType: "application/json; charset=utf-8",
-                    success: function (data) {
-                        switch (data.d) {
-                            case "Account_Not_Exists":
-                                alert("User Name Error!");
-                                return false;
-                                break;
-                            case "Password_Error":
-                                alert("Password Error!");
-                                return false;
-                                break;
-                        }
-                        
-                        var Json_Response = JSON.parse(data.d);
-                        //console.warn(data.d);
-                        alert(Json_Response[0].Response_Account + " - Login");
-                        //window.open("IDX1.aspx");
-                        window.location.assign("IDX1.aspx");
-
-                    },
-                    error: function (response) {
-                        alert(response.responseText);
-                    },
-                });
-            }
-        };
-    </script>
+          
     </form>
 
 </body>

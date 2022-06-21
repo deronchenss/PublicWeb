@@ -467,8 +467,8 @@
                         $(response).each(function (i) {
                             var binary = '';
                             //console.warn( ( (response[i].TWD_P ?? 0) * (response[i].M_Amount ?? 0) ) + ' --- ' + i + ',' + response[i].TWD_P + ' * ' + response[i].M_Amount);
-                            SUM_TWD += (response[i].TWD_P ?? 0) * (response[i].M_Amount ?? 0) * (response[i].NCC ? 0 : 1);//Add_If NCC = 1 > not_Sum_cost
-                            SUM_USD += (response[i].USD_P ?? 0) * (response[i].M_Amount ?? 0) * (response[i].NCC ? 0 : 1);
+                            SUM_TWD += (response[i].TWD_P ?? 0) * (response[i].M_Amount ?? 0);
+                            SUM_USD += (response[i].USD_P ?? 0) * (response[i].M_Amount ?? 0);
 
                             if (response[i].HASIMG) {
                                 $.ajax({
