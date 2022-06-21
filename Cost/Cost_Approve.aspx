@@ -26,28 +26,19 @@
             function Form_Mode_Change(Form_Mode) {
                 switch (Form_Mode) {
                     case "Base":
-                        $('#BT_Search').css('display', '');
-                        $('#BT_Cancel').css('display', 'none');
-                        $('#Div_DT_View, #Div_Exec_Data').css('display', 'none');
-                        $('#BT_ATR, #BT_ATL, #BT_Next').css('display', 'none');
-                        $('#BT_Re_Select, #BT_Approve').css('display', 'none');
-                        $('.For_S').css('display', '');
+                        $('#BT_Search, .For_S').css('display', '');
+                        $('#BT_Cancel, #Div_DT_View, #Div_Data_Control, #Div_Exec_Data, #BT_Re_Select, #BT_Approve').css('display', 'none');
                         break;
                     case "Search":
-                        $('#BT_Cancel').css('display', '');
-                        $('#BT_Search').css('display', 'none');
-                        $('#Div_DT_View, #Div_Exec_Data').css('display', '');
+                        $('#BT_Cancel, #Div_DT_View, #Div_Data_Control, #Div_Exec_Data').css('display', '');
+                        $('#BT_Search, #BT_Re_Select, #BT_Approve, .For_S').css('display', 'none');
                         $('#Div_DT_View').css('width', '60%');
                         $('#Div_Exec_Data').css('width', '35%');
-                        $('#BT_ATR, #BT_ATL').css('display', '');
-                        $('#BT_Re_Select, #BT_Approve').css('display', 'none');
-                        $('.For_S').css('display', 'none');
                         break;
                     case "Review_Data":
-                        $('#BT_Cancel').css('display', 'none');
-                        $('#Div_DT_View').css('display', 'none');
-                        $('#Div_Exec_Data').css('width', '100%');
+                        $('#BT_Cancel, #Div_DT_View, #Div_Data_Control').css('display', 'none');
                         $('#BT_Re_Select, #BT_Approve').css('display', '');
+                        $('#Div_Exec_Data').css('width', '100%');
                         break;
                 }
             }
@@ -109,6 +100,8 @@
                                 + '</th><th>' + '<%=Resources.Cost.Currency%>'
                                 + '</th><th>' + '<%=Resources.Cost.Price_Curr%>'
                                 + '</th><th>' + 'MSRP'
+                                + '</th><th>' + 'Cost'
+                                + '</th><th>' + 'GP'
                                 + '</th><th>' + '<%=Resources.Cost.Last_Price_Day%>'
                                 + '</th><th>' + '<%=Resources.Cost.Supplier_No%>'
                                 + '</th><th>' + '<%=Resources.Cost.SEQ%>'
@@ -155,6 +148,8 @@
                                     '</td><td>' + String(response[i].Curr ?? "") +
                                     '</td><td>' + String(response[i].Curr_P ?? "") +
                                     '</td><td>' + String(response[i].MSRP ?? "") +
+                                    '</td><td>' + String(response[i].Cost ?? "") +
+                                    '</td><td>' + String(response[i].GP ?? "") +
                                     '</td><td>' + String(response[i].LSTP_Day ?? "") +
                                     '</td><td>' + String(response[i].S_No ?? "") +
                                     '</td><td class="SEQ">' + String(response[i].SEQ ?? "") +
@@ -353,36 +348,40 @@
         </tr>
     </table>
     
-    <div id="Div_DT_View" style="width: 60%; height:80vh; overflow: auto; display: none;float:left;">
-        <div class="dataTables_info" id="Table_Search_Cost_info" role="status" aria-live="polite"></div>
-        <table id="Table_Search_Cost" style="width: 100%;" class="table table-striped table-bordered">
-            <thead></thead>
-            <tbody></tbody>
-        </table>
-    </div>
-    
-    <div id="Div_Exec_Data" style="width: 35%; height:80vh; overflow: auto; display: none;float:right;">
-        <div class="dataTables_info" id="Table_Exec_Data_info" role="status" aria-live="polite"></div>
-        <table id="Table_Exec_Data" style="width: 100%;" class="table table-striped table-bordered">
-            <thead></thead>
-            <tbody></tbody>
-        </table>
-    </div>
-    
-    <div style="width:5%; float:right;margin:0 auto;text-align:center;height:80vh;">
-        <table style="width:100%;height:100%;">
-            <tr>
-                <td style="width:100%;height:100%;vertical-align:middle;">
-                    <input id="BT_ATR" type="button" value=">>" class="BTN_Green" style="display:none;" />
-                    <br /><br />
-                    <input id="BT_ATL" type="button" value="<<" class="BTN_Green" style="display:none;" />
-                    <br /><br />
-                    <input id="BT_Next" type="button" value="Next" style="inline-size:100%;display:none;" class="BTN" />
-                </td>
-            </tr>
-        </table>
-    </div>
+    <div style="width: 98%; margin: 0 auto;">
+        <div id="Div_DT_View" style="width: 60%; height: 80vh; overflow: auto; display: none; float: left;">
+            <span class="dataTables_info" id="Table_Search_Cost_info" role="status" aria-live="polite"></span>
+            <table id="Table_Search_Cost" style="width: 99%;" class="table table-striped table-bordered">
+                <thead></thead>
+                <tbody></tbody>
+            </table>
+        </div>
 
+        <div id="Div_Data_Control" style="width: 5%; margin: 0 auto; text-align: center; height: 80vh; float: left; display: none;">
+            <table style="width: 100%; height: 100%;">
+                <tr>
+                    <td style="width: 100%; height: 100%; vertical-align: middle;">
+                        <input id="BT_ATR" type="button" value=">>" class="BTN_Green" />
+                        <br />
+                        <br />
+                        <input id="BT_ATL" type="button" value="<<" class="BTN_Green" />
+                        <br />
+                        <br />
+                        <input id="BT_Next" type="button" value="Next" style="inline-size: 100%; display: none;" class="BTN" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="Div_Exec_Data" style="width: 35%; height: 80vh; overflow: auto; display: none; float: right;">
+            <span class="dataTables_info" id="Table_Exec_Data_info" role="status" aria-live="polite"></span>
+            <table id="Table_Exec_Data" style="width: 100%;" class="table table-striped table-bordered">
+                <thead></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    
     <br />
     <br />
 </asp:Content>

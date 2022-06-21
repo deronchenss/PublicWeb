@@ -11,6 +11,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
+            var IMG_Has_Read = false;
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
 
@@ -25,30 +26,19 @@
             function Form_Mode_Change(Form_Mode) {
                 switch (Form_Mode) {
                     case "Base":
-                        $('#BT_Search').css('display', '');
-                        $('#BT_Cancel').css('display', 'none');
-                        $('#Div_DT_View, #Div_Exec_Data').css('display', 'none');
-                        $('#BT_ATR, #BT_ATL, #BT_Next').css('display', 'none');
-                        $('#BT_Re_Select, #BT_Save').css('display', 'none');
-                        $('.For_S').css('display', '');
-                        $('.For_U').css('display', 'none');
+                        $('#BT_Search, .For_S').css('display', '');
+                        $('#BT_Cancel, #Div_DT_View, #Div_Data_Control, #Div_Exec_Data, #BT_Re_Select, #BT_Save, .For_U').css('display', 'none');
                         break;
                     case "Search":
-                        $('#BT_Cancel').css('display', '');
-                        $('#BT_Search').css('display', 'none');
-                        $('#Div_DT_View, #Div_Exec_Data').css('display', '');
+                        $('#BT_Cancel, #Div_DT_View, #Div_Data_Control, #Div_Exec_Data').css('display', '');
+                        $('#BT_Search, #BT_Re_Select, #BT_Save, .For_S, .For_U').css('display', 'none');
                         $('#Div_DT_View').css('width', '60%');
                         $('#Div_Exec_Data').css('width', '35%');
-                        $('#BT_ATR, #BT_ATL').css('display', '');
-                        $('#BT_Re_Select, #BT_Save').css('display', 'none');
-                        $('.For_S, .For_U').css('display', 'none');
                         break;
                     case "Review_Data":
-                        $('#BT_Cancel').css('display', 'none');
-                        $('#Div_DT_View').css('display', 'none');
+                        $('#BT_Cancel, #Div_DT_View, #Div_Data_Control').css('display', 'none');
+                        $('#BT_Re_Select, #BT_Save, .For_U').css('display', '');
                         $('#Div_Exec_Data').css('width', '100%');
-                        $('#BT_Re_Select, #BT_Save').css('display', '');
-                        $('.For_U').css('display', '');
                         break;
                 }
             }
@@ -118,28 +108,29 @@
                                 + '</th></tr></thead><tbody>';
 
                             $(response).each(function (i) {
-                                var binary = '';
-                                if (response[i].Has_IMG) {
-                                    $.ajax({
-                                        url: "/BOM/BOM_Search.ashx",
-                                        data: {
-                                            "Call_Type": "GET_IMG",
-                                            "P_SEQ": response[i].SEQ
-                                        },
-                                        cache: false,
-                                        async: false,
-                                        type: "POST",
-                                        datatype: "json",
-                                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                                        success: function (RR) {
-                                            var bytes = new Uint8Array(RR[0].P_IMG);
-                                            var len = bytes.byteLength;
-                                            for (var j = 0; j < len; j++) {
-                                                binary += String.fromCharCode(bytes[j]);
-                                            }
-                                        }
-                                    });
-                                }
+                                //var binary = '';
+                                //if (response[i].Has_IMG) {
+                                //    $.ajax({
+                                //        url: "/BOM/BOM_Search.ashx",
+                                //        data: {
+                                //            "Call_Type": "GET_IMG",
+                                //            "P_SEQ": response[i].SEQ
+                                //        },
+                                //        cache: false,
+                                //        async: false,
+                                //        type: "POST",
+                                //        datatype: "json",
+                                //        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                                //        success: function (RR) {
+                                //            var bytes = new Uint8Array(RR[0].P_IMG);
+                                //            var len = bytes.byteLength;
+                                //            for (var j = 0; j < len; j++) {
+                                //                binary += String.fromCharCode(bytes[j]);
+                                //            }
+                                //        }
+                                //    });
+                                //}
+                                //src = "data:image/png;base64,' + window.btoa(binary) + '"
                                 Table_HTML +=
                                     '<tr><td>' + String(response[i].DVN ?? "") +
                                     '</td><td>' + String(response[i].S_SName ?? "") +
@@ -147,10 +138,8 @@
                                     '</td><td>' + String(response[i].PI ?? "") +
                                         (((response[i].Change_Log ?? "").length > 0) ? ('<br /><span style="color:blue;" title="' + (response[i].Change_Log ?? "") + '">移入檢視變更記錄</sapn>') : '') +
                                     '</td><td class="DIMG" style="text-align:center;">' +
-                                    ((response[i].Has_IMG) ? ('<img src="data:image/png;base64,' + window.btoa(binary) + '" />') : ('<%=Resources.Cost.Image_NotExists%>')) +
-                                    //'</td><td title="XXXXX">' + String(response[i].change_ ?? "") +
+                                    ((response[i].Has_IMG) ? ('<img type="Product" SEQ="' + String(response[i].SEQ ?? "") + '" />') : ('<%=Resources.Cost.Image_NotExists%>')) +
                                     '</td><td class="For_U" style="display:none;">' +
-                                    //'<span class="For_V">' + String(response[i].Apply_Reason ?? "") + '</span>' +
                                     '<textarea class="U_Element" style="width:300px;" maxlength="50" title="Max Length 50 words.">' + String(response[i].Apply_Reason ?? "") + '</textarea>' +
                                     '</td><td>' + String(response[i].Unit ?? "") +
                                     '</td><td>' + String(response[i].TWD_P ?? "") +
@@ -170,6 +159,7 @@
                             $('#Table_Search_Cost').html(Table_HTML);
                             $('.DIMG').toggle(!$('#RB_DV_DIMG').prop('checked'));
                             $('#Table_Search_Cost_info').text('Showing ' + $('#Table_Search_Cost > tbody tr').length + ' entries');
+                            IMG_Has_Read = false;//初始化IMG讀取
 
                             $('#Table_Search_Cost').css('white-space', 'nowrap');
                             $('#Table_Search_Cost thead th').css('text-align', 'center');
@@ -183,6 +173,53 @@
                     }
                 });
             };
+
+            $('input[type=radio][name=DIMG]').on('click', function () {
+                var Show_IMG = false;
+                $('.DIMG').toggle(!$('#RB_DV_DIMG').prop('checked'));
+
+                switch ($(this).prop('id')) {
+                    case "RB_DV_DIMG":
+                        break;
+                    case "RB_V_DIMG":
+                        Show_IMG = true;
+                        $('.DIMG img').css('height', '');
+                        break;
+                    case "RB_SM_DIMG":
+                        Show_IMG = true;
+                        $('.DIMG img').css('height', '100px');
+                        break;
+                }
+                if (Show_IMG && !IMG_Has_Read){//Need Show And Not Read Data
+                    $('img[type=Product]').each(function (i) {
+                        var binary = '';
+                        $.ajax({
+                            url: "/BOM/BOM_Search.ashx",
+                            data: {
+                                "Call_Type": "GET_IMG",
+                                "P_SEQ": $(this).attr('SEQ')//response[i].SEQ
+                            },
+                            cache: false,
+                            async: false,
+                            type: "POST",
+                            datatype: "json",
+                            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                            success: function (RR) {
+                                var bytes = new Uint8Array(RR[0].P_IMG);
+                                var len = bytes.byteLength;
+                                for (var j = 0; j < len; j++) {
+                                    binary += String.fromCharCode(bytes[j]);
+                                }
+                            }
+                        });
+                        var SRC = 'data:image/png;base64,' + window.btoa(binary);
+                        $(this).attr('src', SRC);
+                    });
+
+                    IMG_Has_Read = true;
+                }
+
+            });
 
             $('#BT_Next').on('click', function () {
                 Edit_Mode = "Edit";
@@ -354,48 +391,54 @@
         </tr>
         <tr>
             <td colspan="8">
-                <input id="RB_DV_DIMG" type="radio" name="DIMG" checked="checked" onclick="$('.DIMG').css('display', 'none');" />
+                <input id="RB_DV_DIMG" type="radio" name="DIMG" checked="checked" />
                 <label for="RB_DV_DIMG"><%=Resources.BOM.Not_Show_Image%></label>
-                <input id="RB_V_DIMG" type="radio" name="DIMG" onclick="$('.DIMG').css('display', '');$('.DIMG img').css('height', '');" />
+                <input id="RB_V_DIMG" type="radio" name="DIMG" />
                 <label for="RB_V_DIMG"><%=Resources.BOM.Show_Original_Image%></label>
-                <input id="RB_SM_DIMG" type="radio" name="DIMG" onclick="$('.DIMG').css('display', '');$('.DIMG img').css('height', '100px');" />
+                <input id="RB_SM_DIMG" type="radio" name="DIMG" />
                 <label for="RB_SM_DIMG"><%=Resources.BOM.Show_Small_Image%></label>
             </td>
         </tr>
     </table>
-    
-    <div id="Div_DT_View" style="width: 60%; height:80vh; overflow: auto; display: none;float:left;">
-        <div class="dataTables_info" id="Table_Search_Cost_info" role="status" aria-live="polite"></div>
-        <table id="Table_Search_Cost" style="width: 100%;" class="table table-striped table-bordered">
-            <thead></thead>
-            <tbody></tbody>
-        </table>
-    </div>
-    
-    <div id="Div_Exec_Data" style="width: 35%; height:80vh; overflow: auto; display: none;float:right;">
-        <div class="dataTables_info" id="Table_Exec_Data_info" role="status" aria-live="polite"></div>
-        <div class="For_U" style="float:left;">
-            <textarea id="TB_ALL_Reason" style="width:300px;float:left;"></textarea>
-            &nbsp;&nbsp;<input type="button" id="BT_Fill_Reason" value="<%=Resources.Cost.Batch_Update_Reason%>" style="height:54px;background-color: cadetblue;padding: 8px 10px;border-radius: 10px;" />
+    <div style="width: 98%; margin: 0 auto;">
+        <div id="Div_DT_View" style="width: 60%; height: 80vh; overflow: auto; display: none; float: left;">
+            <span class="dataTables_info" id="Table_Search_Cost_info" role="status" aria-live="polite"></span>
+            <table id="Table_Search_Cost" style="width: 99%;" class="table table-striped table-bordered">
+                <thead></thead>
+                <tbody></tbody>
+            </table>
         </div>
-        <table id="Table_Exec_Data" style="width: 100%;" class="table table-striped table-bordered">
-            <thead></thead>
-            <tbody></tbody>
-        </table>
-    </div>
-    
-    <div style="width:5%; float:right;margin:0 auto;text-align:center;height:80vh;">
-        <table style="width:100%;height:100%;">
-            <tr>
-                <td style="width:100%;height:100%;vertical-align:middle;">
-                    <input id="BT_ATR" type="button" value=">>" class="BTN_Green" style="display:none;" />
-                    <br /><br />
-                    <input id="BT_ATL" type="button" value="<<" class="BTN_Green" style="display:none;" />
-                    <br /><br />
-                    <input id="BT_Next" type="button" value="Next" style="inline-size:100%;display:none;" class="BTN" />
-                </td>
-            </tr>
-        </table>
+
+        <div id="Div_Data_Control" style="width: 5%; margin: 0 auto; text-align: center; height: 80vh; float: left; display: none;">
+            <table style="width: 100%; height: 100%;">
+                <tr>
+                    <td style="width: 100%; height: 100%; vertical-align: middle;">
+                        <input id="BT_ATR" type="button" value=">>" class="BTN_Green" />
+                        <br />
+                        <br />
+                        <input id="BT_ATL" type="button" value="<<" class="BTN_Green" />
+                        <br />
+                        <br />
+                        <input id="BT_Next" type="button" value="Next" style="inline-size: 100%; display: none;" class="BTN" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="Div_Exec_Data" style="width: 35%; height: 80vh; overflow: auto; display: none; float: right;">
+            <span class="dataTables_info" id="Table_Exec_Data_info" role="status" aria-live="polite"></span>
+            <div class="For_U">
+                <div style="display: flex;align-items: center;">
+                    <textarea id="TB_ALL_Reason" style="width: 300px;"></textarea>
+                    &nbsp;&nbsp;&nbsp;
+                    <input type="button" id="BT_Fill_Reason" value="<%=Resources.Cost.Batch_Update_Reason%>" style="height: 54px; background-color: cadetblue; padding: 8px 10px; border-radius: 10px;" />
+                </div>
+            </div>
+            <table id="Table_Exec_Data" style="width: 100%;" class="table table-striped table-bordered">
+                <thead></thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
 
     <br />

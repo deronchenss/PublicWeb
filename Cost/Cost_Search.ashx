@@ -73,16 +73,26 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                     cmd.Parameters.AddWithValue("S_No", context.Request["S_No"]);
                     break;
                 case "Copy_Apply_Search":
-                    cmd.CommandText = @" SELECT TOP 500 P.[開發中], P.[廠商簡稱], P.[頤坊型號], P.[產品說明], P.[單位], P.[台幣單價], P.[美元單價], P.[外幣幣別], P.[外幣單價], REPLACE(P.[變更記錄],'""','') [變更記錄], P.[MSRP], 
-                                         	LEFT(RTRIM(CONVERT(VARCHAR(20),P.[最後單價日],20)),16) [最後單價日], P.[廠商編號], P.[序號], P.[申請原因],
-                                         	P.[更新人員], LEFT(RTRIM(CONVERT(VARCHAR(20),P.[更新日期],20)),16) [更新日期], P.[更新日期] [Sort],
-                                         	CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[P_SEQ] = P.[序號]),0) AS BIT) [Has_IMG]
-                                         FROM Dc2..suplu P
-                                         	LEFT JOIN Dc2..bom BM ON BM.P_SEQ = P.[序號]
-                                         WHERE (P.[開發中] = @DVN OR @DVN = 'ALL')
-                                                AND P.[頤坊型號] LIKE '%' + @IM + '%'
-                                                AND P.[廠商編號] LIKE '%' + @S_No + '%'
-                                                AND CONVERT(VARCHAR(20),P.[更新日期], 23) BETWEEN @Date_S AND @Date_E
+                    cmd.CommandText = @" DECLARE @PUR_USD_Rate float = (SELECT [內容] FROM Dc2..refdata WHERE [代碼] = 'PUR_Rate')
+                                         DECLARE @ORD_USD_Rate float = (SELECT [內容] FROM Dc2..refdata WHERE [代碼] = 'ORD_Rate')
+                                         SELECT IIF(ISNULL(A.[MSRP],0) = 0,'0', CAST(ROUND( (A.MSRP - A.Cost) / A.MSRP * 100 ,2,2) AS VARCHAR(20)) + '%' )  [GP], * 
+                                         FROM (
+                                            SELECT TOP 500 P.[開發中], P.[廠商簡稱], P.[頤坊型號], P.[產品說明], P.[單位], P.[台幣單價], P.[美元單價], P.[外幣幣別], P.[外幣單價], REPLACE(P.[變更記錄],'""','') [變更記錄], P.[MSRP], 
+                                            	CASE WHEN ISNULL(P.[MSRP],0) = 0 THEN 0
+                                            		 WHEN (SELECT 1 FROM Dc2..bom BM WHERE BM.P_SEQ = P.[序號]) IS NULL THEN ROUND(P.[美元單價] + (P.[台幣單價] / @PUR_USD_Rate),2)
+                                            		 ELSE (SELECT ROUND( SUM( (BDP.[美元單價] * BD.[材料用量]) + (BDP.[台幣單價] * BD.[材料用量] / @PUR_USD_Rate )) ,2)
+                                            			   FROM Dc2..bomsub BD 
+                                            				INNER JOIN Dc2..suplu BDP ON BDP.[序號]	= BD.PD_SEQ  
+                                            			   WHERE BD.P_SEQ = P.[序號] AND BD.[不計成本] = 0 ) END [Cost],
+                                            	LEFT(RTRIM(CONVERT(VARCHAR(20),P.[最後單價日],20)),16) [最後單價日], P.[廠商編號], P.[序號], P.[申請原因],
+                                            	P.[更新人員], LEFT(RTRIM(CONVERT(VARCHAR(20),P.[更新日期],20)),16) [更新日期], P.[更新日期] [Sort],
+                                            	CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[P_SEQ] = P.[序號]),0) AS BIT) [Has_IMG]
+                                            FROM Dc2..suplu P
+                                            WHERE (P.[開發中] = @DVN OR @DVN = 'ALL')
+                                                   AND P.[頤坊型號] LIKE '%' + @IM + '%'
+                                                   AND P.[廠商編號] LIKE '%' + @S_No + '%'
+                                                   AND CONVERT(VARCHAR(20),P.[更新日期], 23) BETWEEN @Date_S AND @Date_E
+                                         ) A
                                          ORDER BY [Sort] DESC ";
                     cmd.Parameters.AddWithValue("IM", context.Request["IM"]);
                     cmd.Parameters.AddWithValue("S_No", context.Request["S_No"]);
@@ -215,6 +225,8 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                             Curr_P = sdr["外幣單價"],
                             Change_Log = sdr["變更記錄"],
                             MSRP = sdr["MSRP"],
+                            Cost = sdr["Cost"],
+                            GP = sdr["GP"],
                             LSTP_Day = sdr["最後單價日"],
                             S_No = sdr["廠商編號"],
                             SEQ = sdr["序號"],

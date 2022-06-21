@@ -202,7 +202,7 @@
     <value>訂單</value>
   </data>
   <data name="Product" xml:space="preserve">
-    <value>產品(Cost)</value>
+    <value>Cost</value>
   </data>
   <data name="Product_ATC_Hint" xml:space="preserve">
     <value>輸入部分型號後，選擇產品</value>
