@@ -74,7 +74,7 @@
     <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>
 </head>
-<body>
+<body style="width:auto;height:auto">
     <form id="form1" runat="server">
         <div class="site-mobile-menu site-navbar-target">
             <div class="site-mobile-menu-header">
@@ -162,7 +162,7 @@
                                         <li class="has-children">
                                             <a href="#"><%--訂單處理--%><%=Resources.MP.Order%></a>
                                             <ul class="dropdown">
-                                                <li><a href="#"><%--訂單主檔維護--%><%=Resources.MP.Order%><%=Resources.MP.Speace%><%=Resources.MP.Master%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%></a></li>
+                                                <li><a href="/Orders/Orders/Orders_BaseMT.aspx"><%--訂單主檔維護--%><%=Resources.MP.Order%><%=Resources.MP.Speace%><%=Resources.MP.Master%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%></a></li>
                                                 <li><a href="#"><%--訂單明細新增--%><%=Resources.MP.Order%><%=Resources.MP.Speace%><%=Resources.MP.Detail%><%=Resources.MP.Speace%><%=Resources.MP.Add%></a></li>
                                                 <li><a href="#"><%--訂單明細維護--%><%=Resources.MP.Order%><%=Resources.MP.Speace%><%=Resources.MP.Detail%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%></a></li>
                                             </ul>
