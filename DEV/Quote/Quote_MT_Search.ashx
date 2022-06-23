@@ -43,36 +43,14 @@ public class Quote_MT_Search : IHttpHandler, IRequiresSessionState
                         cmd.Parameters.AddWithValue("Date_S", context.Request["Date_S"]);
                         cmd.Parameters.AddWithValue("Date_E", context.Request["Date_E"]);
                         break;
+                    case "QUAH_SEQ_SEARCH":
+                        cmd.CommandText = @" SELECT ISNULL(CONVERT(INT,SUBSTRING(MAX(報價單號),2,6)), 220000) +1 from QUAH 
+							                 WHERE SUBSTRING([報價單號],2,2) = SUBSTRING(CONVERT(VARCHAR,GETDATE(),111),3,2)
+							                 AND LEN([報價單號]) = 7 ";
+                        break;
                 }
                 cmd.Connection = conn;
                 conn.Open();
-                //SqlDataReader sdr = cmd.ExecuteReader();
-                //switch (context.Request["Call_Type"])
-                //{
-                //    case "Quote_MT_Search":
-                //        while (sdr.Read())
-                //        {
-                //            quote.Add(new
-                //            {
-                //                CUSTOMER_S_NAME = sdr["客戶簡稱"],
-                //                IVAN_TYPE = sdr["頤坊型號"],
-                //                USD_P = sdr["美元單價"],
-                //                TWD_P = sdr["台幣單價"],
-                //                CURR_TYPE = sdr["外幣幣別"],
-                //                FOR_P = sdr["外幣單價"],
-                //                MIN = sdr["MIN"],
-                //                PROD_INT = sdr["產品說明"],
-                //                UNIT = sdr["單位"],
-                //                COM_NO = sdr["廠商編號"],
-                //                COM_S_NAME = sdr["廠商簡稱"],
-                //                CUST_NO = sdr["客戶編號"],
-                //                SEQ = sdr["序號"],
-                //                UPDATE_USER = sdr["更新人員"],
-                //                UPDATE_DATE = sdr["更新日期"]
-                //            });
-                //        }
-                //        break;
-                //}
 
                 SqlDataAdapter sqlData = new SqlDataAdapter(cmd);
                 sqlData.Fill(dt);

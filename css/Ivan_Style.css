@@ -1,6 +1,10 @@
 tr.trstyle {
  
 }
+tr.trCenterstyle {
+    text-align: center;
+    width: 100%;
+}
 
 td.tdhstyle {
     vertical-align: middle; /*文字控制 */
@@ -9,7 +13,6 @@ td.tdhstyle {
     font-weight: normal;
     font-size:15px;
     padding-right:5px;
-    width:200px;
 }
 td.tdbstyle {
     text-align: left;
@@ -37,11 +40,10 @@ td.tdtstyleLeft /* 底 */ {
     padding-left: 20px;
 }
 
-.textbox_char_200 {
+.textbox_char {
     text-align: left;
     font-family: 微軟正黑體;
     font-size: 15px;
-    width: 200px;
 }
 
 .date_S_style {
