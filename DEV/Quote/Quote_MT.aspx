@@ -8,6 +8,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
+            var apiUrl = "/DEV/Quote/Quote_MT.ashx";
             //隱藏滾動卷軸
             //document.body.style.overflow = 'hidden';
 
@@ -29,28 +30,34 @@
                     case "Base":
                         $('.Div_D').css('display', 'none');
                         $('.V_BT').attr('disabled', false);
-                        $('#BT_CHS').attr('disabled', 'disabled');
                         $('#BT_Cancel').css('display', 'none');
-                        $('#BT_Search').css('display','')
+              
+                        V_BT_CHG($('#BT_CHS'));
                         break;
                     case "Search":
                         $('.Div_D').css('display', 'none');
                         $('#Div_DT_Search').css('display', '');
-                        $('#BT_Search').css('display', 'none')
                         $('#BT_Cancel').css('display', '');
-                        $('.V_BT').attr('disabled', false);
-                        $('#BT_CHS').attr('disabled', 'disabled');
+
+                        V_BT_CHG($('#BT_CHS'));
                         break;
                     case "EXEC":
-                        if ($('#Table_CHS_Data > tbody tr').length === 0) {
-                            alert('請至少選擇1筆');
-                            $('.V_BT').attr('disabled', false);
-                            $('#BT_CHS').attr('disabled', 'disabled');
+                        if ($('#Div_DT_Search').css("display") === 'none') {
+                            alert('請先查詢');
                             Edit_Mode = "Base";
+                            return;
+                        }
+                        if ($('#Table_CHS_Data > tbody tr[role=row]').length === 0) {
+                            alert('請至少選擇1筆');
+                            Edit_Mode = "Base";
+
+                            V_BT_CHG($('#BT_CHS'));
                         }
                         else {
                             $('.Div_D').css('display', 'none');
                             $('#Div_DT_DETAIL').css('display', '');
+                            V_BT_CHG($('#BT_DT'));
+
                             $('#Table_EXEC_Data').DataTable({
                                 "destroy": true,
                                 "columns": [
@@ -74,22 +81,52 @@
                                 "scrollY": "62vh",
                                 "searching": false,
                                 "paging": false,
-                                "ordering": false,
                                 "bInfo": false //顯示幾筆隱藏
                             });
 
-                            $('#Table_EXEC_Data').DataTable().clear().rows.add($('#Table_CHS_Data').find('tbody tr').clone()).draw(); //將選擇後TABLE 複製至第二面
-                            $('#Table_EXEC_info').text('Showing ' + $('#Table_EXEC_Data > tbody tr').length + ' entries'); //顯示TABLE 列數
-                            $('#E_QUAH_CNT').text('報價筆數: ' + $('#Table_EXEC_Data > tbody tr').length); //顯示TABLE 列數
+                            $('#Table_EXEC_Data').DataTable().clear().rows.add($('#Table_CHS_Data').find('tbody tr[role=row]').clone()).draw(); //將選擇後TABLE 複製至第二面
+                            $('#Table_EXEC_info').text('Showing ' + $('#Table_EXEC_Data > tbody tr[role=row]').length + ' entries'); //顯示TABLE 列數
+                            $('#E_QUAH_CNT').text('報價筆數: ' + $('#Table_EXEC_Data > tbody tr[role=row]').length); 
+
+                            //帶出客戶編號、客戶簡稱、客戶全名
+                            //因為同一批一定要同個客戶編號才可執行，前方UI有做檢核，故這邊只需要選TABLE第一筆的客戶編號即可
+                            var custNoIndex = $('#Table_EXEC_Data thead th:contains(客戶編號)').index() + 1; //客戶編號INDEX
+                            var custNo = $('#Table_EXEC_Data > tbody tr:nth-child(1)').find('td:nth-child(' + custNoIndex + ')').text();
+                            $('#E_CUST_NO').val(custNo);
+                            Search_BYR_NAME(custNo);
+
+                            //帶出報價單號
+                            Search_QUAH_SEQ(); 
                         }
                 }
             }
 
+            function Item_Move(click_tr, ToTable, FromTable, Full) {
+                if (Full) {
+                    ToTable.DataTable().rows.add(FromTable.find('tbody tr[role=row]').clone()).draw();
+                    FromTable.DataTable().rows(FromTable.find('tbody tr[role=row]')).remove().draw();
+                }
+                else {
+                    ToTable.DataTable().row.add(click_tr.clone()).draw();
+                    FromTable.DataTable().rows(click_tr).remove().draw();
+                }
+
+                $('#Table_CHS_Data_info').text('Showing ' + $('#Table_CHS_Data > tbody tr[role=row]').length + ' entries');
+                $('#Table_Search_Quote_info').text('Showing ' + $('#Table_Search_Quote > tbody tr[role=row]').length + ' entries');
+                $('#BT_Next').toggle(Boolean($('#Table_CHS_Data').find('tbody tr').length > 0));
+            }
+
+            function V_BT_CHG(buttonChs) {
+                $('.V_BT').attr('disabled', false);
+                buttonChs.attr('disabled', 'disabled');
+            }
+
+            //ajax function
             function Search_Quote() {
                 $.ajax({
-                    url: "/DEV/Quote/Quote_MT_Search.ashx",
+                    url: apiUrl,
                     data: {
-                        "Call_Type": "Quote_MT_Search",
+                        "Call_Type": "Quote_MT",
                         "CUST_NO": $('#CUST_NO').val(),
                         "CUST_S_NAME": $('#CUST_S_NAME').val(),
                         "Date_S": $('#TB_Date_S').val(),
@@ -106,7 +143,7 @@
                             Edit_Mode = "Base";
                             Form_Mode_Change("Base");
                         }
-                        else {                        
+                        else {       
                             $('#Table_Search_Quote').DataTable({
                                 "data": response,
                                 "destroy": true,
@@ -131,7 +168,6 @@
                                 "scrollY": "62vh",
                                 "searching": false,
                                 "paging": false,
-                                "ordering": false,
                                 "bInfo": false //顯示幾筆隱藏
                             });
                             
@@ -158,16 +194,14 @@
                                 "scrollY": "62vh",
                                 "searching": false,
                                 "paging": false,
-                                "ordering": false,
                                 "bInfo": false //顯示幾筆隱藏
                             });
 
                             $('#Table_Search_Quote').DataTable().draw();
                             $('#Table_CHS_Data').DataTable().draw();
-                            $('#Table_CHS_Data').find('tbody tr').remove();
 
-                            $('#Table_CHS_Data_info').text('Showing ' + $('#Table_CHS_Data > tbody tr').length + ' entries');
-                            $('#Table_Search_Quote_info').text('Showing ' + $('#Table_Search_Quote > tbody tr').length + ' entries');
+                            $('#Table_CHS_Data_info').text('Showing ' + $('#Table_CHS_Data > tbody tr[role=row]').length + ' entries');
+                            $('#Table_Search_Quote_info').text('Showing ' + $('#Table_Search_Quote > tbody tr[role=row]').length + ' entries');
                         }
                     },
                     error: function (ex) {
@@ -178,9 +212,9 @@
 
             function Search_QUAH_SEQ() {
                 $.ajax({
-                    url: "/DEV/Quote/Quote_MT_Search.ashx",
+                    url: apiUrl,
                     data: {
-                        "Call_Type": "QUAH_SEQ_SEARCH"
+                        "Call_Type": "QUAH_SEQ_SEARCH"                
                     },
                     cache: false,
                     type: "POST",
@@ -200,36 +234,103 @@
                 });
             };        
 
-            function Item_Move(click_tr, ToTable, FromTable, Full) {
-                if (ToTable.find('tbody tr').length === 0) {
-                    ToTable.css('white-space', 'nowrap');
-                }
-                if (Full) {
-                    //ToTable.DataTable().rows.add(FromTable.find('tbody tr[role=row]').clone()).draw();
-                    //FromTable.DataTable().rows(FromTable.find('tbody tr[role=row]')).remove().draw();
-                    ToTable.find('tbody').append(FromTable.find('tbody tr').clone());
-                    FromTable.find('tbody tr').remove();
-                }
-                else {
-                    //ToTable.DataTable().row.add(click_tr.clone()).draw();
-                    //FromTable.DataTable().rows(click_tr).remove().draw();
-                    //ToTable.DataTable().row.add(click_tr);
-                    //FromTable.DataTable().row(click_tr).remove();
-                    //ToTable.find('tbody').append(FromTable.find(click_tr).clone());
-                    ToTable.append(click_tr.clone());
-                    click_tr.remove();
-                }
-               
-                $('#Table_CHS_Data_info').text('Showing ' + $('#Table_CHS_Data > tbody tr[role=row]').length + ' entries');
-                $('#Table_Search_Quote_info').text('Showing ' + $('#Table_Search_Quote > tbody tr[role=row]').length + ' entries');
-                $('#BT_Next').toggle(Boolean($('#Table_CHS_Data').find('tbody tr').length > 0));
+            function Search_BYR_NAME(custNo) {
+                $.ajax({
+                    url: apiUrl,
+                    data: {
+                        "Call_Type": "CUST_NAME_SEARCH",
+                        "CUST_NO": custNo
+                    },
+                    cache: false,
+                    type: "POST",
+                    datatype: "json",
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    success: function (response) {
+                        if (response.length === 0) {
+                            alert('<%=Resources.MP.Data_Not_Exists_Alert%>');
+                        }
+                        else {
+                            $('#E_CUST_S_NAME').val(response[0].CUST_S_NAME);
+                            $('#E_CUST_NAME').val(response[0].CUST_NAME);
+                        }
+                    },
+                    error: function (ex) {
+                        alert(ex);
+                    }
+                });
+            };        
 
-                //FromTable.DataTable().draw();
-                //ToTable.DataTable().draw();
-            }
+            function INSERT_QUAH() {
+                var liIvanType = [];
+                var liFactNo = [];
+                var custNo = $('#E_CUST_NO').val(); 
+                var corCnt = 0;
+                var errCnt = 0;
+                var execCnt = $('#Table_EXEC_Data > tbody tr[role=row]').length;
 
-            //BUTTON CLICK EVENT        
-            $('#Table_Search_Quote').on('click', 'tbody tr', function () {
+                for (var tableCnt = 1; tableCnt <= execCnt; tableCnt++) {
+                    var ivanTypeIndex = $('#Table_EXEC_Data thead th:contains(頤坊型號)').index() + 1; //頤坊型號INDEX
+                    var ivanType = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('td:nth-child(' + ivanTypeIndex + ')').text();
+                    var factNoIndex = $('#Table_EXEC_Data thead th:contains(廠商編號)').index() + 1; //廠商編號INDEX
+                    var factNo = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('td:nth-child(' + factNoIndex + ')').text();
+                    var custNoIndex = $('#Table_Search_Quote thead th:contains(客戶編號)').index() + 1; //客戶編號INDEX
+                    var tableCustNo = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('td:nth-child(' + custNoIndex + ')').text();
+
+                    //一樣的寫入DB
+                    if (custNo == tableCustNo) {
+                        corCnt++;
+
+                        liIvanType.push(ivanType);
+                        liFactNo.push(factNo);
+                        $('#Table_EXEC_Data').DataTable().row(tableCnt - 1).remove().draw();
+                    }
+                    else {
+                        errCnt++;
+                    }
+                }
+
+                alert('共' + errCnt + '筆客戶編號不同');
+
+                $.ajax({
+                    url: apiUrl,
+                    data: {
+                        "Call_Type": "INSERT_QUAH",
+                        "SEQ": $('#E_QUAH_SEQ').val(),
+                        "IVAN_TYPE": liIvanType,
+                        "FACT_NO": liFactNo,
+                        "FROM": $('#E_SHIP_PLACE').val(),
+                        "CUST_NO": $('#E_CUST_NO').val()
+                    },
+                    cache: false,
+                    type: "POST",
+                    datatype: "json",
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    success: function (response) {
+                        if (response != liIvanType.length) {
+                            console.log(response);
+                            alert('寫入有誤請通知資訊人員');
+                            return;
+                        }
+                        else {
+                            alert('已寫入報價檔，筆數:' + corCnt);
+
+                            //回到第一頁
+                            Search_Quote();
+                            $('#Table_CHS_Data').DataTable().clear().rows.add($('#Table_EXEC_Data').find('tbody tr[role=row]').clone()).draw();
+
+                            Edit_Mode = "Search";
+                            Form_Mode_Change("Search");
+                        }
+                    },
+                    error: function (ex) {
+                        alert(ex);
+                        return;
+                    }
+                });
+            };        
+         
+            //TABLE 功能設定
+            $('#Table_Search_Quote').on('click', 'tbody tr', function () {             
                 Item_Move($(this), $('#Table_CHS_Data'), $('#Table_Search_Quote'), false);
             });
             $('#Table_CHS_Data').on('click', 'tbody tr', function () {
@@ -238,28 +339,58 @@
             $('#BT_ATR').on('click', function () {
                 Item_Move($(this), $('#Table_CHS_Data'), $('#Table_Search_Quote'), true);
             });
-            $('#BT_ATL').on('click', function () {
+            $('#BT_ATL').on('click', function () {            
                 Item_Move($(this), $('#Table_Search_Quote'), $('#Table_CHS_Data'), true);
             });
-
-            $('.V_BT').on('click', function () {
-                $(this).attr('disabled', 'disabled');
-                $('.V_BT').not($(this)).attr('disabled', false);
-            });
-
             $('#BT_Next').on('click', function () {
                 Edit_Mode = "Edit";
-                Form_Mode_Change("Review_Data");
+                Form_Mode_Change("EXEC");
             });
 
+
+            //BUTTON CLICK EVENT BASE 頁
             $('#BT_Search').on('click', function () {
                 Edit_Mode = "Base";
                 Form_Mode_Change("Search");
                 Search_Quote();
             });
 
+            $('#BT_Cancel').on('click', function () {
+                $('#Table_Search_Quote').DataTable().clear().draw();
+                $('#Table_CHS_Data').DataTable().clear().draw();
+
+                var Confirm_Check = confirm("<%=Resources.MP.Cancel_Alert%>");
+                if (Confirm_Check) {
+                    Edit_Mode = "Base";
+                    Form_Mode_Change("Base");
+                }
+            });
+
+            //BUTTON CLICK EVENT 執行頁
             $('#BT_QUAH_SEQ').on('click', function () {
                 Search_QUAH_SEQ();
+            });
+
+            $('#BT_EXECUTE').on('click', function () {
+                if ($('#E_QUAH_SEQ').val().length != 7) {
+                    alert('報價單號 規格不正確 !');
+                    return;
+                }
+                if ($('#E_CUST_S_NAME').val() === '') {
+                    alert('客戶簡稱不可空白');
+                    return;
+                }
+                if ($('#E_SHIP_PLACE').val() === '') {
+                    alert('出貨地不可空白');
+                    return;
+                }
+
+                INSERT_QUAH();
+            });
+
+            $('#BT_EXECUTE_CANCEL').on('click', function () {
+                Edit_Mode = "Base";
+                Form_Mode_Change("Search");
             });
 
             //功能選單
@@ -271,20 +402,7 @@
             $('#BT_DT').on('click', function () {
                 Edit_Mode = "Edit";
                 Form_Mode_Change("EXEC");
-            });
-
-            $('#BT_Cancel').on('click', function () {
-                var Confirm_Check = confirm("<%=Resources.MP.Cancel_Alert%>");
-                if (Confirm_Check) {
-                    Edit_Mode = "Base";
-                    Form_Mode_Change("Base");
-                }
-            });
-
-            $('#BT_Re_Select').on('click', function () {
-                Edit_Mode = "Base";
-                Form_Mode_Change("Search");
-            });
+            });          
         });
     </script>
 </asp:Content>
@@ -347,7 +465,7 @@
     
             <div id="Div_Exec_Data" style="width:25%; border-style:solid;border-width:1px; float:right;">
                 <div class="dataTables_info" id="Table_CHS_Data_info" role="status" aria-live="polite"></div>
-                <table id="Table_CHS_Data" style="width: 100%;" class="Table_CHS_Data table table-striped table-bordered">
+                <table id="Table_CHS_Data" style="width: 100%;" class="Table_Search table table-striped table-bordered">
                     <thead style="white-space:nowrap"></thead>
                     <tbody style="white-space:nowrap"></tbody>
                 </table>
@@ -398,26 +516,29 @@
                     <tr class="trCenterstyle">
                         <td class="tdhstyle" style="font-size:20px">客戶編號</td>
                         <td class="tdbstyle">
-                            <input id="E_CUST_SEQ"  class="textbox_char" style="width:80%" />
-                            <input id="E_B_CUST_SEQ" style="font-size:20px;width:20%" type="button" value="..." />
+                            <input id="E_CUST_NO"  class="textbox_char" disabled="disabled" style="width:100%" />
                         </td>
                     </tr>
                     <tr class="trCenterstyle">
                         <td class="tdhstyle" style="font-size:20px">客戶簡稱</td>
                         <td class="tdbstyle">
-                            <input id="E_CUST_S_NAME"  class="textbox_char" style="width:100%" />
+                            <input id="E_CUST_S_NAME"  class="textbox_char" disabled="disabled" style="width:100%" />
                         </td>
                     </tr>
                      <tr class="trCenterstyle">
                         <td class="tdhstyle" style="font-size:20px">客戶全名</td>
                         <td class="tdbstyle" >
-                            <input id="E_CUST_NAME"  style="width:100%" />
+                            <input id="E_CUST_NAME"  style="width:100%" disabled="disabled" />
                         </td>
                     </tr>
                     <tr class="trCenterstyle">
                         <td class="tdhstyle" style="font-size:20px">出貨地</td>
                         <td class="tdbstyle">
-                            <input id="E_SHIP_PLACE" class="textbox_char" style="width:100%"  />
+                            <select id="E_SHIP_PLACE">
+                                <option selected="selected" value="0">0-預設</option>
+                                <option value="1">1-台灣出貨</option>
+                                <option value="2">2-中國出貨</option>
+                            </select>
                         </td>
                     </tr>
                     <tr class="trstyle"> 
@@ -426,7 +547,7 @@
                     <tr class="trCenterstyle">
                         <td colspan="2">
                             <input id="BT_EXECUTE" style="font-size:20px" type="button" value="執行"  />
-                            <input id="BT_CANCEL" style="font-size:20px" type="button" value="返回" />
+                            <input id="BT_EXECUTE_CANCEL" style="font-size:20px" type="button" value="返回" />
                         </td>
                     </tr>
                 </table>
