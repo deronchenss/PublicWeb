@@ -20,7 +20,7 @@ public class Customer_Search : IHttpHandler, IRequiresSessionState
 
         if (!string.IsNullOrEmpty(context.Request["Call_Type"]))
         {
-            List<object> supplier = new List<object>();
+            List<object> customer = new List<object>();
             SqlConnection conn = new SqlConnection();
             conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
             SqlCommand cmd = new SqlCommand();
@@ -75,7 +75,6 @@ public class Customer_Search : IHttpHandler, IRequiresSessionState
                     {
                         cmd.CommandText += " AND " + context.Request["Search_Where"];
                     }
-
                     cmd.CommandText += " ORDER BY [更新日期] DESC ";
                     //cmd.Parameters.AddWithValue("C_No", context.Request["C_No"]);
                     break;
@@ -91,6 +90,13 @@ public class Customer_Search : IHttpHandler, IRequiresSessionState
                                                  WHERE [客戶編號] = @C_No ";
                     cmd.Parameters.AddWithValue("C_No", context.Request["C_No"]);
                     break;
+                case "SCD_Search":
+                    cmd.CommandText = @" SELECT TOP 100 [序號], [客戶編號], [客戶簡稱], [客戶名稱], [負責人], [email], LEFT([備註],30) + IIF(LEN([備註]) > 30,'...','')  [備註]
+                                         FROM Dc2..byr
+                                         WHERE [客戶編號] LIKE @C_No + '%' AND [客戶簡稱] LIKE '%' + @C_SName + '%' ";
+                    cmd.Parameters.AddWithValue("C_No", context.Request["C_No"]);
+                    cmd.Parameters.AddWithValue("C_SName", context.Request["C_SName"]);
+                    break;
             }
             cmd.Connection = conn;
             conn.Open();
@@ -100,7 +106,7 @@ public class Customer_Search : IHttpHandler, IRequiresSessionState
                 case "BT_Search":
                     while (sdr.Read())
                     {
-                        supplier.Add(new
+                        customer.Add(new
                         {
                             C_No = sdr["客戶編號"],
                             C_SName = sdr["客戶簡稱"],
@@ -121,7 +127,7 @@ public class Customer_Search : IHttpHandler, IRequiresSessionState
                 case "Table_Selected":
                     while (sdr.Read())
                     {
-                        supplier.Add(new
+                        customer.Add(new
                         {
                             C_No = sdr["客戶編號"],
                             C_SName = sdr["客戶簡稱"],
@@ -167,7 +173,7 @@ public class Customer_Search : IHttpHandler, IRequiresSessionState
                 case "Customer2_Search":
                     while (sdr.Read())
                     {
-                        supplier.Add(new
+                        customer.Add(new
                         {
                             C_No = sdr["客戶編號"],
                             C_Tel = sdr["電話"],
@@ -200,7 +206,7 @@ public class Customer_Search : IHttpHandler, IRequiresSessionState
                 case "Customer2_Selected":
                     while (sdr.Read())
                     {
-                        supplier.Add(new
+                        customer.Add(new
                         {
                             C_SEQ = sdr["序號"],
                             C_No = sdr["客戶編號"],
@@ -258,13 +264,28 @@ public class Customer_Search : IHttpHandler, IRequiresSessionState
                         });
                     }
                     break;
+                case "SCD_Search":
+                    while (sdr.Read())
+                    {
+                        customer.Add(new
+                        {
+                            SEQ = sdr["序號"],
+                            C_No = sdr["客戶編號"],
+                            C_SName = sdr["客戶簡稱"],
+                            C_Name = sdr["客戶名稱"],
+                            Principal = sdr["負責人"],
+                            Mail = sdr["email"],
+                            Remark = sdr["備註"],
+                        });
+                    }
+                    break;
             }
 
             SqlDataAdapter SQL_DA = new SqlDataAdapter(cmd);
             conn.Close();
             SQL_DA.Fill(DT);
 
-            var json = (new JavaScriptSerializer().Serialize(supplier));
+            var json = (new JavaScriptSerializer().Serialize(customer));
             context.Response.ContentType = "text/json";
             context.Response.Write(json);
         }

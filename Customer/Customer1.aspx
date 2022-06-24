@@ -199,7 +199,6 @@
                                     "language": {
                                         "lengthMenu": "&nbsp;Show _MENU_ entries"
                                     },
-                                    "scrollX": true
                                 });
 
                                 $('#Table_Customer').attr('style', 'white-space:nowrap;');

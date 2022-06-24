@@ -140,16 +140,15 @@
                                         (((response[i].Change_Log ?? "").length > 0) ? ('<br /><span style="color:blue;" title="' + (response[i].Change_Log ?? "") + '">移入檢視變更記錄</sapn>') : '') +
                                     '</td><td class="DIMG" style="text-align:center;">' +
                                     ((response[i].Has_IMG) ? ('<img src="data:image/png;base64,' + window.btoa(binary) + '" />') : ('<%=Resources.Cost.Image_NotExists%>')) +
-                                    //'</td><td title="XXXXX">' + String(response[i].change_ ?? "") +
                                     '</td><td>' + String(response[i].Apply_Reason ?? "") + 
                                     '</td><td>' + String(response[i].Unit ?? "") +
-                                    '</td><td>' + String(response[i].TWD_P ?? "") +
-                                    '</td><td>' + String(response[i].USD_P ?? "") +
+                                    '</td><td style="text-align:right;">' + ((response[i].TWD_P != 0) ? String(response[i].TWD_P ?? "") : "") +
+                                    '</td><td style="text-align:right;">' + ((response[i].USD_P != 0) ? String(response[i].USD_P ?? "") : "")  +
                                     '</td><td>' + String(response[i].Curr ?? "") +
-                                    '</td><td>' + String(response[i].Curr_P ?? "") +
-                                    '</td><td>' + String(response[i].MSRP ?? "") +
-                                    '</td><td>' + String(response[i].Cost ?? "") +
-                                    '</td><td>' + String(response[i].GP ?? "") +
+                                    '</td><td style="text-align:right;">' + ((response[i].Curr_P != 0) ? String(response[i].Curr_P ?? ""): "")  +
+                                    '</td><td style="text-align:right;">' + ((response[i].MSRP != 0) ? String(response[i].MSRP ?? ""): "")  +
+                                    '</td><td style="text-align:right;">' + ((response[i].Cost != 0) ? String(response[i].Cost ?? ""): "")  +
+                                    '</td><td style="text-align:right;">' + ((response[i].GP != 0) ? String(response[i].GP ?? "") : "") +
                                     '</td><td>' + String(response[i].LSTP_Day ?? "") +
                                     '</td><td>' + String(response[i].S_No ?? "") +
                                     '</td><td class="SEQ">' + String(response[i].SEQ ?? "") +

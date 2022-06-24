@@ -117,142 +117,61 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Add" xml:space="preserve">
-    <value>新增</value>
+  <data name="Customer_Model" xml:space="preserve">
+    <value>Customer Model</value>
   </data>
-  <data name="Address" xml:space="preserve">
-    <value>地址</value>
+  <data name="Customer_No" xml:space="preserve">
+    <value>Customer No</value>
   </data>
-  <data name="Add_Success" xml:space="preserve">
-    <value>新增成功</value>
+  <data name="Customer_Short_Name" xml:space="preserve">
+    <value>Customer Short Name</value>
   </data>
-  <data name="Applyopen" xml:space="preserve">
-    <value>申請放行</value>
+  <data name="Developing" xml:space="preserve">
+    <value>Developing</value>
   </data>
-  <data name="Approve" xml:space="preserve">
-    <value>核准</value>
+  <data name="Ivan_Model" xml:space="preserve">
+    <value>Ivan Model</value>
   </data>
-  <data name="Bank" xml:space="preserve">
-    <value>銀行</value>
+  <data name="Last_Price_Day" xml:space="preserve">
+    <value>Last Price Day</value>
   </data>
-  <data name="Base" xml:space="preserve">
-    <value>基本檔</value>
+  <data name="Price_T" xml:space="preserve">
+    <value>Price</value>
   </data>
-  <data name="Cancel" xml:space="preserve">
-    <value>返回</value>
+  <data name="Product_Information" xml:space="preserve">
+    <value>Product Information</value>
   </data>
-  <data name="Cancel_Alert" xml:space="preserve">
-    <value>返回將會清空資料，確定執行？</value>
+  <data name="Product_SEQ" xml:space="preserve">
+    <value>Product Sequence</value>
   </data>
-  <data name="Copy" xml:space="preserve">
-    <value>複製</value>
+  <data name="SEQ" xml:space="preserve">
+    <value>Sequence</value>
   </data>
-  <data name="Copy_Condition" xml:space="preserve">
-    <value>複製條件</value>
+  <data name="Stop_Date" xml:space="preserve">
+    <value>Stop Date</value>
   </data>
-  <data name="Copy_Success" xml:space="preserve">
-    <value>複製完成</value>
+  <data name="Supplier_No" xml:space="preserve">
+    <value>Supplier No</value>
   </data>
-  <data name="Customer" xml:space="preserve">
-    <value>客戶</value>
+  <data name="Supplier_Short_Name" xml:space="preserve">
+    <value>Supplier Short Name</value>
   </data>
-  <data name="C_No_ATC_Hint" xml:space="preserve">
-    <value>輸入部分編號or名稱後，選擇客戶</value>
+  <data name="Trademark" xml:space="preserve">
+    <value>Trademark</value>
   </data>
-  <data name="Data_Not_Exists_Alert" xml:space="preserve">
-    <value>找不到任何相符資料</value>
+  <data name="TWD_Price" xml:space="preserve">
+    <value>TWD Price</value>
   </data>
-  <data name="Detail" xml:space="preserve">
-    <value>明細</value>
+  <data name="Unit" xml:space="preserve">
+    <value>Unit</value>
   </data>
-  <data name="Detail_Search" xml:space="preserve">
-    <value>進階查詢</value>
+  <data name="Update_Date" xml:space="preserve">
+    <value>Update Date</value>
   </data>
-  <data name="Edit" xml:space="preserve">
-    <value>修改</value>
+  <data name="Update_User" xml:space="preserve">
+    <value>Update User</value>
   </data>
-  <data name="Edit_Alert" xml:space="preserve">
-    <value>確定修改資料？</value>
-  </data>
-  <data name="Fax" xml:space="preserve">
-    <value>傳真</value>
-  </data>
-  <data name="Insert" xml:space="preserve">
-    <value>新增</value>
-  </data>
-  <data name="Language" xml:space="preserve">
-    <value>語系</value>
-  </data>
-  <data name="Logout" xml:space="preserve">
-    <value>登出</value>
-  </data>
-  <data name="Maintenance" xml:space="preserve">
-    <value>維護</value>
-  </data>
-  <data name="Master" xml:space="preserve">
-    <value>主檔</value>
-  </data>
-  <data name="More" xml:space="preserve">
-    <value>其他</value>
-  </data>
-  <data name="Nation" xml:space="preserve">
-    <value>國名</value>
-  </data>
-  <data name="Order" xml:space="preserve">
-    <value>訂單</value>
-  </data>
-  <data name="Product" xml:space="preserve">
-    <value>Cost</value>
-  </data>
-  <data name="Product_ATC_Hint" xml:space="preserve">
-    <value>輸入部分型號後，選擇產品</value>
-  </data>
-  <data name="Remark" xml:space="preserve">
-    <value>備註</value>
-  </data>
-  <data name="Sample" xml:space="preserve">
-    <value>圖例</value>
-  </data>
-  <data name="Save" xml:space="preserve">
-    <value>儲存</value>
-  </data>
-  <data name="Save_Alert" xml:space="preserve">
-    <value>確定要儲存嗎？</value>
-  </data>
-  <data name="Search" xml:space="preserve">
-    <value>查詢</value>
-  </data>
-  <data name="Search_Confition" xml:space="preserve">
-    <value>查詢條件</value>
-  </data>
-  <data name="Search_Product" xml:space="preserve">
-    <value>查詢產品</value>
-  </data>
-  <data name="Select" xml:space="preserve">
-    <value>選取</value>
-  </data>
-  <data name="Select_Product_Alert" xml:space="preserve">
-    <value>請選擇產品</value>
-  </data>
-  <data name="Settings" xml:space="preserve">
-    <value>設定</value>
-  </data>
-  <data name="Speace" xml:space="preserve">
-    <value />
-  </data>
-  <data name="Supplier" xml:space="preserve">
-    <value>廠商</value>
-  </data>
-  <data name="S_No_ATC_Hint" xml:space="preserve">
-    <value>輸入部分編號or名稱後，選擇廠商</value>
-  </data>
-  <data name="Tel" xml:space="preserve">
-    <value>電話</value>
-  </data>
-  <data name="Type" xml:space="preserve">
-    <value>類別</value>
-  </data>
-  <data name="Update_Success" xml:space="preserve">
-    <value>修改成功</value>
+  <data name="USD_Price" xml:space="preserve">
+    <value>Usd Price</value>
   </data>
 </root>
