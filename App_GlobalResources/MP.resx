@@ -168,6 +168,9 @@
   <data name="Detail_Search" xml:space="preserve">
     <value>進階查詢</value>
   </data>
+  <data name="DEV" xml:space="preserve">
+    <value>開發</value>
+  </data>
   <data name="Edit" xml:space="preserve">
     <value>修改</value>
   </data>
@@ -206,6 +209,9 @@
   </data>
   <data name="Product_ATC_Hint" xml:space="preserve">
     <value>輸入部分型號後，選擇產品</value>
+  </data>
+  <data name="Quote_MT" xml:space="preserve">
+    <value>報價作業</value>
   </data>
   <data name="Remark" xml:space="preserve">
     <value>備註</value>

@@ -75,26 +75,4 @@ public class DDL_DataBind : System.Web.Services.WebService
         var json = (new JavaScriptSerializer().Serialize(DP));
         return json;
     }
-    [WebMethod]
-    public string Customer_Trademark()
-    {
-        List<object> CT = new List<object>();
-        SqlConnection conn = new SqlConnection();
-        conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
-        SqlCommand cmd = new SqlCommand();
-        cmd.CommandText = @" SELECT RTRIM([內容]) [txt] FROM Dc2..Refdata Where [代碼] = '商標' Order By 1 ";
-        cmd.Connection = conn;
-        conn.Open();
-        SqlDataReader sdr = cmd.ExecuteReader();
-        while (sdr.Read())
-        {
-            CT.Add(new
-            {
-                txt = sdr["txt"]
-            });
-        }
-        conn.Close();
-        var json = (new JavaScriptSerializer().Serialize(CT));
-        return json;
-    }
 }

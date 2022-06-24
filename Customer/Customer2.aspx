@@ -48,9 +48,9 @@
                         $('#Div_DT_View').css('display', '');
                         $('.V_BT').not($('#V_BT_Master')).css('display', '');
 
-                        $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
+                        $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select, #BT_ED_Edit').attr('disabled', 'disabled');
                         $('#BT_Cancel, #Div_DT_View').css('display', '');
-                        $('#BT_ED_Edit, #BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
+                        $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
                         break;
                     case "Search_D":
                         $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');

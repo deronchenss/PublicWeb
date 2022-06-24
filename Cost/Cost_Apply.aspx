@@ -142,11 +142,11 @@
                                     '</td><td class="For_U" style="display:none;">' +
                                     '<textarea class="U_Element" style="width:300px;" maxlength="50" title="Max Length 50 words.">' + String(response[i].Apply_Reason ?? "") + '</textarea>' +
                                     '</td><td>' + String(response[i].Unit ?? "") +
-                                    '</td><td style="text-align:right;">' + ((response[i].TWD_P != 0) ? String(response[i].TWD_P ?? "") : "") +
-                                    '</td><td style="text-align:right;">' + ((response[i].USD_P != 0) ? String(response[i].USD_P ?? "") : "") +
+                                    '</td><td>' + String(response[i].TWD_P ?? "") +
+                                    '</td><td>' + String(response[i].USD_P ?? "") +
                                     '</td><td>' + String(response[i].Curr ?? "") +
-                                    '</td><td style="text-align:right;">' + ((response[i].Curr_P != 0) ? String(response[i].Curr_P ?? "") : "") +
-                                    '</td><td style="text-align:right;">' + ((response[i].MSRP != 0) ? String(response[i].MSRP ?? "") : "") +
+                                    '</td><td>' + String(response[i].Curr_P ?? "") +
+                                    '</td><td>' + String(response[i].MSRP ?? "") +
                                     '</td><td>' + String(response[i].LSTP_Day ?? "") +
                                     '</td><td>' + String(response[i].S_No ?? "") +
                                     '</td><td class="SEQ">' + String(response[i].SEQ ?? "") +
