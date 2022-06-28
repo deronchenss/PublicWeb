@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Cost Apply" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Quote_MT.aspx.cs" Inherits="Quote_MT" %>
+﻿<%@ Page Title="Quah MT" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Quote_MT.aspx.cs" Inherits="Quote_MT" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
@@ -52,6 +52,7 @@
                             Edit_Mode = "Base";
 
                             V_BT_CHG($('#BT_CHS'));
+                            return;
                         }
                         else {
                             $('.Div_D').css('display', 'none');
@@ -77,6 +78,7 @@
                                     { title: "<%=Resources.Customer.Update_User%>" },
                                     { title: "<%=Resources.Customer.Update_Date%>" }
                                 ],
+                                "order": [[1, "asc"]], //根據 頤坊型號 排序
                                 "scrollX": true,
                                 "scrollY": "62vh",
                                 "searching": false,
@@ -98,10 +100,17 @@
                             //帶出報價單號
                             Search_QUAH_SEQ(); 
                         }
+                    case "RPT":
+                        $('.Div_D').css('display', 'none');
+                        $('#Div_RPT').css('display', 'flex');
+
+                        V_BT_CHG($('#BT_RPT'));
+                        break;
                 }
             }
 
             function Item_Move(click_tr, ToTable, FromTable, Full) {
+
                 if (Full) {
                     ToTable.DataTable().rows.add(FromTable.find('tbody tr[role=row]').clone()).draw();
                     FromTable.DataTable().rows(FromTable.find('tbody tr[role=row]')).remove().draw();
@@ -111,11 +120,29 @@
                     FromTable.DataTable().rows(click_tr).remove().draw();
                 }
 
+                //移除重複ROWS
+                removeDuplicateRows(ToTable);
+
                 $('#Table_CHS_Data_info').text('Showing ' + $('#Table_CHS_Data > tbody tr[role=row]').length + ' entries');
                 $('#Table_Search_Quote_info').text('Showing ' + $('#Table_Search_Quote > tbody tr[role=row]').length + ' entries');
                 $('#BT_Next').toggle(Boolean($('#Table_CHS_Data').find('tbody tr').length > 0));
             }
 
+            //移除 DATATABLE 重複ROWS
+            function removeDuplicateRows($table) {
+                function getVisibleRowText($row) {
+                    return $row.find('td:visible').text().toLowerCase();
+                }
+
+                $table.find('tr').each(function (index, row) {
+                    var $row = $(row);
+                    $row.nextAll('tr').each(function (index, next) {
+                        var $next = $(next);
+                        if (getVisibleRowText($next) == getVisibleRowText($row))
+                            $table.DataTable().rows($row).remove().draw();
+                    })
+                });
+            }
             function V_BT_CHG(buttonChs) {
                 $('.V_BT').attr('disabled', false);
                 buttonChs.attr('disabled', 'disabled');
@@ -147,6 +174,13 @@
                             $('#Table_Search_Quote').DataTable({
                                 "data": response,
                                 "destroy": true,
+                                //維持scroll bar 位置
+                                "preDrawCallback": function (settings) {
+                                    pageScrollPos = $('div.dataTables_scrollBody').scrollTop();
+                                },
+                                "drawCallback": function (settings) {
+                                    $('div.dataTables_scrollBody').scrollTop(pageScrollPos);
+                                },
                                 "columns": [
                                     { data: "客戶簡稱", title: "客戶簡稱" },
                                     { data: "頤坊型號", title: "頤坊型號" },
@@ -164,6 +198,7 @@
                                     { data: "更新人員", title: "<%=Resources.Customer.Update_User%>" },
                                     { data: "更新日期", title: "<%=Resources.Customer.Update_Date%>" }
                                 ],
+                                "order": [[1, "asc"]], //根據 頤坊型號 排序
                                 "scrollX": true,
                                 "scrollY": "62vh",
                                 "searching": false,
@@ -172,7 +207,13 @@
                             });
                             
                            $('#Table_CHS_Data').DataTable({
-                                "destroy": true,
+                               "destroy": true,
+                               "preDrawCallback": function (settings) {
+                                   pageScrollPos = $('div.dataTables_scrollBody').scrollTop();
+                               },
+                               "drawCallback": function (settings) {
+                                   $('div.dataTables_scrollBody').scrollTop(pageScrollPos);
+                               },
                                 "columns": [
                                     { title: "客戶簡稱" },
                                     { title: "頤坊型號" },
@@ -190,6 +231,7 @@
                                     { title: "<%=Resources.Customer.Update_User%>" },
                                     { title: "<%=Resources.Customer.Update_Date%>" }
                                 ],
+                                "order": [[1, "asc"]], //根據 頤坊型號 排序
                                 "scrollX": true,
                                 "scrollY": "62vh",
                                 "searching": false,
@@ -198,7 +240,7 @@
                             });
 
                             $('#Table_Search_Quote').DataTable().draw();
-                            $('#Table_CHS_Data').DataTable().draw();
+                            $('#Table_CHS_Data').DataTable().draw();                         
 
                             $('#Table_CHS_Data_info').text('Showing ' + $('#Table_CHS_Data > tbody tr[role=row]').length + ' entries');
                             $('#Table_Search_Quote_info').text('Showing ' + $('#Table_Search_Quote > tbody tr[role=row]').length + ' entries');
@@ -260,6 +302,7 @@
                 });
             };        
 
+            //寫入DB
             function INSERT_QUAH() {
                 var liIvanType = [];
                 var liFactNo = [];
@@ -282,12 +325,15 @@
 
                         liIvanType.push(ivanType);
                         liFactNo.push(factNo);
-                        $('#Table_EXEC_Data').DataTable().row(tableCnt - 1).remove().draw();
+                        $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').toggleClass('removeReady');
                     }
                     else {
                         errCnt++;
                     }
                 }
+
+                //一次刪，防止迴圈判斷錯誤
+                $('#Table_EXEC_Data').DataTable().rows('.removeReady').remove().draw();
 
                 alert('共' + errCnt + '筆客戶編號不同');
 
@@ -328,7 +374,52 @@
                     }
                 });
             };        
-         
+
+            //產生報表
+            function GenerateRPT() {
+                if ($('#R_QUAH_NO').val() === '') {
+                    alert('請填入報價單號')
+                }
+                else {
+                    $.ajax({
+                        url: apiUrl,
+                        data: {
+                            "Call_Type": "GEN_RPT",
+                            "RPT_TYPE": $('#R_RPT_TYPE').val(),
+                            "QUAH_NO": $('#R_QUAH_NO').val(),
+                            "DELV_DAYS": $('#R_DELV_DAYS').val(),
+                            "SIGN": $('#R_SIGN').val()
+                        },
+                        cache: false,
+                        type: "POST",
+                        datatype: "json",
+                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                        xhrFields: { responseType: "blob" },
+                        success: function (response) {
+                            if (response === '204') {
+                                alert('報價單號查無資料');
+                            }
+
+                            var blob = new Blob([response], { type: "application/pdf" });
+                            var url = window.URL || window.webkitURL;
+                            link = url.createObjectURL(blob);
+                            var a = $("<a />");
+                            a.attr("download", "報價作業報表.pdf");
+                            a.attr("href", link);
+                            $("body").append(a);
+                            a[0].click();
+                            $("body").remove(a);
+
+                            console.log(response);
+                            //window.open(response);
+                        },
+                        error: function (ex) {
+                            alert(ex);
+                        }
+                    });
+                }
+            };        
+
             //TABLE 功能設定
             $('#Table_Search_Quote').on('click', 'tbody tr', function () {             
                 Item_Move($(this), $('#Table_CHS_Data'), $('#Table_Search_Quote'), false);
@@ -393,6 +484,11 @@
                 Form_Mode_Change("Search");
             });
 
+            //BUTTON CLICK REPORT 執行頁
+            $('#BT_PRINT').on('click', function () {
+                GenerateRPT();
+            });
+
             //功能選單
             $('#BT_CHS').on('click', function () {
                 Edit_Mode = "Base";
@@ -403,6 +499,10 @@
                 Edit_Mode = "Edit";
                 Form_Mode_Change("EXEC");
             });          
+
+            $('#BT_RPT').on('click', function () {
+                Form_Mode_Change("RPT");
+            });       
         });
     </script>
 </asp:Content>
@@ -440,8 +540,6 @@
                 <td class="tdtstyleRight" colspan="4">
                     <input type="button" id="BT_Search" class="buttonStyle" value="<%=Resources.MP.Search%>" />
                     <input type="button" id="BT_Cancel" class="buttonStyle" value="<%=Resources.MP.Cancel%>" style="display: none;" />
-                    <input type="button" id="BT_Re_Select" class="buttonStyle" value="<%=Resources.Cost.Re_Selet%>" style="display:none;" />
-                    <input type="button" id="BT_Save" class="buttonStyle" value="<%=Resources.MP.Save%>" style="display:none;" />
                 </td>
             </tr>
         </table>
@@ -450,7 +548,7 @@
             &nbsp;
             <input type="button" id="BT_CHS" class="V_BT" value="選擇"  disabled="disabled" />
             <input type="button" id="BT_DT" class="V_BT" value="報價內容" />
-            <input type="button" class="V_BT" value="報表" />
+            <input type="button" id="BT_RPT" class="V_BT" value="報表" />
             <input type="button" class="V_BT" value="圖例" />
         </div>
 
@@ -550,6 +648,55 @@
                             <input id="BT_EXECUTE_CANCEL" style="font-size:20px" type="button" value="返回" />
                         </td>
                     </tr>
+                </table>
+            </div> 
+        </div>
+
+        <div id="Div_RPT" class=" Div_D" style=" display:flex; align-items:center; justify-content:center;" >
+            <div id="Div_RPT_DETAIL" style="width:50%;height:71vh; border-style:solid;border-width:1px; display:flex; align-items:center; justify-content:center ">
+                <table class="search_section_control">
+                    <tr class="trCenterstyle">
+                        <td class="tdhstyle" style="font-size:20px;">報表類型</td>
+                        <td class="tdbstyle">
+                            <select id="R_RPT_TYPE" style="font-size:20px;">
+                                <option selected="selected" value="0">無圖報價單</option>
+                                <option value="1">雙排1:1</option>
+                            </select>
+                         </td>
+                    </tr>
+                    <tr class="trCenterstyle">
+                        <td class="tdhstyle" style="font-size:20px;">報價單號</td>
+                        <td class="tdbstyle">
+                            <input id="R_QUAH_NO"  class="textbox_char" />
+                        </td>
+                    </tr>
+                    <tr class="trCenterstyle">
+                        <td class="tdhstyle" style="font-size:20px;">交貨天數</td>
+                        <td class="tdbstyle">
+                            <input id="R_DELV_DAYS" type="number" value="45" />
+                        </td>
+                    </tr>
+                    <tr class="trCenterstyle">
+                        <td class="tdhstyle" style="font-size:20px">簽名</td>
+                        <td class="tdbstyle">
+                            <select id="R_SIGN" style="font-size:20px;">
+                                <option selected="selected" value="0">無</option>
+                                <option value="1">HKC</option>
+                                <option value="2">HAOHAN</option>
+                                <option value="3">VIVIAN</option>
+                                <option value="4">SCOTT</option>
+                            </select>
+                         </td>
+                    </tr>
+                     <tr class="trstyle"> 
+                        <td class="tdbstyle" style="height: 10vh; font-size: smaller;" >&nbsp</td>
+                    </tr>
+                     <tr class="trCenterstyle"> 
+                         <td colspan="2" style="text-align:center" >
+                            <input type="button" id="BT_PRINT" style="display:inline-block" class="BTN" value="列印"  />
+                         </td>
+                    </tr>
+
                 </table>
             </div> 
         </div>

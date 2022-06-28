@@ -205,7 +205,7 @@
                                         <li class="has-children">
                                             <a href="#"><%--報價作業--%><%=Resources.MP.Quote_MT%></a>
                                             <ul class="dropdown">
-                                                <li><a href="/DEV/Quote/Quote_MT.aspx"><%--報價作業--%><%=Resources.MP.Quote_MT%><%=Resources.MP.Speace%><%=Resources.MP.Master%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%></a></li>
+                                                <li><a href="/DEV/Quote/Quote_MT.aspx"><%--報價作業--%><%=Resources.MP.Quote_MT%></a></li>
                                             </ul>
                                         </li>
                                     </ul>
