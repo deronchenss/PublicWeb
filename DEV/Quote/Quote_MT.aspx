@@ -394,7 +394,11 @@
                         type: "POST",
                         datatype: "json",
                         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                        xhrFields: { responseType: "blob" },
+                        xhr: function () {// Seems like the only way to get access to the xhr object
+                            var xhr = new XMLHttpRequest();
+                            xhr.responseType = 'blob'
+                            return xhr;
+                        },
                         success: function (response) {
                             if (response === '204') {
                                 alert('報價單號查無資料');
@@ -407,8 +411,10 @@
                             a.attr("download", "報價作業報表.pdf");
                             a.attr("href", link);
                             $("body").append(a);
+
                             a[0].click();
                             $("body").remove(a);
+
                         },
                         error: function (ex) {
                             alert(ex);
