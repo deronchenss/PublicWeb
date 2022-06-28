@@ -409,9 +409,6 @@
                             $("body").append(a);
                             a[0].click();
                             $("body").remove(a);
-
-                            console.log(response);
-                            //window.open(response);
                         },
                         error: function (ex) {
                             alert(ex);
@@ -492,7 +489,13 @@
             //功能選單
             $('#BT_CHS').on('click', function () {
                 Edit_Mode = "Base";
-                Form_Mode_Change("Search");
+                if($('#Table_Search_Quote > tbody tr[role=row]').length > 0)
+                {
+                    Form_Mode_Change("Search");
+                }
+                else {
+                    Form_Mode_Change("Base");
+                }
             });
 
             $('#BT_DT').on('click', function () {
@@ -681,10 +684,9 @@
                         <td class="tdbstyle">
                             <select id="R_SIGN" style="font-size:20px;">
                                 <option selected="selected" value="0">無</option>
-                                <option value="1">HKC</option>
-                                <option value="2">HAOHAN</option>
-                                <option value="3">VIVIAN</option>
-                                <option value="4">SCOTT</option>
+                                <option value="HKC">HKC</option>
+                                <option value="HAOHAN">HAOHAN</option>
+                                <option value="SCOTT">SCOTT</option>
                             </select>
                          </td>
                     </tr>

@@ -116,11 +116,11 @@ public class Quote_MT : IHttpHandler, IRequiresSessionState
 			                                           ,C.大備註
                                                        ,(SELECT TOP 1 X.[圖檔] FROM [192.168.1.135].Pic.dbo.xpic X WHERE X.頤坊型號 = Q.頤坊型號) 圖檔
 			                                           ,'' 圖檔路徑
-			                                           ,'' 列印圖檔
+			                                           ,ISNULL((SELECT TOP 1 'Y' FROM [192.168.1.135].Pic.dbo.xpic X WHERE X.頤坊型號 = Q.頤坊型號), '') 列印圖檔
 			                                           ,(SELECT TOP 1 R.RI_IMAGE FROM [192.168.1.135].pic.dbo.REF_IMAGE R WHERE R.RI_REFENCE_KEY = @SIGN) 簽名圖檔
 			                                           ,'' 簽名圖檔路徑
-			                                           ,'' 簽名列印圖檔
-			                                           ,CONVERT(VARCHAR,Q.報價日期,111) 轉換列印日期
+			                                           ,ISNULL((SELECT TOP 1 'Y' FROM [192.168.1.135].pic.dbo.REF_IMAGE R WHERE R.RI_REFENCE_KEY = @SIGN), '') 簽名列印圖檔
+			                                           ,LEFT(FORMAT(Q.報價日期, 'MMMM', 'en-US'),3) + '. ' + RIGHT(CONVERT(VARCHAR,Q.報價日期,112),2) + ', ' + LEFT(CONVERT(VARCHAR,Q.報價日期,112),4) 轉換列印日期
 		                                         FROM (
 			                                         SELECT 序號
 				                                           ,min_1 
@@ -183,9 +183,6 @@ public class Quote_MT : IHttpHandler, IRequiresSessionState
                                     byte[] bytes = new byte[stream.Length];
                                     stream.Read(bytes, 0, bytes.Length);
                                     stream.Seek(0, System.IO.SeekOrigin.Begin);
-
-                                    //System.IO.FileStream fs = new System.IO.FileStream("C:/Users/user/Desktop/QUAH_RPT.pdf", System.IO.FileMode.Open, System.IO.FileAccess.ReadWrite);
-                                    //rptDoc.Write(fs);
 
                                     string filename = "QUAH_RPT.pdf";
                                     context.Response.ClearContent();
