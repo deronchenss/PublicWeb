@@ -1,9 +1,18 @@
 tr.trstyle {
- 
 }
 tr.trCenterstyle {
     text-align: center;
     width: 100%;
+}
+
+td.tdEditstyle {
+    vertical-align: middle; /*文字控制 */
+    text-align: right;
+    font-family: 微軟正黑體;
+    font-weight: normal;
+    font-size: 20px;
+    padding-right: 5px;
+    padding-left: 5px;
 }
 
 td.tdhstyle {
@@ -62,6 +71,7 @@ td.tdtstyleLeft /* 底 */ {
 }
 
 .buttonStyle {
+    font-size: 20px;
     border-radius: 4px;
     border: 5px blue none;
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
@@ -101,6 +111,13 @@ td.tdtstyleLeft /* 底 */ {
     margin: 0 auto;
 }
 
+.edit_section_control {
+    width: 100%;
+    font-size: 20px;
+    border-radius: 5px;
+    text-align: center;
+    margin: 0 auto;
+}
 
 .button_change_section {
     width: 65%;

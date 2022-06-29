@@ -210,8 +210,14 @@
   <data name="Product_ATC_Hint" xml:space="preserve">
     <value>輸入部分型號後，選擇產品</value>
   </data>
-  <data name="Quote_MT" xml:space="preserve">
+  <data name="Quote_Base" xml:space="preserve">
     <value>報價作業</value>
+  </data>
+  <data name="Quote_MT" xml:space="preserve">
+    <value>報價作業維護</value>
+  </data>
+  <data name="Quote_Query" xml:space="preserve">
+    <value>每日報價查詢</value>
   </data>
   <data name="Remark" xml:space="preserve">
     <value>備註</value>

@@ -1,4 +1,4 @@
-﻿<%@ WebHandler Language="C#" Class="Quote_MT" %>
+﻿<%@ WebHandler Language = "C#" Class="Quote_MT" %>
 
 using System.Collections.Generic;
 using System.Web;
@@ -9,6 +9,7 @@ using System.Configuration;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using CrystalDecisions.CrystalReports.Engine;
+using System.Web.SessionState;
 
 public class Quote_MT : IHttpHandler, IRequiresSessionState
 {
@@ -32,184 +33,100 @@ public class Quote_MT : IHttpHandler, IRequiresSessionState
 
                         switch (context.Request["Call_Type"])
                         {
-                            case "Quote_MT":
-                                cmd.CommandText = @" SELECT TOP 1000 Byr.客戶簡稱, Byr.頤坊型號
-                                                   ,IIF(Byr.美元單價 = 0, NULL, Byr.美元單價) 美元單價, IIF(Byr.台幣單價=0,NULL, Byr.台幣單價) 台幣單價, 外幣幣別, IIF(Byr.外幣單價=0, NULL, Byr.外幣單價) 外幣單價
-                                                   ,IIF(Byr.MIN_1 = 0, NULL, Byr.MIN_1) MIN
-                                                   ,Byr.產品說明, Byr.單位, Byr.廠商編號, Byr.廠商簡稱
-                                                   ,Byr.客戶編號, Byr.序號, Byr.更新人員, CONVERT(VARCHAR, Byr.更新日期, 120) 更新日期
-                                         	       --,CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[P_SEQ] = Byr.[序號]),0) AS BIT) [Has_IMG]
-                                             FROM Dc2..Byrlu Byr
-                                             WHERE Byr.[客戶編號] LIKE @CUST_NO + '%'
-                                             AND Byr.[客戶簡稱] LIKE '%' + @CUST_S_NAME + '%'
-                                             AND Byr.[頤坊型號] LIKE @IVAN_TYPE + '%'
-                                             AND Byr.[更新日期] BETWEEN @Date_S AND @Date_E
+                            case "Quote_Base":
+                                cmd.CommandText = @" SELECT TOP 1000 報價單號, CONVERT(VARCHAR, 報價日期, 120) 報價日期, 客戶簡稱, 頤坊型號, 單位
+                                                            ,IIF(美元單價 = 0, NULL, 美元單價) 美元單價, IIF(台幣單價=0,NULL, 台幣單價) 台幣單價
+                                                            ,IIF(MIN_1 = 0, NULL, MIN_1) 基本量_1
+                                                            ,產品說明, 單位, 廠商編號, 廠商簡稱,客戶編號
+                                                            ,IIF(MIN_2 = 0, NULL, MIN_2) 基本量_2
+                                                            ,IIF(MIN_3 = 0, NULL, MIN_3) 基本量_3
+                                                            ,IIF(MIN_4 = 0, NULL, MIN_4) 基本量_4
+                                                            ,IIF(單價_2 = 0, NULL, 單價_2) 單價_2
+                                                            ,IIF(單價_3 = 0, NULL, 單價_3) 單價_3
+                                                            ,IIF(單價_4 = 0, NULL, 單價_4) 單價_4
+                                                            ,S_FROM 出貨地
+                                                            , 序號, 更新人員, CONVERT(VARCHAR, 更新日期, 120) 更新日期
+                                                     FROM Dc2..Quah 
+                                                     WHERE [頤坊型號] LIKE @IVAN_TYPE + '%'
+                                                     AND [報價日期] BETWEEN @QUAH_DATE_S AND @QUAH_DATE_E
+                                                     AND [客戶編號] LIKE @CUST_NO + '%'
+                                                     AND [客戶簡稱] LIKE '%' + @CUST_S_NAME + '%'
+                                                     AND [報價單號] LIKE @QUAH_NO + '%'
+                                                     AND [廠商編號] LIKE @FACT_NO + '%'
+                                                     AND [廠商簡稱] LIKE '%' + @FACT_S_NAME + '%'
+                                                     AND [產品說明] LIKE '%' + @PROD_DES + '%'
                                               ";
+                                cmd.Parameters.AddWithValue("IVAN_TYPE", context.Request["IVAN_TYPE"]);
+                                cmd.Parameters.AddWithValue("QUAH_DATE_S", context.Request["QUAH_DATE_S"]);
+                                cmd.Parameters.AddWithValue("QUAH_DATE_E", context.Request["QUAH_DATE_E"]);
+                                cmd.Parameters.AddWithValue("CUST_NO", context.Request["CUST_NO"]);
+                                cmd.Parameters.AddWithValue("CUST_S_NAME", context.Request["CUST_S_NAME"]);
+                                cmd.Parameters.AddWithValue("QUAH_NO", context.Request["QUAH_NO"]);
+                                cmd.Parameters.AddWithValue("FACT_NO", context.Request["FACT_NO"]);
+                                cmd.Parameters.AddWithValue("FACT_S_NAME", context.Request["FACT_S_NAME"]);
+                                cmd.Parameters.AddWithValue("PROD_DES", context.Request["PROD_DES"]);
+                                break;
+                            case "UPD_QUAH":
+
+                                cmd.CommandText = @" UPDATE [dbo].[quah]
+                                                        SET [報價單號] = @QUAH_NO
+                                                            ,[報價日期] = @QUAH_DATE
+                                                            ,[客戶編號] = @CUST_NO
+                                                            ,[客戶簡稱] = @CUST_S_NAME
+                                                            ,[頤坊型號] = @IVAN_TYPE
+                                                            ,[產品說明] = @PROD_DESC
+                                                            ,[單位] = @UNIT
+                                                            ,[美元單價] = IIF(@USD = '', 0,CONVERT(DECIMAL,@USD))
+                                                            ,[台幣單價] = IIF(@NTD = '', 0,CONVERT(DECIMAL,@NTD))
+                                                            ,[單價_2] = IIF(@PRICE_2 = '', 0,CONVERT(DECIMAL,@PRICE_2))
+                                                            ,[單價_3] = IIF(@PRICE_3 = '', 0,CONVERT(DECIMAL,@PRICE_3))
+                                                            ,[單價_4] = IIF(@PRICE_4 = '', 0,CONVERT(DECIMAL,@PRICE_4))
+                                                            ,[min_1] = IIF(@MIN_1 = '', 0,CONVERT(DECIMAL,@MIN_1))
+                                                            ,[min_2] = IIF(@MIN_2 = '', 0,CONVERT(DECIMAL,@MIN_2))
+                                                            ,[min_3] = IIF(@MIN_3 = '', 0,CONVERT(DECIMAL,@MIN_3))
+                                                            ,[min_4] = IIF(@MIN_4 = '', 0,CONVERT(DECIMAL,@MIN_4))
+                                                            ,[S_FROM] = @S_FROM
+                                                            ,[廠商編號] = @FACT_NO
+                                                            ,[廠商簡稱] = @FACT_S_NAME
+                                                            ,[變更日期] = GETDATE()
+                                                            ,[更新人員] = @UPD_USER
+                                                            ,[更新日期] = GETDATE()
+                                                        WHERE [序號] = @SEQ ";
+                                cmd.Parameters.Clear();
+                                cmd.Parameters.AddWithValue("SEQ", context.Request["SEQ"]);
+                                cmd.Parameters.AddWithValue("QUAH_NO", context.Request["QUAH_NO"]);
+                                cmd.Parameters.AddWithValue("QUAH_DATE", context.Request["QUAH_DATE"]);
                                 cmd.Parameters.AddWithValue("CUST_NO", context.Request["CUST_NO"]);
                                 cmd.Parameters.AddWithValue("CUST_S_NAME", context.Request["CUST_S_NAME"]);
                                 cmd.Parameters.AddWithValue("IVAN_TYPE", context.Request["IVAN_TYPE"]);
-                                cmd.Parameters.AddWithValue("Date_S", context.Request["Date_S"]);
-                                cmd.Parameters.AddWithValue("Date_E", context.Request["Date_E"]);
-                                break;
-                            case "QUAH_SEQ_SEARCH":
-                                cmd.CommandText = @" SELECT ISNULL(CONVERT(INT,SUBSTRING(MAX(報價單號),2,6)), 220000) +1 from QUAH 
-							                     WHERE SUBSTRING([報價單號],2,2) = SUBSTRING(CONVERT(VARCHAR,GETDATE(),111),3,2)
-							                     AND LEN([報價單號]) = 7 ";
-                                break;
-                            case "CUST_NAME_SEARCH":
-                                cmd.CommandText = @" SELECT [客戶簡稱] CUST_S_NAME, [客戶名稱] CUST_NAME from BYR 
-							                     WHERE [客戶編號] = @CUST_NO ";
+                                cmd.Parameters.AddWithValue("PROD_DESC", context.Request["PROD_DESC"]);
+                                cmd.Parameters.AddWithValue("UNIT", context.Request["UNIT"]);
+                                cmd.Parameters.AddWithValue("USD", context.Request["USD"]);
+                                cmd.Parameters.AddWithValue("NTD", context.Request["NTD"]);
+                                cmd.Parameters.AddWithValue("PRICE_2", context.Request["PRICE_2"]);
+                                cmd.Parameters.AddWithValue("PRICE_3", context.Request["PRICE_3"]);
+                                cmd.Parameters.AddWithValue("PRICE_4", context.Request["PRICE_4"]);
+                                cmd.Parameters.AddWithValue("MIN_1", context.Request["MIN_1"]);
+                                cmd.Parameters.AddWithValue("MIN_2", context.Request["MIN_2"]);
+                                cmd.Parameters.AddWithValue("MIN_3", context.Request["MIN_3"]);
+                                cmd.Parameters.AddWithValue("MIN_4", context.Request["MIN_4"]);
+                                cmd.Parameters.AddWithValue("S_FROM", context.Request["S_FROM"]);
+                                cmd.Parameters.AddWithValue("FACT_NO", context.Request["FACT_NO"]);
+                                cmd.Parameters.AddWithValue("FACT_S_NAME", context.Request["FACT_S_NAME"]);
+                                cmd.Parameters.AddWithValue("UPD_USER", "IVAN");
 
-                                cmd.Parameters.AddWithValue("CUST_NO", context.Request["CUST_NO"]);
-                                break;
-                            case "INSERT_QUAH":
-
-                                string[] ivanArray = context.Request["IVAN_TYPE[]"].Split(',');
-                                string[] factNoArr = context.Request["FACT_NO[]"].Split(',');
-
-                                for (int cnt = 0; cnt < ivanArray.Length; cnt++)
-                                {
-                                    string fromSQl = (context.Request["FROM"] == "0" ? @"(SELECT CASE WHEN 所在地 IN ('台灣','國外') THEN '1' WHEN 所在地 = '香港' THEN '2' WHEN 所在地 = '中國' THEN '3' ELSE '?' END FROM Sup 
-                                                                                      WHERE 廠商編號= @FACT_NO)  "
-                                                                                     : context.Request["FROM"]);
-
-                                    cmd.CommandText = @" INSERT INTO [dbo].[quah]
-                                                       ([序號],[報價單號],[報價日期],[客戶編號],[客戶簡稱]
-                                                       ,[頤坊型號],[暫時型號_Del],[產品說明],[單位],[美元單價],[台幣單價]
-                                                       ,[歐元單價],[單價_2],[單價_3],[單價_4],[min_1],[min_2],[min_3],[min_4]
-                                                       ,[外幣幣別],[外幣單價],[S_FROM],[廠商編號],[廠商簡稱],[變更日期],[更新人員],[更新日期])
-                                                    SELECT  (Select IsNull(Max(序號),0)+1 From Quah) [序號], @SEQ [報價單號], GETDATE() [報價日期],[客戶編號],[客戶簡稱]
-                                                       ,[頤坊型號], '' [暫時型號_Del],[產品說明],[單位],[美元單價],[台幣單價]
-                                                       ,[歐元單價],[單價_2],[單價_3],[單價_4],[min_1],[min_2],[min_3],[min_4]
-                                                       ,[外幣幣別],[外幣單價],"
-                                                            + fromSQl + @"[S_FROM],[廠商編號],[廠商簡稱],[變更日期], 'IVAN' [更新人員],[更新日期]
-                                                    FROM byrlu
-                                                    WHERE 頤坊型號 = @IVAN_TYPE 
-                                                    AND 客戶編號 = @CUST_NO ";
-                                    cmd.Parameters.Clear();
-                                    cmd.Parameters.AddWithValue("SEQ", context.Request["SEQ"]);
-                                    cmd.Parameters.AddWithValue("FROM", context.Request["FROM"]);
-                                    cmd.Parameters.AddWithValue("FACT_NO", factNoArr[cnt]);
-                                    cmd.Parameters.AddWithValue("IVAN_TYPE", ivanArray[cnt]);
-                                    cmd.Parameters.AddWithValue("CUST_NO", context.Request["CUST_NO"]);
-
-                                    cmd.ExecuteNonQuery();
-                                }
-
-                                context.Response.Write(ivanArray.Length);
-                                break;
-                            case "GEN_RPT":
-                                cmd.CommandText = @" SELECT Q.報價單號
-			                                           ,Q.頤坊型號
-			                                           ,D.客戶型號
-			                                           ,Q.產品說明
-			                                           ,Q.單位
-			                                           ,TMP.min_1
-			                                           ,B.客戶名稱
-			                                           ,B.連絡人樣品
-			                                           ,@DELV_DAYS 交貨天數
-			                                           ,RTRIM(B.價格條件) + CASE Q.S_FROM WHEN '1' THEN ' TAIWAN' WHEN '2' THEN ' HONG KONG' WHEN '3' THEN ' CHINA' ELSE '' END 價格條件
-                                                       ,CASE Q.S_FROM WHEN '1' THEN ' *** SHIPPING FROM TAIWAN ***' WHEN '2' THEN '*** SHIPPING FROM HONG KONG ***' WHEN '3' THEN ' *** SHIPPING FROM CHINA ***' ELSE '*** SHIPPING FROM ***' END ShipFrom
-                                                       ,TMP.列印單價
-			                                           ,CASE WHEN Q.美元單價 > 0 THEN 'USD'
-					                                         ELSE 'NTD' END 幣別
-			                                           ,C.大備註
-                                                       ,(SELECT TOP 1 X.[圖檔] FROM [192.168.1.135].Pic.dbo.xpic X WHERE X.頤坊型號 = Q.頤坊型號) 圖檔
-			                                           ,'' 圖檔路徑
-			                                           ,ISNULL((SELECT TOP 1 'Y' FROM [192.168.1.135].Pic.dbo.xpic X WHERE X.頤坊型號 = Q.頤坊型號), '') 列印圖檔
-			                                           ,(SELECT TOP 1 R.RI_IMAGE FROM [192.168.1.135].pic.dbo.REF_IMAGE R WHERE R.RI_REFENCE_KEY = @SIGN) 簽名圖檔
-			                                           ,'' 簽名圖檔路徑
-			                                           ,ISNULL((SELECT TOP 1 'Y' FROM [192.168.1.135].pic.dbo.REF_IMAGE R WHERE R.RI_REFENCE_KEY = @SIGN), '') 簽名列印圖檔
-			                                           ,LEFT(FORMAT(Q.報價日期, 'MMMM', 'en-US'),3) + '. ' + RIGHT(CONVERT(VARCHAR,Q.報價日期,112),2) + ', ' + LEFT(CONVERT(VARCHAR,Q.報價日期,112),4) 轉換列印日期
-		                                         FROM (
-			                                         SELECT 序號
-				                                           ,min_1 
-				                                           ,CASE WHEN Q.美元單價 > 0 THEN Q.美元單價
-						                                         ELSE Q.台幣單價 END 列印單價
-			                                         FROM QUAH Q 
-			                                         Where Q.報價單號 = @QUAH_NO
-			                                         UNION ALL 
-			                                         SELECT 序號
-				                                           ,min_2 min_1
-				                                           ,單價_2 列印單價
-			                                         FROM QUAH Q 
-			                                         WHERE Q.min_2 != 0
-			                                         AND Q.報價單號 = @QUAH_NO
-			                                         UNION ALL 
-			                                         SELECT 序號
-				                                           ,min_3 min_1
-				                                           ,單價_3 列印單價
-			                                         FROM QUAH Q 
-			                                         WHERE Q.min_3 != 0
-			                                         AND Q.報價單號 = @QUAH_NO 
-			                                         UNION ALL 
-			                                         SELECT 序號
-				                                           ,min_4 min_1
-				                                           ,單價_4 列印單價
-			                                         FROM QUAH Q 
-			                                         WHERE Q.min_4 != 0
-			                                         AND Q.報價單號 = @QUAH_NO ) TMP
-		                                        JOIN QUAH Q ON TMP.序號 = Q.序號
-		                                        INNER JOIN BYR B ON Q.客戶編號=B.客戶編號 
-		                                        LEFT JOIN QUAHM C ON Q.報價單號=C.報價單號 
-		                                        INNER JOIN BYRLU D ON Q.PRICE_SEQ=D.序號
-		                                        ORDER BY Q.頤坊型號, Q.min_1 ";
-
-                                cmd.Parameters.AddWithValue("QUAH_NO", context.Request["QUAH_NO"]);
-                                cmd.Parameters.AddWithValue("DELV_DAYS", context.Request["DELV_DAYS"]);
-                                cmd.Parameters.AddWithValue("SIGN", context.Request["SIGN"]);
-
-                                SqlDataAdapter sqlData = new SqlDataAdapter(cmd);
-                                sqlData.Fill(dt);
-
-                                if (dt != null && dt.Rows.Count > 0)
-                                {
-                                    string rptDir = "~/DEV/Quote/Rpt/Quote_BASE.rpt";
-                                    switch (context.Request["RPT_TYPE"])
-                                    {
-                                        case "0":
-                                            rptDir = "~/DEV/Quote/Rpt/Quote_BASE.rpt";
-                                            break;
-                                        case "1":
-                                            rptDir = "~/DEV/Quote/Rpt/Quote_IMG.rpt";
-                                            break;
-
-                                    }
-
-                                    ReportDocument rptDoc = new ReportDocument();
-                                    rptDoc.Load(context.Server.MapPath(rptDir));
-                                    rptDoc.SetDataSource(dt);
-                                    System.IO.Stream stream = rptDoc.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
-                                    byte[] bytes = new byte[stream.Length];
-                                    stream.Read(bytes, 0, bytes.Length);
-                                    stream.Seek(0, System.IO.SeekOrigin.Begin);
-
-                                    string filename = "QUAH_RPT.pdf";
-                                    context.Response.ClearContent();
-                                    context.Response.ClearHeaders();
-                                    context.Response.AddHeader("content-disposition", "attachment;filename=" + filename);
-                                    context.Response.ContentType = "application/pdf";
-                                    context.Response.OutputStream.Write(bytes, 0, bytes.Length);
-                                    context.Response.Flush();
-                                    context.Response.End();
-                                }
-                                else
-                                {
-                                    context.Response.Write("204");
-                                    return;
-                                }
+                                cmd.ExecuteNonQuery();
+                                context.Response.StatusCode = cmd.ExecuteNonQuery() == 1 ?  200 : 404;
+                                context.Response.End();
                                 break;
                         }
 
-                        if (!context.Request["Call_Type"].Equals("INSERT_QUAH"))
-                        {
-                            SqlDataAdapter sqlData = new SqlDataAdapter(cmd);
-                            sqlData.Fill(dt);
+                        SqlDataAdapter sqlData = new SqlDataAdapter(cmd);
+                        sqlData.Fill(dt);
 
-                            var json = JsonConvert.SerializeObject(dt);
-                            context.Response.ContentType = "text/json";
-                            context.Response.Write(json);
-                        }
+                        var json = JsonConvert.SerializeObject(dt);
+                        context.Response.ContentType = "text/json";
+                        context.Response.Write(json);
                     }
                 }
             }
