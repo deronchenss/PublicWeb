@@ -9,7 +9,6 @@ using System.Configuration;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using CrystalDecisions.CrystalReports.Engine;
-using System.Web.SessionState;
 
 public class Quote_Base : IHttpHandler, IRequiresSessionState
 {
@@ -29,12 +28,12 @@ public class Quote_Base : IHttpHandler, IRequiresSessionState
                     {
                         conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
                         cmd.Connection = conn;
-                        conn.Open();
+                        conn.Open();                  
 
                         switch (context.Request["Call_Type"])
                         {
                             case "Quote_Base":
-                                cmd.CommandText = @" SELECT TOP 1000 Byr.客戶簡稱, Byr.頤坊型號
+                                cmd.CommandText = @" SELECT TOP 500 Byr.客戶簡稱, Byr.頤坊型號
                                                    ,IIF(Byr.美元單價 = 0, NULL, Byr.美元單價) 美元單價, IIF(Byr.台幣單價=0,NULL, Byr.台幣單價) 台幣單價, 外幣幣別, IIF(Byr.外幣單價=0, NULL, Byr.外幣單價) 外幣單價
                                                    ,IIF(Byr.MIN_1 = 0, NULL, Byr.MIN_1) MIN
                                                    ,Byr.產品說明, Byr.單位, Byr.廠商編號, Byr.廠商簡稱
@@ -44,8 +43,17 @@ public class Quote_Base : IHttpHandler, IRequiresSessionState
                                              WHERE Byr.[客戶編號] LIKE @CUST_NO + '%'
                                              AND Byr.[客戶簡稱] LIKE '%' + @CUST_S_NAME + '%'
                                              AND Byr.[頤坊型號] LIKE @IVAN_TYPE + '%'
-                                             AND Byr.[更新日期] BETWEEN @Date_S AND @Date_E
                                               ";
+
+                                if (!string.IsNullOrEmpty(context.Request["Date_E"]))
+                                {
+                                    cmd.CommandText += " AND CONVERT(DATE,[更新日期]) <= @Date_E";
+                                }
+                                if (!string.IsNullOrEmpty(context.Request["Date_S"]))
+                                {
+                                    cmd.CommandText += " AND CONVERT(DATE,[更新日期]) >= @Date_S";
+                                }
+
                                 cmd.Parameters.AddWithValue("CUST_NO", context.Request["CUST_NO"]);
                                 cmd.Parameters.AddWithValue("CUST_S_NAME", context.Request["CUST_S_NAME"]);
                                 cmd.Parameters.AddWithValue("IVAN_TYPE", context.Request["IVAN_TYPE"]);
@@ -115,9 +123,9 @@ public class Quote_Base : IHttpHandler, IRequiresSessionState
 			                                           ,CASE WHEN Q.美元單價 > 0 THEN 'USD'
 					                                         ELSE 'NTD' END 幣別
 			                                           ,C.大備註
-                                                       ,(SELECT TOP 1 X.[圖檔] FROM [192.168.1.135].Pic.dbo.xpic X WHERE X.頤坊型號 = Q.頤坊型號) 圖檔
+                                                       ,(SELECT TOP 1 X.[圖檔] FROM [192.168.1.135].Pic.dbo.xpic X WHERE X.P_SEQ = (SELECT P_SEQ FROM byrlu where 序號 = Q.PRICE_SEQ)) 圖檔
 			                                           ,'' 圖檔路徑
-			                                           ,ISNULL((SELECT TOP 1 'Y' FROM [192.168.1.135].Pic.dbo.xpic X WHERE X.頤坊型號 = Q.頤坊型號), '') 列印圖檔
+			                                           ,ISNULL((SELECT TOP 1 'Y' FROM [192.168.1.135].Pic.dbo.xpic X WHERE X.P_SEQ = (SELECT P_SEQ FROM byrlu where 序號 = Q.PRICE_SEQ)), '') 列印圖檔
 			                                           ,(SELECT TOP 1 R.RI_IMAGE FROM [192.168.1.135].pic.dbo.REF_IMAGE R WHERE R.RI_REFENCE_KEY = @SIGN) 簽名圖檔
 			                                           ,'' 簽名圖檔路徑
 			                                           ,ISNULL((SELECT TOP 1 'Y' FROM [192.168.1.135].pic.dbo.REF_IMAGE R WHERE R.RI_REFENCE_KEY = @SIGN), '') 簽名列印圖檔

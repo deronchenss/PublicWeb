@@ -4,7 +4,12 @@
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
     <script src="/js/jquery.dataTables.min.js"></script>
     <script src="/js/dataTables.bootstrap4.min.js"></script>
-
+    <style type="text/css">
+       .tableToEdit {
+            color: white;
+            background-color: rgb(90, 20, 0) !important;
+        }
+    </style>
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
@@ -15,8 +20,8 @@
             //init CONTROLER
             Form_Mode_Change("Base");
 
-            $('#Q_QUAH_DATE_S').val($.datepicker.formatDate('yy-mm-dd', new Date()));
-            $('#Q_QUAH_DATE_E').val($.datepicker.formatDate('yy-mm-dd', new Date()));          
+            //$('#Q_QUAH_DATE_S').val($.datepicker.formatDate('yy-mm-dd', new Date()));
+            //$('#Q_QUAH_DATE_E').val($.datepicker.formatDate('yy-mm-dd', new Date()));          
 
             window.document.body.onbeforeunload = function () {
                 if (Edit_Mode === "Edit") {
@@ -29,90 +34,77 @@
                 switch (Form_Mode) {
                     case "Base":
                         $('.Div_D').css('display', 'none');
+                        $('#Div_DT_View').css('display', 'none');
                         $('#BT_Cancel').css('display', 'none');
               
                         V_BT_CHG($('#BT_BASE'));
                         break;
                     case "Search":
                         $('.Div_D').css('display', 'none');
-                        $('#Div_DT_Search').css('display', '');
+                        $('#Div_EDIT_Data').css('display', '');
+                        $('#Div_DT_View').css('display', '');
                         $('#BT_Cancel').css('display', '');
 
                         V_BT_CHG($('#BT_BASE'));
                         break;
-                    case "EXEC":
-                        if ($('#Div_DT_Search').css("display") === 'none') {
-                            alert('請先查詢');
-                            Edit_Mode = "Base";
-                            return;
-                        }
-                        if ($('#Table_CHS_Data > tbody tr[role=row]').length === 0) {
-                            alert('請至少選擇1筆');
-                            Edit_Mode = "Base";
-
-                            V_BT_CHG($('#BT_BASE'));
-                            return;
-                        }
-                        else {
-                            $('.Div_D').css('display', 'none');
-                            $('#Div_DT_DETAIL').css('display', '');
-                            V_BT_CHG($('#BT_DT'));
-                        }
                     case "RPT":
                         $('.Div_D').css('display', 'none');
-                        $('#Div_RPT').css('display', 'flex');
+                        $('#Div_RPT_DETAIL').css('display', '');
 
-                        V_BT_CHG($('#BT_RPT'));
+                        V_BT_CHG($('#BT_REMARK'));
+                        break;
+                    case "IMG":
+                        $('.Div_D').css('display', 'none');
+                        $('#Div_IMG_DETAIL').css('display', '');
+
+                        V_BT_CHG($('#BT_IMG'));
                         break;
                 }
             }
 
             function ClickToEdit(click_tr) {
 
-                var index = $('#Table_Search_Quote thead th:contains(序號)').index() + 1; 
-                $('#E_SEQ').val(click_tr.find('td:nth-child(' + index + ')').text());
-                index = $('#Table_Search_Quote thead th:contains(報價單號)').index() + 1;
-                $('#E_QUAH_NO').val(click_tr.find('td:nth-child(' + index + ')').text());
-                index = $('#Table_Search_Quote thead th:contains(報價日期)').index() + 1;
-                $('#E_QUAH_DATE').val(click_tr.find('td:nth-child(' + index + ')').text().substr(0, 10));
-                index = $('#Table_Search_Quote thead th:contains(客戶編號)').index() + 1;
-                $('#E_CUST_NO').val(click_tr.find('td:nth-child(' + index + ')').text());
-                index = $('#Table_Search_Quote thead th:contains(客戶簡稱)').index() + 1;
-                $('#E_CUST_S_NAME').val(click_tr.find('td:nth-child(' + index + ')').text());
-                index = $('#Table_Search_Quote thead th:contains(頤坊型號)').index() + 1;
-                $('#E_IVAN_TYPE').val(click_tr.find('td:nth-child(' + index + ')').text());
-                index = $('#Table_Search_Quote thead th:contains(產品說明)').index() + 1;
-                $('#E_PROD_DESC').val(click_tr.find('td:nth-child(' + index + ')').text());
-                index = $('#Table_Search_Quote thead th:contains(廠商編號)').index() + 1;
-                $('#E_FACT_NO').val(click_tr.find('td:nth-child(' + index + ')').text());
-                index = $('#Table_Search_Quote thead th:contains(廠商簡稱)').index() + 1;
-                $('#E_FACT_S_NAME').val(click_tr.find('td:nth-child(' + index + ')').text());
-                index = $('#Table_Search_Quote thead th:contains(基本量_1)').index() + 1;
-                $('#E_MIN_1').val(click_tr.find('td:nth-child(' + index + ')').text());
-                index = $('#Table_Search_Quote thead th:contains(美元單價)').index() + 1;
-                $('#E_USD').val(click_tr.find('td:nth-child(' + index + ')').text());
-                index = $('#Table_Search_Quote thead th:contains(單位)').index() + 1;
-                $('#E_UNIT').val(click_tr.find('td:nth-child(' + index + ')').text());
-                index = $('#Table_Search_Quote thead th:contains(台幣單價)').index() + 1;
-                $('#E_NTD').val(click_tr.find('td:nth-child(' + index + ')').text());
-                index = $('#Table_Search_Quote thead th:contains(基本量_2)').index() + 1;
-                $('#E_MIN_2').val(click_tr.find('td:nth-child(' + index + ')').text());
-                index = $('#Table_Search_Quote thead th:contains(單價_2)').index() + 1;
-                $('#E_PRICE_2').val(click_tr.find('td:nth-child(' + index + ')').text());
-                index = $('#Table_Search_Quote thead th:contains(基本量_3)').index() + 1;
-                $('#E_MIN_3').val(click_tr.find('td:nth-child(' + index + ')').text());
-                index = $('#Table_Search_Quote thead th:contains(單價_3)').index() + 1;
-                $('#E_PRICE_3').val(click_tr.find('td:nth-child(' + index + ')').text());
-                index = $('#Table_Search_Quote thead th:contains(基本量_4)').index() + 1;
-                $('#E_MIN_4').val(click_tr.find('td:nth-child(' + index + ')').text());
-                index = $('#Table_Search_Quote thead th:contains(單價_4)').index() + 1;
-                $('#E_PRICE_4').val(click_tr.find('td:nth-child(' + index + ')').text());
-                index = $('#Table_Search_Quote thead th:contains(出貨地)').index() + 1;
-                $('#E_S_FROM').val(click_tr.find('td:nth-child(' + index + ')').text());
-                index = $('#Table_Search_Quote thead th:contains(更新人員)').index() + 1;
-                $('#E_UPD_USER').val(click_tr.find('td:nth-child(' + index + ')').text());
-                index = $('#Table_Search_Quote thead th:contains(更新日期)').index() + 1;
-                $('#E_UPD_DATE').val(click_tr.find('td:nth-child(' + index + ')').text().substr(0, 10));
+                //點擊賦予顏色
+                $('#Table_Search_Quote > tbody tr').removeClass("tableToEdit");
+                click_tr.addClass("tableToEdit");
+
+                var clickData = $('#Table_Search_Quote').DataTable().row(click_tr).data();
+
+                //Edit page
+                $('#E_SEQ').val(clickData['序號']);
+                $('#E_QUAH_NO').val(clickData['報價單號']);
+                $('#E_QUAH_DATE').val(clickData['報價日期'].substr(0, 10));
+                $('#E_CUST_NO').val(clickData['客戶編號']);
+                $('#E_CUST_S_NAME').val(clickData['客戶簡稱']);
+                $('#E_IVAN_TYPE').val(clickData['頤坊型號']);
+                $('#E_PROD_DESC').val(clickData['產品說明']);
+                $('#E_FACT_NO').val(clickData['廠商編號']);
+                $('#E_FACT_S_NAME').val(clickData['廠商簡稱']);
+                $('#E_MIN_1').val(clickData['基本量_1']);
+                $('#E_USD').val(clickData['美元單價']);
+                $('#E_UNIT').val(clickData['單位']);
+                $('#E_NTD').val(clickData['台幣單價']);
+                $('#E_MIN_2').val(clickData['基本量_2']);
+                $('#E_PRICE_2').val(clickData['單價_2']);
+                $('#E_MIN_3').val(clickData['基本量_3']);
+                $('#E_PRICE_3').val(clickData['單價_3']);
+                $('#E_MIN_4').val(clickData['基本量_4']);
+                $('#E_PRICE_4').val(clickData['單價_4']);
+                $('#E_S_FROM').val(clickData['出貨地']);
+                $('#E_UPD_USER').val(clickData['更新人員']);
+                $('#E_UPD_DATE').val(clickData['更新日期'].substr(0, 10));
+
+                //RPT page
+                $('#R_QUAH_NO').val(clickData['報價單號']);
+                $('#R_RPT_REMARK').val(clickData['大備註']);
+
+                //IMG page
+                $('#I_IVAN_TYPE').val(clickData['頤坊型號']);
+                $('#I_FACT_NO').val(clickData['廠商編號']);
+                $('#I_FACT_S_NAME').val(clickData['廠商簡稱']);
+                $('#I_PROD_DESC').val(clickData['產品說明']);
+                $('#I_RPT_REMARK').val(clickData['大備註']);
+                Search_IMG(clickData['PRICE_SEQ']);
             }
             
             function V_BT_CHG(buttonChs) {
@@ -158,6 +150,7 @@
                                     $('div.dataTables_scrollBody').scrollTop(pageScrollPos);
                                 },
                                 "columns": [
+                                    { data: "序號", title: "序號" },
                                     { data: "報價單號", title: "報價單號" },
                                     { data: "報價日期", title: "報價日期" },
                                     { data: "客戶簡稱", title: "客戶簡稱" },
@@ -177,11 +170,12 @@
                                     { data: "單價_3", title: "單價_3" },
                                     { data: "單價_4", title: "單價_4" },
                                     { data: "出貨地", title: "出貨地" },
-                                    { data: "序號", title: "序號" },
                                     { data: "更新人員", title: "<%=Resources.Customer.Update_User%>" },
-                                    { data: "更新日期", title: "<%=Resources.Customer.Update_Date%>" }
+                                    { data: "更新日期", title: "<%=Resources.Customer.Update_Date%>" },
+                                    { data: "大備註", title: "大備註", visible: false },
+                                    { data: "PRICE_SEQ", title: "PRICE_SEQ", visible: false }
                                 ],
-                                "order": [[3, "asc"]], //根據 頤坊型號 排序
+                                "order": [[1, "asc"]], //根據 報價單號 排序
                                 "scrollX": true,
                                 "scrollY": "62vh",
                                 "searching": false,
@@ -199,48 +193,55 @@
                 });
             };        
 
-            function Search_QUAH_SEQ() {
+            function Search_IMG(priceSeq) {
+                var binary = '';
                 $.ajax({
                     url: apiUrl,
                     data: {
-                        "Call_Type": "QUAH_SEQ_SEARCH"                
+                        "Call_Type": "GET_IMG",
+                        "PRICE_SEQ": priceSeq
                     },
                     cache: false,
+                    async: false,
                     type: "POST",
                     datatype: "json",
                     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                    success: function (response) {
-                        if (response.length === 0) {
-                            alert('<%=Resources.MP.Data_Not_Exists_Alert%>');
+                    success: function (RR) {
+                        if (RR != null && RR.length > 0) {
+                            $('#I_NO_IMG').css('display', 'none');
+                            $('#I_IMG').css('display', '');
+
+                            var SRC = 'data:image/png;base64,' + RR[0].P_IMG;
+                            $('#I_IMG').attr('src', SRC);
                         }
                         else {
-                            $('#E_QUAH_SEQ').val('Q' + response[0].Column1);
+                            $('#I_NO_IMG').css('display', '');
+                            $('#I_IMG').css('display', 'none');
                         }
-                    },
-                    error: function (ex) {
-                        alert(ex);
                     }
                 });
             };        
 
-            function Search_BYR_NAME(custNo) {
+            //更新印表備註
+            function UPD_RPT_REMARK() {
+
                 $.ajax({
                     url: apiUrl,
                     data: {
-                        "Call_Type": "CUST_NAME_SEARCH",
-                        "CUST_NO": custNo
+                        "Call_Type": "UPD_RPT_REMARK",
+                        "QUAH_NO": $('#R_QUAH_NO').val(),
+                        "RPT_REMARK": $('#R_RPT_REMARK').val()
                     },
                     cache: false,
                     type: "POST",
                     datatype: "json",
                     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                    success: function (response) {
-                        if (response.length === 0) {
-                            alert('<%=Resources.MP.Data_Not_Exists_Alert%>');
+                    success: function (response, status) {
+                        if (status === 'success') {
+                            alert('報價單號:' + $('#R_QUAH_NO').val() + '已修改完成');
                         }
                         else {
-                            $('#E_CUST_S_NAME').val(response[0].CUST_S_NAME);
-                            $('#E_CUST_NAME').val(response[0].CUST_NAME);
+                            alert('修改資料有誤請通知資訊人員');
                         }
                     },
                     error: function (ex) {
@@ -331,6 +332,10 @@
             $('#BT_EDIT').on('click', function () {
                 UPD_QUAH();
             });
+
+            $('#BT_RPT_SETTING').on('click', function () {
+                UPD_RPT_REMARK();
+            });
       
             //功能選單
             $('#BT_BASE').on('click', function () {
@@ -342,16 +347,15 @@
                 else {
                     Form_Mode_Change("Base");
                 }
-            });
+            });    
 
-            $('#BT_DT').on('click', function () {
-                Edit_Mode = "Edit";
-                Form_Mode_Change("EXEC");
-            });          
-
-            $('#BT_RPT').on('click', function () {
+            $('#BT_REMARK').on('click', function () {
                 Form_Mode_Change("RPT");
             });       
+
+            $('#BT_IMG').on('click', function () {
+                Form_Mode_Change("IMG");
+            });   
         });
     </script>
 </asp:Content>
@@ -419,7 +423,7 @@
             <input type="button" class="V_BT" value="圖例" />
         </div>
 
-        <div id="Div_DT_Search" class=" Div_D">
+        <div id="Div_DT">
             <div id="Div_DT_View" style=" width:60%; border-style:solid;border-width:1px; float:left;">
                 <div class="dataTables_info" id="Table_Search_Quote_info" role="status" aria-live="polite"></div>
                 <table id="Table_Search_Quote" class="Table_Search table table-striped table-bordered">
@@ -428,7 +432,7 @@
                 </table>
             </div>
     
-            <div id="Div_EDIT_Data" style="width:35%; height:71vh; border-style:solid; border-width:1px;  float:right;">
+            <div id="Div_EDIT_Data" class=" Div_D" style="width:35%; height:71vh; border-style:solid; border-width:1px;  float:right;">
                 <table class="edit_section_control">
                     <tr class="trstyle"> 
                         <td class="tdbstyle" style="height: 5vh; font-size: smaller;" >&nbsp</td>
@@ -565,24 +569,10 @@
                     </tr>
                 </table>
             </div>
-    
-        </div>
-
-        <div id="Div_DT_DETAIL" class=" Div_D" style="white-space:nowrap">
-            
-        </div>
-
-        <div id="Div_RPT" class=" Div_D" style=" display:flex; align-items:center; justify-content:center;" >
-            <div id="Div_RPT_DETAIL" style="width:50%;height:71vh; border-style:solid;border-width:1px; display:flex; align-items:center; justify-content:center ">
+            <div id="Div_RPT_DETAIL" class=" Div_D" style="width:35%;height:71vh; border-style:solid;border-width:1px; float:right; ">
                 <table class="search_section_control">
-                    <tr class="trCenterstyle">
-                        <td class="tdhstyle" style="font-size:20px;">報表類型</td>
-                        <td class="tdbstyle">
-                            <select id="R_RPT_TYPE" style="font-size:20px;">
-                                <option selected="selected" value="0">無圖報價單</option>
-                                <option value="1">雙排1:1</option>
-                            </select>
-                         </td>
+                    <tr class="trstyle"> 
+                        <td class="tdbstyle" style="height: 15vh; font-size: smaller;" >&nbsp</td>
                     </tr>
                     <tr class="trCenterstyle">
                         <td class="tdhstyle" style="font-size:20px;">報價單號</td>
@@ -590,30 +580,60 @@
                             <input id="R_QUAH_NO"  class="textbox_char" />
                         </td>
                     </tr>
+                    <tr class="trstyle"> 
+                        <td class="tdbstyle" style="height: 3vh; font-size: smaller;" >&nbsp</td>
+                    </tr>
                     <tr class="trCenterstyle">
-                        <td class="tdhstyle" style="font-size:20px;">交貨天數</td>
-                        <td class="tdbstyle">
-                            <input id="R_DELV_DAYS" type="number" value="45" />
+                        <td colspan="2">
+                            <textarea id="R_RPT_REMARK" cols="40" rows="5"></textarea>
                         </td>
                     </tr>
-                    <tr class="trCenterstyle">
-                        <td class="tdhstyle" style="font-size:20px">簽名</td>
-                        <td class="tdbstyle">
-                            <select id="R_SIGN" style="font-size:20px;">
-                                <option selected="selected" value="0">無</option>
-                                <option value="HKC">HKC</option>
-                                <option value="HAOHAN">HAOHAN</option>
-                                <option value="SCOTT">SCOTT</option>
-                            </select>
-                         </td>
-                    </tr>
-                     <tr class="trstyle"> 
-                        <td class="tdbstyle" style="height: 10vh; font-size: smaller;" >&nbsp</td>
+                    <tr class="trstyle"> 
+                        <td class="tdbstyle" style="height: 5vh; font-size: smaller;" >&nbsp</td>
                     </tr>
                      <tr class="trCenterstyle"> 
                          <td colspan="2" style="text-align:center" >
-                            <input type="button" id="BT_PRINT" style="display:inline-block" class="BTN" value="列印"  />
+                            <input type="button" id="BT_RPT_SETTING" style="display:inline-block" class="BTN" value="修改"  />
                          </td>
+                    </tr>
+
+                </table>
+            </div> 
+            <div id="Div_IMG_DETAIL" class=" Div_D" style="width:35%;height:71vh; border-style:solid;border-width:1px; float:right; ">
+                <table class="edit_section_control">
+                     <tr class="trstyle"> 
+                        <td class="tdbstyle" style="height: 5vh; font-size: smaller;" >&nbsp</td>
+                    </tr>
+                    <tr class="trstyle">
+                        <td class="tdEditstyle">頤坊型號</td>
+                        <td class="tdbstyle">
+                            <input id="I_IVAN_TYPE" class="textbox_char"  />
+                        </td>
+                        <td class="tdEditstyle">廠商編號</td>
+                        <td class="tdbstyle">
+                            <input id="I_FACT_NO"  class="textbox_char"  />
+                        </td>
+                    </tr>
+                    <tr class="trstyle">
+                        <td class="tdEditstyle"></td>
+                        <td class="tdbstyle"></td>
+                        <td class="tdEditstyle">廠商簡稱</td>
+                        <td class="tdbstyle" >
+                            <input id="I_FACT_S_NAME" class="textbox_char"  />
+                        </td>
+                    </tr>
+                    <tr class="trstyle">
+                        <td class="tdEditstyle">產品說明</td>
+                        <td class="tdbstyle" colspan="4">
+                            <input id="I_PROD_DESC" class="textbox_char" style="width:80%" />
+                        </td>
+                    </tr>
+
+                    <tr class="trstyle">
+                        <td style="text-align:center" colspan="4">
+                            <img id="I_IMG" src="#" style="display:none" />
+                            <span id="I_NO_IMG" >查無圖檔</span>
+                        </td>
                     </tr>
 
                 </table>

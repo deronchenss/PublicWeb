@@ -9,7 +9,6 @@ using System.Configuration;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using CrystalDecisions.CrystalReports.Engine;
-using System.Web.SessionState;
 
 public class Quote_MT : IHttpHandler, IRequiresSessionState
 {
@@ -34,28 +33,40 @@ public class Quote_MT : IHttpHandler, IRequiresSessionState
                         switch (context.Request["Call_Type"])
                         {
                             case "Quote_Base":
-                                cmd.CommandText = @" SELECT TOP 1000 報價單號, CONVERT(VARCHAR, 報價日期, 120) 報價日期, 客戶簡稱, 頤坊型號, 單位
-                                                            ,IIF(美元單價 = 0, NULL, 美元單價) 美元單價, IIF(台幣單價=0,NULL, 台幣單價) 台幣單價
-                                                            ,IIF(MIN_1 = 0, NULL, MIN_1) 基本量_1
+                                cmd.CommandText = @" SELECT TOP 500 Quah.報價單號, CONVERT(VARCHAR, Quah.報價日期, 120) 報價日期, Quah.客戶簡稱, Quah.頤坊型號, Quah.單位
+                                                            ,IIF(Quah.美元單價 = 0, NULL, Quah.美元單價) 美元單價, IIF(Quah.台幣單價=0,NULL, Quah.台幣單價) 台幣單價
+                                                            ,IIF(Quah.MIN_1 = 0, NULL, Quah.MIN_1) 基本量_1
                                                             ,產品說明, 單位, 廠商編號, 廠商簡稱,客戶編號
-                                                            ,IIF(MIN_2 = 0, NULL, MIN_2) 基本量_2
-                                                            ,IIF(MIN_3 = 0, NULL, MIN_3) 基本量_3
-                                                            ,IIF(MIN_4 = 0, NULL, MIN_4) 基本量_4
-                                                            ,IIF(單價_2 = 0, NULL, 單價_2) 單價_2
-                                                            ,IIF(單價_3 = 0, NULL, 單價_3) 單價_3
-                                                            ,IIF(單價_4 = 0, NULL, 單價_4) 單價_4
-                                                            ,S_FROM 出貨地
-                                                            , 序號, 更新人員, CONVERT(VARCHAR, 更新日期, 120) 更新日期
+                                                            ,IIF(Quah.MIN_2 = 0, NULL, Quah.MIN_2) 基本量_2
+                                                            ,IIF(Quah.MIN_3 = 0, NULL, Quah.MIN_3) 基本量_3
+                                                            ,IIF(Quah.MIN_4 = 0, NULL, Quah.MIN_4) 基本量_4
+                                                            ,IIF(Quah.單價_2 = 0, NULL, Quah.單價_2) 單價_2
+                                                            ,IIF(Quah.單價_3 = 0, NULL, Quah.單價_3) 單價_3
+                                                            ,IIF(Quah.單價_4 = 0, NULL, Quah.單價_4) 單價_4
+                                                            ,Quah.S_FROM 出貨地
+                                                            , Quah.序號, Quah.更新人員, CONVERT(VARCHAR, Quah.更新日期, 120) 更新日期
+                                                            ,ISNULL(quahm.大備註,'') 大備註
+                                                            ,PRICE_SEQ
                                                      FROM Dc2..Quah 
-                                                     WHERE [頤坊型號] LIKE @IVAN_TYPE + '%'
-                                                     AND [報價日期] BETWEEN @QUAH_DATE_S AND @QUAH_DATE_E
-                                                     AND [客戶編號] LIKE @CUST_NO + '%'
-                                                     AND [客戶簡稱] LIKE '%' + @CUST_S_NAME + '%'
-                                                     AND [報價單號] LIKE @QUAH_NO + '%'
-                                                     AND [廠商編號] LIKE @FACT_NO + '%'
-                                                     AND [廠商簡稱] LIKE '%' + @FACT_S_NAME + '%'
-                                                     AND [產品說明] LIKE '%' + @PROD_DES + '%'
+                                                     LEFT JOIN quahm ON Quah.報價單號 = quahm.報價單號
+                                                     WHERE Quah.[頤坊型號] LIKE @IVAN_TYPE + '%'
+                                                     AND Quah.[客戶編號] LIKE @CUST_NO + '%'
+                                                     AND Quah.[客戶簡稱] LIKE '%' + @CUST_S_NAME + '%'
+                                                     AND Quah.[報價單號] LIKE @QUAH_NO + '%'
+                                                     AND Quah.[廠商編號] LIKE @FACT_NO + '%'
+                                                     AND Quah.[廠商簡稱] LIKE '%' + @FACT_S_NAME + '%'
+                                                     AND Quah.[產品說明] LIKE '%' + @PROD_DES + '%'
                                               ";
+
+                                if (!string.IsNullOrEmpty(context.Request["QUAH_DATE_E"]))
+                                {
+                                    cmd.CommandText += " AND CONVERT(DATE,[報價日期]) <= @QUAH_DATE_E";
+                                }
+                                if (!string.IsNullOrEmpty(context.Request["QUAH_DATE_S"]))
+                                {
+                                    cmd.CommandText += " AND CONVERT(DATE,[報價日期]) >= @QUAH_DATE_S";
+                                }
+
                                 cmd.Parameters.AddWithValue("IVAN_TYPE", context.Request["IVAN_TYPE"]);
                                 cmd.Parameters.AddWithValue("QUAH_DATE_S", context.Request["QUAH_DATE_S"]);
                                 cmd.Parameters.AddWithValue("QUAH_DATE_E", context.Request["QUAH_DATE_E"]);
@@ -66,6 +77,26 @@ public class Quote_MT : IHttpHandler, IRequiresSessionState
                                 cmd.Parameters.AddWithValue("FACT_S_NAME", context.Request["FACT_S_NAME"]);
                                 cmd.Parameters.AddWithValue("PROD_DES", context.Request["PROD_DES"]);
                                 break;
+                            case "UPD_RPT_REMARK":
+
+                                cmd.CommandText = @" DELETE FROM quahm WHERE [報價單號] = @QUAH_NO
+                                                     INSERT INTO [dbo].[quahm]
+                                                     SELECT (Select IsNull(Max(序號),0)+1 From quahm) [序號] 
+                                                             ,@QUAH_NO 報價單號
+                                                             ,@RPT_REMARK 大備註
+                                                             ,null 變更日期
+                                                             ,@UPD_USER [更新人員]
+                                                             ,GETDATE() [更新日期] ";
+                                cmd.Parameters.Clear();
+                                cmd.Parameters.AddWithValue("QUAH_NO", context.Request["QUAH_NO"]);
+                                cmd.Parameters.AddWithValue("RPT_REMARK", context.Request["RPT_REMARK"]);
+                                cmd.Parameters.AddWithValue("UPD_USER", "IVAN");
+
+                                cmd.ExecuteNonQuery();
+                                context.Response.StatusCode = cmd.ExecuteNonQuery() > 0 ?  200 : 404;
+                                context.Response.End();
+                                break;
+
                             case "UPD_QUAH":
 
                                 cmd.CommandText = @" UPDATE [dbo].[quah]
@@ -116,13 +147,21 @@ public class Quote_MT : IHttpHandler, IRequiresSessionState
                                 cmd.Parameters.AddWithValue("UPD_USER", "IVAN");
 
                                 cmd.ExecuteNonQuery();
-                                context.Response.StatusCode = cmd.ExecuteNonQuery() == 1 ?  200 : 404;
+                                context.Response.StatusCode = cmd.ExecuteNonQuery() == 1 ? 200 : 404;
                                 context.Response.End();
+                                break;
+                            case "GET_IMG":
+                                cmd.CommandText = @" SELECT TOP 1 [P_SEQ], [圖檔] [P_IMG]
+                                                     FROM [192.168.1.135].pic.dbo.xpic
+                                                     WHERE [P_SEQ] = (SELECT P_SEQ FROM byrlu where 序號 = @PRICE_SEQ) ";
+                                cmd.Parameters.AddWithValue("PRICE_SEQ", context.Request["PRICE_SEQ"]);
+
                                 break;
                         }
 
                         SqlDataAdapter sqlData = new SqlDataAdapter(cmd);
                         sqlData.Fill(dt);
+
 
                         var json = JsonConvert.SerializeObject(dt);
                         context.Response.ContentType = "text/json";
@@ -132,6 +171,7 @@ public class Quote_MT : IHttpHandler, IRequiresSessionState
             }
             catch (SqlException ex)
             {
+                context.Response.StatusCode = 404;
                 context.Response.Write(ex.Message);
             }
         }

@@ -17,8 +17,8 @@
             //init CONTROLER
             Form_Mode_Change("Base");
 
-            $('#TB_Date_S').val($.datepicker.formatDate('yy-mm-dd', new Date()));
-            $('#TB_Date_E').val($.datepicker.formatDate('yy-mm-dd', new Date()));          
+            //$('#TB_Date_S').val($.datepicker.formatDate('yy-mm-dd', new Date()));
+            //$('#TB_Date_E').val($.datepicker.formatDate('yy-mm-dd', new Date()));          
 
             window.document.body.onbeforeunload = function () {
                 if (Edit_Mode === "Edit") {
