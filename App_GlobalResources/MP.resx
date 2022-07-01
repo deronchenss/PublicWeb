@@ -130,7 +130,7 @@
     <value>申請放行</value>
   </data>
   <data name="Approve" xml:space="preserve">
-    <value>核准</value>
+    <value>審核</value>
   </data>
   <data name="Bank" xml:space="preserve">
     <value>銀行</value>
@@ -168,7 +168,7 @@
   <data name="Detail_Search" xml:space="preserve">
     <value>進階查詢</value>
   </data>
-  <data name="DEV" xml:space="preserve">
+	<data name="DEV" xml:space="preserve">
     <value>開發</value>
   </data>
   <data name="Edit" xml:space="preserve">
@@ -183,6 +183,9 @@
   <data name="Insert" xml:space="preserve">
     <value>新增</value>
   </data>
+  <data name="International_No" xml:space="preserve">
+    <value>國際條碼</value>
+  </data>
   <data name="Language" xml:space="preserve">
     <value>語系</value>
   </data>
@@ -194,6 +197,9 @@
   </data>
   <data name="Master" xml:space="preserve">
     <value>主檔</value>
+  </data>
+  <data name="Model_Search" xml:space="preserve">
+    <value>型號查詢</value>
   </data>
   <data name="More" xml:space="preserve">
     <value>其他</value>
@@ -210,6 +216,8 @@
   <data name="Product_ATC_Hint" xml:space="preserve">
     <value>輸入部分型號後，選擇產品</value>
   </data>
+  <data name="Product_Class" xml:space="preserve">
+    <value>產品全階</value>
   <data name="Quote_Base" xml:space="preserve">
     <value>報價作業</value>
   </data>
@@ -218,6 +226,7 @@
   </data>
   <data name="Quote_Query" xml:space="preserve">
     <value>每日報價查詢</value>
+  </data>
   </data>
   <data name="Remark" xml:space="preserve">
     <value>備註</value>

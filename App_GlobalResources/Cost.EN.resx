@@ -261,6 +261,9 @@
   <data name="Re_Select" xml:space="preserve">
     <value>Re Select</value>
   </data>
+  <data name="Sale_Model" xml:space="preserve">
+    <value>Sale_Model</value>
+  </data>
   <data name="Sample_Product_No" xml:space="preserve">
     <value>Sample Product No</value>
   </data>

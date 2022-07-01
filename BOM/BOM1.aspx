@@ -11,6 +11,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
+            var IMG_Has_Read = false;
             var Dialog_Control;
             Dialog();
             ATC();
@@ -97,7 +98,6 @@
                 Edit_Mode = "Edit";
                 Form_Mode_Change("New_M");
             });
-
 
             $('#BT_New_Save').on('click', function () {
                 if (confirm("<%=Resources.MP.Save_Alert%>")) {
@@ -553,7 +553,6 @@
                         $('.Rank_td:contains(3)').parent().find('td:lt(7)').not(':nth-child(1), :nth-child(6)').each(function () { $(this).text('\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + $(this).text()) });
                         $('.DIMG').toggle(!$('#RB_DV_DIMG').prop('checked'));
                         $('.DIMG img').css('height', ($('#RB_SM_DIMG').prop('checked')) ? '100px' : '');
-
 
                         if (Type == "Continue_Edit") {
                             $('#TB_M2_Remark').attr('disabled', false);

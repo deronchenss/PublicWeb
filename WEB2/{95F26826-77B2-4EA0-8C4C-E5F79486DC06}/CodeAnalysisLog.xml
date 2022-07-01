@@ -2,129 +2,9 @@
 <?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio\2019\community\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
 <FxCopReport Version="16.0">
  <Targets>
-  <Target Name="C:\Users\user\AppData\Local\Temp\tmp4E2B.tmp.cadir\bin\App_Web_325uo2hx.dll">
+  <Target Name="C:\Users\user\AppData\Local\Temp\tmp54B4.tmp.cadir\bin\App_Web_4naebdhy.dll">
    <Modules>
-    <Module Name="app_web_325uo2hx.dll">
-     <Namespaces>
-      <Namespace Name="">
-       <Types>
-        <Type Name="Price_Search" Kind="Class" Accessibility="Public" ExternallyVisible="True">
-         <Members>
-          <Member Name="#ProcessRequest(System.Web.HttpContext)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
-           <Messages>
-            <Message TypeName="必須檢閱 SQL 查詢中是否有安全性弱點" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-24 08:47:15Z" FixCategory="DependsOnFix">
-             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="c:\Users\user\Desktop\WEB2\Price" File="Price_Search.ashx" Line="45">傳遞給 'Price_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
-             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="c:\Users\user\Desktop\WEB2\Price" File="Price_Search.ashx" Line="43">傳遞給 'Price_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText', 'context.Request["Search_Where"]'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
-            </Message>
-           </Messages>
-          </Member>
-         </Members>
-        </Type>
-       </Types>
-      </Namespace>
-     </Namespaces>
-    </Module>
-   </Modules>
-  </Target>
-  <Target Name="C:\Users\user\AppData\Local\Temp\tmp4E2B.tmp.cadir\bin\App_Web_5crrf5ky.dll">
-   <Modules>
-    <Module Name="app_web_5crrf5ky.dll">
-     <Namespaces>
-      <Namespace Name="">
-       <Types>
-        <Type Name="Cost_Search" Kind="Class" Accessibility="Public" ExternallyVisible="True">
-         <Members>
-          <Member Name="#ProcessRequest(System.Web.HttpContext)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
-           <Messages>
-            <Message TypeName="必須檢閱 SQL 查詢中是否有安全性弱點" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-24 08:47:15Z" FixCategory="DependsOnFix">
-             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="c:\Users\user\Desktop\WEB2\Cost" File="Cost_Search.ashx" Line="46">傳遞給 'Cost_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
-             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="c:\Users\user\Desktop\WEB2\Cost" File="Cost_Search.ashx" Line="44">傳遞給 'Cost_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText', 'context.Request["Search_Where"]'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
-            </Message>
-           </Messages>
-          </Member>
-         </Members>
-        </Type>
-       </Types>
-      </Namespace>
-     </Namespaces>
-    </Module>
-   </Modules>
-  </Target>
-  <Target Name="C:\Users\user\AppData\Local\Temp\tmp4E2B.tmp.cadir\bin\App_Web_5qkjkfga.dll">
-   <Modules>
-    <Module Name="app_web_5qkjkfga.dll">
-     <Namespaces>
-      <Namespace Name="">
-       <Types>
-        <Type Name="Customer_Search" Kind="Class" Accessibility="Public" ExternallyVisible="True">
-         <Members>
-          <Member Name="#ProcessRequest(System.Web.HttpContext)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
-           <Messages>
-            <Message TypeName="必須檢閱 SQL 查詢中是否有安全性弱點" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-24 08:47:15Z" FixCategory="DependsOnFix">
-             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="c:\Users\user\Desktop\WEB2\Customer" File="Customer_Search.ashx" Line="79">傳遞給 'Customer_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
-             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="c:\Users\user\Desktop\WEB2\Customer" File="Customer_Search.ashx" Line="76">傳遞給 'Customer_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText', 'context.Request["Search_Where"]'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
-            </Message>
-           </Messages>
-          </Member>
-         </Members>
-        </Type>
-       </Types>
-      </Namespace>
-     </Namespaces>
-    </Module>
-   </Modules>
-  </Target>
-  <Target Name="C:\Users\user\AppData\Local\Temp\tmp4E2B.tmp.cadir\bin\App_Web_dyoff2bw.dll">
-   <Modules>
-    <Module Name="app_web_dyoff2bw.dll">
-     <Namespaces>
-      <Namespace Name="">
-       <Types>
-        <Type Name="Quote_MT" Kind="Class" Accessibility="Public" ExternallyVisible="True">
-         <Members>
-          <Member Name="#ProcessRequest(System.Web.HttpContext)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
-           <Messages>
-            <Message TypeName="必須檢閱 SQL 查詢中是否有安全性弱點" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-24 08:47:15Z" FixCategory="DependsOnFix">
-             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="c:\Users\user\Desktop\WEB2\DEV\Quote" File="Quote_MT.ashx" Line="74">傳遞給 'Quote_MT.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'context.Request["FROM"]'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
-            </Message>
-           </Messages>
-          </Member>
-         </Members>
-        </Type>
-       </Types>
-      </Namespace>
-     </Namespaces>
-    </Module>
-   </Modules>
-  </Target>
-  <Target Name="C:\Users\user\AppData\Local\Temp\tmp4E2B.tmp.cadir\bin\App_Web_uscw1h5h.dll">
-   <Modules>
-    <Module Name="app_web_uscw1h5h.dll">
-     <Namespaces>
-      <Namespace Name="">
-       <Types>
-        <Type Name="BOM_Search" Kind="Class" Accessibility="Public" ExternallyVisible="True">
-         <Members>
-          <Member Name="#ProcessRequest(System.Web.HttpContext)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
-           <Messages>
-            <Message TypeName="必須檢閱 SQL 查詢中是否有安全性弱點" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-24 08:47:15Z" FixCategory="DependsOnFix">
-             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="c:\Users\user\Desktop\WEB2\BOM" File="BOM_Search.ashx" Line="41">傳遞給 'BOM_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
-             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="c:\Users\user\Desktop\WEB2\BOM" File="BOM_Search.ashx" Line="61">傳遞給 'BOM_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
-             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="c:\Users\user\Desktop\WEB2\BOM" File="BOM_Search.ashx" Line="39">傳遞給 'BOM_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText', 'context.Request["Search_Where"]'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
-            </Message>
-           </Messages>
-          </Member>
-         </Members>
-        </Type>
-       </Types>
-      </Namespace>
-     </Namespaces>
-    </Module>
-   </Modules>
-  </Target>
-  <Target Name="C:\Users\user\AppData\Local\Temp\tmp4E2B.tmp.cadir\bin\App_Web_voinwpqw.dll">
-   <Modules>
-    <Module Name="app_web_voinwpqw.dll">
+    <Module Name="app_web_4naebdhy.dll">
      <Namespaces>
       <Namespace Name="">
        <Types>
@@ -132,13 +12,110 @@
          <Members>
           <Member Name="#ProcessRequest(System.Web.HttpContext)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="必須檢閱 SQL 查詢中是否有安全性弱點" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-24 08:47:15Z" FixCategory="DependsOnFix">
-             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="c:\Users\user\Desktop\WEB2\Supplier" File="Sup_Search.ashx" Line="39">傳遞給 'Sup_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
-             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="c:\Users\user\Desktop\WEB2\Supplier" File="Sup_Search.ashx" Line="40">傳遞給 'Sup_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
-             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="c:\Users\user\Desktop\WEB2\Supplier" File="Sup_Search.ashx" Line="41">傳遞給 'Sup_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
-             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="c:\Users\user\Desktop\WEB2\Supplier" File="Sup_Search.ashx" Line="42">傳遞給 'Sup_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
-             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="c:\Users\user\Desktop\WEB2\Supplier" File="Sup_Search.ashx" Line="77">傳遞給 'Sup_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
-             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="c:\Users\user\Desktop\WEB2\Supplier" File="Sup_Search.ashx" Line="75">傳遞給 'Sup_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText', 'context.Request["Search_Where"]'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
+            <Message TypeName="必須檢閱 SQL 查詢中是否有安全性弱點" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-20 09:47:59Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="d:\OneDrive\WEB2\Supplier" File="Sup_Search.ashx" Line="39">傳遞給 'Sup_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="d:\OneDrive\WEB2\Supplier" File="Sup_Search.ashx" Line="40">傳遞給 'Sup_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="d:\OneDrive\WEB2\Supplier" File="Sup_Search.ashx" Line="41">傳遞給 'Sup_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="d:\OneDrive\WEB2\Supplier" File="Sup_Search.ashx" Line="42">傳遞給 'Sup_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="d:\OneDrive\WEB2\Supplier" File="Sup_Search.ashx" Line="77">傳遞給 'Sup_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="d:\OneDrive\WEB2\Supplier" File="Sup_Search.ashx" Line="75">傳遞給 'Sup_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText', 'context.Request["Search_Where"]'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+     </Namespaces>
+    </Module>
+   </Modules>
+  </Target>
+  <Target Name="C:\Users\user\AppData\Local\Temp\tmp54B4.tmp.cadir\bin\App_Web_antovkri.dll">
+   <Modules>
+    <Module Name="app_web_antovkri.dll">
+     <Namespaces>
+      <Namespace Name="">
+       <Types>
+        <Type Name="Customer_Search" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#ProcessRequest(System.Web.HttpContext)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="必須檢閱 SQL 查詢中是否有安全性弱點" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-20 09:47:59Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="d:\OneDrive\WEB2\Customer" File="Customer_Search.ashx" Line="79">傳遞給 'Customer_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="d:\OneDrive\WEB2\Customer" File="Customer_Search.ashx" Line="76">傳遞給 'Customer_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText', 'context.Request["Search_Where"]'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+     </Namespaces>
+    </Module>
+   </Modules>
+  </Target>
+  <Target Name="C:\Users\user\AppData\Local\Temp\tmp54B4.tmp.cadir\bin\App_Web_azovuttx.dll">
+   <Modules>
+    <Module Name="app_web_azovuttx.dll">
+     <Namespaces>
+      <Namespace Name="">
+       <Types>
+        <Type Name="Price_Search" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#ProcessRequest(System.Web.HttpContext)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="必須檢閱 SQL 查詢中是否有安全性弱點" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-20 09:47:59Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="d:\OneDrive\WEB2\Price" File="Price_Search.ashx" Line="45">傳遞給 'Price_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="d:\OneDrive\WEB2\Price" File="Price_Search.ashx" Line="43">傳遞給 'Price_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText', 'context.Request["Search_Where"]'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+     </Namespaces>
+    </Module>
+   </Modules>
+  </Target>
+  <Target Name="C:\Users\user\AppData\Local\Temp\tmp54B4.tmp.cadir\bin\App_Web_flk4kr5e.dll">
+   <Modules>
+    <Module Name="app_web_flk4kr5e.dll">
+     <Namespaces>
+      <Namespace Name="">
+       <Types>
+        <Type Name="BOM_Search" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#ProcessRequest(System.Web.HttpContext)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="必須檢閱 SQL 查詢中是否有安全性弱點" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-20 09:47:59Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="d:\OneDrive\WEB2\BOM" File="BOM_Search.ashx" Line="41">傳遞給 'BOM_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="d:\OneDrive\WEB2\BOM" File="BOM_Search.ashx" Line="61">傳遞給 'BOM_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="d:\OneDrive\WEB2\BOM" File="BOM_Search.ashx" Line="39">傳遞給 'BOM_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText', 'context.Request["Search_Where"]'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+     </Namespaces>
+    </Module>
+   </Modules>
+  </Target>
+  <Target Name="C:\Users\user\AppData\Local\Temp\tmp54B4.tmp.cadir\bin\App_Web_ggogg5fz.dll">
+   <Modules>
+    <Module Name="app_web_ggogg5fz.dll">
+     <Namespaces>
+      <Namespace Name="">
+       <Types>
+        <Type Name="Cost_Search" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#ProcessRequest(System.Web.HttpContext)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="必須檢閱 SQL 查詢中是否有安全性弱點" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-20 09:47:59Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="d:\OneDrive\WEB2\Cost" File="Cost_Search.ashx" Line="46">傳遞給 'Cost_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="d:\OneDrive\WEB2\Cost" File="Cost_Search.ashx" Line="44">傳遞給 'Cost_Search.ProcessRequest(HttpContext)' 中的 'SqlCommand.CommandText.set(string)' 的查詢字串可能包含下列變數 'cmd.CommandText', 'context.Request["Search_Where"]'。如果這其中任何變數來自使用者輸入，請考慮使用預存程序或參數化 SQL 查詢，而不要用字串串連的方式建立查詢。</Issue>
             </Message>
            </Messages>
           </Member>

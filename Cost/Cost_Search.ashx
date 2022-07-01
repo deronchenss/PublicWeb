@@ -32,7 +32,7 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                 case "Cost1_Search":
                     cmd.CommandText = @" SELECT TOP 500 [頤坊型號], [廠商型號], [廠商編號], [廠商簡稱], [暫時型號], [單位], 
                                                                 [台幣單價], [美元單價], [外幣幣別], [外幣單價], [MIN_1], 
-                                                                LEFT(RTRIM(CONVERT(VARCHAR(20),[最後單價日],20)),16) [最後單價日],
+                                                                CONVERT(VARCHAR(20),[最後單價日],23) [最後單價日],
                                                                 [產品說明], 
                                                                 LEFT(RTRIM(CONVERT(VARCHAR(20),[新增日期],20)),16) [新增日期],
                                                                 [圖型啟用], [序號], [更新人員], 
@@ -77,23 +77,25 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                                          DECLARE @ORD_USD_Rate float = (SELECT [內容] FROM Dc2..refdata WHERE [代碼] = 'ORD_Rate')
                                          SELECT IIF(ISNULL(A.[MSRP],0) = 0,'0', CAST(ROUND( (A.MSRP - A.Cost) / A.MSRP * 100 ,2,2) AS VARCHAR(20)) + '%' )  [GP], * 
                                          FROM (
-                                            SELECT TOP 500 P.[開發中], P.[廠商簡稱], P.[頤坊型號], P.[產品說明], P.[單位], P.[台幣單價], P.[美元單價], P.[外幣幣別], P.[外幣單價], REPLACE(P.[變更記錄],'""','') [變更記錄], P.[MSRP], 
+                                            SELECT TOP 500 P.[開發中], P.[廠商簡稱], P.[頤坊型號], P.[產品說明], P.[單位], 
+                                                REPLACE(CONVERT(VARCHAR(40),CAST(P.[台幣單價] AS MONEY),1),'.00','') [台幣單價], 
+                                                P.[美元單價], P.[外幣幣別], P.[外幣單價], REPLACE(P.[變更記錄],'""','') [變更記錄], P.[MSRP], 
                                             	CASE WHEN ISNULL(P.[MSRP],0) = 0 THEN 0
                                             		 WHEN (SELECT 1 FROM Dc2..bom BM WHERE BM.P_SEQ = P.[序號]) IS NULL THEN ROUND(P.[美元單價] + (P.[台幣單價] / @PUR_USD_Rate),2)
                                             		 ELSE (SELECT ROUND( SUM( (BDP.[美元單價] * BD.[材料用量]) + (BDP.[台幣單價] * BD.[材料用量] / @PUR_USD_Rate )) ,2)
                                             			   FROM Dc2..bomsub BD 
                                             				INNER JOIN Dc2..suplu BDP ON BDP.[序號]	= BD.PD_SEQ  
                                             			   WHERE BD.P_SEQ = P.[序號] AND BD.[不計成本] = 0 ) END [Cost],
-                                            	LEFT(RTRIM(CONVERT(VARCHAR(20),P.[最後單價日],20)),16) [最後單價日], P.[廠商編號], P.[序號], P.[申請原因],
-                                            	P.[更新人員], LEFT(RTRIM(CONVERT(VARCHAR(20),P.[更新日期],20)),16) [更新日期], P.[更新日期] [Sort],
+                                            	CONVERT(VARCHAR(20),P.[最後單價日],23) [最後單價日], P.[廠商編號], P.[序號], P.[申請原因],
+                                            	P.[更新人員], LEFT(RTRIM(CONVERT(VARCHAR(20),P.[更新日期],20)),16) [更新日期], 
                                             	CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[P_SEQ] = P.[序號]),0) AS BIT) [Has_IMG]
                                             FROM Dc2..suplu P
                                             WHERE (P.[開發中] = @DVN OR @DVN = 'ALL')
-                                                   AND P.[頤坊型號] LIKE '%' + @IM + '%'
-                                                   AND P.[廠商編號] LIKE '%' + @S_No + '%'
-                                                   AND CONVERT(VARCHAR(20),P.[更新日期], 23) BETWEEN @Date_S AND @Date_E
+                                                   AND P.[頤坊型號] LIKE @IM + '%'
+                                                   AND P.[廠商編號] LIKE @S_No + '%'
+                                                   AND ((P.[更新日期] >= @Date_S AND DATEADD(DAY,-1,P.[更新日期]) <= @Date_E) OR (@Date_S ='' AND @Date_E = '' ))
                                          ) A
-                                         ORDER BY [Sort] DESC ";
+                                         ORDER BY [頤坊型號] ";
                     cmd.Parameters.AddWithValue("IM", context.Request["IM"]);
                     cmd.Parameters.AddWithValue("S_No", context.Request["S_No"]);
                     cmd.Parameters.AddWithValue("Date_S", context.Request["Date_S"]);

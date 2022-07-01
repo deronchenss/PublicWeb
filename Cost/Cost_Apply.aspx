@@ -7,7 +7,7 @@
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
     <script src="/js/jquery.dataTables.min.js"></script>
     <script src="/js/dataTables.bootstrap4.min.js"></script>
-
+    
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
@@ -15,7 +15,7 @@
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
 
-            $('#TB_Date_S').val($.datepicker.formatDate('yy-mm-dd', new Date()));
+            $('#TB_Date_S').val($.datepicker.formatDate('yy-mm-dd', new Date(new Date().setDate(new Date().getDate() - 14))));
             $('#TB_Date_E').val($.datepicker.formatDate('yy-mm-dd', new Date()));
 
             window.document.body.onbeforeunload = function () {
@@ -28,12 +28,15 @@
                     case "Base":
                         $('#BT_Search, .For_S').css('display', '');
                         $('#BT_Cancel, #Div_DT_View, #Div_Data_Control, #Div_Exec_Data, #BT_Re_Select, #BT_Save, .For_U').css('display', 'none');
+                        $('#RB_DV_DIMG').prop('checked', true);
+                        $('input[type=radio][name=DIMG]').attr('disabled', 'disabled');
                         break;
                     case "Search":
                         $('#BT_Cancel, #Div_DT_View, #Div_Data_Control, #Div_Exec_Data').css('display', '');
                         $('#BT_Search, #BT_Re_Select, #BT_Save, .For_S, .For_U').css('display', 'none');
                         $('#Div_DT_View').css('width', '60%');
                         $('#Div_Exec_Data').css('width', '35%');
+                        $('input[type=radio][name=DIMG]').attr('disabled', false);
                         break;
                     case "Review_Data":
                         $('#BT_Cancel, #Div_DT_View, #Div_Data_Control').css('display', 'none');
@@ -50,11 +53,8 @@
             });
 
             $('#BT_Cancel').on('click', function () {
-                var Confirm_Check = confirm("<%=Resources.MP.Cancel_Alert%>");
-                if (Confirm_Check) {
-                    Edit_Mode = "Base";
-                    Form_Mode_Change("Base");
-                }
+                Edit_Mode = "Base";
+                Form_Mode_Change("Base");
             });
 
             $('#BT_Re_Select').on('click', function () {
@@ -142,11 +142,11 @@
                                     '</td><td class="For_U" style="display:none;">' +
                                     '<textarea class="U_Element" style="width:300px;" maxlength="50" title="Max Length 50 words.">' + String(response[i].Apply_Reason ?? "") + '</textarea>' +
                                     '</td><td>' + String(response[i].Unit ?? "") +
-                                    '</td><td>' + String(response[i].TWD_P ?? "") +
-                                    '</td><td>' + String(response[i].USD_P ?? "") +
+                                    '</td><td style="text-align:right;">' + ((response[i].TWD_P != 0) ? String(response[i].TWD_P ?? "") : "") +
+                                    '</td><td style="text-align:right;">' + ((response[i].USD_P != 0) ? String(response[i].USD_P ?? "") : "") +
                                     '</td><td>' + String(response[i].Curr ?? "") +
-                                    '</td><td>' + String(response[i].Curr_P ?? "") +
-                                    '</td><td>' + String(response[i].MSRP ?? "") +
+                                    '</td><td style="text-align:right;">' + ((response[i].Curr_P != 0) ? String(response[i].Curr_P ?? "") : "") +
+                                    '</td><td style="text-align:right;">' + ((response[i].MSRP != 0) ? String(response[i].MSRP ?? "") : "") +
                                     '</td><td>' + String(response[i].LSTP_Day ?? "") +
                                     '</td><td>' + String(response[i].S_No ?? "") +
                                     '</td><td class="SEQ">' + String(response[i].SEQ ?? "") +
@@ -164,8 +164,8 @@
                             $('#Table_Search_Cost').css('white-space', 'nowrap');
                             $('#Table_Search_Cost thead th').css('text-align', 'center');
 
-                            $('#Table_Exec_Data_info').text('');
-                            $('#Table_Exec_Data').html('');
+                            //$('#Table_Exec_Data_info').text('');
+                            //$('#Table_Exec_Data').html('');
                         }
                     },
                     error: function (ex) {
@@ -190,8 +190,9 @@
                         $('.DIMG img').css('height', '100px');
                         break;
                 }
-                if (Show_IMG && !IMG_Has_Read){//Need Show And Not Read Data
+                if (Show_IMG && !IMG_Has_Read) {//Need Show And Not Read Data
                     $('img[type=Product]').each(function (i) {
+                        var IMG_SEL = $(this);
                         var binary = '';
                         $.ajax({
                             url: "/BOM/BOM_Search.ashx",
@@ -200,7 +201,7 @@
                                 "P_SEQ": $(this).attr('SEQ')//response[i].SEQ
                             },
                             cache: false,
-                            async: false,
+                            //async: false,
                             type: "POST",
                             datatype: "json",
                             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -210,12 +211,11 @@
                                 for (var j = 0; j < len; j++) {
                                     binary += String.fromCharCode(bytes[j]);
                                 }
+                                var SRC = 'data:image/png;base64,' + window.btoa(binary);
+                                IMG_SEL.attr('src', SRC);
                             }
                         });
-                        var SRC = 'data:image/png;base64,' + window.btoa(binary);
-                        $(this).attr('src', SRC);
                     });
-
                     IMG_Has_Read = true;
                 }
 
@@ -272,11 +272,17 @@
                         ToTable.css('white-space', 'nowrap');
                     }
                     if (Full) {
-                        ToTable.find('tbody').append(FromTable.find('tbody tr').clone());
-                        FromTable.find('tbody tr').remove();
+                        FromTable.find('.SEQ').each(function () {
+                            if (ToTable.find('.SEQ:contains(' + $(this).text() + ')').length === 0) {
+                                ToTable.append($(this).parent().clone());
+                            }
+                            $(this).parent().remove();
+                        });
                     }
                     else {
-                        ToTable.append(click_tr.clone());
+                        if (ToTable.find('.SEQ:contains(' + click_tr.find('.SEQ').text() + ')').length === 0) {
+                            ToTable.append(click_tr.clone());
+                        }
                         click_tr.remove();
                     }
 
@@ -391,17 +397,18 @@
         </tr>
         <tr>
             <td colspan="8">
-                <input id="RB_DV_DIMG" type="radio" name="DIMG" checked="checked" />
+                <input id="RB_DV_DIMG" type="radio" name="DIMG" disabled="disabled" checked="checked" />
                 <label for="RB_DV_DIMG"><%=Resources.BOM.Not_Show_Image%></label>
-                <input id="RB_V_DIMG" type="radio" name="DIMG" />
+                <input id="RB_V_DIMG" type="radio" name="DIMG" disabled="disabled" />
                 <label for="RB_V_DIMG"><%=Resources.BOM.Show_Original_Image%></label>
-                <input id="RB_SM_DIMG" type="radio" name="DIMG" />
+                <input id="RB_SM_DIMG" type="radio" name="DIMG" disabled="disabled" />
                 <label for="RB_SM_DIMG"><%=Resources.BOM.Show_Small_Image%></label>
             </td>
         </tr>
     </table>
+    <br />
     <div style="width: 98%; margin: 0 auto;">
-        <div id="Div_DT_View" style="width: 60%; height: 80vh; overflow: auto; display: none; float: left;">
+        <div id="Div_DT_View" style="width: 60%; height: 75vh; overflow: auto; display: none; float: left;border-style:solid;border-width:1px; ">
             <span class="dataTables_info" id="Table_Search_Cost_info" role="status" aria-live="polite"></span>
             <table id="Table_Search_Cost" style="width: 99%;" class="table table-striped table-bordered">
                 <thead></thead>
@@ -409,7 +416,7 @@
             </table>
         </div>
 
-        <div id="Div_Data_Control" style="width: 5%; margin: 0 auto; text-align: center; height: 80vh; float: left; display: none;">
+        <div id="Div_Data_Control" style="width: 5%; margin: 0 auto; text-align: center; height: 75vh; float: left; display: none;">
             <table style="width: 100%; height: 100%;">
                 <tr>
                     <td style="width: 100%; height: 100%; vertical-align: middle;">
@@ -425,7 +432,7 @@
             </table>
         </div>
 
-        <div id="Div_Exec_Data" style="width: 35%; height: 80vh; overflow: auto; display: none; float: right;">
+        <div id="Div_Exec_Data" style="width: 35%; height: 75vh; overflow: auto; display: none; float: right;border-style:solid;border-width:1px; ">
             <span class="dataTables_info" id="Table_Exec_Data_info" role="status" aria-live="polite"></span>
             <div class="For_U">
                 <div style="display: flex;align-items: center;">

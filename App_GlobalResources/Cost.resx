@@ -261,6 +261,9 @@
   <data name="Re_Selet" xml:space="preserve">
     <value>重新選擇</value>
   </data>
+  <data name="Sale_Model" xml:space="preserve">
+    <value>銷售型號</value>
+  </data>
   <data name="Sample_Product_No" xml:space="preserve">
     <value>暫時型號</value>
   </data>

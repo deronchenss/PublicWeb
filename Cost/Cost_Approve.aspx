@@ -11,12 +11,12 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
+            var IMG_Has_Read = false;
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
 
-            $('#TB_Date_S').val($.datepicker.formatDate('yy-mm-dd', new Date()));
+            $('#TB_Date_S').val($.datepicker.formatDate('yy-mm-dd', new Date(new Date().setDate(new Date().getDate() - 14)) ));
             $('#TB_Date_E').val($.datepicker.formatDate('yy-mm-dd', new Date()));
-
 
             window.document.body.onbeforeunload = function () {
                 if (Edit_Mode === "Edit") {
@@ -28,6 +28,7 @@
                     case "Base":
                         $('#BT_Search, .For_S').css('display', '');
                         $('#BT_Cancel, #Div_DT_View, #Div_Data_Control, #Div_Exec_Data, #BT_Re_Select, #BT_Approve').css('display', 'none');
+                        $('#RB_DV_DIMG').prop('checked', true);
                         break;
                     case "Search":
                         $('#BT_Cancel, #Div_DT_View, #Div_Data_Control, #Div_Exec_Data').css('display', '');
@@ -50,11 +51,8 @@
             });
 
             $('#BT_Cancel').on('click', function () {
-                var Confirm_Check = confirm("<%=Resources.MP.Cancel_Alert%>");
-                if (Confirm_Check) {
-                    Edit_Mode = "Base";
-                    Form_Mode_Change("Base");
-                }
+                Edit_Mode = "Base";
+                Form_Mode_Change("Base");
             });
 
             $('#BT_Re_Select').on('click', function () {
@@ -110,46 +108,23 @@
                                 + '</th></tr></thead><tbody>';
 
                             $(response).each(function (i) {
-                                var binary = '';
-                                if (response[i].Has_IMG) {
-                                    $.ajax({
-                                        url: "/BOM/BOM_Search.ashx",
-                                        data: {
-                                            "Call_Type": "GET_IMG",
-                                            "P_SEQ": response[i].SEQ
-                                        },
-                                        cache: false,
-                                        async: false,
-                                        type: "POST",
-                                        datatype: "json",
-                                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                                        success: function (RR) {
-                                            var bytes = new Uint8Array(RR[0].P_IMG);
-                                            var len = bytes.byteLength;
-                                            for (var j = 0; j < len; j++) {
-                                                binary += String.fromCharCode(bytes[j]);
-                                            }
-                                        }
-                                    });
-                                }
                                 Table_HTML +=
                                     '<tr><td>' + String(response[i].DVN ?? "") +
                                     '</td><td>' + String(response[i].S_SName ?? "") +
                                     '</td><td>' + String(response[i].IM ?? "") +
                                     '</td><td>' + String(response[i].PI ?? "") +
-                                        (((response[i].Change_Log ?? "").length > 0) ? ('<br /><span style="color:blue;" title="' + (response[i].Change_Log ?? "") + '">移入檢視變更記錄</sapn>') : '') +
+                                    (((response[i].Change_Log ?? "").length > 0) ? ('<br /><span style="color:blue;" title="' + (response[i].Change_Log ?? "") + '">移入檢視變更記錄</sapn>') : '') +
                                     '</td><td class="DIMG" style="text-align:center;">' +
-                                    ((response[i].Has_IMG) ? ('<img src="data:image/png;base64,' + window.btoa(binary) + '" />') : ('<%=Resources.Cost.Image_NotExists%>')) +
-                                    //'</td><td title="XXXXX">' + String(response[i].change_ ?? "") +
+                                    ((response[i].Has_IMG) ? ('<img type="Product" SEQ="' + String(response[i].SEQ ?? "") + '" />') : ('<%=Resources.Cost.Image_NotExists%>')) +
                                     '</td><td>' + String(response[i].Apply_Reason ?? "") + 
                                     '</td><td>' + String(response[i].Unit ?? "") +
-                                    '</td><td>' + String(response[i].TWD_P ?? "") +
-                                    '</td><td>' + String(response[i].USD_P ?? "") +
+                                    '</td><td style="text-align:right;">' + ((response[i].TWD_P != 0) ? String(response[i].TWD_P ?? "") : "") +
+                                    '</td><td style="text-align:right;">' + ((response[i].USD_P != 0) ? String(response[i].USD_P ?? "") : "")  +
                                     '</td><td>' + String(response[i].Curr ?? "") +
-                                    '</td><td>' + String(response[i].Curr_P ?? "") +
-                                    '</td><td>' + String(response[i].MSRP ?? "") +
-                                    '</td><td>' + String(response[i].Cost ?? "") +
-                                    '</td><td>' + String(response[i].GP ?? "") +
+                                    '</td><td style="text-align:right;">' + ((response[i].Curr_P != 0) ? String(response[i].Curr_P ?? ""): "")  +
+                                    '</td><td style="text-align:right;">' + ((response[i].MSRP != 0) ? String(response[i].MSRP ?? ""): "")  +
+                                    '</td><td style="text-align:right;">' + ((response[i].Cost != 0) ? String(response[i].Cost ?? ""): "")  +
+                                    '</td><td style="text-align:right;">' + ((response[i].GP != 0) ? String(response[i].GP ?? "") : "") +
                                     '</td><td>' + String(response[i].LSTP_Day ?? "") +
                                     '</td><td>' + String(response[i].S_No ?? "") +
                                     '</td><td class="SEQ">' + String(response[i].SEQ ?? "") +
@@ -162,12 +137,14 @@
                             $('#Table_Search_Cost').html(Table_HTML);
                             $('.DIMG').toggle(!$('#RB_DV_DIMG').prop('checked'));
                             $('#Table_Search_Cost_info').text('Showing ' + $('#Table_Search_Cost > tbody tr').length + ' entries');
+                            IMG_Has_Read = false;//初始化IMG讀取
 
                             $('#Table_Search_Cost').css('white-space', 'nowrap');
                             $('#Table_Search_Cost thead th').css('text-align', 'center');
 
-                            $('#Table_Exec_Data_info').text('');
-                            $('#Table_Exec_Data').html('');
+
+                            //$('#Table_Exec_Data_info').text('');
+                            //$('#Table_Exec_Data').html('');
                         }
                     },
                     error: function (ex) {
@@ -175,6 +152,51 @@
                     }
                 });
             };
+
+            $('input[type=radio][name=DIMG]').on('click', function () {
+                var Show_IMG = false;
+                $('.DIMG').toggle(!$('#RB_DV_DIMG').prop('checked'));
+
+                switch ($(this).prop('id')) {
+                    case "RB_DV_DIMG":
+                        break;
+                    case "RB_V_DIMG":
+                        Show_IMG = true;
+                        $('.DIMG img').css('height', '');
+                        break;
+                    case "RB_SM_DIMG":
+                        Show_IMG = true;
+                        $('.DIMG img').css('height', '100px');
+                        break;
+                }
+                if (Show_IMG && !IMG_Has_Read) {//Need Show And Not Read Data
+                    $('img[type=Product]').each(function (i) {
+                        var IMG_SEL = $(this);
+                        var binary = '';
+                        $.ajax({
+                            url: "/BOM/BOM_Search.ashx",
+                            data: {
+                                "Call_Type": "GET_IMG",
+                                "P_SEQ": $(this).attr('SEQ')//response[i].SEQ
+                            },
+                            cache: false,
+                            type: "POST",
+                            datatype: "json",
+                            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                            success: function (RR) {
+                                var bytes = new Uint8Array(RR[0].P_IMG);
+                                var len = bytes.byteLength;
+                                for (var j = 0; j < len; j++) {
+                                    binary += String.fromCharCode(bytes[j]);
+                                }
+                                var SRC = 'data:image/png;base64,' + window.btoa(binary);
+                                IMG_SEL.attr('src', SRC);
+                            }
+                        });
+                    });
+                    IMG_Has_Read = true;
+                }
+            });
 
             $('#BT_Next').on('click', function () {
                 Edit_Mode = "Edit";
@@ -219,14 +241,19 @@
                         ToTable.css('white-space', 'nowrap');
                     }
                     if (Full) {
-                        ToTable.find('tbody').append(FromTable.find('tbody tr').clone());
-                        FromTable.find('tbody tr').remove();
+                        FromTable.find('.SEQ').each(function () {
+                            if (ToTable.find('.SEQ:contains(' + $(this).text() + ')').length === 0) {
+                                ToTable.append($(this).parent().clone());
+                            }
+                            $(this).parent().remove();
+                        });
                     }
                     else {
-                        ToTable.append(click_tr.clone());
                         click_tr.remove();
+                        if (ToTable.find('.SEQ:contains(' + click_tr.find('.SEQ').text() + ')').length === 0) {
+                            ToTable.append(click_tr.clone());
+                        }
                     }
-
                     if (FromTable.find('tbody tr').length === 0) {
                         FromTable.html('');
                     }
@@ -283,7 +310,6 @@
             opacity: 0.8;
         }
     </style>
-
     <table class="table_th" style="text-align: left;">
         <tr>
             <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
@@ -347,9 +373,10 @@
             </td>
         </tr>
     </table>
+    <br />
     
     <div style="width: 98%; margin: 0 auto;">
-        <div id="Div_DT_View" style="width: 60%; height: 80vh; overflow: auto; display: none; float: left;">
+        <div id="Div_DT_View" style="width: 60%; height: 75vh; overflow: auto; display: none; float: left;border-style:solid;border-width:1px; ">
             <span class="dataTables_info" id="Table_Search_Cost_info" role="status" aria-live="polite"></span>
             <table id="Table_Search_Cost" style="width: 99%;" class="table table-striped table-bordered">
                 <thead></thead>
@@ -357,7 +384,7 @@
             </table>
         </div>
 
-        <div id="Div_Data_Control" style="width: 5%; margin: 0 auto; text-align: center; height: 80vh; float: left; display: none;">
+        <div id="Div_Data_Control" style="width: 5%; margin: 0 auto; text-align: center; height: 75vh; float: left; display: none;">
             <table style="width: 100%; height: 100%;">
                 <tr>
                     <td style="width: 100%; height: 100%; vertical-align: middle;">
@@ -373,7 +400,7 @@
             </table>
         </div>
 
-        <div id="Div_Exec_Data" style="width: 35%; height: 80vh; overflow: auto; display: none; float: right;">
+        <div id="Div_Exec_Data" style="width: 35%; height: 75vh; overflow: auto; display: none; float: right;border-style:solid;border-width:1px; ">
             <span class="dataTables_info" id="Table_Exec_Data_info" role="status" aria-live="polite"></span>
             <table id="Table_Exec_Data" style="width: 100%;" class="table table-striped table-bordered">
                 <thead></thead>
