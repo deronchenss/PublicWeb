@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Quah MT" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Quote_Base.aspx.cs" Inherits="Quote_Base" %>
+﻿<%@ Page Title="報價作業" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Quote_Base.aspx.cs" Inherits="Quote_Base" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />

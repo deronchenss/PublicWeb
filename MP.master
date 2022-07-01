@@ -199,13 +199,19 @@
                                         </li>
                                     </ul>
                                 </li>
-                                <li class="has-children">
+                                 <li class="has-children">
                                     <a href="#about-section" class="nav-link" style="vertical-align:sub;" IVM_PERMISSIONS="4"><%--開發--%><%=Resources.MP.DEV%></a>
                                     <ul class="dropdown">
                                         <li class="has-children">
+                                            <a href="#">樣品開發</a>
+                                            <ul class="dropdown">
+                                                <li><a href="/DEV/Sample/Sample_MT.aspx">樣品開發維護</a></li>
+                                            </ul>
+                                        </li>
+                                        <li class="has-children">
                                             <a href="#"><%--報價作業--%><%=Resources.MP.Quote_MT%></a>
                                             <ul class="dropdown">
-                                                <li><a href="/DEV/Quote/Quote_Base.aspx"><%--報價作業--%><%=Resources.MP.Quote_Base%></a></li>
+                                                <li><a href="/DEV/Quote/Quote_Base.aspx">報價作業</a></li>
                                                 <li><a href="/DEV/Quote/Quote_MT.aspx"><%--報價作業維護--%><%=Resources.MP.Quote_MT%></a></li>
                                             </ul>
                                         </li>
