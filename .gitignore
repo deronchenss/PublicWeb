@@ -363,3 +363,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/User_Control/Dia_Product_Selector.ascx.cs
+/User_Control/Dia_Product_Selector.ascx
+/Cost/Rpt/Quote_IMG.rpt

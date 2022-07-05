@@ -1,4 +1,4 @@
-﻿<%@ Page Title="BOM Maintenance" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Model_Search.aspx.cs" Inherits="Base_Model_Search" %>
+﻿<%@ Page Title="Model Search" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Model_Search.aspx.cs" Inherits="Base_Model_Search" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
 </asp:Content>
@@ -13,9 +13,11 @@
         $(document).ready(function () {
             document.body.style.overflow = 'hidden';
 
-            function Search_Product() {
+            $('#BT_Search').on('click', function () {
+                Search_Product();
+            });
 
-                //$('#Table_Product').DataTable().fnDestroy();
+            function Search_Product() {
                 $('#Div_Basic').html('<table id="Table_Product" style="width: 100%" class="table table-striped table-bordered"><thead></thead><tbody></tbody></table>');
 
                 switch ($('#DDL_Data_Souce').val()) {
@@ -23,6 +25,14 @@
                         $.ajax({
                             url: "/Base/Base_Search.ashx",
                             data: {
+                                "IM": $('#TB_IM').val(),
+                                "SampleM": $('#TB_Sample_Model').val(),
+                                "PC": $('#DDL_PC').val(),
+                                "S_No": $('#TB_S_No').val(),
+                                "IN": $('#TB_I_No').val(),
+                                "SupM": $('#TB_SM').val(),
+                                "SaleM": $('#TB_SaleM').val(),
+                                "CPI": $('#TB_CPI').val(),
                                 "Call_Type": "Base_C_Search"
                             },
                             cache: false,
@@ -55,7 +65,13 @@
                                         { data: "S_No", title: "<%=Resources.Supplier.Supplier_NO%>" },
                                         { data: "SD", title: "<%=Resources.Cost.Stop_Date%>" },
                                         { data: "DVN", title: "<%=Resources.Cost.Developing%>" },
-                                        { data: "SEQ", title: "<%=Resources.Cost.SEQ%>" },
+                                        <%--{ data: "SEQ", title: "<%=Resources.Cost.SEQ%>" },--%>
+                                        {
+                                            data: "SEQ", title: "<%=Resources.BOM.P_SEQ%>",
+                                            render: function (data, type, row) {
+                                                return '<span class="Cost_SEQ">' + data + '</span>';
+                                            }
+                                        },
                                         { data: "Update_User", title: "<%=Resources.Cost.Update_User%>" },
                                         { data: "Update_Date", title: "<%=Resources.Cost.Update_Date%>" },
                                     ],
@@ -73,6 +89,13 @@
                         $.ajax({
                             url: "/Base/Base_Search.ashx",
                             data: {
+                                "IM": $('#TB_IM').val(),
+                                "PC": $('#DDL_PC').val(),
+                                "C_No": $('#TB_C_No').val(),
+                                "IN": $('#TB_I_No').val(),
+                                "CM": $('#TB_CM').val(),
+                                "SaleM": $('#TB_SaleM').val(),
+                                "PPI": $('#TB_PPI').val(),
                                 "Call_Type": "Base_P_Search"
                             },
                             cache: false,
@@ -109,7 +132,13 @@
                                         { data: "SEQ", title: "<%=Resources.Cost.SEQ%>" },
                                         { data: "Update_User", title: "<%=Resources.Cost.Update_User%>" },
                                         { data: "Update_Date", title: "<%=Resources.Cost.Update_Date%>" },
-                                        { data: "Cost_SEQ", title: "<%=Resources.Cost.SEQ%>" },
+                                        <%--{ data: "Cost_SEQ", title: "<%=Resources.BOM.P_SEQ%>" },--%>
+                                        {
+                                            data: "Cost_SEQ", title: "<%=Resources.BOM.P_SEQ%>",
+                                            render: function (data, type, row) {
+                                                return '<span class="Cost_SEQ">' + data + '</span>';
+                                            }
+                                        },
                                     ],
                                     "language": {
                                         "lengthMenu": "&nbsp;Show _MENU_ entries"
@@ -125,46 +154,84 @@
 
                 $('#Table_Product').attr('style', 'white-space:nowrap;');
                 $('#Table_Product thead th').attr('style', 'text-align:center;');
+
+                $('#Table_Product').on('click', 'tbody tr', function () {
+                    $(this).parent().find('tr').css('background-color', '');
+                    $(this).parent().find('tr').css('color', 'black');
+                    $(this).css('background-color', '#5a1400');
+                    $(this).css('color', 'white');
+
+                    var SEQ = $(this).find('.Cost_SEQ').text().toString().trim();
+
+                    $('.M2_For_U').css('display', '');
+                    $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
+                    $('#BT_ED_Edit, #BT_ED_Copy').css('display', '');
+                    $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
+
+                    $.ajax({
+                        url: "/BOM/BOM_Search.ashx",
+                        data: {
+                            "P_SEQ": SEQ,
+                            "Call_Type": "GET_IMG"
+                        },
+                        cache: false,
+                        type: "POST",
+                        datatype: "json",
+                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                        success: function (response) {
+                            var IMG_View = !(response[0] == null);
+                            $('#IMG_I_IMG').toggle(IMG_View);
+                            $('#IMG_I_IMG_Hint').toggle(!IMG_View);
+                            if (IMG_View) {
+                                var binary = '';
+                                var bytes = new Uint8Array(response[0].P_IMG);
+                                var len = bytes.byteLength;
+                                for (var i = 0; i < len; i++) {
+                                    binary += String.fromCharCode(bytes[i]);
+                                }
+                                $('#IMG_I_IMG').attr('src', 'data:image/png;base64,' + window.btoa(binary));
+                            }
+                        },
+                        error: function (ex) {
+                            alert(ex);
+                        }
+                    });
+                });
             };
 
-            $('#BT_Search').on('click', function () {
-                Search_Product();
+
+            $('#TB_S_No').autocomplete({
+                autoFocus: true,
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/Web_Service/AutoComplete.asmx/Serach_Supplier_No_Name",
+                        cache: false,
+                        data: "{'S_No': '" + request.term + "'}",
+                        dataType: "json",
+                        type: "POST",
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data) {
+                            var Json_Response = JSON.parse(data.d);
+                            response($.map(Json_Response, function (item) { return { label: item.S_No + " - " + item.S_Name, value: item.S_No, name: item.S_Name } }));
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                    });
+                },
+                select: function (event, ui) {
+                    $('#TB_S_No').val(ui.item.value);
+                    $('#TB_S_SName').val(ui.item.name)
+                },
             });
 
-            $('#Table_Product').on('click', 'tbody tr', function () {
-                $(this).parent().find('tr').css('background-color', '');
-                $(this).parent().find('tr').css('color', 'black');
-                $(this).css('background-color', '#5a1400');
-                $(this).css('color', 'white');
-
-                var C_No = $(this).find('td:nth-child(1)').text().toString().trim();
-
-                $.ajax({
-                    url: "/Customer/Customer_Search.ashx",
-                    data: {
-                        "C_No": C_No,
-                        "Call_Type": "Table_Selected"
-                    },
-                    cache: false,
-                    type: "POST",
-                    datatype: "json",
-                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                    success: function (response) {
-                        $('#TB_B2_C_No').val(C_No);
-                    },
-                    error: function (ex) {
-                        alert(ex);
-                    }
-                });
-            });
-
-            $('#TB_Search_C_No').on('change', function () {
+            $('#TB_C_No').on('change', function () {
                 if ($.trim($(this).val()) == "") {
-                    $('#TB_Search_C_SName').val('');
+                    $('#TB_C_SName').val('');
                 }
             });
 
-            $('#TB_Search_C_No').autocomplete({
+            $('#TB_C_No').autocomplete({
                 autoFocus: true,
                 source: function (request, response) {
                     $.ajax({
@@ -184,11 +251,12 @@
                     });
                 },
                 select: function (event, ui) {
-                    $('#TB_Search_C_No').val(ui.item.value);
-                    $('#TB_Search_C_SName').val(ui.item.name);
+                    $('#TB_C_No').val(ui.item.value);
+                    $('#TB_C_SName').val(ui.item.name);
                     Search_Product();
                 },
             });
+
             $('#DDL_Data_Souce').on('change', function () {
                 switch ($(this).val()) {
                     case "Cost":
@@ -200,6 +268,26 @@
                         $('.Price').css('display', '');
                         break;
                 }
+            });
+            //DDL
+            $.ajax({
+                url: "/Web_Service/DDL_DataBind.asmx/Product_Class",
+                cache: false,
+                dataType: "json",
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    var Json_Response = JSON.parse(data.d);
+                    var DDL_Option = "<option></option>";
+
+                    $.each(Json_Response, function (i, value) {
+                        DDL_Option += '<option value="' + value.val + '">' + value.txt + '</option>';
+                    });
+                    $('#DDL_PC').html(DDL_Option);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
             });
         });
     </script>
@@ -231,7 +319,6 @@
             <td style="text-align: left; width: 15%;">
                 <select id="DDL_PC" style="width:100%;"></select>
             </td>
-
             <td rowspan="3" style="text-align: center;">
                 <div style="display: flex; justify-content: center; align-items: center;">
                     <input id="BT_Search" class="BTN" type="button" value="<%=Resources.MP.Search%>" />
@@ -250,11 +337,11 @@
 
             <td style="text-align: right; text-wrap: none; width: 10%;display:none;" class="Price"><%=Resources.Customer.Customer_No%></td>
             <td style="text-align: left; width: 15%;display:none;" class="Price">
-                <input id="TB_Search_C_No" name="TB_Search_C_No" placeholder="<%=Resources.MP.C_No_ATC_Hint%>" style="width: 100%;" />
+                <input id="TB_C_No" placeholder="<%=Resources.MP.C_No_ATC_Hint%>" style="width: 100%;" />
             </td>
             <td style="text-align: right; text-wrap: none; width: 10%;display:none;" class="Price"><%=Resources.Customer.Customer_Short_Name%></td>
             <td style="text-align: left; width: 15%;display:none;" class="Price">
-                <input id="TB_Search_C_SName" style="width: 100%;" disabled="disabled" />
+                <input id="TB_C_SName" style="width: 100%;" disabled="disabled" />
             </td>
             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.International_No%></td>
             <td style="text-align: left; width: 15%;">
@@ -266,23 +353,21 @@
             <td style="text-align: left; width: 15%;" class="Cost">
                 <input id="TB_SM" style="width: 100%;" class="Cost" />
             </td>
-            <td style="text-align: right; text-wrap: none; width: 10%;" class="Cost"><%=Resources.Cost.Product_Information%></td>
-            <td style="text-align: left; width: 15%;" class="Cost">
-                <input id="TB_CPI" style="width: 100%;" class="Cost" />
-            </td>
-
             <td style="text-align: right; text-wrap: none; width: 10%;display:none;" class="Price"><%=Resources.Price.Customer_Model%></td>
             <td style="text-align: left; width: 15%;display:none;" class="Price">
                 <input id="TB_CM" style="width: 100%;display:none;" class="Price" />
             </td>
-            <td style="text-align: right; text-wrap: none; width: 10%;display:none;" class="Price"><%=Resources.Price.Price_Information%></td>
-            <td style="text-align: left; width: 15%;display:none;" class="Price">
-                <input id="TB_PPI" style="width: 100%;display:none;" class="Price" />
-            </td>
-            
             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Sale_Model%></td>
             <td style="text-align: left; width: 15%;">
                 <input id="TB_SaleM" style="width: 100%;" />
+            </td>
+            <td style="text-align: right; text-wrap: none; width: 10%;" class="Cost"><%=Resources.Cost.Product_Information%></td>
+            <td style="text-align: left; width: 15%;" class="Cost">
+                <input id="TB_CPI" style="width: 100%;" class="Cost" />
+            </td>
+            <td style="text-align: right; text-wrap: none; width: 10%;display:none;" class="Price"><%=Resources.Price.Price_Information%></td>
+            <td style="text-align: left; width: 15%;display:none;" class="Price">
+                <input id="TB_PPI" style="width: 100%;display:none;" class="Price" />
             </td>
         </tr>
         <tr>
@@ -292,9 +377,8 @@
 
     <div style="width: 99%; margin: 0 auto; background-color: white;">
         &nbsp;
-        <input type="button" class="V_BT" value="<%=Resources.Customer.Basic%>" onclick="$('.Div_D').css('display','none');$('#Div_Basic2').css('display','');" disabled="disabled" />
-        <input type="button" class="V_BT" value="<%=Resources.Cost.Image%>" onclick="$('.Div_D').css('display','none');$('#Div_Remark').css('display','');" />
-        <%--<input type="button" class="V_BT" value="Title" onclick="$('.Div_D').css('display','none');$('#Div_Title').css('display','');" />--%>
+        <input type="button" class="V_BT" value="<%=Resources.Customer.Basic%>" onclick="$('.Div_D').css('display','none');$('#Div_Basic').css('width','100%');" disabled="disabled" />
+        <input type="button" class="V_BT" value="<%=Resources.Cost.Image%>" onclick="$('.Div_D').css('display','none');$('#Div_Image').css('display','');$('#Div_Basic').css('width','60%');$('#Div_Image').css('width','40%');" />
     </div>
     <style type="text/css">
         .V_BT {
@@ -325,138 +409,26 @@
         });
     </script>
     <div style="width: 98%; margin: 0 auto;">
-        <div id="Div_Basic" style="float:left;overflow:auto;width:100%;height:70vh;">
+        <div id="Div_Image" class="Div_D" style="float:left;display:none;overflow:auto;height:70vh;border-style:solid;border-width:1px;">
+            <table style="font-size: 15px;border-collapse:separate;border-spacing:0px 20px;">
+                <tr>
+                    <td style="text-align:center; width: 15%;" colspan="8">
+                        <img id="IMG_I_IMG" src="#"  />
+                        <span id="IMG_I_IMG_Hint" style="display:none;"><%=Resources.Cost.Image_NotExists%></span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="Div_Basic" style="float:left;overflow:auto;width:100%;height:70vh;border-style:solid;border-width:1px;">
             <table id="Table_Product" style="width: 100%" class="table table-striped table-bordered">
                 <thead></thead>
                 <tbody></tbody>
             </table>
         </div>
         
-        <div id="Div_Basic2" class="Div_D" style="height:70vh;display:none;">
-            <table style="font-size: 15px;border-collapse:separate; border-spacing:0px 8px;">
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Customer_No%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_B2_C_No" disabled="disabled" style="width: 100%;" />
-                    </td>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"></td>
-                    <td style="text-align: left; width: 15%;">
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Customer_Short_Name%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_B2_C_SName" disabled="disabled" style="width: 100%;" />
-                    </td>
+        <%--<div id="Div_Basic2" class="Div_D" style="height:70vh;display:none;">
+        </div>--%>
 
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Tel%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_B2_C_Tel" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Customer_Name%></td>
-                    <td style="text-align: left; width: 40%;" colspan="3">
-                        <input id="TB_B2_C_Name" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Nation%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_B2_C_Nation" disabled="disabled" style="width: 100%;" />
-                    </td>
-
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Principal%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_B2_Principal" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Person_Commodity%></td>
-                    <td style="text-align: left; width: 40%;" colspan="3">
-                        <input id="TB_B2_Person_Commodity" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Person_Sample%></td>
-                    <td style="text-align: left; width: 40%;" colspan="3">
-                        <input id="TB_B2_Person_Sample" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;">E-Mail</td>
-                    <td style="text-align: left; width: 40%;" colspan="3">
-                        <input id="TB_B2_Mail" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Web%></td>
-                    <td style="text-align: left; width: 40%;" colspan="3">
-                        <input id="TB_B2_Web" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Costomer_Source%></td>
-                    <td style="text-align: left; width: 40%;" colspan="3">
-                        <input id="TB_B2_Costomer_Source" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Mail_Group%></td>
-                    <td style="text-align: left; width: 40%;" colspan="3">
-                        <input id="TB_B2_Mail_Group" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Company_Address%></td>
-                    <td colspan="3" style="text-align: left; width: 15%;">
-                        <textarea id="TB_B2_Company_Address" style="width: 100%;" disabled="disabled"></textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Factory_Address%></td>
-                    <td colspan="3" style="text-align: left; width: 15%;">
-                        <textarea id="TB_B2_Factory_Address" style="width: 100%;" disabled="disabled"></textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Delivery_Address%></td>
-                    <td colspan="3" style="text-align: left; width: 15%;">
-                        <textarea id="TB_B2_Delivery_Address" style="width: 100%;" disabled="disabled"></textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Update_User%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_B2_Update_User" disabled="disabled" style="width: 100%;" />
-                    </td>
-
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Supplier.Update_Date%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_B2_Update_Date" disabled="disabled" style="width: 100%;" />
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-        <div id="Div_Image" class="Div_D" style="display:none;overflow:auto;">
-            <table style="font-size: 15px;border-collapse:separate;border-spacing:0px 20px;">
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Customer_Short_Name%></td>
-                    <td style="text-align: left; width: 15%;">
-                        <input id="TB_R_C_NO" disabled="disabled" style="width: 100%; " />
-                    </td>
-                    <td style="width: 10%;"></td>
-                    <td style="width: 15%;"></td>
-                </tr>
-                <tr>
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Customer.Remark%></td>
-                    <td style="text-align: left;" colspan="3">
-                        <textarea id="TB_R_Remark" style="width: 100%; height: 500px;" disabled="disabled"></textarea>
-                    </td>
-                </tr>
-            </table>
-        </div>
         
         <%--<div id="Div_Title" class="Div_D" style="display:none;overflow:auto;">
             Title_Test

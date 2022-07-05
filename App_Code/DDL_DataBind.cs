@@ -97,4 +97,33 @@ public class DDL_DataBind : System.Web.Services.WebService
         var json = (new JavaScriptSerializer().Serialize(CT));
         return json;
     }
+
+    [WebMethod]
+    public string Product_Class()
+    {
+        List<object> CT = new List<object>();
+        SqlConnection conn = new SqlConnection();
+        conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
+        SqlCommand cmd = new SqlCommand();
+        cmd.CommandText = @" SELECT CASE ( LEN(RTRIM([內容])) - LEN(REPLACE(RTRIM([內容]),'-','')) ) 
+                             	        WHEN '2' THEN '&nbsp;&nbsp;&nbsp;&nbsp;'
+                             	        WHEN '3' THEN '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
+                             	        ELSE '' END + RTRIM([內容]) [txt], RTRIM([內容]) [val]
+                             FROM Dc2..refdata WHERE [代碼] LIKE '產品分類%階' 
+                             ORDER BY [內容] ";
+        cmd.Connection = conn;
+        conn.Open();
+        SqlDataReader sdr = cmd.ExecuteReader();
+        while (sdr.Read())
+        {
+            CT.Add(new
+            {
+                txt = sdr["txt"],
+                val = sdr["val"]
+            });
+        }
+        conn.Close();
+        var json = (new JavaScriptSerializer().Serialize(CT));
+        return json;
+    }
 }

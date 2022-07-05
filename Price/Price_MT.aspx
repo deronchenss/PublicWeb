@@ -589,16 +589,16 @@
                                     }
                                     switch ($('#Dia_TB1_Operator2').val()) {
                                         case "%LIKE%":
-                                            Where_Text += " AND [廠商編號] LIKE '%" + $('#Dia_TB1_S_No').val() + "%'";
+                                            Where_Text += " AND [客戶編號] LIKE '%" + $('#Dia_TB1_S_No').val() + "%'";
                                             break;
                                         case "LIKE%":
-                                            Where_Text += " AND [廠商編號] LIKE '" + $('#Dia_TB1_S_No').val() + "%'";;
+                                            Where_Text += " AND [客戶編號] LIKE '" + $('#Dia_TB1_S_No').val() + "%'";;
                                             break;
                                         case "%LIKE":
-                                            Where_Text += " AND [廠商編號] LIKE '%" + $('#Dia_TB1_S_No').val() + "'";;
+                                            Where_Text += " AND [客戶編號] LIKE '%" + $('#Dia_TB1_S_No').val() + "'";;
                                             break;
                                         default:
-                                            Where_Text += " AND [廠商編號] " + $('#Dia_TB1_Operator2').val() + " '" + $('#Dia_TB1_S_No').val() + "'";
+                                            Where_Text += " AND [客戶編號] " + $('#Dia_TB1_Operator2').val() + " '" + $('#Dia_TB1_S_No').val() + "'";
                                             break;
                                     }
                                     console.warn(Where_Text);
@@ -799,8 +799,8 @@
                 <td style="width: 30%;">
                     <select style="width: 90%; height: 25px;" id="Dia_TB1_Operator1">
                         <option>=</option>
-                        <option selected="selected">%LIKE%</option>
-                        <option>LIKE%</option>
+                        <option>%LIKE%</option>
+                        <option selected="selected">LIKE%</option>
                         <option>%LIKE</option>
                     </select>
                 </td>
@@ -813,8 +813,8 @@
                 <td style="width: 30%;">
                     <select style="width: 90%; height: 25px;" id="Dia_TB1_Operator2">
                         <option>=</option>
-                        <option selected="selected">%LIKE%</option>
-                        <option>LIKE%</option>
+                        <option>%LIKE%</option>
+                        <option selected="selected">LIKE%</option>
                         <option>%LIKE</option>
                     </select>
                 </td>
@@ -828,14 +828,19 @@
                 <td style="width: 40%;">
                     <%--Where Column--%>
                     <select style="width: 90%; height: 25px;" id="DDL_Dia_Filter">
-                        <option value="[頤坊型號]" selected="selected"><%=Resources.Cost.Ivan_Model%></option>
-                        <option value="[廠商編號]"><%=Resources.Cost.Supplier_No%></option>
-                        <option value="[廠商型號]"><%=Resources.Cost.Supplier_Model%></option>
-                        <option value="[暫時型號]"><%=Resources.Cost.Sample_Product_No%></option>
+                        <option value="[頤坊型號]"><%=Resources.Cost.Ivan_Model%></option>
+                        <option value="[客戶型號]"><%=Resources.Price.Customer_Model%></option>
+                        <option value="[開發中]"><%=Resources.Price.Developing%></option>
+                        <option value="[客戶簡稱]"><%=Resources.Customer.Customer_Short_Name%></option>
+                        <option value="[美元單價]"><%=Resources.Cost.Price_USD%></option>
                         <option value="[廠商簡稱]"><%=Resources.Cost.Supplier_Short_Name%></option>
+                        <option value="[單位]"><%=Resources.Cost.Unit%></option>
+                        <option value="[MIN_1]">MIN_1</option>
                         <option value="[最後價日]"><%=Resources.Cost.Last_Price_Day%></option>
+                        <option value="[台幣單價]"><%=Resources.Cost.Price_TWD%></option>
+                        <option value="[停用日期]"><%=Resources.Cost.Stop_Date%></option>
                         <option value="[產品說明]"><%=Resources.Cost.Product_Information%></option>
-                        <option value="[新增日期]"><%=Resources.Cost.Add_Date%></option>
+                        <option value="[客戶編號]"><%=Resources.Customer.Customer_No%></option>
                         <option value="[序號]"><%=Resources.Cost.SEQ%></option>
                         <option value="[更新人員]"><%=Resources.Cost.Update_User%></option>
                         <option value="[更新日期]"><%=Resources.Cost.Update_Date%></option>
@@ -850,8 +855,8 @@
                         <option>></option>
                         <option><</option>
                         <option><></option>
-                        <option selected="selected">%LIKE%</option>
-                        <option>LIKE%</option>
+                        <option>%LIKE%</option>
+                        <option selected="selected">LIKE%</option>
                         <option>%LIKE</option>
                     </select>
                 </td>

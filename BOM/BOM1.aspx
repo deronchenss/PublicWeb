@@ -417,8 +417,8 @@
                 $('#TB_M2_Update_User').val($(Click_tr).find('td:nth-child(8)').text().toString().trim());
                 $('#TB_M2_Update_Date').val($(Click_tr).find('td:nth-child(9)').text().toString().trim());
 
-                Form_Mode_Change("Search_D");
                 Search_BOM_D(P_SEQ, '');
+                Form_Mode_Change("Search_D");
             };
 
             function Search_BOM_D(P_SEQ, Type) {
@@ -553,6 +553,9 @@
                         $('.Rank_td:contains(3)').parent().find('td:lt(7)').not(':nth-child(1), :nth-child(6)').each(function () { $(this).text('\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + $(this).text()) });
                         $('.DIMG').toggle(!$('#RB_DV_DIMG').prop('checked'));
                         $('.DIMG img').css('height', ($('#RB_SM_DIMG').prop('checked')) ? '100px' : '');
+
+                        $('#Table_Search_BOM_D tr').toggle(true);
+                        $('#Table_Search_BOM_D .Expand').text('-');
 
                         if (Type == "Continue_Edit") {
                             $('#TB_M2_Remark').attr('disabled', false);

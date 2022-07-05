@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="Product Maintenance" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Cost1.aspx.cs" Inherits="Cost_Cost1" %>
+<%@ Register TagPrefix="uc" TagName="uc1" Src="~/User_Control/Dia_Supplier_Selector.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
 </asp:Content>
@@ -14,6 +15,10 @@
             ATC();
             DDL_Bind();
             Dialog();
+
+            $('#M2_BT_Product_Selector').on('click', function () {
+                $("#Search_Supplier_Dialog").dialog('open');
+            });
 
             function Form_Mode_Change(Form_Mode) {
                 switch (Form_Mode) {
@@ -32,7 +37,7 @@
                         $('.Div_D').css('display', 'none');
                         $('#Div_M2').css('display', '');
 
-                        $('.M2_For_U').css('display', 'none');
+                        $('.M2_For_U, .M2_For_N').css('display', 'none');
                         break;
                     case "New_M":
                         //$('.M_BT').not($('#BT_Cancel')).css('display', 'none');
@@ -40,6 +45,7 @@
                         //$('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', false);
 
                         $('input[required], select[required]').css('background-color', 'yellow');
+                        $('.M2_For_N').css('display', '');
                         $('.M2_For_U').css('display', 'none');
                         $('#BT_New, #BT_Search, #BT_Detail_Search').css('display', 'none');
                         $('#BT_Cancel, #BT_New_Save').css('display', '');
@@ -1005,6 +1011,8 @@
         </table>
     </div>
 
+    <uc:uc1 ID="uc1" runat="server" /> 
+
     <table class="table_th" style="text-align:left;">
         <tr>
             <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
@@ -1070,7 +1078,12 @@
                 <tr>
                     <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Supplier_No%></td>
                     <td style="text-align: left; width: 15%;" colspan="3">
-                        <input id="TB_M2_S_No" autocomplete="off" required="required" disabled="disabled" style="width: 100%;" placeholder="<%=Resources.MP.S_No_ATC_Hint%>" />
+                        <div style="width: 90%; float: left; z-index: -10;">
+                            <input id="TB_M2_S_No" class="disable" required="required" disabled="disabled" style="width: 100%;z-index: -10;" />
+                        </div>
+                        <div class="M2_For_N" style="width: 10%; float: right; z-index: 10; display: none;">
+                            <input id="M2_BT_Product_Selector" type="button" value="…" style="float: right; z-index: 10;width:100%;" />
+                        </div>
                     </td>
 
                     <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Supplier_Short_Name%></td>
@@ -1254,7 +1267,7 @@
                 </tr>
                 <tr>
                     <td style="text-align:center; width: 15%;" colspan="8">
-                        <img id="IMG_I_IMG" src=""  />
+                        <img id="IMG_I_IMG" src="#"  />
                         <span id="IMG_I_IMG_Hint" style="display:none;"><%=Resources.Cost.Image_NotExists%></span>
                     </td>
                 </tr>

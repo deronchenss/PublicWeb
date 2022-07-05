@@ -548,7 +548,7 @@
         </asp:Panel>
 
         <asp:Panel ID="P_Detail" CssClass="P_D" runat="server" ScrollBars="Auto" Style="display: none;">
-            <table style="font-size: 15px;">
+            <table style="font-size: 15px;border-collapse:separate; border-spacing:0px 10px;">
                 <tr>
                     <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Supplier.Supplier_NO%></td>
                     <td style="text-align: left; width: 15%;">

@@ -273,8 +273,15 @@
                     }
                     if (Full) {
                         FromTable.find('.SEQ').each(function () {
-                            if (ToTable.find('.SEQ:contains(' + $(this).text() + ')').length === 0) {
+                            var OT = $(this).text();
+                            //if (ToTable.find('.SEQ:contains(' + $(this).text() + ')').length === 0) {
+                            //    ToTable.append($(this).parent().clone());
+                            //}
+                            if (ToTable.find('.SEQ').filter(function () { return $(this).text() == OT; })) {
                                 ToTable.append($(this).parent().clone());
+                            }
+                            else {
+                                console.warn($(this));
                             }
                             $(this).parent().remove();
                         });
