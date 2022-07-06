@@ -71,6 +71,7 @@
                             $('#BT_INSERT_CANCEL').css('display', 'inline-block');
                             $('.onlyEdit').css('display', 'none');
                             $('#E_SEQ').val('');
+                            $('#E_FORCE_CLOSE').prop('checked', false);
                             $('.editReset').val('');
                         }
                         else {
@@ -100,6 +101,14 @@
 
                         V_BT_CHG($('#BT_IMG'));
                         break;
+                    case "RPT":
+                        $('.Div_D').css('display', 'none');
+                        $('#Div_DT_View').css('width', '60%');
+                        $('#Div_RPT_DETAIL').css('display', '');
+
+                        V_BT_CHG($('#BT_RPT'));
+                        break;
+                        
                 }
             }
 
@@ -132,6 +141,8 @@
                     $('#E_USD').val(clickData['美元單價']);
                     $('#E_UNIT').val(clickData['單位']);
                     $('#E_NTD').val(clickData['台幣單價']);
+                    $('#E_FORE_CODE').val(clickData['外幣幣別']),
+                    $('#E_FORE_AMT').val(clickData['外幣單價']),
                     $('#E_MIN_2').val(clickData['基本量_2']);
                     $('#E_PRICE_2').val(clickData['單價_2']);
                     $('#E_MIN_3').val(clickData['基本量_3']);
@@ -140,6 +151,12 @@
                     $('#E_UPD_DATE').val(clickData['更新日期']);
                 }
 
+                if (clickData['強制結案'] == '1') {
+                    $('#E_FORCE_CLOSE').prop('checked', true);
+                }
+                else {
+                    $('#E_FORCE_CLOSE').prop('checked', false);
+                }
                 $('#E_IVAN_TYPE').val(clickData['頤坊型號']);
                 $('#E_FACT_NO').val(clickData['廠商編號']);
                 $('#E_FACT_S_NAME').val(clickData['廠商簡稱']);
@@ -172,18 +189,23 @@
                 }
 
                 //BIG REMARK PAGE
-                $('#R_PUDU_NO').val(clickData['採購單號']);
-                $('#R_FACT_S_NAME').val(clickData['廠商簡稱']);
-                $('#R_PRE_PAY_AMT_1').val(clickData['預付款一']);
-                $('#R_PRE_PAY_DATE_1').val(clickData['預付日一']);
-                $('#R_PRE_PAY_AMT_2').val(clickData['預付款二']);
-                $('#R_PRE_PAY_DATE_2').val(clickData['預付日二']);
-                $('#R_ADD_AMT').val(clickData['附加費']);
-                $('#R_ADD_DESC').val(clickData['附加費說明']);
-                $('#R_BIG_REMARK_1').val(clickData['大備註一']);
-                $('#R_BIG_REMARK_2').val(clickData['大備註二']);
-                $('#R_BIG_REMARK_3').val(clickData['大備註三']);
-                $('#R_SPEC_REMARK').val(clickData['特別事項']);
+                $('#B_PUDU_NO').val(clickData['採購單號']);
+                $('#B_FACT_S_NAME').val(clickData['廠商簡稱']);
+                $('#B_PRE_PAY_AMT_1').val(clickData['預付款一']);
+                $('#B_PRE_PAY_DATE_1').val(clickData['預付日一']);
+                $('#B_PRE_PAY_AMT_2').val(clickData['預付款二']);
+                $('#B_PRE_PAY_DATE_2').val(clickData['預付日二']);
+                $('#B_ADD_AMT').val(clickData['附加費']);
+                $('#B_ADD_DESC').val(clickData['附加費說明']);
+                $('#B_BIG_REMARK_1').val(clickData['大備註一']);
+                $('#B_BIG_REMARK_2').val(clickData['大備註二']);
+                $('#B_BIG_REMARK_3').val(clickData['大備註三']);
+                $('#B_SPEC_REMARK').val(clickData['特別事項']);
+
+                //RPT PAGE
+                $('#R_PUDU_NO_S').val(clickData['採購單號']);
+                $('#R_PUDU_NO_E').val(clickData['採購單號']);
+                $('#R_PUDU_NO_1').val(clickData['採購單號']);
             }
             
             function V_BT_CHG(buttonChs) {
@@ -253,6 +275,8 @@
                                     { data: "基本量_1", title: "基本量_1", visible: false },
                                     { data: "台幣單價", title: "台幣單價", visible: false },
                                     { data: "客戶編號", title: "客戶編號", visible: false },
+                                    { data: "外幣幣別", title: "外幣幣別", visible: false },
+                                    { data: "外幣單價", title: "外幣單價", visible: false },
                                     { data: "基本量_2", title: "基本量_2", visible: false },
                                     { data: "基本量_3", title: "基本量_3", visible: false },
                                     { data: "單價_2", title: "單價_2", visible: false },
@@ -289,7 +313,8 @@
                         }
                     },
                     error: function (ex) {
-                        alert(ex);
+                        console.log(ex.responseText);
+                        alert('查詢有誤請通知資訊人員');
                     }
                 });
             };        
@@ -351,7 +376,8 @@
                             }
                         },
                         error: function (ex) {
-                            alert(ex);
+                            console.log(ex.responseText);
+                            alert('編號有誤請通知資訊人員');
                             return;
                         }
                     });
@@ -398,7 +424,8 @@
                             }
                         },
                         error: function (ex) {
-                            alert(ex);
+                            console.log(ex.responseText);
+                            alert('新增資料有誤請通知資訊人員');
                             return;
                         }
                     });
@@ -417,6 +444,7 @@
                             "Call_Type": "UPD_SAMPLE",
                             "SEQ": $('#E_SEQ').val(),
                             "SAMPLE_NO": $('#E_SAMPLE_NO').val(),
+                            "FORCE_CLOSE": $('#E_FORCE_CLOSE').is(':checked') ? '1' : '0',
                             "IVAN_TYPE": $('#E_IVAN_TYPE').val(),
                             "FACT_NO": $('#E_FACT_NO').val(),
                             "FACT_S_NAME": $('#E_FACT_S_NAME').val(),
@@ -443,6 +471,8 @@
                             "USD": $('#E_USD').val(),
                             "UNIT": $('#E_UNIT').val(),
                             "NTD": $('#E_NTD').val(),
+                            "FORE_CODE": $('#E_FORE_CODE').val(),
+                            "FORE_AMT": $('#E_FORE_AMT').val(),
                             "MIN_2": $('#E_MIN_2').val(),
                             "PRICE_2": $('#E_PRICE_2').val(),
                             "MIN_3": $('#E_MIN_3').val(),
@@ -466,7 +496,8 @@
                             }
                         },
                         error: function (ex) {
-                            alert(ex);
+                            console.log(ex.responseText);
+                            alert('修改資料有誤請通知資訊人員');
                             return;
                         }
                     });
@@ -475,7 +506,7 @@
 
             //更新列印備註
             function UPD_RPT_REMARK() {
-                if ($('#R_PUDU_NO').val() === '') {
+                if ($('#B_PUDU_NO').val() === '') {
                     alert('請選擇要修改的資料');
                 }
                 else {
@@ -483,18 +514,18 @@
                         url: apiUrl,
                         data: {
                             "Call_Type": "UPD_RPT_REMARK",
-                            "PUDU_NO": $('#R_PUDU_NO').val(),
-                            "CURR_CODE": $('#R_CURR_CODE').val(),
-                            "PRE_PAY_AMT_1": $('#R_PRE_PAY_AMT_1').val(),
-                            "PRE_PAY_DATE_1": $('#R_PRE_PAY_DATE_1').val(),
-                            "PRE_PAY_AMT_2": $('#R_PRE_PAY_AMT_2').val(),
-                            "PRE_PAY_DATE_2": $('#R_PRE_PAY_DATE_2').val(),
-                            "ADD_AMT": $('#R_ADD_AMT').val(),
-                            "ADD_DESC": $('#R_ADD_DESC').val(),
-                            "BIG_REMARK_1": $('#R_BIG_REMARK_1').val(),
-                            "BIG_REMARK_2": $('#R_BIG_REMARK_2').val(),
-                            "BIG_REMARK_3": $('#R_BIG_REMARK_3').val(),
-                            "SPEC_REMARK": $('#R_SPEC_REMARK').val()
+                            "PUDU_NO": $('#B_PUDU_NO').val(),
+                            "CURB_CODE": $('#B_CURB_CODE').val(),
+                            "PRE_PAY_AMT_1": $('#B_PRE_PAY_AMT_1').val(),
+                            "PRE_PAY_DATE_1": $('#B_PRE_PAY_DATE_1').val(),
+                            "PRE_PAY_AMT_2": $('#B_PRE_PAY_AMT_2').val(),
+                            "PRE_PAY_DATE_2": $('#B_PRE_PAY_DATE_2').val(),
+                            "ADD_AMT": $('#B_ADD_AMT').val(),
+                            "ADD_DESC": $('#B_ADD_DESC').val(),
+                            "BIG_REMARK_1": $('#B_BIG_REMARK_1').val(),
+                            "BIG_REMARK_2": $('#B_BIG_REMARK_2').val(),
+                            "BIG_REMARK_3": $('#B_BIG_REMARK_3').val(),
+                            "SPEC_REMARK": $('#B_SPEC_REMARK').val()
                         },
                         cache: false,
                         type: "POST",
@@ -503,19 +534,95 @@
                         success: function (response, status) {
                             console.log(status);
                             if (status === 'success') {
-                                alert('採購單號:' + $('#R_PUDU_NO').val() + '已修改完成');
+                                alert('採購單號:' + $('#B_PUDU_NO').val() + '已修改完成');
                             }
                             else {
                                 alert('修改資料有誤請通知資訊人員');
                             }
                         },
                         error: function (ex) {
-                            alert(ex);
+                            console.log(ex.responseText);
+                            alert('修改資料有誤請通知資訊人員');
                             return;
                         }
                     });
                 }
             };      
+
+            //產生報表
+            function PRINT_RPT() {
+                if ($('#R_PUDU_NO_S').val() === '' && $('#R_RPT_TYPE').val() != '3') {
+                    alert('請填寫採購單號');
+                }
+                else if ($('#R_PUDU_NO_1').val() === '' && $('#R_RPT_TYPE').val() == '3') {
+                    alert('請填寫採購單號');
+                }
+                else {
+                    $.ajax({
+                        url: apiUrl,
+                        data: {
+                            "Call_Type": "PRINT_RPT",
+                            "PUDU_NO_S": $('#R_PUDU_NO_S').val(),
+                            "PUDU_NO_E": $('#R_PUDU_NO_E').val(),
+                            "WORK_TYPE": $('#R_RPT_TYPE').val(),
+                            "PUDU_NO_1": $('#R_PUDU_NO_1').val(),
+                            "PUDU_NO_2": $('#R_PUDU_NO_2').val(),
+                            "PUDU_NO_3": $('#R_PUDU_NO_3').val(),
+                            "PUDU_NO_4": $('#R_PUDU_NO_4').val(),
+                            "PUDU_NO_5": $('#R_PUDU_NO_5').val()
+                        },
+                        cache: false,
+                        type: "POST",
+                        datatype: "json",
+                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                        xhr: function () {// Seems like the only way to get access to the xhr object
+                            var xhr = new XMLHttpRequest();
+                            xhr.responseType = 'blob'
+                            return xhr;
+                        },
+                        success: function (response, status) {
+                            if (status === 'nocontent') {
+                                alert('採購單號查無資料');
+                            }
+                            else if (status !== 'success')
+                            {
+                                alert(response);
+                            }
+                            else {
+                                var blob = new Blob([response], { type: "application/pdf" });
+                                var url = window.URL || window.webkitURL;
+                                link = url.createObjectURL(blob);
+                                var a = $("<a />");
+                                switch ($('#R_RPT_TYPE').val()) {
+                                    case "0":
+                                        a.attr("download", "開發單.pdf");
+                                        break;
+                                    case "1":
+                                        a.attr("download", "詢價單.pdf");
+                                        break;
+                                    case "2":
+                                        a.attr("download", "索樣單.pdf");
+                                        break;
+                                    case "3":
+                                        a.attr("download", "樣品到貨核對表.pdf");
+                                        break;
+                                }
+                                
+                                a.attr("href", link);
+                                $("body").append(a);
+
+                                a[0].click();
+                                $("body").remove(a);
+                            }
+                        },
+                        error: function (ex) {
+                            console.log(ex.responseText);
+                            alert('修改資料有誤請通知資訊人員');
+                            return;
+                        }
+                    });
+                }
+            };    
 
             //TABLE 功能設定
             $('#Table_Search_Sample').on('click', 'tbody tr', function () {
@@ -553,7 +660,11 @@
             $('#BT_Update').on('click', function () {
                 Edit_Mode = "Edit";
                 Form_Mode_Change("Search");
-                Search_Sample();
+            });
+
+            $('#BT_WriteOff').on('click', function () {
+                Edit_Mode = "WriteOff";
+                Form_Mode_Change("WriteOff");
             });
 
             $('#BT_INSERT_SAVE').on('click', function () {
@@ -578,7 +689,23 @@
             $('#BT_UPD_REMARK').on('click', function () {
                 UPD_RPT_REMARK();
             });
-      
+
+            //報表頁
+            $('#BT_PRINT').on('click', function () {
+                PRINT_RPT();
+            });
+
+            $('#R_RPT_TYPE').on('change', function () {
+                if ($('#R_RPT_TYPE').val() == '3') {
+                    $('.sampleRpt').css('display', '');
+                    $('.commonRpt').css('display', 'none');
+                }
+                else {
+                    $('.sampleRpt').css('display', 'none');
+                    $('.commonRpt').css('display', '');
+                }
+            });
+            
             //功能選單
             $('#BT_BASE').on('click', function () {
                 if($('#Table_Search_Sample > tbody tr[role=row]').length > 0)
@@ -588,10 +715,6 @@
                 else {
                     Form_Mode_Change("Base");
                 }
-            });    
-
-            $('#BT_REMARK').on('click', function () {
-                Form_Mode_Change("RPT");
             });    
 
             $('#BT_SEQ').on('click', function () {
@@ -605,6 +728,10 @@
             $('#BT_IMG').on('click', function () {
                 Form_Mode_Change("IMG");
             });   
+
+            $('#BT_RPT').on('click', function () {
+                Form_Mode_Change("RPT");
+            });  
         });
     </script>
 </asp:Content>
@@ -676,6 +803,7 @@
             <input type="button" id="BT_BASE" class="V_BT" value="主檔"  disabled="disabled" />
             <input type="button" id="BT_SEQ" class="V_BT" value="編號" />
             <input type="button" id="BT_BIG_REMARK" class="V_BT" value="大備註" />
+            <input type="button" id="BT_WriteOff" class="V_BT" value="結案"  />
             <input type="button" id="BT_IMG" class="V_BT" value="圖型" />
             <input type="button" id="BT_RPT" class="V_BT" value="報表" />
         </div>
@@ -706,8 +834,10 @@
                         <td class="tdbstyle">
                             <input id="E_IVAN_TYPE"  class="textbox_char editReset" />
                         </td>
-                        <td class="tdEditstyle"></td>
-                        <td class="tdbstyle"></td>
+                        <td class="tdEditstyle">強制結案</td>
+                        <td class="tdbstyle">
+                             <input id="E_FORCE_CLOSE" type="checkbox"  />
+                        </td>
                     </tr>
                     <tr class="trstyle">
                         <td class="tdEditstyle">廠商編號</td>
@@ -854,6 +984,16 @@
                         </td>
                     </tr>
                     <tr class="trstyle onlyEdit">
+                        <td class="tdEditstyle">外幣幣別</td>
+                        <td class="tdbstyle">
+                            <input id="E_FORE_CODE"  class="textbox_char editReset"  />
+                        </td>
+                        <td class="tdEditstyle">外幣單價</td>
+                        <td class="tdbstyle">
+                            <input id="E_FORE_AMT"  class="textbox_char editReset" type="number" />
+                        </td>
+                    </tr>
+                    <tr class="trstyle onlyEdit">
                          <td class="tdEditstyle">基本量_3</td>
                         <td class="tdbstyle">
                             <input id="E_MIN_3"  class="textbox_char editReset" type="number" />
@@ -872,9 +1012,6 @@
                         <td class="tdbstyle">
                             <input id="E_UPD_DATE" type="date" class="date_S_style editReset" disabled="disabled" />
                         </td>
-                    </tr>
-                    <tr class="trstyle"> 
-                        <td class="tdbstyle" style="height: 5px; font-size: smaller;" >&nbsp</td>
                     </tr>
                      <tr class="trCenterstyle"> 
                          <td colspan="4" style="text-align:center" >
@@ -933,35 +1070,35 @@
                     <tr class="trstyle">
                         <td class="tdEditstyle">採購單號</td>
                         <td class="tdbstyle">
-                            <input id="R_PUDU_NO" class="textbox_char" disabled="disabled"   />
+                            <input id="B_PUDU_NO" class="textbox_char" disabled="disabled"   />
                         </td>
                         <td class="tdEditstyle">廠商簡稱</td>
                         <td class="tdbstyle">
-                            <input id="R_FACT_S_NAME"  class="textbox_char" disabled="disabled"   />
+                            <input id="B_FACT_S_NAME"  class="textbox_char" disabled="disabled"   />
                         </td>
                     </tr>
                     <tr class="trstyle">
                         <td class="tdEditstyle">大備註</td>
                         <td class="tdbstyle" colspan="4">
-                            <input id="R_BIG_REMARK_1" class="textbox_char" style="width:90%"/>
+                            <input id="B_BIG_REMARK_1" class="textbox_char" style="width:90%"/>
                         </td>
                     </tr>
                     <tr class="trstyle">
                         <td class="tdEditstyle"></td>
                         <td class="tdbstyle" colspan="4">
-                            <input id="R_BIG_REMARK_2" class="textbox_char" style="width:90%"/>
+                            <input id="B_BIG_REMARK_2" class="textbox_char" style="width:90%"/>
                         </td>
                     </tr>
                     <tr class="trstyle">
                         <td class="tdEditstyle"></td>
                         <td class="tdbstyle" colspan="4">
-                            <input id="R_BIG_REMARK_3" class="textbox_char" style="width:90%"/>
+                            <input id="B_BIG_REMARK_3" class="textbox_char" style="width:90%"/>
                         </td>
                     </tr>
                     <tr class="trstyle">
                         <td class="tdEditstyle">幣別</td>
                         <td class="tdbstyle">
-                            <select id="R_CURR_CODE">
+                            <select id="B_CURB_CODE">
                                 <option selected="selected" value=""></option>
                                 <option value="NTD">NTD</option>
                                 <option value="HKD">HKD</option>
@@ -973,37 +1110,37 @@
                      <tr class="trstyle">
                         <td class="tdEditstyle">預付款一</td>
                         <td class="tdbstyle">
-                            <input id="R_PRE_PAY_AMT_1" class="textbox_char" type="number"  />
+                            <input id="B_PRE_PAY_AMT_1" class="textbox_char" type="number"  />
                         </td>
                         <td class="tdEditstyle">預付日一</td>
                         <td class="tdbstyle">
-                            <input id="R_PRE_PAY_DATE_1"  class="textbox_char" disabled="disabled"   />
+                            <input id="B_PRE_PAY_DATE_1"  class="textbox_char" disabled="disabled"   />
                         </td>
                     </tr>
                     <tr class="trstyle">
                         <td class="tdEditstyle">預付款二</td>
                         <td class="tdbstyle">
-                            <input id="R_PRE_PAY_AMT_2" class="textbox_char" type="number"  />
+                            <input id="B_PRE_PAY_AMT_2" class="textbox_char" type="number"  />
                         </td>
                         <td class="tdEditstyle">預付日二</td>
                         <td class="tdbstyle">
-                            <input id="R_PRE_PAY_DATE_2"  class="textbox_char" disabled="disabled"   />
+                            <input id="B_PRE_PAY_DATE_2"  class="textbox_char" disabled="disabled"   />
                         </td>
                     </tr>
                     <tr class="trstyle">
                         <td class="tdEditstyle">附加費</td>
                         <td class="tdbstyle">
-                            <input id="R_ADD_AMT" class="textbox_char" type="number"  />
+                            <input id="B_ADD_AMT" class="textbox_char" type="number"  />
                         </td>
                         <td class="tdEditstyle">附加費說明</td>
                         <td class="tdbstyle">
-                            <input id="R_ADD_DESC"  class="textbox_char" disabled="disabled"   />
+                            <input id="B_ADD_DESC"  class="textbox_char" disabled="disabled"   />
                         </td>
                     </tr>
                     <tr class="trstyle">
                         <td class="tdEditstyle">特別事項</td>
                         <td class="tdbstyle" colspan="4">
-                            <input id="R_SPEC_REMARK" class="textbox_char" style="width:90%"/>
+                            <input id="B_SPEC_REMARK" class="textbox_char" style="width:90%"/>
                         </td>
                     </tr>
                     <tr class="trstyle"> 
@@ -1051,6 +1188,83 @@
                             <img id="I_IMG" src="#" style="display:none" />
                             <span id="I_NO_IMG" >查無圖檔</span>
                         </td>
+                    </tr>
+
+                </table>
+            </div> 
+            <div id="Div_WriteOff" class=" Div_D" style="width:35%;height:71vh; border-style:solid;border-width:1px; float:right; ">
+                <div class="dataTables_info" id="Table_WriteOff_info" role="status" aria-live="polite"></div>
+                <table id="Table_WriteOff_Sample" class="Table_Search table table-striped table-bordered">
+                    <thead style="white-space:nowrap"></thead>
+                    <tbody style="white-space:nowrap"></tbody>
+                </table>
+            </div> 
+            <div id="Div_RPT_DETAIL" class=" Div_D" style="width:35%;height:71vh; border-style:solid;border-width:1px; float:right; overflow:auto ">
+                <table class="edit_section_control"style="width:80%">
+                    <tr class="trstyle"> 
+                        <td class="tdbstyle" style="height: 10vh; font-size: smaller;" >&nbsp</td>
+                    </tr>
+                    <tr class="trCenterstyle">
+                        <td class="tdhstyle" style="font-size:20px;">報表類型</td>
+                        <td class="tdbstyle" style="font-size:20px;">
+                            <select id="R_RPT_TYPE" >
+                                <option selected="selected" value="0">開發單</option>
+                                <option value="1">詢價單</option>
+                                <option value="2">索樣單</option>
+                                <option value="3">樣品到貨核對表</option>
+                            </select>
+                         </td>
+                    </tr>
+                    <tr class="trCenterstyle commonRpt">
+                        <td class="tdhstyle" style="font-size:20px;" >採購單號</td>
+                        <td class="tdbstyle" style="font-size:20px;">
+                            <input id="R_PUDU_NO_S"  class="textbox_char" />~
+                            <input id="R_PUDU_NO_E"  class="textbox_char" />
+                        </td>
+                    </tr>
+                    <tr class="trCenterstyle commonRpt">
+                        <td class="tdhstyle" style="font-size:20px;" >E-mail</td>
+                        <td class="tdbstyle" style="font-size:20px;">
+                            <input id="R_MAIL" type="checkbox" />
+                        </td>
+                    </tr>
+                    <tr class="trCenterstyle sampleRpt" style="display:none">
+                        <td class="tdhstyle" style="font-size:20px;" >採購單號</td>
+                        <td class="tdbstyle" style="font-size:20px;">
+                            <input id="R_PUDU_NO_1"  class="textbox_char" />
+                        </td>
+                    </tr>
+                    <tr class="trCenterstyle sampleRpt" style="display:none">
+                        <td class="tdhstyle" style="font-size:20px;" ></td>
+                        <td class="tdbstyle" style="font-size:20px;">
+                            <input id="R_PUDU_NO_2"  class="textbox_char" />
+                        </td>
+                    </tr>
+                    <tr class="trCenterstyle sampleRpt" style="display:none">
+                        <td class="tdhstyle" style="font-size:20px;" ></td>
+                        <td class="tdbstyle" style="font-size:20px;">
+                            <input id="R_PUDU_NO_3"  class="textbox_char" />
+                        </td>
+                    </tr>
+                    <tr class="trCenterstyle sampleRpt" style="display:none">
+                        <td class="tdhstyle" style="font-size:20px;" ></td>
+                        <td class="tdbstyle" style="font-size:20px;">
+                            <input id="R_PUDU_NO_4"  class="textbox_char" />
+                        </td>
+                    </tr>
+                    <tr class="trCenterstyle sampleRpt" style="display:none">
+                        <td class="tdhstyle" style="font-size:20px;" ></td>
+                        <td class="tdbstyle" style="font-size:20px;">
+                            <input id="R_PUDU_NO_5"  class="textbox_char" />
+                        </td>
+                    </tr>
+                     <tr class="trstyle"> 
+                        <td class="tdbstyle" style="height: 10vh; font-size: smaller;" >&nbsp</td>
+                    </tr>
+                     <tr class="trCenterstyle"> 
+                         <td colspan="2" style="text-align:center" >
+                            <input type="button" id="BT_PRINT" style="display:inline-block" class="BTN" value="列印"  />
+                         </td>
                     </tr>
 
                 </table>

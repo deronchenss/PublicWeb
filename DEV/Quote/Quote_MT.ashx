@@ -92,7 +92,6 @@ public class Quote_MT : IHttpHandler, IRequiresSessionState
                                 cmd.Parameters.AddWithValue("RPT_REMARK", context.Request["RPT_REMARK"]);
                                 cmd.Parameters.AddWithValue("UPD_USER", "IVAN");
 
-                                cmd.ExecuteNonQuery();
                                 context.Response.StatusCode = cmd.ExecuteNonQuery() > 0 ?  200 : 404;
                                 context.Response.End();
                                 break;
@@ -146,7 +145,6 @@ public class Quote_MT : IHttpHandler, IRequiresSessionState
                                 cmd.Parameters.AddWithValue("FACT_S_NAME", context.Request["FACT_S_NAME"]);
                                 cmd.Parameters.AddWithValue("UPD_USER", "IVAN");
 
-                                cmd.ExecuteNonQuery();
                                 context.Response.StatusCode = cmd.ExecuteNonQuery() == 1 ? 200 : 404;
                                 context.Response.End();
                                 break;
@@ -161,7 +159,6 @@ public class Quote_MT : IHttpHandler, IRequiresSessionState
 
                         SqlDataAdapter sqlData = new SqlDataAdapter(cmd);
                         sqlData.Fill(dt);
-
 
                         var json = JsonConvert.SerializeObject(dt);
                         context.Response.ContentType = "text/json";

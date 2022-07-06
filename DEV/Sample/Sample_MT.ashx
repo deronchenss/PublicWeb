@@ -126,13 +126,15 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                 break;
                             case "INSERT_SAMPLE":
                             case "UPD_SAMPLE":
+                                cmd.Parameters.Clear();
 
-                                if(context.Request["Call_Type"] == "UPD_SAMPLE")
+                                if (context.Request["Call_Type"] == "UPD_SAMPLE")
                                 {
                                     cmd.CommandText = @" UPDATE [dbo].[pudu]
                                                         SET [採購單號] = @PUDU_NO
                                                            ,[採購日期] = @PUDU_DATE
                                                            ,[樣品號碼] = @SAMPLE_NO
+                                                           ,[強制結案] = @FORCE_CLOSE
                                                            ,[工作類別] = @WORK_TYPE
                                                            ,[廠商編號] = @FACT_NO
                                                            ,[廠商簡稱] = @FACT_S_NAME
@@ -161,16 +163,41 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                                            ,[min_1] = IIF(@MIN_1 = '', 0,CONVERT(DECIMAL,@MIN_1))
                                                            ,[min_2] = IIF(@MIN_2 = '', 0,CONVERT(DECIMAL,@MIN_2))
                                                            ,[min_3] = IIF(@MIN_3 = '', 0,CONVERT(DECIMAL,@MIN_3))
+                                                           ,[外幣幣別] = @FORE_CODE
+                                                           ,[外幣單價] = IIF(@FORE_AMT = '', 0,CONVERT(DECIMAL,@FORE_AMT))
                                                            ,[更新人員] = @UPD_USER
                                                            ,[更新日期] = GETDATE()
                                                         WHERE [序號] = @SEQ ";
+
+                                    cmd.Parameters.AddWithValue("FORCE_CLOSE", context.Request["FORCE_CLOSE"]);
+                                    cmd.Parameters.AddWithValue("PUDU_NO", context.Request["PUDU_NO"]);
+                                    cmd.Parameters.AddWithValue("PUDU_DATE", context.Request["PUDU_DATE"]);
+                                    cmd.Parameters.AddWithValue("PUDU_CNT", context.Request["PUDU_CNT"]);
+                                    cmd.Parameters.AddWithValue("PUDU_GIVE_DATE", context.Request["PUDU_GIVE_DATE"]);
+                                    cmd.Parameters.AddWithValue("GIVE_STATUS", context.Request["GIVE_STATUS"]);
+                                    cmd.Parameters.AddWithValue("CHECK_NO", context.Request["CHECK_NO"]);
+                                    cmd.Parameters.AddWithValue("CHECK_DATE", context.Request["CHECK_DATE"]);
+                                    cmd.Parameters.AddWithValue("CHECK_CNT", context.Request["CHECK_CNT"]);
+                                    cmd.Parameters.AddWithValue("ACC_SHIP_CNT", context.Request["ACC_SHIP_CNT"]);
+                                    cmd.Parameters.AddWithValue("GIVE_SHIP_DATE", context.Request["GIVE_SHIP_DATE"]);
+                                    cmd.Parameters.AddWithValue("ACC_SHIP_DATE", context.Request["ACC_SHIP_DATE"]);
+                                    cmd.Parameters.AddWithValue("UNIT", context.Request["UNIT"]);
+                                    cmd.Parameters.AddWithValue("USD", context.Request["USD"]);
+                                    cmd.Parameters.AddWithValue("NTD", context.Request["NTD"]);
+                                    cmd.Parameters.AddWithValue("FORE_CODE", context.Request["FORE_CODE"]);
+                                    cmd.Parameters.AddWithValue("FORE_AMT", context.Request["FORE_AMT"]);
+                                    cmd.Parameters.AddWithValue("PRICE_2", context.Request["PRICE_2"]);
+                                    cmd.Parameters.AddWithValue("PRICE_3", context.Request["PRICE_3"]);
+                                    cmd.Parameters.AddWithValue("MIN_1", context.Request["MIN_1"]);
+                                    cmd.Parameters.AddWithValue("MIN_2", context.Request["MIN_2"]);
+                                    cmd.Parameters.AddWithValue("MIN_3", context.Request["MIN_3"]);
                                 }
                                 else
                                 {
                                     cmd.CommandText = @" INSERT INTO [dbo].[pudu]
                                                                (序號,[樣品號碼],[工作類別],[廠商編號],[廠商簡稱]
                                                                ,[頤坊型號],[暫時型號],[廠商型號],[產品說明]
-                                                               ,[客戶編號],[客戶簡稱],[到貨處理]
+                                                               ,[客戶編號],[客戶簡稱],[到貨處理],[強制結案]
                                                                --,[採購單號],[採購日期],[採購數量],[採購交期]
                                                                --,[到貨數量],[出貨日期],[到貨日期]
                                                                --,[點收批號],[點收數量],[點收日期]
@@ -180,7 +207,7 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                                          SELECT (Select IsNull(Max(序號),0)+1 From pudu)
                                                                ,@SAMPLE_NO,@WORK_TYPE,@FACT_NO,@FACT_S_NAME
                                                                ,@IVAN_TYPE,@TMP_TYPE,@FACT_TYPE,@PROD_DESC
-                                                               ,@CUST_NO,@CUST_S_NAME,@GIVE_WAY
+                                                               ,@CUST_NO,@CUST_S_NAME,@GIVE_WAY, 0
                                                                --,@PUDU_NO,@PUDU_DATE,@PUDU_CNT,@PUDU_GIVE_DATE
                                                                --,@ACC_SHIP_CNT,@GIVE_SHIP_DATE,@ACC_SHIP_DATE
                                                                --,@CHECK_NO,@CHECK_CNT,@CHECK_DATE
@@ -195,7 +222,6 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                                                ,@UPD_USER, GETDATE() ";
                                 }
                                 
-                                cmd.Parameters.Clear();
                                 cmd.Parameters.AddWithValue("SEQ", context.Request["SEQ"]);
                                 cmd.Parameters.AddWithValue("SAMPLE_NO", context.Request["SAMPLE_NO"]);
                                 cmd.Parameters.AddWithValue("IVAN_TYPE", context.Request["IVAN_TYPE"]);
@@ -256,7 +282,6 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                 //{
                                 //    cmd.Parameters.AddWithValue("SET_SEQ_USER", "IVAN");
                                 //}
-
                                 res = cmd.ExecuteNonQuery();
                                 context.Response.StatusCode = res != 1 ? 200 : 404;
                                 context.Response.Write(res);
@@ -309,11 +334,127 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                 context.Response.StatusCode = cmd.ExecuteNonQuery() > 0 ? 200 : 404;
                                 context.Response.End();
                                 break;
+                            case "PRINT_RPT":
+                                string rptDir = "~/DEV/Sample/Rpt/Sample_Dev.rpt";
+                                string workType = "";
+
+                                if(context.Request["WORK_TYPE"] != "3")
+                                {
+                                    switch (context.Request["WORK_TYPE"])
+                                    {
+                                        case "0":
+                                            rptDir = "~/DEV/Sample/Rpt/Sample_Dev.rpt";
+                                            workType = "開";
+                                            break;
+                                        case "1":
+                                            rptDir = "~/DEV/Sample/Rpt/Sample_Ask.rpt";
+                                            workType = "詢";
+                                            break;
+                                        case "2":
+                                            rptDir = "~/DEV/Sample/Rpt/Sample_Get.rpt";
+                                            workType = "索";
+                                            break;
+                                    }
+
+                                    cmd.CommandText = @" SELECT P.採購單號,P.採購日期,P.樣品號碼,P.工作類別,P.廠商編號,P.廠商簡稱,P.頤坊型號,P.頤坊型號 抬頭,P.廠商型號,P.產品說明,P.單位,
+                                                            P.台幣單價,P.美元單價,P.單價_2,P.單價_3,P.MIN_1,P.MIN_2,P.MIN_3,P.外幣幣別,P.外幣單價,P.採購數量,P.採購交期,P.列表小備註,
+                                                            S.廠商名稱,S.連絡人採購,S.公司地址,S.電話,S.傳真,S.幣別,
+                                                            S.所在地,PU.大備註一,PU.大備註二,PU.大備註三
+                                                           ,'' 列印圖檔, '' 圖檔, P.採購單號 群組一
+	                                                       ,CASE WHEN ISNULL(S.email開發,'') <> '' THEN  '    E-mail: ' + S.email開發 ELSE S.連絡人開發 END 連絡人與email
+                                                           ,CASE WHEN ISNULL(外幣單價,0) <> 0 THEN 外幣幣別 WHEN ISNULL(美元單價,0) <> 0 THEN '(USD)' ELSE 'NTD' END 預設幣別 
+	                                                       ,CASE WHEN ISNULL(外幣單價,0) <> 0 THEN 外幣單價 WHEN ISNULL(美元單價,0) <> 0 THEN 美元單價 ELSE 台幣單價 END 單價 
+	                                                       ,CASE WHEN ISNULL(外幣單價,0) <> 0 THEN 外幣單價 WHEN ISNULL(美元單價,0) <> 0 THEN 美元單價 ELSE 台幣單價 END * ISNULL(採購數量,0) 金額
+	                                                       ,(SELECT 內容 FROM refdata r JOIN pass p ON r.備註 = CASE WHEN p.所在地 = '汐止' THEN p.所在地 ELSE '內湖' END WHERE 代碼 = '交貨地點' AND p.使用者名稱 = @USER) 交貨地點
+	                                                       ,(SELECT TOP 1 R.RI_IMAGE FROM [192.168.1.135].pic.dbo.REF_IMAGE R WHERE R.RI_REFENCE_KEY = @USER) 簽名圖檔1
+                                                     FROM PUDU P 
+                                                     INNER JOIN SUP S ON P.廠商編號=S.廠商編號 
+                                                     LEFT JOIN PUDUM PU ON P.採購單號=PU.採購單號 
+                                                     WHERE P.採購單號 >= @PUDU_NO_S 
+                                                     AND P.採購單號 <= @PUDU_NO_E
+                                                     AND P.工作類別 LIKE '%' + @WORK_TYPE + '%'   ";
+
+                                    cmd.Parameters.AddWithValue("USER", "IVAN");
+                                    cmd.Parameters.AddWithValue("PUDU_NO_S", context.Request["PUDU_NO_S"]);
+                                    cmd.Parameters.AddWithValue("PUDU_NO_E", context.Request["PUDU_NO_E"]);
+                                    cmd.Parameters.AddWithValue("WORK_TYPE", workType);
+                                }
+                                else
+                                {
+                                    rptDir = "~/DEV/Sample/Rpt/Sample_Chk.rpt";
+
+                                    cmd.CommandText = @" SELECT P.採購單號,P.採購日期,P.樣品號碼,P.工作類別,P.廠商編號,P.廠商簡稱,P.頤坊型號,P.頤坊型號 抬頭,P.廠商型號,P.產品說明,P.單位,
+                                                                P.台幣單價,P.美元單價,P.單價_2,P.單價_3,P.MIN_1,P.MIN_2,P.MIN_3,P.外幣幣別,P.外幣單價,P.採購數量,P.採購交期,P.列表小備註,
+                                                                S.廠商名稱,S.連絡人採購,S.公司地址,S.電話,S.傳真,S.幣別,
+                                                                S.所在地,PU.大備註一,PU.大備註二,PU.大備註三,
+                                                                P.採購單號 群組一, P.到貨處理 列印到貨處理
+                                                         FROM PUDU P 
+                                                         INNER JOIN SUP S ON P.廠商編號=S.廠商編號 
+                                                         LEFT JOIN PUDUM PU ON P.採購單號=PU.採購單號 
+                                                         WHERE IsNull(P.採購數量,0) - IsNull(P.到貨數量,0) > 0   
+                                                         AND (1=0 ";
+
+                                    if(context.Request["PUDU_NO_1"] != "")
+                                    {
+                                        cmd.CommandText += " OR P.採購單號 = @PUDU_NO_1 ";
+                                        cmd.Parameters.AddWithValue("PUDU_NO_1", context.Request["PUDU_NO_1"]);
+                                    }
+                                    if (context.Request["PUDU_NO_2"] != "")
+                                    {
+                                        cmd.CommandText += " OR P.採購單號 = @PUDU_NO_2 ";
+                                        cmd.Parameters.AddWithValue("PUDU_NO_2", context.Request["PUDU_NO_2"]);
+                                    }
+                                    if (context.Request["PUDU_NO_3"] != "")
+                                    {
+                                        cmd.CommandText += " OR P.採購單號 = @PUDU_NO_3 ";
+                                        cmd.Parameters.AddWithValue("PUDU_NO_3", context.Request["PUDU_NO_3"]);
+                                    }
+                                    if (context.Request["PUDU_NO_4"] != "")
+                                    {
+                                        cmd.CommandText += " OR P.採購單號 = @PUDU_NO_4 ";
+                                        cmd.Parameters.AddWithValue("PUDU_NO_4", context.Request["PUDU_NO_4"]);
+                                    }
+                                    if (context.Request["PUDU_NO_5"] != "")
+                                    {
+                                        cmd.CommandText += " OR P.採購單號 = @PUDU_NO_5 ";
+                                        cmd.Parameters.AddWithValue("PUDU_NO_5", context.Request["PUDU_NO_5"]);
+                                    }
+
+                                    cmd.CommandText += ")";
+                                }
+
+                                SqlDataAdapter sqlDatai = new SqlDataAdapter(cmd);
+                                sqlDatai.Fill(dt);
+
+                                if (dt != null && dt.Rows.Count > 0)
+                                {
+                                    ReportDocument rptDoc = new ReportDocument();
+                                    rptDoc.Load(context.Server.MapPath(rptDir));
+                                    rptDoc.SetDataSource(dt);
+                                    System.IO.Stream stream = rptDoc.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+                                    byte[] bytes = new byte[stream.Length];
+                                    stream.Read(bytes, 0, bytes.Length);
+                                    stream.Seek(0, System.IO.SeekOrigin.Begin);
+
+                                    string filename = "樣品開發維護.pdf";
+                                    context.Response.ClearContent();
+                                    context.Response.ClearHeaders();
+                                    context.Response.AddHeader("content-disposition", "attachment;filename=" + filename);
+                                    context.Response.ContentType = "application/pdf";
+                                    context.Response.OutputStream.Write(bytes, 0, bytes.Length);
+                                    context.Response.Flush();
+                                    context.Response.End();
+                                }
+                                else
+                                {
+                                    context.Response.StatusCode = 204;
+                                    context.Response.End();
+                                }
+                                break;
                         }
 
                         SqlDataAdapter sqlData = new SqlDataAdapter(cmd);
                         sqlData.Fill(dt);
-
 
                         var json = JsonConvert.SerializeObject(dt);
                         context.Response.ContentType = "text/json";
