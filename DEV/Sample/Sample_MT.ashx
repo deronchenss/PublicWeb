@@ -75,7 +75,7 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                                                   ,pudu.[到貨處理] 分配方式
                                                                   ,pudu.[列表小備註]
                                                                   ,pudu.[結案]
-                                                                  ,pudu.[強制結案]
+                                                                  ,IIF(pudu.[強制結案] = 1, '是', '') 強制結案
                                                                   ,pudu.[運送方式]
                                                                   ,pudu.[部門]
                                                                   ,pudu.[變更日期]
@@ -295,7 +295,6 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                 cmd.Parameters.AddWithValue("IVAN_TYPE", context.Request["IVAN_TYPE"]);
                                 break;
                             case "UPD_RPT_REMARK":
-
                                 cmd.CommandText = @" DELETE FROM pudum WHERE [採購單號] = @PUDU_NO
                                                      INSERT INTO [dbo].[pudum]
                                                      SELECT (Select IsNull(Max(序號),0)+1 From pudum) [序號] 
@@ -332,6 +331,22 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                 cmd.Parameters.AddWithValue("UPD_USER", "IVAN");
 
                                 context.Response.StatusCode = cmd.ExecuteNonQuery() > 0 ? 200 : 404;
+                                context.Response.End();
+                                break;
+                            case "UPD_WRITEOFF":
+                                string[] seqArr = context.Request["SEQ[]"].Split(',');
+                                foreach(string seq in seqArr)
+                                {
+                                    cmd.CommandText = @" UPDATE pudu
+                                                         SET [強制結案] = @FORCE_CLOSE
+                                                         WHERE 序號 = @SEQ";
+                                    cmd.Parameters.Clear();
+                                    cmd.Parameters.AddWithValue("SEQ", seq);
+                                    cmd.Parameters.AddWithValue("FORCE_CLOSE", context.Request["FORCE_CLOSE"]);
+                                    cmd.ExecuteNonQuery();
+                                }
+
+                                context.Response.StatusCode = 200;
                                 context.Response.End();
                                 break;
                             case "PRINT_RPT":

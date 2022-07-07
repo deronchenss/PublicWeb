@@ -52,6 +52,11 @@
                         $('#BT_INSERT_CANCEL').css('display', 'none');
                         $('.onlyEdit').css('display', '');
 
+                        //確保 Table有值 將 第一欄checkbox隱藏
+                        if ($('#Table_Search_Sample > tbody tr[role=row]').length > 0) {
+                            $('#Table_Search_Sample').DataTable().column(0).visible(false);
+                            $('#Table_Search_Sample').DataTable().column(3).visible(false);
+                        }
 
                         $('.modeButton').css('display', 'none')
                         if (Edit_Mode == "Edit") {
@@ -94,6 +99,27 @@
 
                         V_BT_CHG($('#BT_BIG_REMARK'));
                         break;
+                    case "WriteOff":
+                        $('.Div_D').css('display', 'none');
+                        $('#Div_DT_View').css('width', '60%');
+                        $('#Div_WriteOff').css('display', '');
+
+                        //顯示checkbox
+                        if ($('#Table_Search_Sample > tbody tr[role=row]').length > 0) {
+                            $('#Table_Search_Sample').DataTable().column(0).visible(true);
+                            $('#Table_Search_Sample').DataTable().column(3).visible(true);
+                            $('#W_CHK_CNT').text('共選擇: ' + $('.tbChkBox:checked').length + '筆');
+                            $('#thCheckbox').on('click', function () {
+                                var rows = $('#Table_Search_Sample').DataTable().rows().nodes();
+                                $('input[type="checkbox"]', rows).prop('checked', this.checked);
+                            });
+                            $('.tableChkBox').on('click', function () {
+                                $('#W_CHK_CNT').text('共選擇: ' + $('.tbChkBox:checked').length + '筆');
+                            });
+                        }
+
+                        V_BT_CHG($('#BT_WriteOff'));
+                        break;
                     case "IMG":
                         $('.Div_D').css('display', 'none');
                         $('#Div_DT_View').css('width', '60%');
@@ -107,8 +133,7 @@
                         $('#Div_RPT_DETAIL').css('display', '');
 
                         V_BT_CHG($('#BT_RPT'));
-                        break;
-                        
+                        break;              
                 }
             }
 
@@ -151,7 +176,7 @@
                     $('#E_UPD_DATE').val(clickData['更新日期']);
                 }
 
-                if (clickData['強制結案'] == '1') {
+                if (clickData['強制結案'] == '是') {
                     $('#E_FORCE_CLOSE').prop('checked', true);
                 }
                 else {
@@ -252,8 +277,17 @@
                                     $('div.dataTables_scrollBody').scrollTop(pageScrollPos);
                                 },
                                 "columns": [
+                                    {
+                                        data: null, title: '<input type="checkbox" id="thCheckbox" class="tableChkBox" />全選',
+                                        render: function (data, type, row) {
+                                            return '<input type="checkbox" style="text-align:center" class="tbChkBox tableChkBox" />'
+                                        },
+                                        orderable: false,
+                                        visible: false
+                                    },
                                     { data: "序號", title: "序號" },
                                     { data: "樣品號碼", title: "樣品號碼" },
+                                    { data: "強制結案", title: "強制結案", visible: false },
                                     { data: "工作類別", title: "工作類別" },
                                     { data: "採購單號", title: "採購單號" },
                                     { data: "採購日期", title: "採購日期" },
@@ -288,7 +322,6 @@
                                     { data: "出貨日期", title: "出貨日期", visible: false },
                                     { data: "到貨日期", title: "到貨日期", visible: false },
                                     { data: "到貨數量", title: "到貨數量", visible: false },
-                                    { data: "強制結案", title: "強制結案", visible: false },
                                     { data: "預付款一", title: "預付款一", visible: false },
                                     { data: "預付日一", title: "預付日一", visible: false },
                                     { data: "預付款二", title: "預付款二", visible: false },
@@ -300,7 +333,13 @@
                                     { data: "大備註三", title: "大備註三", visible: false },
                                     { data: "特別事項", title: "特別事項", visible: false }
                                 ],
-                                "order": [[1, "asc"]], //根據 樣品號碼 排序
+                                columnDefs: [{
+                                    targets: [0],
+                                    createdCell: function (td, cellData, rowData, row, col) { //操作dom元素
+                                    },
+                                    className: "text-center",// 新增class
+                                }],
+                                "order": [[2, "asc"]], //根據 樣品號碼 排序
                                 "scrollX": true,
                                 "scrollY": "62vh",
                                 "searching": false,
@@ -310,6 +349,12 @@
 
                             $('#Table_Search_Sample').DataTable().draw();
                             $('#Table_Search_Sample_info').text('Showing ' + $('#Table_Search_Sample > tbody tr[role=row]').length + ' entries');
+
+                            if (Edit_Mode == 'WriteOff') {
+                                console.log(11);
+                                Form_Mode_Change('WriteOff');
+                            }
+
                         }
                     },
                     error: function (ex) {
@@ -549,6 +594,49 @@
                 }
             };      
 
+            //更新結案
+            function UPD_WRITEOFF(type) {
+                if ($('.tbChkBox:checked').length == 0) {
+                    alert('請選擇要更新結案狀態的資料');
+                }
+                else {
+                    var liSeq = [];
+                    var rowcollection = $('#Table_Search_Sample').DataTable().$(".tbChkBox:checked");
+                    rowcollection.each(function (index, elem) {
+                        var seq = $(elem).parents("tr").find("td")[1].innerHTML;
+                        liSeq.push(seq);
+                    });
+                 
+                    $.ajax({
+                        url: apiUrl,
+                        data: {
+                            "Call_Type": "UPD_WRITEOFF",
+                            "SEQ": liSeq,
+                            "FORCE_CLOSE": type
+                        },
+                        cache: false,
+                        type: "POST",
+                        datatype: "json",
+                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                        success: function (response, status) {
+                            if (status === 'success') {
+                                var str = type == 1 ? '結案' : '未結案';
+                                alert('已更新' + $('.tbChkBox:checked').length + '筆，狀態為' + str);
+                                Search_Sample();
+                            }
+                            else {
+                                alert('更新狀態有誤請通知資訊人員');
+                            }
+                        },
+                        error: function (ex) {
+                            console.log(ex.responseText);
+                            alert('更新狀態有誤請通知資訊人員');
+                            return;
+                        }
+                    });
+                }
+            };   
+
             //產生報表
             function PRINT_RPT() {
                 if ($('#R_PUDU_NO_S').val() === '' && $('#R_RPT_TYPE').val() != '3') {
@@ -631,8 +719,8 @@
 
             //BUTTON CLICK EVENT BASE 頁
             $('#BT_Search').on('click', function () {
-                if (Edit_Mode !== "Insert") {
-                    Edit_Mode = "Search";
+                if (Edit_Mode !== "WriteOff") {
+                    console.log(113);
                     Form_Mode_Change("Search");
                 }
                 Search_Sample();
@@ -662,11 +750,6 @@
                 Form_Mode_Change("Search");
             });
 
-            $('#BT_WriteOff').on('click', function () {
-                Edit_Mode = "WriteOff";
-                Form_Mode_Change("WriteOff");
-            });
-
             $('#BT_INSERT_SAVE').on('click', function () {
                 INSERT_SAMPLE();
             });
@@ -690,6 +773,15 @@
                 UPD_RPT_REMARK();
             });
 
+            //結案頁
+            $('#BT_WRITEOFF').on('click', function () {
+                UPD_WRITEOFF(1);
+            });
+
+            $('#BT_WRITEOFF_N').on('click', function () {
+                UPD_WRITEOFF(0);
+            });
+            
             //報表頁
             $('#BT_PRINT').on('click', function () {
                 PRINT_RPT();
@@ -723,6 +815,11 @@
 
             $('#BT_BIG_REMARK').on('click', function () {
                 Form_Mode_Change("REMARK");
+            });   
+
+            $('#BT_S_WriteOff').on('click', function () {
+                Edit_Mode = 'WriteOff'
+                Form_Mode_Change("WriteOff");
             });   
 
             $('#BT_IMG').on('click', function () {
@@ -803,7 +900,7 @@
             <input type="button" id="BT_BASE" class="V_BT" value="主檔"  disabled="disabled" />
             <input type="button" id="BT_SEQ" class="V_BT" value="編號" />
             <input type="button" id="BT_BIG_REMARK" class="V_BT" value="大備註" />
-            <input type="button" id="BT_WriteOff" class="V_BT" value="結案"  />
+            <input type="button" id="BT_S_WriteOff" class="V_BT" value="結案"  />
             <input type="button" id="BT_IMG" class="V_BT" value="圖型" />
             <input type="button" id="BT_RPT" class="V_BT" value="報表" />
         </div>
@@ -1193,10 +1290,24 @@
                 </table>
             </div> 
             <div id="Div_WriteOff" class=" Div_D" style="width:35%;height:71vh; border-style:solid;border-width:1px; float:right; ">
-                <div class="dataTables_info" id="Table_WriteOff_info" role="status" aria-live="polite"></div>
-                <table id="Table_WriteOff_Sample" class="Table_Search table table-striped table-bordered">
-                    <thead style="white-space:nowrap"></thead>
-                    <tbody style="white-space:nowrap"></tbody>
+                <table class="search_section_control">
+                    <tr class="trstyle"> 
+                        <td class="tdbstyle" style="height: 20vh; font-size: smaller;" >&nbsp</td>
+                    </tr>
+                    <tr class="trCenterstyle"> 
+                         <td colspan="4" style="text-align:center" >
+                            <label style="font-size:20px" id="W_CHK_CNT"></label>
+                         </td>
+                    </tr>
+                     <tr class="trstyle"> 
+                        <td class="tdbstyle" style="height: 2vh; font-size: smaller;" >&nbsp</td>
+                    </tr>
+                     <tr class="trCenterstyle"> 
+                         <td class="tdhstyle" style="text-align:center" >
+                            <input type="button" id="BT_WRITEOFF" style="display:inline-block" class="BTN" value="結案"  />
+                            <input type="button" id="BT_WRITEOFF_N" style="display:inline-block" class="BTN" value="取消結案"  />
+                         </td>
+                    </tr>
                 </table>
             </div> 
             <div id="Div_RPT_DETAIL" class=" Div_D" style="width:35%;height:71vh; border-style:solid;border-width:1px; float:right; overflow:auto ">

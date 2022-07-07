@@ -25,7 +25,6 @@
                     return '您尚未將編輯過的表單資料送出，請問您確定要離開網頁嗎？';
                 }
             }
-
             //function region
             function Form_Mode_Change(Form_Mode) {
                 switch (Form_Mode) {
@@ -157,28 +156,30 @@
             //ajax function
             function Search_Quote() {
                 $.ajax({
-                    url: apiUrl,
-                    data: {
-                        "Call_Type": "Quote_Base",
-                        "CUST_NO": $('#CUST_NO').val(),
-                        "CUST_S_NAME": $('#CUST_S_NAME').val(),
-                        "Date_S": $('#TB_Date_S').val(),
-                        "Date_E": $('#TB_Date_E').val(),
-                        "IVAN_TYPE": $('#IVAN_TYPE').val()
-                    },
+                    url: "http://localhost:7000/API/v1/Quote/QuoteBase",
+                    data:
+                        JSON.stringify({
+                            "CUST_NO": $('#CUST_NO').val(),
+                            "CUST_S_NAME": $('#CUST_S_NAME').val(),
+                            "Date_S": $('#TB_Date_S').val(),
+                            "Date_E": $('#TB_Date_E').val(),
+                            "IVAN_TYPE": $('#IVAN_TYPE').val()
+                    }),
                     cache: false,
                     type: "POST",
-                    datatype: "json",
-                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                    success: function (response) {
+                    //datatype: "json",
+                    contentType: 'application/json; charset=UTF-8',
+                    success: function (response,status) {
                         if (response.length === 0) {
                             alert('<%=Resources.MP.Data_Not_Exists_Alert%>');
                             Edit_Mode = "Base";
                             Form_Mode_Change("Base");
                         }
-                        else {       
+                        else {
+                            console.log(status);
+                            var jsonArr = $.parseJSON(response);
                             $('#Table_Search_Quote').DataTable({
-                                "data": response,
+                                "data": jsonArr,
                                 "destroy": true,
                                 //維持scroll bar 位置
                                 "preDrawCallback": function (settings) {
@@ -235,18 +236,18 @@
                                     { title: "客戶編號" },
                                     { title: "序號" },
                                     { title: "<%=Resources.Customer.Update_User%>" },
-                                    { title: "<%=Resources.Customer.Update_Date%>" }
-                                ],
-                                "order": [[1, "asc"]], //根據 頤坊型號 排序
-                                "scrollX": true,
-                                "scrollY": "62vh",
-                                "searching": false,
-                                "paging": false,
-                                "bInfo": false //顯示幾筆隱藏
-                            });
+                                   { title: "<%=Resources.Customer.Update_Date%>" }
+                               ],
+                               "order": [[1, "asc"]], //根據 頤坊型號 排序
+                               "scrollX": true,
+                               "scrollY": "62vh",
+                               "searching": false,
+                               "paging": false,
+                               "bInfo": false //顯示幾筆隱藏
+                           });
 
                             $('#Table_Search_Quote').DataTable().draw();
-                            $('#Table_CHS_Data').DataTable().draw();                         
+                            $('#Table_CHS_Data').DataTable().draw();
 
                             $('#Table_CHS_Data_info').text('Showing ' + $('#Table_CHS_Data > tbody tr[role=row]').length + ' entries');
                             $('#Table_Search_Quote_info').text('Showing ' + $('#Table_Search_Quote > tbody tr[role=row]').length + ' entries');
@@ -256,7 +257,7 @@
                         alert(ex);
                     }
                 });
-            };        
+            };          
 
             function Search_QUAH_SEQ() {
                 $.ajax({
@@ -322,7 +323,7 @@
                     var ivanType = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('td:nth-child(' + ivanTypeIndex + ')').text();
                     var factNoIndex = $('#Table_EXEC_Data thead th:contains(廠商編號)').index() + 1; //廠商編號INDEX
                     var factNo = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('td:nth-child(' + factNoIndex + ')').text();
-                    var custNoIndex = $('#Table_Search_Quote thead th:contains(客戶編號)').index() + 1; //客戶編號INDEX
+                    var custNoIndex = $('#Table_EXEC_Data thead th:contains(客戶編號)').index() + 1; //客戶編號INDEX
                     var tableCustNo = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('td:nth-child(' + custNoIndex + ')').text();
 
                     //一樣的寫入DB
