@@ -25,6 +25,7 @@
                     return '您尚未將編輯過的表單資料送出，請問您確定要離開網頁嗎？';
                 }
             }
+
             //function region
             function Form_Mode_Change(Form_Mode) {
                 switch (Form_Mode) {
@@ -32,7 +33,7 @@
                         $('.Div_D').css('display', 'none');
                         $('.V_BT').attr('disabled', false);
                         $('#BT_Cancel').css('display', 'none');
-              
+
                         V_BT_CHG($('#BT_CHS'));
                         break;
                     case "Search":
@@ -78,8 +79,8 @@
                                     { title: "廠商簡稱" },
                                     { title: "客戶編號" },
                                     { title: "序號" },
-                                    { title: "<%=Resources.Customer.Update_User%>" },
-                                    { title: "<%=Resources.Customer.Update_Date%>" }
+                                    { title: "<%=Resources.MP.Update_User%>" },
+                                    { title: "<%=Resources.MP.Update_Date%>" }
                                 ],
                                 "order": [[1, "asc"]], //根據 頤坊型號 排序
                                 "scrollX": true,
@@ -91,7 +92,7 @@
 
                             $('#Table_EXEC_Data').DataTable().clear().rows.add($('#Table_CHS_Data').find('tbody tr[role=row]').clone()).draw(); //將選擇後TABLE 複製至第二面
                             $('#Table_EXEC_info').text('Showing ' + $('#Table_EXEC_Data > tbody tr[role=row]').length + ' entries'); //顯示TABLE 列數
-                            $('#E_QUAH_CNT').text('報價筆數: ' + $('#Table_EXEC_Data > tbody tr[role=row]').length); 
+                            $('#E_QUAH_CNT').text('報價筆數: ' + $('#Table_EXEC_Data > tbody tr[role=row]').length);
 
                             //帶出客戶編號、客戶簡稱、客戶全名
                             //因為同一批一定要同個客戶編號才可執行，前方UI有做檢核，故這邊只需要選TABLE第一筆的客戶編號即可
@@ -101,7 +102,7 @@
                             Search_BYR_NAME(custNo);
 
                             //帶出報價單號
-                            Search_QUAH_SEQ(); 
+                            Search_QUAH_SEQ();
 
                             break;
                         }
@@ -156,30 +157,28 @@
             //ajax function
             function Search_Quote() {
                 $.ajax({
-                    url: "http://localhost:7000/API/v1/Quote/QuoteBase",
-                    data:
-                        JSON.stringify({
-                            "CUST_NO": $('#CUST_NO').val(),
-                            "CUST_S_NAME": $('#CUST_S_NAME').val(),
-                            "Date_S": $('#TB_Date_S').val(),
-                            "Date_E": $('#TB_Date_E').val(),
-                            "IVAN_TYPE": $('#IVAN_TYPE').val()
-                    }),
+                    url: apiUrl,
+                    data: {
+                        "Call_Type": "Quote_Base",
+                        "CUST_NO": $('#CUST_NO').val(),
+                        "CUST_S_NAME": $('#CUST_S_NAME').val(),
+                        "Date_S": $('#TB_Date_S').val(),
+                        "Date_E": $('#TB_Date_E').val(),
+                        "IVAN_TYPE": $('#IVAN_TYPE').val()
+                    },
                     cache: false,
                     type: "POST",
-                    //datatype: "json",
-                    contentType: 'application/json; charset=UTF-8',
-                    success: function (response,status) {
+                    datatype: "json",
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    success: function (response) {
                         if (response.length === 0) {
                             alert('<%=Resources.MP.Data_Not_Exists_Alert%>');
                             Edit_Mode = "Base";
                             Form_Mode_Change("Base");
                         }
                         else {
-                            console.log(status);
-                            var jsonArr = $.parseJSON(response);
                             $('#Table_Search_Quote').DataTable({
-                                "data": jsonArr,
+                                "data": response,
                                 "destroy": true,
                                 //維持scroll bar 位置
                                 "preDrawCallback": function (settings) {
@@ -202,8 +201,8 @@
                                     { data: "廠商簡稱", title: "廠商簡稱" },
                                     { data: "客戶編號", title: "客戶編號" },
                                     { data: "序號", title: "序號" },
-                                    { data: "更新人員", title: "<%=Resources.Customer.Update_User%>" },
-                                    { data: "更新日期", title: "<%=Resources.Customer.Update_Date%>" }
+                                    { data: "更新人員", title: "<%=Resources.MP.Update_User%>" },
+                                    { data: "更新日期", title: "<%=Resources.MP.Update_Date%>" }
                                 ],
                                 "order": [[1, "asc"]], //根據 頤坊型號 排序
                                 "scrollX": true,
@@ -235,19 +234,19 @@
                                     { title: "廠商簡稱" },
                                     { title: "客戶編號" },
                                     { title: "序號" },
-                                    { title: "<%=Resources.Customer.Update_User%>" },
-                                   { title: "<%=Resources.Customer.Update_Date%>" }
-                               ],
-                               "order": [[1, "asc"]], //根據 頤坊型號 排序
-                               "scrollX": true,
-                               "scrollY": "62vh",
-                               "searching": false,
-                               "paging": false,
-                               "bInfo": false //顯示幾筆隱藏
-                           });
+                                    { title: "<%=Resources.MP.Update_User%>" },
+                                    { title: "<%=Resources.MP.Update_Date%>" }
+                                ],
+                                "order": [[1, "asc"]], //根據 頤坊型號 排序
+                                "scrollX": true,
+                                "scrollY": "62vh",
+                                "searching": false,
+                                "paging": false,
+                                "bInfo": false //顯示幾筆隱藏
+                            });
 
                             $('#Table_Search_Quote').DataTable().draw();
-                            $('#Table_CHS_Data').DataTable().draw();
+                            $('#Table_CHS_Data').DataTable().draw();                         
 
                             $('#Table_CHS_Data_info').text('Showing ' + $('#Table_CHS_Data > tbody tr[role=row]').length + ' entries');
                             $('#Table_Search_Quote_info').text('Showing ' + $('#Table_Search_Quote > tbody tr[role=row]').length + ' entries');
@@ -257,7 +256,7 @@
                         alert(ex);
                     }
                 });
-            };          
+            };        
 
             function Search_QUAH_SEQ() {
                 $.ajax({
@@ -323,7 +322,7 @@
                     var ivanType = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('td:nth-child(' + ivanTypeIndex + ')').text();
                     var factNoIndex = $('#Table_EXEC_Data thead th:contains(廠商編號)').index() + 1; //廠商編號INDEX
                     var factNo = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('td:nth-child(' + factNoIndex + ')').text();
-                    var custNoIndex = $('#Table_EXEC_Data thead th:contains(客戶編號)').index() + 1; //客戶編號INDEX
+                    var custNoIndex = $('#Table_Search_Quote thead th:contains(客戶編號)').index() + 1; //客戶編號INDEX
                     var tableCustNo = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('td:nth-child(' + custNoIndex + ')').text();
 
                     //一樣的寫入DB
@@ -505,8 +504,7 @@
             //功能選單
             $('#BT_CHS').on('click', function () {
                 Edit_Mode = "Base";
-                if($('#Table_Search_Quote > tbody tr[role=row]').length > 0)
-                {
+                if ($('#Table_Search_Quote > tbody tr[role=row]').length > 0) {
                     Form_Mode_Change("Search");
                 }
                 else {
@@ -517,11 +515,11 @@
             $('#BT_DT').on('click', function () {
                 Edit_Mode = "Edit";
                 Form_Mode_Change("EXEC");
-            });          
+            });
 
             $('#BT_RPT').on('click', function () {
                 Form_Mode_Change("RPT");
-            });       
+            });
         });
     </script>
 </asp:Content>

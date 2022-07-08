@@ -339,7 +339,8 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                 foreach(string seq in seqArr)
                                 {
                                     cmd.CommandText = @" UPDATE pudu
-                                                         SET [強制結案] = @FORCE_CLOSE
+                                                         SET [結案] = @FORCE_CLOSE,
+                                                             [強制結案] = @FORCE_CLOSE
                                                          WHERE 序號 = @SEQ";
                                     cmd.Parameters.Clear();
                                     cmd.Parameters.AddWithValue("SEQ", seq);

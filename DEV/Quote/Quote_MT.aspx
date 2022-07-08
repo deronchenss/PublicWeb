@@ -170,8 +170,8 @@
                                     { data: "單價_3", title: "單價_3" },
                                     { data: "單價_4", title: "單價_4" },
                                     { data: "出貨地", title: "出貨地" },
-                                    { data: "更新人員", title: "<%=Resources.Customer.Update_User%>" },
-                                    { data: "更新日期", title: "<%=Resources.Customer.Update_Date%>" },
+                                    { data: "更新人員", title: "<%=Resources.MP.Update_User%>" },
+                                    { data: "更新日期", title: "<%=Resources.MP.Update_Date%>" },
                                     { data: "大備註", title: "大備註", visible: false },
                                     { data: "PRICE_SEQ", title: "PRICE_SEQ", visible: false }
                                 ],
