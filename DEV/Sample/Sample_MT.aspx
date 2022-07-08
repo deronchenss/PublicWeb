@@ -118,7 +118,7 @@
                             });
                         }
 
-                        V_BT_CHG($('#BT_WriteOff'));
+                        V_BT_CHG($('#BT_S_WriteOff'));
                         break;
                     case "IMG":
                         $('.Div_D').css('display', 'none');
@@ -253,7 +253,8 @@
                         "PUDU_NO": $('#Q_PUDU_NO').val(),
                         "FACT_NO": $('#Q_FACT_NO').val(),
                         "FACT_S_NAME": $('#Q_FACT_S_NAME').val(),
-                        "PROD_DES": $('#Q_PROD_DES').val()
+                        "PROD_DES": $('#Q_PROD_DES').val(),
+                        "WRITE_OFF": $('#Q_WRITEOFF').val()
                     },
                     cache: false,
                     type: "POST",
@@ -351,7 +352,6 @@
                             $('#Table_Search_Sample_info').text('Showing ' + $('#Table_Search_Sample > tbody tr[role=row]').length + ' entries');
 
                             if (Edit_Mode == 'WriteOff') {
-                                console.log(11);
                                 Form_Mode_Change('WriteOff');
                             }
 
@@ -720,7 +720,6 @@
             //BUTTON CLICK EVENT BASE 頁
             $('#BT_Search').on('click', function () {
                 if (Edit_Mode !== "WriteOff") {
-                    console.log(113);
                     Form_Mode_Change("Search");
                 }
                 Search_Sample();
@@ -853,6 +852,14 @@
                 <td class="tdbstyle">
                     <input id="Q_PUDU_DATE_S" type="date" class="date_S_style" />~<input id="Q_PUDU_DATE_E" type="date" class="date_E_style" />
                 </td>
+                <td class="tdEditstyle">結案狀態</td>
+                <td class="tdbstyle">
+                    <select id="Q_WRITEOFF" >
+                        <option selected="selected" value=""></option>
+                        <option value="1">結案</option>
+                        <option value="0">未結案</option>
+                    </select>
+                </td>
             </tr>
             <tr class="trstyle">
                 <td class="tdhstyle" >客戶編號</td>
@@ -886,7 +893,7 @@
                 <td style="height: 5px; font-size: smaller;" colspan="8">&nbsp</td>
             </tr>
             <tr class="trstyle">
-                <td class="tdtstyleRight" colspan="6">
+                <td class="tdtstyleRight" colspan="8">
                     <input type="button" id="BT_Search" class="buttonStyle" value="<%=Resources.MP.Search%>" />
                     <input type="button" id="BT_Insert" class="buttonStyle" value="<%=Resources.MP.Insert%>" />
                     <input type="button" id="BT_Update" class="buttonStyle" value="修改" />
@@ -1311,7 +1318,7 @@
                 </table>
             </div> 
             <div id="Div_RPT_DETAIL" class=" Div_D" style="width:35%;height:71vh; border-style:solid;border-width:1px; float:right; overflow:auto ">
-                <table class="edit_section_control"style="width:80%">
+                <table class="search_section_control"style="width:80%">
                     <tr class="trstyle"> 
                         <td class="tdbstyle" style="height: 10vh; font-size: smaller;" >&nbsp</td>
                     </tr>
@@ -1331,12 +1338,6 @@
                         <td class="tdbstyle" style="font-size:20px;">
                             <input id="R_PUDU_NO_S"  class="textbox_char" />~
                             <input id="R_PUDU_NO_E"  class="textbox_char" />
-                        </td>
-                    </tr>
-                    <tr class="trCenterstyle commonRpt">
-                        <td class="tdhstyle" style="font-size:20px;" >E-mail</td>
-                        <td class="tdbstyle" style="font-size:20px;">
-                            <input id="R_MAIL" type="checkbox" />
                         </td>
                     </tr>
                     <tr class="trCenterstyle sampleRpt" style="display:none">

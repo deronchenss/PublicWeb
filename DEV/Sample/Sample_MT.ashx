@@ -101,6 +101,7 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                                      AND ISNULL(pudu.[廠商編號],'') LIKE @FACT_NO + '%'
                                                      AND ISNULL(pudu.[廠商簡稱],'') LIKE '%' + @FACT_S_NAME + '%'
                                                      AND ISNULL(pudu.[產品說明],'') LIKE '%' + @PROD_DES + '%'
+                                                     AND 強制結案 LIKE '%' + @WRITE_OFF + '%'
                                               ";
 
                                 if (!string.IsNullOrEmpty(context.Request["PUDU_DATE_E"]))
@@ -122,7 +123,7 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                 cmd.Parameters.AddWithValue("FACT_NO", context.Request["FACT_NO"]);
                                 cmd.Parameters.AddWithValue("FACT_S_NAME", context.Request["FACT_S_NAME"]);
                                 cmd.Parameters.AddWithValue("PROD_DES", context.Request["PROD_DES"]);
-
+                                cmd.Parameters.AddWithValue("WRITE_OFF", context.Request["WRITE_OFF"]);
                                 break;
                             case "INSERT_SAMPLE":
                             case "UPD_SAMPLE":
