@@ -62,6 +62,7 @@ td.tdtstyleLeft /* ©³ */ {
 }
 
 .buttonStyle {
+    font-size:20px;
     border-radius: 4px;
     border: 5px blue none;
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
@@ -101,6 +102,13 @@ td.tdtstyleLeft /* ©³ */ {
     margin: 0 auto;
 }
 
+.edit_section_control {
+    width: 100%;
+    font-size: 15px;
+    border-radius: 5px;
+    text-align: center;
+    margin: 0 auto;
+}
 
 .button_change_section {
     width: 65%;
