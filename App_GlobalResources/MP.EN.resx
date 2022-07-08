@@ -117,32 +117,122 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Account_Class" xml:space="preserve">
+    <value>Account class</value>
+  </data>
   <data name="Add" xml:space="preserve">
     <value>Add</value>
   </data>
   <data name="Address" xml:space="preserve">
     <value>Address</value>
   </data>
+  <data name="Add_Date" xml:space="preserve">
+    <value>Add Date</value>
+  </data>
+  <data name="Add_Item" xml:space="preserve">
+    <value>Add Item</value>
+  </data>
   <data name="Add_Success" xml:space="preserve">
     <value>Add success</value>
+  </data>
+  <data name="Air_Shipping_Agent" xml:space="preserve">
+    <value>Air shipping agent</value>
   </data>
   <data name="Applyopen" xml:space="preserve">
     <value>Apply Open</value>
   </data>
+  <data name="Apply_Reason" xml:space="preserve">
+    <value>Apply Reason</value>
+  </data>
   <data name="Approve" xml:space="preserve">
     <value>Approve</value>
+  </data>
+  <data name="Approve_alert" xml:space="preserve">
+    <value>Could you want approve these data?</value>
+  </data>
+  <data name="Area" xml:space="preserve">
+    <value>Area</value>
   </data>
   <data name="Bank" xml:space="preserve">
     <value>Bank</value>
   </data>
+  <data name="Bank_Account" xml:space="preserve">
+    <value>Bank account</value>
+  </data>
+  <data name="Bank_Account_Header" xml:space="preserve">
+    <value>Bank account header</value>
+  </data>
+  <data name="Bank_Address" xml:space="preserve">
+    <value>Bank address</value>
+  </data>
+  <data name="Bank_Branch_Code" xml:space="preserve">
+    <value>Bank branch Code</value>
+  </data>
+  <data name="Bank_Head_Code" xml:space="preserve">
+    <value>Bank head code</value>
+  </data>
+  <data name="Bank_Name" xml:space="preserve">
+    <value>Bank</value>
+  </data>
   <data name="Base" xml:space="preserve">
     <value>Basic</value>
+  </data>
+  <data name="Basic" xml:space="preserve">
+    <value>Basic</value>
+  </data>
+  <data name="Batch_Update_Reason" xml:space="preserve">
+    <value>Batch Update Reason</value>
+  </data>
+  <data name="BOM_Master" xml:space="preserve">
+    <value>BOM Master</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
   <data name="Cancel_Alert" xml:space="preserve">
     <value>Cancel will be clear data, continue?</value>
+  </data>
+  <data name="Change_Log" xml:space="preserve">
+    <value>Change Log</value>
+  </data>
+  <data name="Collect_Account" xml:space="preserve">
+    <value>Collect account</value>
+  </data>
+  <data name="Collect_Address" xml:space="preserve">
+    <value>Collect Address</value>
+  </data>
+  <data name="Collect_Bank_Address" xml:space="preserve">
+    <value>Collect bank address</value>
+  </data>
+  <data name="Collect_Bank_Name" xml:space="preserve">
+    <value>Collect bank name</value>
+  </data>
+  <data name="Collect_Date" xml:space="preserve">
+    <value>Collect date</value>
+  </data>
+  <data name="Collect_EIN" xml:space="preserve">
+    <value>Collect EIN</value>
+  </data>
+  <data name="Collect_Mail" xml:space="preserve">
+    <value>Collect Mail</value>
+  </data>
+  <data name="Collect_Name" xml:space="preserve">
+    <value>Collect name</value>
+  </data>
+  <data name="Collect_Nation" xml:space="preserve">
+    <value>Collect Nation</value>
+  </data>
+  <data name="Collect_Person" xml:space="preserve">
+    <value>Collect person</value>
+  </data>
+  <data name="Combination" xml:space="preserve">
+    <value>Combination</value>
+  </data>
+  <data name="Company_Address" xml:space="preserve">
+    <value>Company Address</value>
+  </data>
+  <data name="Confirm_Fill_Reason" xml:space="preserve">
+    <value>Confirm fill all apply reason?</value>
   </data>
   <data name="Copy" xml:space="preserve">
     <value>Copy</value>
@@ -153,8 +243,38 @@
   <data name="Copy_Success" xml:space="preserve">
     <value>Copy Success</value>
   </data>
+  <data name="COST_SEQ" xml:space="preserve">
+    <value>Cost Sequence</value>
+  </data>
+  <data name="Create_Date" xml:space="preserve">
+    <value>Create Date</value>
+  </data>
+  <data name="Currency" xml:space="preserve">
+    <value>Currency</value>
+  </data>
   <data name="Customer" xml:space="preserve">
     <value>Customer</value>
+  </data>
+  <data name="Customer_Model" xml:space="preserve">
+    <value>Customer Model</value>
+  </data>
+  <data name="Customer_Name" xml:space="preserve">
+    <value>Customer Name</value>
+  </data>
+  <data name="Customer_No" xml:space="preserve">
+    <value>Customer No</value>
+  </data>
+  <data name="Customer_Short_Name" xml:space="preserve">
+    <value>Customer Short Name</value>
+  </data>
+  <data name="Customer_Source" xml:space="preserve">
+    <value>Customer Source</value>
+  </data>
+  <data name="Customs_Broker" xml:space="preserve">
+    <value>Customs broker</value>
+  </data>
+  <data name="Customs_Clearance" xml:space="preserve">
+    <value>Customs clearance</value>
   </data>
   <data name="C_No_ATC_Hint" xml:space="preserve">
     <value>After input data, Select customer</value>
@@ -162,11 +282,47 @@
   <data name="Data_Not_Exists_Alert" xml:space="preserve">
     <value>Can not find any data</value>
   </data>
+  <data name="Delete_Item" xml:space="preserve">
+    <value>Delete Item</value>
+  </data>
+  <data name="Delivery_Address" xml:space="preserve">
+    <value>Delivery address</value>
+  </data>
+  <data name="Design_Image" xml:space="preserve">
+    <value>Design Image</value>
+  </data>
+  <data name="Design_Person" xml:space="preserve">
+    <value>Design Person</value>
+  </data>
   <data name="Detail" xml:space="preserve">
     <value>Detail</value>
   </data>
   <data name="Detail_Search" xml:space="preserve">
     <value>Detail Search</value>
+  </data>
+  <data name="Develop" xml:space="preserve">
+    <value>Develop</value>
+  </data>
+  <data name="Developing" xml:space="preserve">
+    <value>Developing</value>
+  </data>
+  <data name="Develop_Mail" xml:space="preserve">
+    <value>Develop contact mail</value>
+  </data>
+  <data name="Develop_Person" xml:space="preserve">
+    <value>Develop Person</value>
+  </data>
+  <data name="Develop_Remark" xml:space="preserve">
+    <value>Develop remark</value>
+  </data>
+  <data name="Domestic_Payment" xml:space="preserve">
+    <value>Domestic Payment</value>
+  </data>
+  <data name="D_Count" xml:space="preserve">
+    <value>Material Count</value>
+  </data>
+  <data name="D_SEQ" xml:space="preserve">
+    <value>Detail Sequence</value>
   </data>
   <data name="Edit" xml:space="preserve">
     <value>Edit</value>
@@ -174,8 +330,53 @@
   <data name="Edit_Alert" xml:space="preserve">
     <value>Do you want to save this change?</value>
   </data>
+  <data name="EIN" xml:space="preserve">
+    <value>EIN</value>
+  </data>
+  <data name="Example" xml:space="preserve">
+    <value>Example</value>
+  </data>
+  <data name="Express_Delivery_Account" xml:space="preserve">
+    <value>Express delivery account</value>
+  </data>
+  <data name="Factory_Address" xml:space="preserve">
+    <value>Factory address</value>
+  </data>
   <data name="Fax" xml:space="preserve">
     <value>Fax Number</value>
+  </data>
+  <data name="Final_Supplier" xml:space="preserve">
+    <value>Final Supplier</value>
+  </data>
+  <data name="Finance_Mail" xml:space="preserve">
+    <value>Finance mail</value>
+  </data>
+  <data name="First_Contact" xml:space="preserve">
+    <value>First contact</value>
+  </data>
+  <data name="Gross_Weight" xml:space="preserve">
+    <value>Gross Weight</value>
+  </data>
+  <data name="HK_Customs_Clearance" xml:space="preserve">
+    <value>HK_Customs clearance</value>
+  </data>
+  <data name="Image" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="Image_NotExists" xml:space="preserve">
+    <value>Image Not Exists.</value>
+  </data>
+  <data name="IMG_Enable" xml:space="preserve">
+    <value>Image Enable</value>
+  </data>
+  <data name="Innerbox_Amount" xml:space="preserve">
+    <value>Innerbox Amount</value>
+  </data>
+  <data name="Innerbox_Amount_2" xml:space="preserve">
+    <value>Innerbox Amount</value>
+  </data>
+  <data name="Innerbox_Capacity" xml:space="preserve">
+    <value>Innerbox Capacity</value>
   </data>
   <data name="Insert" xml:space="preserve">
     <value>Insert</value>
@@ -183,17 +384,71 @@
   <data name="International_No" xml:space="preserve">
     <value>International No</value>
   </data>
+  <data name="Ivan_Model" xml:space="preserve">
+    <value>Ivan Model</value>
+  </data>
+  <data name="IV_Address" xml:space="preserve">
+    <value>IV Address</value>
+  </data>
   <data name="Language" xml:space="preserve">
     <value>Language</value>
+  </data>
+  <data name="Last_Price_Day" xml:space="preserve">
+    <value>Last Price Day</value>
   </data>
   <data name="Logout" xml:space="preserve">
     <value>Logout</value>
   </data>
+  <data name="Mail_Group" xml:space="preserve">
+    <value>Mail Group</value>
+  </data>
   <data name="Maintenance" xml:space="preserve">
     <value>Maintenance</value>
   </data>
+  <data name="Manufacture_Spec" xml:space="preserve">
+    <value>Manufacture Spec</value>
+  </data>
+  <data name="Mark" xml:space="preserve">
+    <value>Mark</value>
+  </data>
+  <data name="Marks" xml:space="preserve">
+    <value>Marks</value>
+  </data>
+  <data name="Marks_Shape" xml:space="preserve">
+    <value>Marks shape</value>
+  </data>
+  <data name="Marks_Word" xml:space="preserve">
+    <value>Marks word</value>
+  </data>
   <data name="Master" xml:space="preserve">
     <value>Master</value>
+  </data>
+  <data name="Master_Supplier_ALL" xml:space="preserve">
+    <value>Master Supplier</value>
+  </data>
+  <data name="Master_Supplier_S_Name" xml:space="preserve">
+    <value>Final Supplier Short Name</value>
+  </data>
+  <data name="Master_Supplier_S_No" xml:space="preserve">
+    <value>Final Supplier No</value>
+  </data>
+  <data name="Material_Amount" xml:space="preserve">
+    <value>Material Amount</value>
+  </data>
+  <data name="Material_Model" xml:space="preserve">
+    <value>Material Model</value>
+  </data>
+  <data name="Material_Sell" xml:space="preserve">
+    <value>Material Sell</value>
+  </data>
+  <data name="Material_Supplier_ALL" xml:space="preserve">
+    <value>Material Supplier</value>
+  </data>
+  <data name="Material_Supplier_No" xml:space="preserve">
+    <value>Material Supplier No</value>
+  </data>
+  <data name="Material_Supplier_Short_Name" xml:space="preserve">
+    <value>Material Supplier Short Name</value>
   </data>
   <data name="Model_Search" xml:space="preserve">
     <value>Model Search</value>
@@ -201,11 +456,143 @@
   <data name="More" xml:space="preserve">
     <value>More</value>
   </data>
+  <data name="M_SEQ" xml:space="preserve">
+    <value>Master Sequence</value>
+  </data>
   <data name="Nation" xml:space="preserve">
     <value>Nation</value>
   </data>
+  <data name="Net_Weight" xml:space="preserve">
+    <value>Net Weight</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>New </value>
+  </data>
+  <data name="Not_Billing" xml:space="preserve">
+    <value>Not Billing</value>
+  </data>
+  <data name="Not_Computing_Cost" xml:space="preserve">
+    <value>Not Computing Cost</value>
+  </data>
+  <data name="Not_Expand" xml:space="preserve">
+    <value>Not Expand</value>
+  </data>
+  <data name="Not_Show_Image" xml:space="preserve">
+    <value>Don't Show Image</value>
+  </data>
+  <data name="Old" xml:space="preserve">
+    <value>Old </value>
+  </data>
+  <data name="Old_Ivan_Model" xml:space="preserve">
+    <value>Old Ivan Model</value>
+  </data>
+  <data name="Old_Master_SEQ" xml:space="preserve">
+    <value>Old Master Sequence</value>
+  </data>
+  <data name="Old_Product_Information" xml:space="preserve">
+    <value>Old Product Information</value>
+  </data>
+  <data name="Old_Supplier" xml:space="preserve">
+    <value>Old Supplier</value>
+  </data>
   <data name="Order" xml:space="preserve">
     <value>Order</value>
+  </data>
+  <data name="Outerbox_Height" xml:space="preserve">
+    <value>Outerbox Height</value>
+  </data>
+  <data name="Outerbox_Lenght" xml:space="preserve">
+    <value>Outerbox Lenght</value>
+  </data>
+  <data name="Outerbox_No" xml:space="preserve">
+    <value>Outerbox Number</value>
+  </data>
+  <data name="Outerbox_Weight" xml:space="preserve">
+    <value>Outerbox Weight</value>
+  </data>
+  <data name="Overseas_Payment" xml:space="preserve">
+    <value>Overseas Payment</value>
+  </data>
+  <data name="Package" xml:space="preserve">
+    <value>Package</value>
+  </data>
+  <data name="Package_Height" xml:space="preserve">
+    <value>Package Height</value>
+  </data>
+  <data name="Package_Length" xml:space="preserve">
+    <value>Package Length</value>
+  </data>
+  <data name="Package_Weight" xml:space="preserve">
+    <value>Package Weight</value>
+  </data>
+  <data name="Packag_Request" xml:space="preserve">
+    <value>Packag request</value>
+  </data>
+  <data name="Parent_Model" xml:space="preserve">
+    <value>Parent Model</value>
+  </data>
+  <data name="Parent_Product_Information" xml:space="preserve">
+    <value>Parent Product Information</value>
+  </data>
+  <data name="Parent_Rank" xml:space="preserve">
+    <value>Parent Rank</value>
+  </data>
+  <data name="Parent_SEQ" xml:space="preserve">
+    <value>Parent Sequence</value>
+  </data>
+  <data name="Parent_Supplier" xml:space="preserve">
+    <value>Parent Supplier</value>
+  </data>
+  <data name="Payment_Mode" xml:space="preserve">
+    <value>Payment mode</value>
+  </data>
+  <data name="Payment_Terms" xml:space="preserve">
+    <value>Payment terms</value>
+  </data>
+  <data name="PD_IMG" xml:space="preserve">
+    <value>Material Image</value>
+  </data>
+  <data name="D_COST_SEQ" xml:space="preserve">
+    <value>Material Sequence</value>
+  </data>
+  <data name="Person_Commodity" xml:space="preserve">
+    <value>Person commodity</value>
+  </data>
+  <data name="Person_Finance" xml:space="preserve">
+    <value>Person finance</value>
+  </data>
+  <data name="Person_Purchase" xml:space="preserve">
+    <value>Person purchase</value>
+  </data>
+  <data name="Person_Sample" xml:space="preserve">
+    <value>Person sample</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="Port" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="Price_Condition" xml:space="preserve">
+    <value>Price condition</value>
+  </data>
+  <data name="Price_Curr" xml:space="preserve">
+    <value>Price Curr</value>
+  </data>
+  <data name="Price_Information" xml:space="preserve">
+    <value>Price Information</value>
+  </data>
+  <data name="Price_T" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="Price_TWD" xml:space="preserve">
+    <value>Price TWD</value>
+  </data>
+  <data name="Price_USD" xml:space="preserve">
+    <value>Price USD</value>
+  </data>
+  <data name="Principal" xml:space="preserve">
+    <value>Principal</value>
   </data>
   <data name="Product" xml:space="preserve">
     <value>Product(Cost)</value>
@@ -216,11 +603,86 @@
   <data name="Product_Class" xml:space="preserve">
     <value>Product Class</value>
   </data>
+  <data name="Product_Height" xml:space="preserve">
+    <value>Product Height</value>
+  </data>
+  <data name="Product_Information" xml:space="preserve">
+    <value>Product Information</value>
+  </data>
+  <data name="Product_Information_Detail" xml:space="preserve">
+    <value>Information Detail</value>
+  </data>
+  <data name="Product_Length" xml:space="preserve">
+    <value>Product Length</value>
+  </data>
+  <data name="Product_SEQ" xml:space="preserve">
+    <value>Product Sequence</value>
+  </data>
+  <data name="Product_Status" xml:space="preserve">
+    <value>Product Status</value>
+  </data>
+  <data name="Product_Weight" xml:space="preserve">
+    <value>Product Weight</value>
+  </data>
+  <data name="Purchase" xml:space="preserve">
+    <value>Purchase</value>
+  </data>
+  <data name="Purchase_Mail" xml:space="preserve">
+    <value>Purchase contact mail</value>
+  </data>
+  <data name="Purchase_Person" xml:space="preserve">
+    <value>Purchase Person</value>
+  </data>
+  <data name="Purchase_Plan" xml:space="preserve">
+    <value>Purchase Plan</value>
+  </data>
+  <data name="Purchase_Remark" xml:space="preserve">
+    <value>Purchase remark</value>
+  </data>
+  <data name="P_SEQ" xml:space="preserve">
+    <value>Product Sequence</value>
+  </data>
+  <data name="Quote_Class" xml:space="preserve">
+    <value>Quote class</value>
+  </data>
+  <data name="Rank" xml:space="preserve">
+    <value>Rank</value>
+  </data>
+  <data name="Reference" xml:space="preserve">
+    <value>Reference</value>
+  </data>
+  <data name="Reference_Number" xml:space="preserve">
+    <value>Reference number</value>
+  </data>
   <data name="Remark" xml:space="preserve">
     <value>Remark</value>
   </data>
+  <data name="Remark_Develop" xml:space="preserve">
+    <value>Remark Develop</value>
+  </data>
+  <data name="Remark_Purchase" xml:space="preserve">
+    <value>Remark Purchase</value>
+  </data>
+  <data name="Repeat_1_Rank_Product" xml:space="preserve">
+    <value>Can not insert repeat product of 1 rank.</value>
+  </data>
+  <data name="Repeat_Copy_Product" xml:space="preserve">
+    <value>New BOM repeat with source product</value>
+  </data>
+  <data name="Report" xml:space="preserve">
+    <value>Report</value>
+  </data>
+  <data name="Re_Select" xml:space="preserve">
+    <value>Re Select</value>
+  </data>
+  <data name="Sale_Model" xml:space="preserve">
+    <value>Sale_Model</value>
+  </data>
   <data name="Sample" xml:space="preserve">
     <value>Sample</value>
+  </data>
+  <data name="Sample_Product_No" xml:space="preserve">
+    <value>Sample Product No</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
@@ -243,14 +705,56 @@
   <data name="Select_Product_Alert" xml:space="preserve">
     <value>Please select product</value>
   </data>
+  <data name="SEQ" xml:space="preserve">
+    <value>Sequence</value>
+  </data>
   <data name="Settings" xml:space="preserve">
     <value>Setttings</value>
+  </data>
+  <data name="Shipping_Agent" xml:space="preserve">
+    <value>Shipping agent</value>
+  </data>
+  <data name="Shipping_Notes" xml:space="preserve">
+    <value>Shipping notes</value>
+  </data>
+  <data name="Shipping_Schedule" xml:space="preserve">
+    <value>Shipping schedule</value>
+  </data>
+  <data name="Show_Original_Image" xml:space="preserve">
+    <value>Show Original Image</value>
+  </data>
+  <data name="Show_Small_Image" xml:space="preserve">
+    <value>Show Small Image</value>
   </data>
   <data name="Speace" xml:space="preserve">
     <value> </value>
   </data>
+  <data name="Special_Document" xml:space="preserve">
+    <value>Special document</value>
+  </data>
+  <data name="Stop_Date" xml:space="preserve">
+    <value>Stop Date</value>
+  </data>
+  <data name="SUM_TWD" xml:space="preserve">
+    <value>SUM TWD Price</value>
+  </data>
+  <data name="SUM_USD" xml:space="preserve">
+    <value>SUM USD Price</value>
+  </data>
   <data name="Supplier" xml:space="preserve">
     <value>Supplier</value>
+  </data>
+  <data name="Supplier_Model" xml:space="preserve">
+    <value>Supplier Model</value>
+  </data>
+  <data name="Supplier_Name" xml:space="preserve">
+    <value>Supplier Name</value>
+  </data>
+  <data name="Supplier_No" xml:space="preserve">
+    <value>Supplier No</value>
+  </data>
+  <data name="Supplier_Short_Name" xml:space="preserve">
+    <value>Supplier Short Name</value>
   </data>
   <data name="S_No_ATC_Hint" xml:space="preserve">
     <value>After input data, Select supplier</value>
@@ -258,10 +762,52 @@
   <data name="Tel" xml:space="preserve">
     <value>Tel Number</value>
   </data>
+  <data name="Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="Trademark" xml:space="preserve">
+    <value>Trademark</value>
+  </data>
+  <data name="TWD_Price" xml:space="preserve">
+    <value>TWD Price</value>
+  </data>
+  <data name="TW_Customs_Clearance" xml:space="preserve">
+    <value>TW_Customs clearance</value>
+  </data>
   <data name="Type" xml:space="preserve">
     <value>Type</value>
+  </data>
+  <data name="Unit" xml:space="preserve">
+    <value>Unit</value>
+  </data>
+  <data name="Update_Date" xml:space="preserve">
+    <value>Update Date</value>
   </data>
   <data name="Update_Success" xml:space="preserve">
     <value>Update success</value>
   </data>
+  <data name="Update_User" xml:space="preserve">
+    <value>Update User</value>
+  </data>
+  <data name="USD_Price" xml:space="preserve">
+    <value>Usd Price</value>
+  </data>
+  <data name="Web" xml:space="preserve">
+    <value>Official website</value>
+  </data>
+  <data name="Working_Hours" xml:space="preserve">
+    <value>Working Hours(minute)</value>
+  </data>
+  <data name="Z" xml:space="preserve">
+    <value>Pinyin</value>
+  </data>
+	<data name="Quote_MT" xml:space="preserve">
+    <value>Quote Maintain</value>
+  </data>
+	<data name="Quote_Query" xml:space="preserve">
+    <value>Quote Search</value>
+  </data>
+	<data name="Quote_Base" xml:space="preserve">
+    <value>Quotation Create</value>
+
 </root>

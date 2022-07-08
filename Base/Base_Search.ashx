@@ -64,9 +64,9 @@ public class Base_Search : IHttpHandler, IRequiresSessionState
                     cmd.CommandText = @" SELECT TOP 500 P.[客戶簡稱], P.[頤坊型號], P.[產品說明], P.[單位], P.[客戶型號], P.[廠商簡稱], P.[廠商編號], C.[產品狀態], C.[銷售型號],
                                                         C.[產品一階], C.[產品二階], C.[產品三階], C.[國際條碼], P.[客戶編號], P.[商標], P.[開發中], P.[序號], P.[更新人員],
                                             CONVERT(VARCHAR(20),C.[停用日期],23) [停用日期],
-                                         	LEFT(RTRIM(CONVERT(VARCHAR(20),P.[更新日期],20)),16) [更新日期], P.P_SEQ, P.[更新日期] [Sort]
+                                         	LEFT(RTRIM(CONVERT(VARCHAR(20),P.[更新日期],20)),16) [更新日期], P.COST_SEQ, P.[更新日期] [Sort]
                                          FROM Dc2..byrlu P
-                                         	INNER JOIN Dc2..suplu C ON P.P_SEQ = C.[序號]
+                                         	INNER JOIN Dc2..suplu C ON P.COST_SEQ = C.[序號]
                                          WHERE P.[頤坊型號] LIKE @IM + '%'
                                             AND 
                                             (   
@@ -145,7 +145,7 @@ public class Base_Search : IHttpHandler, IRequiresSessionState
                             SEQ = sdr["序號"],
                             Update_User = sdr["更新人員"],
                             Update_Date = sdr["更新日期"],
-                            Cost_SEQ = sdr["P_SEQ"],
+                            Cost_SEQ = sdr["COST_SEQ"],
                         });
                     }
                     break;

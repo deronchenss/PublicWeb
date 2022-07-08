@@ -31,16 +31,25 @@ public class UC_Search : IHttpHandler, IRequiresSessionState
                 case "Supplier_Search":
                     cmd.CommandText = @" SELECT TOP 100 [序號], [開發中], [廠商編號], [廠商簡稱], [連絡人採購], [電話], [公司地址]
                                          FROM Dc2..sup
-                                         WHERE [廠商編號] LIKE @S_No + '%' AND [廠商簡稱] LIKE '%' + @S_SName + '%' ";
+                                         WHERE [廠商編號] LIKE @S_No + '%' AND [廠商簡稱] LIKE '%' + @S_SName + '%'
+                                         ORDER BY [更新日期] DESC ";
                     cmd.Parameters.AddWithValue("S_No", context.Request["S_No"]);
                     cmd.Parameters.AddWithValue("S_SName", context.Request["S_SName"]);
                     break;
                 case "Product_Search":
                     cmd.CommandText = @" SELECT TOP 100 [序號], [開發中], [頤坊型號], [廠商編號], [廠商簡稱], [單位], [產品說明]
                                          FROM Dc2..suplu
-                                         WHERE [頤坊型號] LIKE @IM + '%' AND [廠商編號] LIKE '%' + @S_No + '%' ";
+                                         WHERE [頤坊型號] LIKE @IM + '%' AND [廠商編號] LIKE '%' + @S_No + '%'
+                                         ORDER BY [更新日期] DESC ";
                     cmd.Parameters.AddWithValue("IM", context.Request["IM"]);
                     cmd.Parameters.AddWithValue("S_No", context.Request["S_No"]);
+                    break;                        
+                case "Customer_Search":
+                    cmd.CommandText = @" SELECT TOP 100 [序號], [客戶編號], [客戶簡稱], [客戶名稱], [負責人], [email], LEFT([備註],30) + IIF(LEN([備註]) > 30,'...','')  [備註]
+                                         FROM Dc2..byr
+                                         WHERE [客戶編號] LIKE @C_No + '%' AND [客戶簡稱] LIKE '%' + @C_SName + '%' ";
+                    cmd.Parameters.AddWithValue("C_No", context.Request["C_No"]);
+                    cmd.Parameters.AddWithValue("C_SName", context.Request["C_SName"]);
                     break;
             }
             cmd.Connection = conn;
@@ -75,6 +84,21 @@ public class UC_Search : IHttpHandler, IRequiresSessionState
                             S_SName = sdr["廠商簡稱"],
                             Unit = sdr["單位"],
                             PI = sdr["產品說明"],
+                        });
+                    }
+                    break;                        
+                case "Customer_Search":
+                    while (sdr.Read())
+                    {
+                        LT.Add(new
+                        {
+                            SEQ = sdr["序號"],
+                            C_No = sdr["客戶編號"],
+                            C_SName = sdr["客戶簡稱"],
+                            C_Name = sdr["客戶名稱"],
+                            Principal = sdr["負責人"],
+                            Mail = sdr["email"],
+                            Remark = sdr["備註"],
                         });
                     }
                     break;

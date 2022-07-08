@@ -12,13 +12,21 @@
     <title>MP</title>
     <link rel="shortcut icon" type="image/jpg" href="/images/ivan_logo.ico"/>
 
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+    <%--<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">--%>
+    <link href="css/css.css" rel="stylesheet" />
     <link rel="stylesheet" href="/fonts/icomoon/style.css">
     <link rel="stylesheet" href="/css/owl.carousel.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/Ivan_Style.css">
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+    <%--<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">--%>
+    <link href="/css/jquery-ui.css" rel="stylesheet" />
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/jquery.sticky.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/jquery-ui.js"></script>
+    <link href="/css/jquery.loading.min.css" rel="stylesheet" />
+    <script src="/js/jquery.loading.min.js"></script>
 
     <style type="text/css">
         .dataTables_length, .dataTables_length select{ font-size: 13px;}
@@ -59,23 +67,12 @@
         .BTN:hover {
             opacity: 0.8;
         }
-
-
     </style>
-
-    <script src="/js/jquery-3.6.0.min.js"></script>
-    <%--<script src="js/jquery-3.3.1.min.js"></script>--%>
-
-    <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/jquery.sticky.js"></script>
-    <script src="/js/main.js"></script>
-    <script src="/js/jquery-ui.js"></script>
-    <%--<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>--%>
 
     <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>
 </head>
-<body style="width:auto;height:auto">
+<body>
     <form id="form1" runat="server">
         <div class="site-mobile-menu site-navbar-target">
             <div class="site-mobile-menu-header">
@@ -85,7 +82,6 @@
             </div>
             <div class="site-mobile-menu-body"></div>
         </div>
-
 
         <header class="site-navbar js-sticky-header site-navbar-target" role="banner">
             <div class="container">
@@ -105,15 +101,17 @@
                                 <li class="has-children">
                                     <a href="#" class="nav-link" style="vertical-align:sub;" IVM_PERMISSIONS="1"><%=Resources.MP.Base%><%--基本檔--%></a>
                                     <ul class="dropdown">
+                                        <li><a href="/Base/Model_Search.aspx" IVM_PERMISSIONS="37"><%=Resources.MP.Model_Search%>
+                                        </a></li>
                                         <li class="has-children">
                                             <a href="#" IVM_PERMISSIONS="23"><%--廠商--%><%=Resources.MP.Supplier%>
                                             </a>
                                             <ul class="dropdown">
-                                                <li><a href="/Supplier/Supplier1.aspx" IVM_PERMISSIONS="24"><%--廠商查詢--%><%=Resources.MP.Supplier%><%=Resources.MP.Speace%><%=Resources.MP.Search%>
+                                                <li><a href="/Base/Supplier/Supplier1.aspx" IVM_PERMISSIONS="24"><%--廠商查詢--%><%=Resources.MP.Supplier%><%=Resources.MP.Speace%><%=Resources.MP.Search%>
                                                     </a></li>
-                                                <li><a href="/Supplier/Supplier2.aspx" IVM_PERMISSIONS="25"><%--廠商維護--%><%=Resources.MP.Supplier%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
+                                                <li><a href="/Base/Supplier/Supplier_MT.aspx" IVM_PERMISSIONS="25"><%--廠商維護--%><%=Resources.MP.Supplier%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
                                                     </a></li>
-                                                <li><a href="#" IVM_PERMISSIONS="26"><%--廠商類別設定--%><%=Resources.MP.Supplier%><%=Resources.MP.Speace%><%=Resources.MP.Type%><%=Resources.MP.Speace%><%=Resources.MP.Settings%>(還沒做)
+                                                <li><a href="#" IVM_PERMISSIONS="26"><%--廠商類別設定--%><%=Resources.MP.Supplier%><%=Resources.MP.Speace%><%=Resources.MP.Type%><%=Resources.MP.Speace%><%=Resources.MP.Settings%>(X)
                                                     </a></li>
                                             </ul>
                                         </li>
@@ -121,9 +119,9 @@
                                             <a href="#" IVM_PERMISSIONS="22"><%--客戶--%><%=Resources.MP.Customer%>
                                             </a>
                                             <ul class="dropdown">
-                                                <li><a href="/Customer/Customer1.aspx" IVM_PERMISSIONS="27"><%--客戶查詢--%><%=Resources.MP.Customer%><%=Resources.MP.Speace%><%=Resources.MP.Search%>
+                                                <li><a href="/Base/Customer/Customer1.aspx" IVM_PERMISSIONS="27"><%--客戶查詢--%><%=Resources.MP.Customer%><%=Resources.MP.Speace%><%=Resources.MP.Search%>
                                                     </a></li>
-                                                <li><a href="/Customer/Customer2.aspx" IVM_PERMISSIONS="28"><%--客戶維護--%><%=Resources.MP.Customer%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
+                                                <li><a href="/Base/Customer/Customer_MT.aspx" IVM_PERMISSIONS="28"><%--客戶維護--%><%=Resources.MP.Customer%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
                                                     </a></li>
                                             </ul>
                                         </li>
@@ -131,11 +129,11 @@
                                             <a href="#" IVM_PERMISSIONS="29"><%=Resources.MP.Product%>
                                             </a>
                                             <ul class="dropdown">
-                                                <li><a href="/Cost/Cost1.aspx" IVM_PERMISSIONS="30"><%=Resources.MP.Product%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
+                                                <li><a href="/Base/Cost/Cost_MT.aspx" IVM_PERMISSIONS="30"><%=Resources.MP.Product%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
                                                     </a></li>
-                                                <li><a href="/Cost/Cost_Apply.aspx" IVM_PERMISSIONS="33"><%=Resources.MP.Product%><%=Resources.MP.Speace%><%=Resources.MP.Applyopen%>
+                                                <li><a href="/Base/Cost/Cost_Apply.aspx" IVM_PERMISSIONS="33"><%=Resources.MP.Product%><%=Resources.MP.Speace%><%=Resources.MP.Applyopen%>
                                                     </a></li>
-                                                <li><a href="/Cost/Cost_Approve.aspx" IVM_PERMISSIONS="34"><%=Resources.MP.Product%><%=Resources.MP.Speace%><%=Resources.MP.Approve%>
+                                                <li><a href="/Base/Cost/Cost_Approve.aspx" IVM_PERMISSIONS="34"><%=Resources.MP.Product%><%=Resources.MP.Speace%><%=Resources.MP.Approve%>
                                                     </a></li>
                                             </ul>
                                         </li>
@@ -143,7 +141,7 @@
                                             <a href="#" IVM_PERMISSIONS="35">Price
                                             </a>
                                             <ul class="dropdown">
-                                                <li><a href="/Price/Price_MT.aspx" IVM_PERMISSIONS="36">Price<%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
+                                                <li><a href="/Base/Price/Price_MT.aspx" IVM_PERMISSIONS="36">Price<%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
                                                     </a></li>
                                             </ul>
                                         </li>
@@ -151,7 +149,7 @@
                                             <a href="#" IVM_PERMISSIONS="31">BOM
                                             </a>
                                             <ul class="dropdown">
-                                                <li><a href="/BOM/BOM1.aspx" IVM_PERMISSIONS="32">BOM<%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
+                                                <li><a href="/Base/BOM/BOM1.aspx" IVM_PERMISSIONS="32">BOM<%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
                                                     </a></li>
                                             </ul>
                                         </li>
@@ -199,8 +197,8 @@
                                         </li>
                                     </ul>
                                 </li>
-                                 <li class="has-children">
-                                    <a href="#about-section" class="nav-link" style="vertical-align:sub;" IVM_PERMISSIONS="4"><%--開發--%><%=Resources.MP.DEV%></a>
+                                <li class="has-children">
+                                    <a href="#about-section" class="nav-link" style="vertical-align: sub;" ivm_permissions="4"><%--開發--%><%=Resources.MP.Develop%></a>
                                     <ul class="dropdown">
                                         <li class="has-children">
                                             <a href="#">樣品開發</a>
@@ -234,12 +232,6 @@
                                                 </li>
                                             </ul>
                                         </li>
-                                        <%--<li>
-                                            <a href="#" onclick="document.cookie='Language=';javascript:location.reload();">中文</a>
-                                        </li>
-                                        <li>
-                                            <a href="#1" onclick="document.cookie='Language=EN';javascript:location.reload();">English</a>
-                                        </li>--%>
                                         <li>
                                             <a href="\Login.aspx"><%=Resources.MP.Logout%></a>&nbsp;
                                         </li>
@@ -254,18 +246,15 @@
             </div>
         </header>
         <div class="hero" style="height: 10px;width:100%;margin:auto">
-            <%--<span style="font-size:small;text-wrap:none;">&nbsp;User: <%=(Request.Cookies.Get("SE") == null) ? "Demo" : Request.Cookies.Get("SE").Value %></span>--%>
+            <%--Show_User_Name--%>
+            <span style="font-size:small;text-wrap:none;">&nbsp;User: <%=(Session["Account"] == null) ? "Demo" : Session["Account"].ToString().Trim() %></span>
             &nbsp;<span style="font-size:small;text-wrap:none;" id="Session_User"></span>
             <%--if無Session時退回首頁--%>
             <%--<div style="float:right;">
                 <a href="\Login2.aspx">Logout</a>&nbsp;
             </div>--%>
             <br />
-                        <%--<input type="submit" style="z-index:99999999;position: relative" id="Change_SS" value="Change_Session_Fatial" onclick="document.cookie='SE=Fatial'" />
-                        <input type="submit" style="z-index:99999999;position: relative" id="Change_SS2" value="Change_Session_Eric" onclick="document.cookie='SE=Eric'" />--%>
         </div>
-        <%--<br />
-        <br />--%>
         <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
         </asp:ContentPlaceHolder>
         <script type="text/javascript">

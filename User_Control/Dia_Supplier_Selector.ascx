@@ -20,21 +20,25 @@
             $('#SSD_Div_DT').css('display', '');
 
             $.ajax({
-                url: "/User_Control/UC_Search.ashx",
+                //url: "/User_Control/UC_Search.ashx",
+                url: "/Web_Service/Dialog_DataBind.asmx/Supplier_Search",
                 data: {
                     "S_No": $('#SSD_TB_S_No').val(),
                     "S_SName": $('#SSD_TB_S_SName').val(),
-                    "Call_Type": "Supplier_Search"
                 },
                 cache: false,
                 type: "POST",
                 datatype: "json",
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                //contentType: "application/json; charset=utf-8",
+                //success: function (response) {
                 success: function (response) {
+                    console.warn(JSON.parse(response));
+                    
                     $('#SSD_Table_Supplier').DataTable({
-                        "data": response,
+                        "data": JSON.parse(response),
                         "destroy": true,
-                        "order": [[2, "desc"]],
+                        "order": [[2, "asc"]],
                         "lengthMenu": [
                             [5, 10, 20, -1],
                             [5, 10, 20, "All"],
@@ -43,16 +47,16 @@
                             {
                                 data: null, title: "",
                                 render: function (data, type, row) {
-                                    return '<input type="button" class="BTN_Green" value="' + '<%=Resources.MP.Select%>' + '">'
+                                    return '<input type="button" class="SUP_SEL" value="' + '<%=Resources.MP.Select%>' + '">'
                                 }
                             },
-                            { data: "SEQ", title: "<%=Resources.BOM.P_SEQ%>" },
-                            { data: "DVN", title: "<%=Resources.BOM.Developing%>" },
-                            { data: "S_No", title: "<%=Resources.BOM.Supplier_No%>" },
-                            { data: "S_SName", title: "<%=Resources.BOM.Supplier_Short_Name%>" },
-                            { data: "Purchase_Person", title: "<%=Resources.Supplier.Purchase_Person%>" },
-                            { data: "TEL", title: "<%=Resources.Supplier.Tel%>" },
-                            { data: "Address", title: "<%=Resources.Supplier.Company_Address%>" }
+                            { data: "SEQ", title: "<%=Resources.MP.COST_SEQ%>" },
+                            <%--{ data: "DVN", title: "<%=Resources.MP.Developing%>" },--%>
+                            { data: "S_No", title: "<%=Resources.MP.Supplier_No%>" },
+                            { data: "S_SName", title: "<%=Resources.MP.Supplier_Short_Name%>" },
+                            { data: "Purchase_Person", title: "<%=Resources.MP.Purchase_Person%>" },
+                            { data: "TEL", title: "<%=Resources.MP.Tel%>" },
+                            { data: "Address", title: "<%=Resources.MP.Company_Address%>" }
                         ],
                         "columnDefs": [{
                             targets: [0],
@@ -71,14 +75,14 @@
     });
 </script>
 <style>
-    .BTN_Green {
+    .SUP_SEL {
         color: white;
         border-radius: 4px;
         border: 5px blue none;
         text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
         background: rgb(28, 184, 65);
     }
-        .BTN_Green:hover {
+        .SUP_SEL:hover {
             opacity: 0.8;
         }
 </style>
@@ -86,11 +90,11 @@
 <div id="Search_Supplier_Dialog" style="display: none;">
     <table border="0" style="margin: 0 auto;" id="SSD_Table">
         <tr style="text-align: right;">
-            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Price.Supplier_No%></td>
+            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Supplier_No%></td>
             <td style="text-align: left; width: 15%;">
                 <input style="width: 90%; height: 25px;" id="SSD_TB_S_No" />
             </td>
-            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Supplier.Supplier_Short_Name%></td>
+            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Supplier_Short_Name%></td>
             <td style="text-align: left; width: 15%;">
                 <input style="width: 90%; height: 25px;" id="SSD_TB_S_SName" />
             </td>

@@ -50,30 +50,30 @@
                                         ["All", 5, 10, 20],
                                     ],
                                     "columns": [
-                                        { data: "S_SName", title: "<%=Resources.Cost.Supplier_Short_Name%>" },
-                                        { data: "IM", title: "<%=Resources.Cost.Ivan_Model%>" },
-                                        { data: "CPI", title: "<%=Resources.Cost.Product_Information%>" },
-                                        { data: "Unit", title: "<%=Resources.Cost.Unit%>" },
-                                        { data: "SupM", title: "<%=Resources.Cost.Supplier_Model%>" },
-                                        { data: "SaleM", title: "<%=Resources.Cost.Sale_Model%>" },
-                                        { data: "SampleM", title: "<%=Resources.Cost.Sample_Product_No%>" },
-                                        { data: "PS", title: "<%=Resources.Cost.Product_Status%>" },
+                                        { data: "S_SName", title: "<%=Resources.MP.Supplier_Short_Name%>" },
+                                        { data: "IM", title: "<%=Resources.MP.Ivan_Model%>" },
+                                        { data: "CPI", title: "<%=Resources.MP.Product_Information%>" },
+                                        { data: "Unit", title: "<%=Resources.MP.Unit%>" },
+                                        { data: "SupM", title: "<%=Resources.MP.Supplier_Model%>" },
+                                        { data: "SaleM", title: "<%=Resources.MP.Sale_Model%>" },
+                                        { data: "SampleM", title: "<%=Resources.MP.Sample_Product_No%>" },
+                                        { data: "PS", title: "<%=Resources.MP.Product_Status%>" },
                                         { data: "PC1", title: "<%=Resources.MP.Product_Class%>1" },
                                         { data: "PC2", title: "<%=Resources.MP.Product_Class%>2" },
                                         { data: "PC3", title: "<%=Resources.MP.Product_Class%>3" },
                                         { data: "IN", title: "<%=Resources.MP.International_No%>" },
-                                        { data: "S_No", title: "<%=Resources.Supplier.Supplier_NO%>" },
-                                        { data: "SD", title: "<%=Resources.Cost.Stop_Date%>" },
-                                        { data: "DVN", title: "<%=Resources.Cost.Developing%>" },
-                                        <%--{ data: "SEQ", title: "<%=Resources.Cost.SEQ%>" },--%>
+                                        { data: "S_No", title: "<%=Resources.MP.Supplier_No%>" },
+                                        { data: "SD", title: "<%=Resources.MP.Stop_Date%>" },
+                                        { data: "DVN", title: "<%=Resources.MP.Developing%>" },
+                                        <%--{ data: "SEQ", title: "<%=Resources.MP.SEQ%>" },--%>
                                         {
-                                            data: "SEQ", title: "<%=Resources.BOM.P_SEQ%>",
+                                            data: "SEQ", title: "<%=Resources.MP.COST_SEQ%>",
                                             render: function (data, type, row) {
                                                 return '<span class="Cost_SEQ">' + data + '</span>';
                                             }
                                         },
-                                        { data: "Update_User", title: "<%=Resources.Cost.Update_User%>" },
-                                        { data: "Update_Date", title: "<%=Resources.Cost.Update_Date%>" },
+                                        { data: "Update_User", title: "<%=Resources.MP.Update_User%>" },
+                                        { data: "Update_Date", title: "<%=Resources.MP.Update_Date%>" },
                                     ],
                                     "language": {
                                         "lengthMenu": "&nbsp;Show _MENU_ entries"
@@ -113,28 +113,28 @@
                                         ["All", 5, 10, 20],
                                     ],
                                     "columns": [
-                                        { data: "C_SName", title: "<%=Resources.Price.Customer_Short_Name%>" },
-                                        { data: "IM", title: "<%=Resources.Cost.Ivan_Model%>" },
-                                        { data: "PPI", title: "<%=Resources.Price.Price_Information%>" },
-                                        { data: "Unit", title: "<%=Resources.Price.Unit%>" },
-                                        { data: "CM", title: "<%=Resources.Price.Customer_Model%>" },
-                                        { data: "S_SName", title: "<%=Resources.Cost.Supplier_Short_Name%>" },
-                                        { data: "S_No", title: "<%=Resources.Cost.Supplier_No%>" },
-                                        { data: "PS", title: "<%=Resources.Cost.Product_Status%>" },
+                                        { data: "C_SName", title: "<%=Resources.MP.Customer_Short_Name%>" },
+                                        { data: "IM", title: "<%=Resources.MP.Ivan_Model%>" },
+                                        { data: "PPI", title: "<%=Resources.MP.Price_Information%>" },
+                                        { data: "Unit", title: "<%=Resources.MP.Unit%>" },
+                                        { data: "CM", title: "<%=Resources.MP.Customer_Model%>" },
+                                        { data: "S_SName", title: "<%=Resources.MP.Supplier_Short_Name%>" },
+                                        { data: "S_No", title: "<%=Resources.MP.Supplier_No%>" },
+                                        { data: "PS", title: "<%=Resources.MP.Product_Status%>" },
                                         { data: "PC1", title: "<%=Resources.MP.Product_Class%>1" },
                                         { data: "PC2", title: "<%=Resources.MP.Product_Class%>2" },
                                         { data: "PC3", title: "<%=Resources.MP.Product_Class%>3" },
                                         { data: "IN", title: "<%=Resources.MP.International_No%>" },
-                                        { data: "SD", title: "<%=Resources.Cost.Stop_Date%>" },
-                                        { data: "C_No", title: "<%=Resources.Price.Customer_No%>" },
-                                        { data: "Marks", title: "<%=Resources.Customer.Marks%>" },
-                                        { data: "DVN", title: "<%=Resources.Cost.Developing%>" },
-                                        { data: "SEQ", title: "<%=Resources.Cost.SEQ%>" },
-                                        { data: "Update_User", title: "<%=Resources.Cost.Update_User%>" },
-                                        { data: "Update_Date", title: "<%=Resources.Cost.Update_Date%>" },
-                                        <%--{ data: "Cost_SEQ", title: "<%=Resources.BOM.P_SEQ%>" },--%>
+                                        { data: "SD", title: "<%=Resources.MP.Stop_Date%>" },
+                                        { data: "C_No", title: "<%=Resources.MP.Customer_No%>" },
+                                        { data: "Marks", title: "<%=Resources.MP.Marks%>" },
+                                        { data: "DVN", title: "<%=Resources.MP.Developing%>" },
+                                        { data: "SEQ", title: "<%=Resources.MP.SEQ%>" },
+                                        { data: "Update_User", title: "<%=Resources.MP.Update_User%>" },
+                                        { data: "Update_Date", title: "<%=Resources.MP.Update_Date%>" },
+                                        <%--{ data: "Cost_SEQ", title: "<%=Resources.MP.COST_SEQ%>" },--%>
                                         {
-                                            data: "Cost_SEQ", title: "<%=Resources.BOM.P_SEQ%>",
+                                            data: "Cost_SEQ", title: "<%=Resources.MP.COST_SEQ%>",
                                             render: function (data, type, row) {
                                                 return '<span class="Cost_SEQ">' + data + '</span>';
                                             }
@@ -169,9 +169,9 @@
                     $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
 
                     $.ajax({
-                        url: "/BOM/BOM_Search.ashx",
+                        url: "/Base/BOM/BOM_Search.ashx",
                         data: {
-                            "P_SEQ": SEQ,
+                            "COST_SEQ": SEQ,
                             "Call_Type": "GET_IMG"
                         },
                         cache: false,
@@ -260,11 +260,11 @@
             $('#DDL_Data_Souce').on('change', function () {
                 switch ($(this).val()) {
                     case "Cost":
-                        $('.Cost').css('display', '');
+                        $('.MP.').css('display', '');
                         $('.Price').css('display', 'none');
                         break;
                     case "Price":
-                        $('.Cost').css('display', 'none');
+                        $('.MP.').css('display', 'none');
                         $('.Price').css('display', '');
                         break;
                 }
@@ -305,11 +305,11 @@
                     <option>Price</option>
                 </select>
             </td>
-            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Ivan_Model%></td>
+            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Ivan_Model%></td>
             <td style="text-align: left; width: 15%;">
                 <input id="TB_IM" style="width:100%;" />
             </td>
-            <td style="text-align: right; text-wrap: none; width: 10%;" class="Cost"><%=Resources.Cost.Sample_Product_No%></td>
+            <td style="text-align: right; text-wrap: none; width: 10%;" class="Cost"><%=Resources.MP.Sample_Product_No%></td>
             <td style="text-align: left; width: 15%;" class="Cost">
                 <input id="TB_Sample_Model" style="width:100%;" />
             </td>
@@ -326,20 +326,20 @@
             </td>
         </tr>
         <tr>
-            <td style="text-align: right; text-wrap: none; width: 10%;" class="Cost"><%=Resources.Supplier.Supplier_NO%></td>
+            <td style="text-align: right; text-wrap: none; width: 10%;" class="Cost"><%=Resources.MP.Supplier_No%></td>
             <td style="text-align: left; width: 15%;" class="Cost">
                 <input id="TB_S_No" placeholder="<%=Resources.MP.S_No_ATC_Hint%>" style="width: 100%;" />
             </td>
-            <td style="text-align: right; text-wrap: none; width: 10%;" class="Cost"><%=Resources.Supplier.Supplier_Short_Name%></td>
+            <td style="text-align: right; text-wrap: none; width: 10%;" class="Cost"><%=Resources.MP.Supplier_Short_Name%></td>
             <td style="text-align: left; width: 15%;" class="Cost">
                 <input id="TB_S_SName" style="width: 100%;" disabled="disabled" />
             </td>
 
-            <td style="text-align: right; text-wrap: none; width: 10%;display:none;" class="Price"><%=Resources.Customer.Customer_No%></td>
+            <td style="text-align: right; text-wrap: none; width: 10%;display:none;" class="Price"><%=Resources.MP.Customer_No%></td>
             <td style="text-align: left; width: 15%;display:none;" class="Price">
                 <input id="TB_C_No" placeholder="<%=Resources.MP.C_No_ATC_Hint%>" style="width: 100%;" />
             </td>
-            <td style="text-align: right; text-wrap: none; width: 10%;display:none;" class="Price"><%=Resources.Customer.Customer_Short_Name%></td>
+            <td style="text-align: right; text-wrap: none; width: 10%;display:none;" class="Price"><%=Resources.MP.Customer_Short_Name%></td>
             <td style="text-align: left; width: 15%;display:none;" class="Price">
                 <input id="TB_C_SName" style="width: 100%;" disabled="disabled" />
             </td>
@@ -349,23 +349,23 @@
             </td>
         </tr>
         <tr>
-            <td style="text-align: right; text-wrap: none; width: 10%;" class="Cost"><%=Resources.Cost.Supplier_Model%></td>
+            <td style="text-align: right; text-wrap: none; width: 10%;" class="Cost"><%=Resources.MP.Supplier_Model%></td>
             <td style="text-align: left; width: 15%;" class="Cost">
                 <input id="TB_SM" style="width: 100%;" class="Cost" />
             </td>
-            <td style="text-align: right; text-wrap: none; width: 10%;display:none;" class="Price"><%=Resources.Price.Customer_Model%></td>
+            <td style="text-align: right; text-wrap: none; width: 10%;display:none;" class="Price"><%=Resources.MP.Customer_Model%></td>
             <td style="text-align: left; width: 15%;display:none;" class="Price">
                 <input id="TB_CM" style="width: 100%;display:none;" class="Price" />
             </td>
-            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.Cost.Sale_Model%></td>
+            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Sale_Model%></td>
             <td style="text-align: left; width: 15%;">
                 <input id="TB_SaleM" style="width: 100%;" />
             </td>
-            <td style="text-align: right; text-wrap: none; width: 10%;" class="Cost"><%=Resources.Cost.Product_Information%></td>
+            <td style="text-align: right; text-wrap: none; width: 10%;" class="Cost"><%=Resources.MP.Product_Information%></td>
             <td style="text-align: left; width: 15%;" class="Cost">
                 <input id="TB_CPI" style="width: 100%;" class="Cost" />
             </td>
-            <td style="text-align: right; text-wrap: none; width: 10%;display:none;" class="Price"><%=Resources.Price.Price_Information%></td>
+            <td style="text-align: right; text-wrap: none; width: 10%;display:none;" class="Price"><%=Resources.MP.Price_Information%></td>
             <td style="text-align: left; width: 15%;display:none;" class="Price">
                 <input id="TB_PPI" style="width: 100%;display:none;" class="Price" />
             </td>
@@ -377,8 +377,8 @@
 
     <div style="width: 99%; margin: 0 auto; background-color: white;">
         &nbsp;
-        <input type="button" class="V_BT" value="<%=Resources.Customer.Basic%>" onclick="$('.Div_D').css('display','none');$('#Div_Basic').css('width','100%');" disabled="disabled" />
-        <input type="button" class="V_BT" value="<%=Resources.Cost.Image%>" onclick="$('.Div_D').css('display','none');$('#Div_Image').css('display','');$('#Div_Basic').css('width','60%');$('#Div_Image').css('width','40%');" />
+        <input type="button" class="V_BT" value="<%=Resources.MP.Basic%>" onclick="$('.Div_D').css('display','none');$('#Div_Basic').css('width','100%');" disabled="disabled" />
+        <input type="button" class="V_BT" value="<%=Resources.MP.Image%>" onclick="$('.Div_D').css('display','none');$('#Div_Image').css('display','');$('#Div_Basic').css('width','60%');$('#Div_Image').css('width','40%');" />
     </div>
     <style type="text/css">
         .V_BT {
@@ -414,7 +414,7 @@
                 <tr>
                     <td style="text-align:center; width: 15%;" colspan="8">
                         <img id="IMG_I_IMG" src="#"  />
-                        <span id="IMG_I_IMG_Hint" style="display:none;"><%=Resources.Cost.Image_NotExists%></span>
+                        <span id="IMG_I_IMG_Hint" style="display:none;"><%=Resources.MP.Image_NotExists%></span>
                     </td>
                 </tr>
             </table>

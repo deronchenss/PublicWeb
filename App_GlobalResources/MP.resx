@@ -117,32 +117,122 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Account_Class" xml:space="preserve">
+    <value>帳務分類</value>
+  </data>
   <data name="Add" xml:space="preserve">
     <value>新增</value>
   </data>
   <data name="Address" xml:space="preserve">
     <value>地址</value>
   </data>
+  <data name="Add_Date" xml:space="preserve">
+    <value>新增日期</value>
+  </data>
+  <data name="Add_Item" xml:space="preserve">
+    <value>新增材料</value>
+  </data>
   <data name="Add_Success" xml:space="preserve">
     <value>新增成功</value>
+  </data>
+  <data name="Air_Shipping_Agent" xml:space="preserve">
+    <value>空運代理</value>
   </data>
   <data name="Applyopen" xml:space="preserve">
     <value>申請放行</value>
   </data>
+  <data name="Apply_Reason" xml:space="preserve">
+    <value>申請原因</value>
+  </data>
   <data name="Approve" xml:space="preserve">
     <value>審核</value>
+  </data>
+  <data name="Approve_alert" xml:space="preserve">
+    <value>確定要核准嗎？</value>
+  </data>
+  <data name="Area" xml:space="preserve">
+    <value>所在地</value>
   </data>
   <data name="Bank" xml:space="preserve">
     <value>銀行</value>
   </data>
+  <data name="Bank_Account" xml:space="preserve">
+    <value>銀行帳號</value>
+  </data>
+  <data name="Bank_Account_Header" xml:space="preserve">
+    <value>帳號抬頭</value>
+  </data>
+  <data name="Bank_Address" xml:space="preserve">
+    <value>銀行地址</value>
+  </data>
+  <data name="Bank_Branch_Code" xml:space="preserve">
+    <value>收款分行代號</value>
+  </data>
+  <data name="Bank_Head_Code" xml:space="preserve">
+    <value>收款總行代號</value>
+  </data>
+  <data name="Bank_Name" xml:space="preserve">
+    <value>銀行名稱</value>
+  </data>
   <data name="Base" xml:space="preserve">
     <value>基本檔</value>
+  </data>
+  <data name="Basic" xml:space="preserve">
+    <value>基本</value>
+  </data>
+  <data name="Batch_Update_Reason" xml:space="preserve">
+    <value>批次覆蓋原因</value>
+  </data>
+  <data name="BOM_Master" xml:space="preserve">
+    <value>BOM主檔</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>返回</value>
   </data>
   <data name="Cancel_Alert" xml:space="preserve">
     <value>返回將會清空資料，確定執行？</value>
+  </data>
+  <data name="Change_Log" xml:space="preserve">
+    <value>變更記錄</value>
+  </data>
+  <data name="Collect_Account" xml:space="preserve">
+    <value>收款人帳號</value>
+  </data>
+  <data name="Collect_Address" xml:space="preserve">
+    <value>收款人地址</value>
+  </data>
+  <data name="Collect_Bank_Address" xml:space="preserve">
+    <value>收款銀行地址</value>
+  </data>
+  <data name="Collect_Bank_Name" xml:space="preserve">
+    <value>收款銀行名稱</value>
+  </data>
+  <data name="Collect_Date" xml:space="preserve">
+    <value>收款日期</value>
+  </data>
+  <data name="Collect_EIN" xml:space="preserve">
+    <value>收款人統編</value>
+  </data>
+  <data name="Collect_Mail" xml:space="preserve">
+    <value>收款人Mail</value>
+  </data>
+  <data name="Collect_Name" xml:space="preserve">
+    <value>收款人戶名</value>
+  </data>
+  <data name="Collect_Nation" xml:space="preserve">
+    <value>收款地國別</value>
+  </data>
+  <data name="Collect_Person" xml:space="preserve">
+    <value>收款人員</value>
+  </data>
+  <data name="Combination" xml:space="preserve">
+    <value>組合</value>
+  </data>
+  <data name="Company_Address" xml:space="preserve">
+    <value>公司地址</value>
+  </data>
+  <data name="Confirm_Fill_Reason" xml:space="preserve">
+    <value>確定覆蓋現有申請原因？</value>
   </data>
   <data name="Copy" xml:space="preserve">
     <value>複製</value>
@@ -153,8 +243,38 @@
   <data name="Copy_Success" xml:space="preserve">
     <value>複製完成</value>
   </data>
+  <data name="COST_SEQ" xml:space="preserve">
+    <value>產品序號</value>
+  </data>
+  <data name="Create_Date" xml:space="preserve">
+    <value>新增日期</value>
+  </data>
+  <data name="Currency" xml:space="preserve">
+    <value>外幣幣別</value>
+  </data>
   <data name="Customer" xml:space="preserve">
     <value>客戶</value>
+  </data>
+  <data name="Customer_Model" xml:space="preserve">
+    <value>客戶型號</value>
+  </data>
+  <data name="Customer_Name" xml:space="preserve">
+    <value>客戶名稱</value>
+  </data>
+  <data name="Customer_No" xml:space="preserve">
+    <value>客戶編號</value>
+  </data>
+  <data name="Customer_Short_Name" xml:space="preserve">
+    <value>客戶簡稱</value>
+  </data>
+  <data name="Customer_Source" xml:space="preserve">
+    <value>客戶來源</value>
+  </data>
+  <data name="Customs_Broker" xml:space="preserve">
+    <value>報關行</value>
+  </data>
+  <data name="Customs_Clearance" xml:space="preserve">
+    <value>報關</value>
   </data>
   <data name="C_No_ATC_Hint" xml:space="preserve">
     <value>輸入部分編號or名稱後，選擇客戶</value>
@@ -162,14 +282,47 @@
   <data name="Data_Not_Exists_Alert" xml:space="preserve">
     <value>找不到任何相符資料</value>
   </data>
+  <data name="Delete_Item" xml:space="preserve">
+    <value>刪除材料</value>
+  </data>
+  <data name="Delivery_Address" xml:space="preserve">
+    <value>送貨地址</value>
+  </data>
+  <data name="Design_Image" xml:space="preserve">
+    <value>設計圖號</value>
+  </data>
+  <data name="Design_Person" xml:space="preserve">
+    <value>設計人員</value>
+  </data>
   <data name="Detail" xml:space="preserve">
     <value>明細</value>
   </data>
   <data name="Detail_Search" xml:space="preserve">
     <value>進階查詢</value>
   </data>
-	<data name="DEV" xml:space="preserve">
+  <data name="Develop" xml:space="preserve">
     <value>開發</value>
+  </data>
+  <data name="Developing" xml:space="preserve">
+    <value>開發中</value>
+  </data>
+  <data name="Develop_Mail" xml:space="preserve">
+    <value>E-mail開發</value>
+  </data>
+  <data name="Develop_Person" xml:space="preserve">
+    <value>連絡人開發</value>
+  </data>
+  <data name="Develop_Remark" xml:space="preserve">
+    <value>開發備註</value>
+  </data>
+  <data name="Domestic_Payment" xml:space="preserve">
+    <value>國內支付</value>
+  </data>
+  <data name="D_Count" xml:space="preserve">
+    <value>原料筆數</value>
+  </data>
+  <data name="D_SEQ" xml:space="preserve">
+    <value>明細序號</value>
   </data>
   <data name="Edit" xml:space="preserve">
     <value>修改</value>
@@ -177,8 +330,53 @@
   <data name="Edit_Alert" xml:space="preserve">
     <value>確定修改資料？</value>
   </data>
+  <data name="EIN" xml:space="preserve">
+    <value>統一編號</value>
+  </data>
+  <data name="Example" xml:space="preserve">
+    <value>說明</value>
+  </data>
+  <data name="Express_Delivery_Account" xml:space="preserve">
+    <value>快遞帳號</value>
+  </data>
+  <data name="Factory_Address" xml:space="preserve">
+    <value>工廠地址</value>
+  </data>
   <data name="Fax" xml:space="preserve">
     <value>傳真</value>
+  </data>
+  <data name="Final_Supplier" xml:space="preserve">
+    <value>最後完成者</value>
+  </data>
+  <data name="Finance_Mail" xml:space="preserve">
+    <value>財務Mail</value>
+  </data>
+  <data name="First_Contact" xml:space="preserve">
+    <value>初接觸日</value>
+  </data>
+  <data name="Gross_Weight" xml:space="preserve">
+    <value>毛重</value>
+  </data>
+  <data name="HK_Customs_Clearance" xml:space="preserve">
+    <value>香港報關</value>
+  </data>
+  <data name="Image" xml:space="preserve">
+    <value>圖型</value>
+  </data>
+  <data name="Image_NotExists" xml:space="preserve">
+    <value>查無圖片</value>
+  </data>
+  <data name="IMG_Enable" xml:space="preserve">
+    <value>圖型啟用</value>
+  </data>
+  <data name="Innerbox_Amount" xml:space="preserve">
+    <value>內盒數</value>
+  </data>
+  <data name="Innerbox_Amount_2" xml:space="preserve">
+    <value>內箱數</value>
+  </data>
+  <data name="Innerbox_Capacity" xml:space="preserve">
+    <value>內盒容量</value>
   </data>
   <data name="Insert" xml:space="preserve">
     <value>新增</value>
@@ -186,17 +384,71 @@
   <data name="International_No" xml:space="preserve">
     <value>國際條碼</value>
   </data>
+  <data name="Ivan_Model" xml:space="preserve">
+    <value>頤坊型號</value>
+  </data>
+  <data name="IV_Address" xml:space="preserve">
+    <value>IV列印地址</value>
+  </data>
   <data name="Language" xml:space="preserve">
     <value>語系</value>
+  </data>
+  <data name="Last_Price_Day" xml:space="preserve">
+    <value>最後價日</value>
   </data>
   <data name="Logout" xml:space="preserve">
     <value>登出</value>
   </data>
+  <data name="Mail_Group" xml:space="preserve">
+    <value>郵件群組</value>
+  </data>
   <data name="Maintenance" xml:space="preserve">
     <value>維護</value>
   </data>
+  <data name="Manufacture_Spec" xml:space="preserve">
+    <value>製造規格</value>
+  </data>
+  <data name="Mark" xml:space="preserve">
+    <value>註記</value>
+  </data>
+  <data name="Marks" xml:space="preserve">
+    <value>嘜頭</value>
+  </data>
+  <data name="Marks_Shape" xml:space="preserve">
+    <value>嘜頭形狀</value>
+  </data>
+  <data name="Marks_Word" xml:space="preserve">
+    <value>嘜頭文字</value>
+  </data>
   <data name="Master" xml:space="preserve">
     <value>主檔</value>
+  </data>
+  <data name="Master_Supplier_ALL" xml:space="preserve">
+    <value>最後完成者</value>
+  </data>
+  <data name="Master_Supplier_S_Name" xml:space="preserve">
+    <value>完成者簡稱</value>
+  </data>
+  <data name="Master_Supplier_S_No" xml:space="preserve">
+    <value>最後完成者</value>
+  </data>
+  <data name="Material_Amount" xml:space="preserve">
+    <value>用量</value>
+  </data>
+  <data name="Material_Model" xml:space="preserve">
+    <value>材料型號</value>
+  </data>
+  <data name="Material_Sell" xml:space="preserve">
+    <value>原料銷售</value>
+  </data>
+  <data name="Material_Supplier_ALL" xml:space="preserve">
+    <value>材料廠商</value>
+  </data>
+  <data name="Material_Supplier_No" xml:space="preserve">
+    <value>材料廠編</value>
+  </data>
+  <data name="Material_Supplier_Short_Name" xml:space="preserve">
+    <value>廠商簡稱</value>
   </data>
   <data name="Model_Search" xml:space="preserve">
     <value>型號查詢</value>
@@ -204,11 +456,143 @@
   <data name="More" xml:space="preserve">
     <value>其他</value>
   </data>
+  <data name="M_SEQ" xml:space="preserve">
+    <value>主檔序號</value>
+  </data>
   <data name="Nation" xml:space="preserve">
     <value>國名</value>
   </data>
+  <data name="Net_Weight" xml:space="preserve">
+    <value>淨重</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>新</value>
+  </data>
+  <data name="Not_Billing" xml:space="preserve">
+    <value>不發單</value>
+  </data>
+  <data name="Not_Computing_Cost" xml:space="preserve">
+    <value>不計算成本</value>
+  </data>
+  <data name="Not_Expand" xml:space="preserve">
+    <value>不展開</value>
+  </data>
+  <data name="Not_Show_Image" xml:space="preserve">
+    <value>不顯示圖片</value>
+  </data>
+  <data name="Old" xml:space="preserve">
+    <value>原</value>
+  </data>
+  <data name="Old_Ivan_Model" xml:space="preserve">
+    <value>原頤坊型號</value>
+  </data>
+  <data name="Old_Master_SEQ" xml:space="preserve">
+    <value>原主檔序號</value>
+  </data>
+  <data name="Old_Product_Information" xml:space="preserve">
+    <value>原產品資訊</value>
+  </data>
+  <data name="Old_Supplier" xml:space="preserve">
+    <value>原廠商</value>
+  </data>
   <data name="Order" xml:space="preserve">
     <value>訂單</value>
+  </data>
+  <data name="Outerbox_Height" xml:space="preserve">
+    <value>外箱高度</value>
+  </data>
+  <data name="Outerbox_Lenght" xml:space="preserve">
+    <value>外箱長度</value>
+  </data>
+  <data name="Outerbox_No" xml:space="preserve">
+    <value>外箱編號</value>
+  </data>
+  <data name="Outerbox_Weight" xml:space="preserve">
+    <value>外箱寬度</value>
+  </data>
+  <data name="Overseas_Payment" xml:space="preserve">
+    <value>海外支付</value>
+  </data>
+  <data name="Package" xml:space="preserve">
+    <value>包裝</value>
+  </data>
+  <data name="Package_Height" xml:space="preserve">
+    <value>包裝高度</value>
+  </data>
+  <data name="Package_Length" xml:space="preserve">
+    <value>包裝長度</value>
+  </data>
+  <data name="Package_Weight" xml:space="preserve">
+    <value>包裝寬度</value>
+  </data>
+  <data name="Packag_Request" xml:space="preserve">
+    <value>包裝要求</value>
+  </data>
+  <data name="Parent_Model" xml:space="preserve">
+    <value>上層型號</value>
+  </data>
+  <data name="Parent_Product_Information" xml:space="preserve">
+    <value>上層產品資訊</value>
+  </data>
+  <data name="Parent_Rank" xml:space="preserve">
+    <value>上層階級</value>
+  </data>
+  <data name="Parent_SEQ" xml:space="preserve">
+    <value>上層序號</value>
+  </data>
+  <data name="Parent_Supplier" xml:space="preserve">
+    <value>上層廠商</value>
+  </data>
+  <data name="Payment_Mode" xml:space="preserve">
+    <value>支付方式</value>
+  </data>
+  <data name="Payment_Terms" xml:space="preserve">
+    <value>付款方式</value>
+  </data>
+  <data name="PD_IMG" xml:space="preserve">
+    <value>材料圖檔</value>
+  </data>
+  <data name="D_COST_SEQ" xml:space="preserve">
+    <value>材料序號</value>
+  </data>
+  <data name="Person_Commodity" xml:space="preserve">
+    <value>連絡人大貨</value>
+  </data>
+  <data name="Person_Finance" xml:space="preserve">
+    <value>財務人員</value>
+  </data>
+  <data name="Person_Purchase" xml:space="preserve">
+    <value>採購人員</value>
+  </data>
+  <data name="Person_Sample" xml:space="preserve">
+    <value>連絡人樣品</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>行動電話</value>
+  </data>
+  <data name="Port" xml:space="preserve">
+    <value>港口</value>
+  </data>
+  <data name="Price_Condition" xml:space="preserve">
+    <value>價格條件</value>
+  </data>
+  <data name="Price_Curr" xml:space="preserve">
+    <value>外幣單價</value>
+  </data>
+  <data name="Price_Information" xml:space="preserve">
+    <value>價格資訊</value>
+  </data>
+  <data name="Price_T" xml:space="preserve">
+    <value>單價</value>
+  </data>
+  <data name="Price_TWD" xml:space="preserve">
+    <value>台幣單價</value>
+  </data>
+  <data name="Price_USD" xml:space="preserve">
+    <value>美元單價</value>
+  </data>
+  <data name="Principal" xml:space="preserve">
+    <value>負責人</value>
   </data>
   <data name="Product" xml:space="preserve">
     <value>Cost</value>
@@ -218,21 +602,87 @@
   </data>
   <data name="Product_Class" xml:space="preserve">
     <value>產品全階</value>
-  <data name="Quote_Base" xml:space="preserve">
-    <value>報價作業</value>
   </data>
-  <data name="Quote_MT" xml:space="preserve">
-    <value>報價作業維護</value>
+  <data name="Product_Height" xml:space="preserve">
+    <value>產品高度</value>
   </data>
-  <data name="Quote_Query" xml:space="preserve">
-    <value>每日報價查詢</value>
+  <data name="Product_Information" xml:space="preserve">
+    <value>產品資訊</value>
   </data>
+  <data name="Product_Information_Detail" xml:space="preserve">
+    <value>詳細說明</value>
+  </data>
+  <data name="Product_Length" xml:space="preserve">
+    <value>產品長度</value>
+  </data>
+  <data name="Product_SEQ" xml:space="preserve">
+    <value>產品序號</value>
+  </data>
+  <data name="Product_Status" xml:space="preserve">
+    <value>產品狀態</value>
+  </data>
+  <data name="Product_Weight" xml:space="preserve">
+    <value>產品寬度</value>
+  </data>
+  <data name="Purchase" xml:space="preserve">
+    <value>採購</value>
+  </data>
+  <data name="Purchase_Mail" xml:space="preserve">
+    <value>E-mail採購</value>
+  </data>
+  <data name="Purchase_Person" xml:space="preserve">
+    <value>連絡人採購</value>
+  </data>
+  <data name="Purchase_Plan" xml:space="preserve">
+    <value>採購</value>
+  </data>
+  <data name="Purchase_Remark" xml:space="preserve">
+    <value>採購備註</value>
+  </data>
+  <data name="P_SEQ" xml:space="preserve">
+    <value>產品序號</value>
+  </data>
+  <data name="Quote_Class" xml:space="preserve">
+    <value>報價等級</value>
+  </data>
+  <data name="Rank" xml:space="preserve">
+    <value>階層</value>
+  </data>
+  <data name="Reference" xml:space="preserve">
+    <value>參考</value>
+  </data>
+  <data name="Reference_Number" xml:space="preserve">
+    <value>參考號碼</value>
   </data>
   <data name="Remark" xml:space="preserve">
     <value>備註</value>
   </data>
+  <data name="Remark_Develop" xml:space="preserve">
+    <value>開發備註</value>
+  </data>
+  <data name="Remark_Purchase" xml:space="preserve">
+    <value>採購備註</value>
+  </data>
+  <data name="Repeat_1_Rank_Product" xml:space="preserve">
+    <value>不能重複建立1階產品</value>
+  </data>
+  <data name="Repeat_Copy_Product" xml:space="preserve">
+    <value>新BOM與複製來源完全相同</value>
+  </data>
+  <data name="Report" xml:space="preserve">
+    <value>報表</value>
+  </data>
+  <data name="Re_Selet" xml:space="preserve">
+    <value>重新選擇</value>
+  </data>
+  <data name="Sale_Model" xml:space="preserve">
+    <value>銷售型號</value>
+  </data>
   <data name="Sample" xml:space="preserve">
     <value>圖例</value>
+  </data>
+  <data name="Sample_Product_No" xml:space="preserve">
+    <value>暫時型號</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>儲存</value>
@@ -255,14 +705,59 @@
   <data name="Select_Product_Alert" xml:space="preserve">
     <value>請選擇產品</value>
   </data>
+  <data name="SEQ" xml:space="preserve">
+    <value>序號</value>
+  </data>
+  <data name="SEQ1" xml:space="preserve">
+    <value>序號</value>
+  </data>
   <data name="Settings" xml:space="preserve">
     <value>設定</value>
+  </data>
+  <data name="Shipping_Agent" xml:space="preserve">
+    <value>海運代理</value>
+  </data>
+  <data name="Shipping_Notes" xml:space="preserve">
+    <value>出貨備註</value>
+  </data>
+  <data name="Shipping_Schedule" xml:space="preserve">
+    <value>海運船期</value>
+  </data>
+  <data name="Show_Original_Image" xml:space="preserve">
+    <value>顯示原始圖片</value>
+  </data>
+  <data name="Show_Small_Image" xml:space="preserve">
+    <value>顯示縮圖</value>
   </data>
   <data name="Speace" xml:space="preserve">
     <value />
   </data>
+  <data name="Special_Document" xml:space="preserve">
+    <value>特殊文件</value>
+  </data>
+  <data name="Stop_Date" xml:space="preserve">
+    <value>停用日期</value>
+  </data>
+  <data name="SUM_TWD" xml:space="preserve">
+    <value>台幣合計</value>
+  </data>
+  <data name="SUM_USD" xml:space="preserve">
+    <value>美元合計</value>
+  </data>
   <data name="Supplier" xml:space="preserve">
     <value>廠商</value>
+  </data>
+  <data name="Supplier_Model" xml:space="preserve">
+    <value>廠商型號</value>
+  </data>
+  <data name="Supplier_Name" xml:space="preserve">
+    <value>廠商名稱</value>
+  </data>
+  <data name="Supplier_No" xml:space="preserve">
+    <value>廠商編號</value>
+  </data>
+  <data name="Supplier_Short_Name" xml:space="preserve">
+    <value>廠商簡稱</value>
   </data>
   <data name="S_No_ATC_Hint" xml:space="preserve">
     <value>輸入部分編號or名稱後，選擇廠商</value>
@@ -270,10 +765,51 @@
   <data name="Tel" xml:space="preserve">
     <value>電話</value>
   </data>
+  <data name="Title" xml:space="preserve">
+    <value>標籤</value>
+  </data>
+  <data name="Trademark" xml:space="preserve">
+    <value>商標</value>
+  </data>
+  <data name="TWD_Price" xml:space="preserve">
+    <value>台幣單價</value>
+  </data>
+  <data name="TW_Customs_Clearance" xml:space="preserve">
+    <value>台灣報關</value>
+  </data>
   <data name="Type" xml:space="preserve">
     <value>類別</value>
+  </data>
+  <data name="Unit" xml:space="preserve">
+    <value>單位</value>
+  </data>
+  <data name="Update_Date" xml:space="preserve">
+    <value>更新日期</value>
   </data>
   <data name="Update_Success" xml:space="preserve">
     <value>修改成功</value>
   </data>
+  <data name="Update_User" xml:space="preserve">
+    <value>更新人員</value>
+  </data>
+  <data name="USD_Price" xml:space="preserve">
+    <value>美元單價</value>
+  </data>
+  <data name="Web" xml:space="preserve">
+    <value>網站</value>
+  </data>
+  <data name="Working_Hours" xml:space="preserve">
+    <value>工時(分)</value>
+  </data>
+  <data name="Z" xml:space="preserve">
+    <value>注音</value>
+  </data>
+	<data name="Quote_MT" xml:space="preserve">
+    <value>報價作業維護</value>
+  </data>
+	<data name="Quote_Query" xml:space="preserve">
+    <value>每日報價查詢</value>
+  </data>
+	<data name="Quote_Base" xml:space="preserve">
+    <value>報價作業</value>
 </root>
