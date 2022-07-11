@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="樣品開發維護" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_MT.aspx.cs" Inherits="Sample_MT" %>
+<%@ Register TagPrefix="uc" TagName="uc1" Src="~/User_Control/Dia_Customer_Selector.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
@@ -15,13 +16,24 @@
             var Edit_Mode;
             var apiUrl = "/DEV/Sample/Sample_MT.ashx";
             //隱藏滾動卷軸
-            //document.body.style.overflow = 'hidden';
+            document.body.style.overflow = 'hidden';
 
             //init CONTROLER
             Form_Mode_Change("Base");
 
             //$('#Q_QUAH_DATE_S').val($.datepicker.formatDate('yy-mm-dd', new Date()));
             //$('#Q_QUAH_DATE_E').val($.datepicker.formatDate('yy-mm-dd', new Date()));          
+
+            //Dialog
+            $('#BT_CUST_CHS').on('click', function () {
+                $("#Search_Customer_Dialog").dialog('open');
+            });
+
+            $('#SCD_Table_Customer').on('click', '.CUST_SEL', function () {
+                $('#E_CUST_NO').val($(this).parent().parent().find('td:nth(2)').text());
+                $('#E_CUST_S_NAME').val($(this).parent().parent().find('td:nth(3)').text());
+                $("#Search_Customer_Dialog").dialog('close');
+            });
 
             window.document.body.onbeforeunload = function () {
                 if (Edit_Mode === "Insert" || Edit_Mode === "Edit") {
@@ -145,6 +157,8 @@
                 click_tr.addClass("tableToEdit");
 
                 var clickData = $('#Table_Search_Sample').DataTable().row(click_tr).data();
+
+                console.log(click_tr);
 
                 //Edit page
                 $('#E_SAMPLE_NO').val(clickData['樣品號碼']);
@@ -832,6 +846,7 @@
     </script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
+    <uc:uc1 ID="uc1" runat="server" /> 
     <div style="width:98%;margin:0 auto; ">
         <div class="search_section_all">
             <table class="search_section_control">
@@ -1008,7 +1023,8 @@
                     <tr class="trstyle">
                         <td class="tdEditstyle">客戶編號</td>
                         <td class="tdbstyle">
-                            <input id="E_CUST_NO"  class="textbox_char editReset" />
+                            <input id="E_CUST_NO"  class="textbox_char editReset" disabled="disabled" />
+                            <input id="BT_CUST_CHS" style="font-size:15px" type="button" value="..." />
                         </td>
                         <td class="tdEditstyle">客戶簡稱</td>
                         <td class="tdbstyle">
@@ -1030,31 +1046,31 @@
                     <tr class="trstyle onlyEdit">
                         <td class="tdEditstyle">點收批號</td>
                         <td class="tdbstyle">
-                            <input id="E_CHECK_NO"  class="textbox_char editReset"  />
+                            <input id="E_CHECK_NO"  class="textbox_char editReset" disabled="disabled"  />
                         </td>
                         <td class="tdEditstyle">點收日期</td>
                         <td class="tdbstyle">
-                            <input id="E_CHECK_DATE" type="date" class="date_S_style editReset"  />
+                            <input id="E_CHECK_DATE" type="date" class="date_S_style editReset" disabled="disabled"  />
                         </td>
                     </tr>
                     <tr class="trstyle onlyEdit">
                         <td class="tdEditstyle">點收數量</td>
                         <td class="tdbstyle">
-                            <input id="E_CHECK_CNT" class="textbox_char editReset" type="number" />
+                            <input id="E_CHECK_CNT" class="textbox_char editReset" type="number" disabled="disabled" />
                         </td>
                         <td class="tdEditstyle">到貨數量</td>
                         <td class="tdbstyle">
-                            <input id="E_ACC_SHIP_CNT" class="textbox_char editReset" type="number" />
+                            <input id="E_ACC_SHIP_CNT" class="textbox_char editReset" type="number" disabled="disabled" />
                         </td>
                     </tr>
                     <tr class="trstyle onlyEdit">
                         <td class="tdEditstyle">出貨日期</td>
                         <td class="tdbstyle">
-                            <input id="E_GIVE_SHIP_DATE"  class="textbox_char editReset"  />
+                            <input id="E_GIVE_SHIP_DATE"  class="textbox_char editReset"  disabled="disabled" />
                         </td>
                         <td class="tdEditstyle">到貨日期</td>
                         <td class="tdbstyle">
-                            <input id="E_ACC_SHIP_DATE" type="date" class="date_S_style editReset"  />
+                            <input id="E_ACC_SHIP_DATE" type="date" class="date_S_style editReset" disabled="disabled"  />
                         </td>
                     </tr>
                     <tr class="trstyle onlyEdit">

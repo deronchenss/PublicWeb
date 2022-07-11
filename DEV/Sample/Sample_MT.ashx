@@ -61,14 +61,14 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                                                   ,pudu.[採購數量]
                                                                   ,CONVERT(VARCHAR,pudu.[採購交期],23) [採購交期]
                                                                   ,pudu.[交期狀況]
-                                                                  ,pudu.[點收批號]
-                                                                  ,pudu.[點收數量]
-                                                                  ,CONVERT(VARCHAR,pudu.[點收日期],23) [點收日期]
-                                                                  ,pudu.[到貨數量]
-                                                                  ,CONVERT(VARCHAR,pudu.[出貨日期],23) [出貨日期]
-                                                                  ,CONVERT(VARCHAR,pudu.[到貨日期],23) [到貨日期]
-                                                                  ,pudu.[運輸編號]
-                                                                  ,pudu.[運輸簡稱]
+                                                                  ,RA.[點收批號]
+                                                                  ,SUM(RA.[點收數量]) 點收數量
+                                                                  ,CONVERT(VARCHAR,RA.[點收日期],23) [點收日期]
+                                                                  ,SUM(R.[到貨數量]) 到貨數量
+                                                                  ,CONVERT(VARCHAR,R.[出貨日期],23) [出貨日期]
+                                                                  ,CONVERT(VARCHAR,R.[到貨日期],23) [到貨日期]
+                                                                  ,RA.[運輸編號]
+                                                                  ,RA.[運輸簡稱]
                                                                   ,pudu.[訂單數量]
                                                                   ,pudu.[客戶編號]
                                                                   ,pudu.[客戶簡稱]
@@ -93,6 +93,8 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                                                   ,pudum.特別事項
                                                      FROM Dc2..pudu 
                                                      LEFT JOIN pudum on pudu.採購單號 = pudum.採購單號
+                                                     LEFT JOIN RECUA RA ON pudu.序號 = RA.PUDU_SEQ
+                                                     LEFT JOIN RECU R ON pudu.序號 = R.PUDU_SEQ
                                                      WHERE ISNULL(pudu.[頤坊型號],'') LIKE @IVAN_TYPE + '%'
                                                      AND ISNULL(pudu.[樣品號碼],'') LIKE @SAMPLE_NO + '%'
                                                      AND ISNULL(pudu.[客戶編號],'') LIKE @CUST_NO + '%'
@@ -124,6 +126,24 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                 cmd.Parameters.AddWithValue("FACT_S_NAME", context.Request["FACT_S_NAME"]);
                                 cmd.Parameters.AddWithValue("PROD_DES", context.Request["PROD_DES"]);
                                 cmd.Parameters.AddWithValue("WRITE_OFF", context.Request["WRITE_OFF"]);
+
+                                cmd.CommandText += @" GROUP BY pudu.[序號],pudu.[採購單號],pudu.[採購日期],pudu.[樣品號碼]
+                                                              ,pudu.[工作類別],pudu.[廠商編號],pudu.[廠商簡稱],pudu.[頤坊型號]
+                                                              ,pudu.[暫時型號],pudu.[廠商型號],pudu.[產品說明],pudu.[單位]
+                                                              ,pudu.[台幣單價],pudu.[美元單價],pudu.[人民幣單價],pudu.[單價_2]
+                                                              ,pudu.[單價_3],pudu.[MIN_1],pudu.[MIN_2],pudu.[MIN_3]
+                                                              ,pudu.[外幣幣別],pudu.[外幣單價],pudu.[外幣單價_2]
+                                                              ,pudu.[外幣單價_3],pudu.[採購數量],pudu.[採購交期]
+                                                              ,pudu.[交期狀況],RA.[點收批號],RA.[點收日期]
+                                                              ,R.[出貨日期],R.[到貨日期],RA.[運輸編號],RA.[運輸簡稱]
+                                                              ,pudu.[訂單數量],pudu.[客戶編號],pudu.[客戶簡稱]
+                                                              ,pudu.[到貨處理],pudu.[列表小備註],pudu.[結案]
+                                                              ,pudu.[強制結案],pudu.[運送方式],pudu.[部門]
+                                                              ,pudu.[變更日期],pudu.[更新人員],pudu.[更新日期],pudum.[預付款一]
+                                                              ,pudum.[預付日一],pudum.[預付款二],pudum.[預付日二]
+                                                              ,pudum.[附加費],pudum.附加費說明
+                                                              ,pudum.大備註一,pudum.大備註二,pudum.大備註三,pudum.特別事項";
+
                                 break;
                             case "INSERT_SAMPLE":
                             case "UPD_SAMPLE":
@@ -132,43 +152,37 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                 if (context.Request["Call_Type"] == "UPD_SAMPLE")
                                 {
                                     cmd.CommandText = @" UPDATE [dbo].[pudu]
-                                                        SET [採購單號] = @PUDU_NO
-                                                           ,[採購日期] = @PUDU_DATE
-                                                           ,[樣品號碼] = @SAMPLE_NO
-                                                           ,[強制結案] = @FORCE_CLOSE
-                                                           ,[工作類別] = @WORK_TYPE
-                                                           ,[廠商編號] = @FACT_NO
-                                                           ,[廠商簡稱] = @FACT_S_NAME
-                                                           ,[頤坊型號] = @IVAN_TYPE
-                                                           ,[暫時型號] = @TMP_TYPE
-                                                           ,[廠商型號] = @FACT_TYPE
-                                                           ,[產品說明] = @PROD_DESC
-                                                           ,[採購數量] = @PUDU_CNT
-                                                           ,[採購交期] = @PUDU_GIVE_DATE
-                                                           ,[交期狀況] = @GIVE_STATUS
-                                                           ,[點收批號] = @CHECK_NO
-                                                           ,[點收數量] = @CHECK_CNT
-                                                           ,[點收日期] = @CHECK_DATE
-                                                           ,[到貨數量] = @ACC_SHIP_CNT
-                                                           ,[出貨日期] = @GIVE_SHIP_DATE
-                                                           ,[到貨日期] = @ACC_SHIP_DATE
-                                                           ,[客戶編號] = @CUST_NO
-                                                           ,[客戶簡稱] = @CUST_S_NAME
-                                                           ,[到貨處理] = @GIVE_WAY
-                                                           ,[列表小備註] = @RPT_REMARK
-                                                           ,[單位] = @UNIT
-                                                           ,[美元單價] = IIF(@USD = '', 0,CONVERT(DECIMAL,@USD))
-                                                           ,[台幣單價] = IIF(@NTD = '', 0,CONVERT(DECIMAL,@NTD))
-                                                           ,[單價_2] = IIF(@PRICE_2 = '', 0,CONVERT(DECIMAL,@PRICE_2))
-                                                           ,[單價_3] = IIF(@PRICE_3 = '', 0,CONVERT(DECIMAL,@PRICE_3))
-                                                           ,[min_1] = IIF(@MIN_1 = '', 0,CONVERT(DECIMAL,@MIN_1))
-                                                           ,[min_2] = IIF(@MIN_2 = '', 0,CONVERT(DECIMAL,@MIN_2))
-                                                           ,[min_3] = IIF(@MIN_3 = '', 0,CONVERT(DECIMAL,@MIN_3))
-                                                           ,[外幣幣別] = @FORE_CODE
-                                                           ,[外幣單價] = IIF(@FORE_AMT = '', 0,CONVERT(DECIMAL,@FORE_AMT))
-                                                           ,[更新人員] = @UPD_USER
-                                                           ,[更新日期] = GETDATE()
-                                                        WHERE [序號] = @SEQ ";
+                                                         SET [採購單號] = @PUDU_NO
+                                                            ,[採購日期] = @PUDU_DATE
+                                                            ,[樣品號碼] = @SAMPLE_NO
+                                                            ,[強制結案] = @FORCE_CLOSE
+                                                            ,[工作類別] = @WORK_TYPE
+                                                            ,[廠商編號] = @FACT_NO
+                                                            ,[廠商簡稱] = @FACT_S_NAME
+                                                            ,[頤坊型號] = @IVAN_TYPE
+                                                            ,[暫時型號] = @TMP_TYPE
+                                                            ,[廠商型號] = @FACT_TYPE
+                                                            ,[產品說明] = @PROD_DESC
+                                                            ,[採購數量] = @PUDU_CNT
+                                                            ,[採購交期] = @PUDU_GIVE_DATE
+                                                            ,[交期狀況] = @GIVE_STATUS
+                                                            ,[客戶編號] = @CUST_NO
+                                                            ,[客戶簡稱] = @CUST_S_NAME
+                                                            ,[到貨處理] = @GIVE_WAY
+                                                            ,[列表小備註] = @RPT_REMARK
+                                                            ,[單位] = @UNIT
+                                                            ,[美元單價] = IIF(@USD = '', 0,CONVERT(DECIMAL,@USD))
+                                                            ,[台幣單價] = IIF(@NTD = '', 0,CONVERT(DECIMAL,@NTD))
+                                                            ,[單價_2] = IIF(@PRICE_2 = '', 0,CONVERT(DECIMAL,@PRICE_2))
+                                                            ,[單價_3] = IIF(@PRICE_3 = '', 0,CONVERT(DECIMAL,@PRICE_3))
+                                                            ,[min_1] = IIF(@MIN_1 = '', 0,CONVERT(DECIMAL,@MIN_1))
+                                                            ,[min_2] = IIF(@MIN_2 = '', 0,CONVERT(DECIMAL,@MIN_2))
+                                                            ,[min_3] = IIF(@MIN_3 = '', 0,CONVERT(DECIMAL,@MIN_3))
+                                                            ,[外幣幣別] = @FORE_CODE
+                                                            ,[外幣單價] = IIF(@FORE_AMT = '', 0,CONVERT(DECIMAL,@FORE_AMT))
+                                                            ,[更新人員] = @UPD_USER
+                                                            ,[更新日期] = GETDATE()
+                                                         WHERE [序號] = @SEQ ";
 
                                     cmd.Parameters.AddWithValue("FORCE_CLOSE", context.Request["FORCE_CLOSE"]);
                                     cmd.Parameters.AddWithValue("PUDU_NO", context.Request["PUDU_NO"]);

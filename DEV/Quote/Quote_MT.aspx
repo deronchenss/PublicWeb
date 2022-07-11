@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="報價作業維護" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Quote_MT.aspx.cs" Inherits="Quote_MT" %>
+<%@ Register TagPrefix="uc" TagName="uc1" Src="~/User_Control/Dia_Customer_Selector.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
@@ -19,6 +20,17 @@
 
             //init CONTROLER
             Form_Mode_Change("Base");
+
+            //Dialog
+            $('#BT_CUST_CHS').on('click', function () {
+                $("#Search_Customer_Dialog").dialog('open');
+            });
+
+            $('#SCD_Table_Customer').on('click', '.CUST_SEL', function () {
+                $('#E_CUST_NO').val($(this).parent().parent().find('td:nth(2)').text());
+                $('#E_CUST_S_NAME').val($(this).parent().parent().find('td:nth(3)').text());
+                $("#Search_Customer_Dialog").dialog('close');
+            });
 
             //$('#Q_QUAH_DATE_S').val($.datepicker.formatDate('yy-mm-dd', new Date()));
             //$('#Q_QUAH_DATE_E').val($.datepicker.formatDate('yy-mm-dd', new Date()));          
@@ -360,6 +372,7 @@
     </script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
+    <uc:uc1 ID="uc1" runat="server" /> 
     <div style="width:98%;margin:0 auto; ">
         <div class="search_section_all">
             <table class="search_section_control">
@@ -458,7 +471,8 @@
                     <tr class="trstyle">
                         <td class="tdEditstyle">客戶編號</td>
                         <td class="tdbstyle">
-                            <input id="E_CUST_NO"  class="textbox_char" />
+                            <input id="E_CUST_NO"  class="textbox_char" disabled="disabled" />
+                            <input id="BT_CUST_CHS" style="font-size:15px" type="button" value="..." />
                         </td>
                         <td class="tdEditstyle">客戶簡稱</td>
                         <td class="tdbstyle">

@@ -95,4 +95,38 @@ public class Dialog_DataBind : System.Web.Services.WebService
         Context.Response.Write(json);
         //return json;//return > <string xmlns="http://tempuri.org/">
     }
+
+    [WebMethod]
+    public void Transfer_Search(string S_No, string S_Type)
+    {
+        List<object> Supplier = new List<object>();
+        SqlConnection conn = new SqlConnection();
+
+        conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
+        SqlCommand cmd = new SqlCommand();
+        cmd.CommandText = @" SELECT TOP 100 [運輸編號], [運輸簡稱]
+                             FROM Dc2..TRF
+                             WHERE [運輸編號] LIKE @S_No + '%' 
+                             AND 運輸區分 Like '%' + @S_Type + '%'
+                             AND 停用日期 IS NULL
+                             ORDER BY [更新日期] DESC 
+                           ";
+        cmd.Parameters.AddWithValue("S_No", S_No);
+        cmd.Parameters.AddWithValue("S_Type", S_Type);
+
+        cmd.Connection = conn;
+        conn.Open();
+        SqlDataReader sdr = cmd.ExecuteReader();
+        while (sdr.Read())
+        {
+            Supplier.Add(new
+            {
+                S_No = sdr["運輸編號"],
+                S_S_Name = sdr["運輸簡稱"]
+            });
+        }
+        conn.Close();
+        var json = (new JavaScriptSerializer().Serialize(Supplier));
+        Context.Response.Write(json);
+    }
 }

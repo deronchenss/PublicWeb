@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="樣品點收" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_ChkArr.aspx.cs" Inherits="Sample_ChkArr" %>
+<%@ Register TagPrefix="uc" TagName="uc1" Src="~/User_Control/Dia_Transfer_Selector.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
@@ -16,6 +17,18 @@
 
             //init CONTROLER
             Form_Mode_Change("Base");
+            $('#E_CHK_DATE').val($.datepicker.formatDate('yy-mm-dd', new Date()));
+
+            //Dialog
+            $('#BT_TRANS_WAY').on('click', function () {
+                $("#Search_Transfer_Dialog").dialog('open');
+            });
+
+            $('#SSD_Table_Transfer').on('click', '.SUP_SEL', function () {
+                $('#E_TRANS_WAY_NO').val($(this).parent().parent().find('td:nth(1)').text());
+                $('#E_TRANS_WAY').val($(this).parent().parent().find('td:nth(2)').text());
+                $("#Search_Transfer_Dialog").dialog('close');
+            });
 
             //$('#TB_Date_S').val($.datepicker.formatDate('yy-mm-dd', new Date()));
             //$('#TB_Date_E').val($.datepicker.formatDate('yy-mm-dd', new Date()));          
@@ -78,7 +91,7 @@
                                     { title: "本次點收" },
                                     { title: "已點收數量" },
                                     { title: "客戶簡稱" },
-                                    { title: "到貨處理" },
+                                    //{ title: "到貨處理" },
                                     { title: "單位重-g" },
                                     { title: "單位毛-g" },
                                     { title: "產品長度" },
@@ -96,6 +109,7 @@
                                     { title: "樣品號碼" },
                                     { title: "設計圖號" },
                                     { title: "廠商型號" },
+                                    { title: "廠商編號" },
                                     { title: "客戶編號" },
                                     { title: "結案" },
                                     { title: "序號" },
@@ -229,13 +243,13 @@
                                     },
                                     { data: "點收數量", title: "已點收數量" },
                                     { data: "客戶簡稱", title: "客戶簡稱" },
-                                    {
-                                        data: null, title: "到貨處理",
-                                        render: function (data, type, row) {
-                                            return '<input type="text" id="E_SHIP_ARR_DEAL" class="tableInput" style="width:300px;text-align: left;" disabled="disabled" value = "' + row.到貨處理 + '"   />'
-                                        },
-                                        orderable: false
-                                    },
+                                    //{
+                                    //    data: null, title: "到貨處理",
+                                    //    render: function (data, type, row) {
+                                    //        return '<input type="text" id="E_SHIP_ARR_DEAL" class="tableInput" style="width:300px;text-align: left;" disabled="disabled" value = "' + row.到貨處理 + '"   />'
+                                    //    },
+                                    //    orderable: false
+                                    //},
                                     {
                                         data: null, title: "單位重-g",
                                         render: function (data, type, row) {
@@ -282,6 +296,7 @@
                                     { data: "樣品號碼", title: "樣品號碼" },
                                     { data: "設計圖號", title: "設計圖號" },
                                     { data: "廠商型號", title: "廠商型號" },
+                                    { data: "廠商編號", title: "廠商編號" },
                                     { data: "客戶編號", title: "客戶編號" },
                                     { data: "結案", title: "結案" },
                                     { data: "序號", title: "序號" },
@@ -319,7 +334,7 @@
                                     { title: "本次點收" },
                                     { title: "已點收數量" },
                                     { title: "客戶簡稱" },
-                                    { title: "到貨處理" },
+                                    //{ title: "到貨處理" },
                                     { title: "單位重-g" },
                                     { title: "單位毛-g" },
                                     { title: "產品長度" },
@@ -337,6 +352,7 @@
                                     { title: "樣品號碼" },
                                     { title: "設計圖號" },
                                     { title: "廠商型號" },
+                                    { title: "廠商編號" },
                                     { title: "客戶編號" },
                                     { title: "結案" },
                                     { title: "序號" },
@@ -373,7 +389,7 @@
                                     { title: "採購數量" },
                                     { title: "本次點收" },
                                     { title: "客戶簡稱" },
-                                    { title: "到貨處理" },
+                                    //{ title: "到貨處理" },
                                     { title: "單位重-g" },
                                     { title: "單位毛-g" },
                                     { title: "產品長度" },
@@ -392,6 +408,7 @@
                                     { title: "樣品號碼" },
                                     { title: "設計圖號" },
                                     { title: "廠商型號" },
+                                    { title: "廠商編號" },
                                     { title: "客戶編號" },
                                     { title: "結案" },
                                     { title: "序號" },
@@ -421,111 +438,109 @@
                         }
                     },
                     error: function (ex) {
-                        alert(ex);
+                        console.log(ex.responseText);
+                        alert('查詢有誤請通知資訊人員');
+                        return;
                     }
                 });
             };          
-
-            function Search_QUAH_SEQ() {
-                $.ajax({
-                    url: apiUrl,
-                    data: {
-                        "Call_Type": "QUAH_SEQ_SEARCH"                
-                    },
-                    cache: false,
-                    type: "POST",
-                    datatype: "json",
-                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                    success: function (response) {
-                        if (response.length === 0) {
-                            alert('<%=Resources.MP.Data_Not_Exists_Alert%>');
-                        }
-                        else {
-                            $('#E_QUAH_SEQ').val('Q' + response[0].Column1);
-                        }
-                    },
-                    error: function (ex) {
-                        alert(ex);
-                    }
-                });
-            };        
-
+ 
             //寫入點收 TABLE
             function INSERT_RECUA() {
+                var liSeq = [];
+                var liChkCnt = [];
                 var liIvanType = [];
                 var liFactNo = [];
-                var custNo = $('#E_CUST_NO').val(); 
-                var corCnt = 0;
-                var errCnt = 0;
+                var liNetWeight = [];
+                //var liShipDeal = [];
+                var liWeight = [];
+                var liLen = [];
+                var liWidth = [];
+                var liHeight = [];
                 var execCnt = $('#Table_EXEC_Data > tbody tr[role=row]').length;
 
-                if (execCnt == 0) {
-                    alert('請選擇點收資料!');
-                    return;
-                }
-
                 for (var tableCnt = 1; tableCnt <= execCnt; tableCnt++) {
+                    var chkCnt = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_CHK_CNT').val();
+                    if (chkCnt == '' || chkCnt == 0) {
+                        alert('第' + tableCnt + '筆，點收數量不可為 0!');
+                        return;
+                    }
+
                     var ivanTypeIndex = $('#Table_EXEC_Data thead th:contains(頤坊型號)').index() + 1; //頤坊型號INDEX
                     var ivanType = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('td:nth-child(' + ivanTypeIndex + ')').text();
+                    var netWeight = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_NET_WEIGHT').val();
+                    if (ivanType.indexOf(".") == -1 && (netWeight == '' || netWeight == 0)) {
+                        alert('第' + tableCnt + '筆，頤坊型號:' + ivanType +'，單位重不可為 0!');
+                        return;
+                    }
+
+                    var seqIndex = $('#Table_EXEC_Data thead th:contains(序號)').index() + 1; //序號INDEX
+                    var seq = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('td:nth-child(' + seqIndex + ')').text();
+                    //var shipDeal = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_SHIP_ARR_DEAL').val();
                     var factNoIndex = $('#Table_EXEC_Data thead th:contains(廠商編號)').index() + 1; //廠商編號INDEX
                     var factNo = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('td:nth-child(' + factNoIndex + ')').text();
-                    var custNoIndex = $('#Table_EXEC_Data thead th:contains(客戶編號)').index() + 1; //客戶編號INDEX
-                    var tableCustNo = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('td:nth-child(' + custNoIndex + ')').text();
 
-                    //一樣的寫入DB
-                    if (custNo == tableCustNo) {
-                        corCnt++;
+                    var weight = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_WEIGHT').val();
+                    var len = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_LENGTH').val();
+                    var width = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_WIDTH').val();
+                    var height = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_HEIGHT').val();
 
-                        liIvanType.push(ivanType);
-                        liFactNo.push(factNo);
-                        //$('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').toggleClass('removeReady');
-                    }
-                    else {
-                        errCnt++;
-                    }
-                }
-
-                //一次刪，防止迴圈判斷錯誤
-                //$('#Table_EXEC_Data').DataTable().rows('.removeReady').remove().draw();
-
-                if (errCnt != 0) {
-                    alert('共' + errCnt + '筆客戶編號不同');
+                    liSeq.push(seq);
+                    liIvanType.push(ivanType);
+                    liFactNo.push(factNo);
+                    liChkCnt.push(chkCnt);
+                    liNetWeight.push(netWeight);
+                    //liShipDeal.push(shipDeal);
+                    liWeight.push(weight);
+                    liLen.push(len);
+                    liWidth.push(width);
+                    liHeight.push(height);
                 }
 
                 $.ajax({
                     url: apiUrl,
                     data: {
-                        "Call_Type": "INSERT_QUAH",
-                        "SEQ": $('#E_QUAH_SEQ').val(),
+                        "Call_Type": "INSERT_RECUA",
+                        "SEQ": liSeq,
                         "IVAN_TYPE": liIvanType,
                         "FACT_NO": liFactNo,
-                        "FROM": $('#E_SHIP_PLACE').val(),
-                        "CUST_NO": $('#E_CUST_NO').val()
+                        "CHK_CNT": liChkCnt,
+                        "CHK_BATCH_NO": $('#E_CHK_BATCH_NO').val(),
+                        "CHK_DATE": $('#E_CHK_DATE').val(),
+                        "TRANSFER_NO": $('#E_TRANS_WAY_NO').val(),
+                        "TRANSFER_S_NAME": $('#E_TRANS_WAY').val(),
+                        "NET_WEIGHT": liNetWeight,
+                        //"SHIP_DEAL": liShipDeal,
+                        "WEIGHT": liWeight,
+                        "LEN": liLen,
+                        "WIDTH": liWidth,
+                        "HEIGHT": liHeight
                     },
                     cache: false,
                     type: "POST",
                     datatype: "json",
                     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                    success: function (response) {
-                        if (response != liIvanType.length) {
+                    success: function (response, status) {
+                        console.log(status);
+                        if (status != "success") {
                             console.log(response);
                             alert('寫入有誤請通知資訊人員');
                             return;
                         }
                         else {
-                            alert('已寫入報價檔，筆數:' + corCnt);
+                            alert('已寫入點收檔，筆數:' + execCnt);
+                            $('#Table_EXEC_Data').DataTable().rows().remove().draw();
+                            $('#Table_CHS_Data').DataTable().rows().remove().draw();
 
                             //回到第一頁
                             Search_Pudu();
-                            $('#Table_CHS_Data').DataTable().clear().rows.add($('#Table_EXEC_Data').find('tbody tr[role=row]').clone()).draw();
-
                             Edit_Mode = "Search";
                             Form_Mode_Change("Search");
-                            $('#R_QUAH_NO').val($('#E_QUAH_SEQ').val());
                         }
                     },
                     error: function (ex) {
-                        alert(ex);
+                        console.log(ex.responseText);
+                        alert('寫入有誤請通知資訊人員');
                         return;
                     }
                 });
@@ -570,49 +585,16 @@
 
             //BUTTON CLICK EVENT 執行頁
             $('#BT_EXECUTE').on('click', function () {
-                if (execCnt == 0) {
+                if ($('#Table_EXEC_Data > tbody tr[role=row]').length == 0) {
                     alert('請選擇點收資料!');
                     return;
                 }
-                if ($('#E_PUDU_CHK_NO').val() === '') {
+                if ($('#E_CHK_BATCH_NO').val() === '') {
                     alert('點收批號不可為空白');
                     return;
-                }
+                }  
 
-                var liChkCnt = [];
-                var liFactNo = [];
-                var custNo = $('#E_CUST_NO').val();
-                var execCnt = $('#Table_EXEC_Data > tbody tr[role=row]').length;
-
-                for (var tableCnt = 1; tableCnt <= execCnt; tableCnt++) {
-                    var chkCnt = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_CHK_CNT').val();
-                    var chkCnt = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_SHIP_ARR_DEAL').val();
-                    var chkCnt = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_NET_WEIGHT').val();
-                    var chkCnt = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_WEIGHT').val();
-                    var chkCnt = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_LENGTH').val();
-                    var chkCnt = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_WIDTH').val();
-                    var chkCnt = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_HEIGHT').val();
-
-                    if (chkCnt == '' || chkCnt == 0) {
-                        alert('第' + tableCnt + '筆，點收數量不可為 0!');
-                        return;
-                    }
-                    if (chkCnt == '' || chkCnt == 0) {
-                        alert('第' + tableCnt + '筆，點收數量不可為 0!');
-                        return;
-                    }
-
-                    liChkCnt.push(chkCnt);
-
-                    //一樣的寫入DB
-                    //if (custNo == tableCustNo) {
-                    //    liIvanType.push(ivanType);
-                    //    liFactNo.push(factNo);
-                    //    //$('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').toggleClass('removeReady');
-                    //}
-                }
-
-                //INSERT_RECUA();
+                INSERT_RECUA();
             });
 
             $('#BT_EXECUTE_CANCEL').on('click', function () {
@@ -645,6 +627,7 @@
     </script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
+    <uc:uc1 ID="uc1" runat="server" /> 
     <div style="width:98%;margin:0 auto; ">
         <div class="search_section_all">
             <table class="search_section_control">
@@ -768,13 +751,13 @@
                     <tr class="trCenterstyle">
                         <td class="tdhstyle" style="font-size:20px">點收日期</td>
                         <td class="tdbstyle">
-                            <input id="E_PUDU_CHK_DATE" type="date" class="date_S_style" />
+                            <input id="E_CHK_DATE" type="date" class="date_S_style" />
                         </td>
                     </tr>
                     <tr class="trCenterstyle">
                         <td class="tdhstyle" style="font-size:20px">點收批號</td>
                         <td class="tdbstyle">
-                            <input id="E_PUDU_CHK_NO" maxlength="9"  class="textbox_char" style="width:100%" />
+                            <input id="E_CHK_BATCH_NO" maxlength="9"  class="textbox_char" style="width:100%" />
                         </td>
                     </tr>
                     <tr class="trCenterstyle">

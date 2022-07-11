@@ -22,7 +22,7 @@
             $.ajax({
                 url: "/Base/Customer/Customer_Search.ashx",
                 data: {
-                    "Call_Type": "Customer_Search",
+                    "Call_Type": "SCD_Search",
                     "C_No": $('#SCD_TB_C_No').val(),
                     "C_SName": $('#SCD_TB_C_SName').val(),
                 },

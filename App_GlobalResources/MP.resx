@@ -804,13 +804,22 @@
   <data name="Z" xml:space="preserve">
     <value>注音</value>
   </data>
-	<data name="Quote_MT" xml:space="preserve">
+  <data name="Quote_MT" xml:space="preserve">
     <value>報價作業維護</value>
   </data>
-	<data name="Quote_Query" xml:space="preserve">
+  <data name="Quote_Query" xml:space="preserve">
     <value>每日報價查詢</value>
   </data>
-	<data name="Quote_Base" xml:space="preserve">
+  <data name="Quote_Base" xml:space="preserve">
     <value>報價作業</value>
-		</data>
+  </data>
+  <data name="Transfer_No" xml:space="preserve">
+    <value>運輸編號</value>
+  </data>
+  <data name="Transfer_Short_Name" xml:space="preserve">
+    <value>運輸簡稱</value>
+  </data>
+  <data name="Transfer_Type" xml:space="preserve">
+    <value>運輸類型</value>
+  </data>
 </root>
