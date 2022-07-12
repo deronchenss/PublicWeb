@@ -10,7 +10,7 @@
             var Edit_Mode;
             var apiUrl = "/DEV/Quote/Quote_Base.ashx";
             //隱藏滾動卷軸
-            //document.body.style.overflow = 'hidden';
+            document.body.style.overflow = 'hidden';
 
             <%=Session["QUAH_NO"] = null%>;
 
@@ -116,39 +116,34 @@
             }
 
             function Item_Move(click_tr, ToTable, FromTable, Full) {
-
+                var seqIndex = FromTable.find('thead th:contains(序號)').index() + 1; 
                 if (Full) {
-                    ToTable.DataTable().rows.add(FromTable.find('tbody tr[role=row]').clone()).draw();
-                    FromTable.DataTable().rows(FromTable.find('tbody tr[role=row]')).remove().draw();
+                    console.log(FromTable.find('tbody tr[role=row]'));
+                    FromTable.find('tbody tr[role=row]').each(function () {
+                        var OT = $(this).find('td:nth-child(' + seqIndex + ')').text();
+                        if (ToTable.find('td:nth-child(' + seqIndex + ')').filter(function () { return $(this).text() == OT; }).length === 0) {
+                            ToTable.DataTable().row.add($(this).clone());
+                        }
+                        else {
+                            console.warn($(this));
+                        }
+                        FromTable.DataTable().rows($(this)).remove();
+                    });
+                    ToTable.DataTable().draw();
+                    FromTable.DataTable().draw();
                 }
                 else {
-                    ToTable.DataTable().row.add(click_tr.clone()).draw();
                     FromTable.DataTable().rows(click_tr).remove().draw();
+                    if (ToTable.find('td:nth-child(' + seqIndex + ')').filter(function () { return $(this).text() == click_tr.find('td:nth-child(' + seqIndex + ')').text(); }).length === 0) {
+                        ToTable.DataTable().row.add(click_tr.clone()).draw();
+                    }
                 }
-
-                //移除重複ROWS
-                removeDuplicateRows(ToTable);
 
                 $('#Table_CHS_Data_info').text('Showing ' + $('#Table_CHS_Data > tbody tr[role=row]').length + ' entries');
                 $('#Table_Search_Quote_info').text('Showing ' + $('#Table_Search_Quote > tbody tr[role=row]').length + ' entries');
                 $('#BT_Next').toggle(Boolean($('#Table_CHS_Data').find('tbody tr').length > 0));
             }
 
-            //移除 DATATABLE 重複ROWS
-            function removeDuplicateRows($table) {
-                function getVisibleRowText($row) {
-                    return $row.find('td:visible').text().toLowerCase();
-                }
-
-                $table.find('tr').each(function (index, row) {
-                    var $row = $(row);
-                    $row.nextAll('tr').each(function (index, next) {
-                        var $next = $(next);
-                        if (getVisibleRowText($next) == getVisibleRowText($row))
-                            $table.DataTable().rows($row).remove().draw();
-                    })
-                });
-            }
             function V_BT_CHG(buttonChs) {
                 $('.V_BT').attr('disabled', false);
                 buttonChs.attr('disabled', 'disabled');
@@ -182,10 +177,10 @@
                                 "destroy": true,
                                 //維持scroll bar 位置
                                 "preDrawCallback": function (settings) {
-                                    pageScrollPos = $('div.dataTables_scrollBody').scrollTop();
+                                    searPageScrollPos = $('#Table_Search_Quote_wrapper div.dataTables_scrollBody').scrollTop();
                                 },
                                 "drawCallback": function (settings) {
-                                    $('div.dataTables_scrollBody').scrollTop(pageScrollPos);
+                                    $('#Table_Search_Quote_wrapper div.dataTables_scrollBody').scrollTop(searPageScrollPos);
                                 },
                                 "columns": [
                                     { data: "客戶簡稱", title: "客戶簡稱" },
@@ -215,10 +210,10 @@
                            $('#Table_CHS_Data').DataTable({
                                "destroy": true,
                                "preDrawCallback": function (settings) {
-                                   pageScrollPos = $('div.dataTables_scrollBody').scrollTop();
+                                   pageScrollPos = $('#Table_CHS_Data_wrapper div.dataTables_scrollBody').scrollTop();
                                },
                                "drawCallback": function (settings) {
-                                   $('div.dataTables_scrollBody').scrollTop(pageScrollPos);
+                                   $('#Table_CHS_Data_wrapper div.dataTables_scrollBody').scrollTop(pageScrollPos);
                                },
                                 "columns": [
                                     { title: "客戶簡稱" },

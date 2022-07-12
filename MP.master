@@ -205,6 +205,7 @@
                                             <a href="#">樣品開發</a>
                                             <ul class="dropdown">
                                                 <li><a href="/DEV/Sample/Sample_MT.aspx">樣品開發維護</a></li>
+                                                <li><a href="/DEV/Sample/Sample_Arr.aspx">樣品到貨作業</a></li>
                                             </ul>
                                         </li>
                                         <li class="has-children">

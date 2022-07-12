@@ -59,31 +59,34 @@ public class Sample_ChkArr : IHttpHandler, IRequiresSessionState
                                                      LEFT JOIN RECU R ON P.序號 = R.PUDU_SEQ
                                                      WHERE IsNull(P.採購單號,'') <> ''
                                                      AND 工作類別 <>'詢價'
-                                                     AND ISNULL(P.[頤坊型號],'') LIKE @IVAN_TYPE + '%'
-                                                     AND ISNULL(P.[暫時型號],'') LIKE @TMP_TYPE + '%'
-                                                     AND ISNULL(P.[廠商編號],'') LIKE @FACT_NO + '%'
-                                                     AND ISNULL(P.[廠商簡稱],'') LIKE '%' + @FACT_S_NAME + '%'
-                                                     AND ISNULL(P.[採購單號],'') LIKE @PUDU_NO + '%'
-                                                     AND ISNULL(P.[廠商型號],'') LIKE @FACT_TYPE + '%'
                                               ";
 
-                                if (!string.IsNullOrEmpty(context.Request["PUDU_GIVE_DATE_S"]))
+                                //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
+                                foreach (string form in context.Request.Form)
                                 {
-                                    cmd.CommandText += " AND CONVERT(DATE,[採購日期]) >= @PUDU_GIVE_DATE_S";
-                                    cmd.Parameters.AddWithValue("PUDU_GIVE_DATE_S", context.Request["PUDU_GIVE_DATE_S"]);
+                                    if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type" && form != "WRITE_OFF")
+                                    {
+                                        switch (form)
+                                        {
+                                            case "採購日期_S":
+                                                cmd.CommandText += " AND CONVERT(DATE,[採購日期]) >= @採購日期_S";
+                                                cmd.Parameters.AddWithValue(form, context.Request[form]);
+                                                break;
+                                            case "採購日期_E":
+                                                cmd.CommandText += " AND CONVERT(DATE,[採購日期]) <= @採購日期_E";
+                                                cmd.Parameters.AddWithValue(form, context.Request[form]);
+                                                break;
+                                            case "廠商簡稱":
+                                                cmd.CommandText += " AND ISNULL(P.[廠商簡稱],'') LIKE '%' + @廠商簡稱 + '%'";
+                                                cmd.Parameters.AddWithValue(form, context.Request[form]);
+                                                break;
+                                            default:
+                                                cmd.CommandText += " AND ISNULL(P.[" + form + "],'') LIKE @" + form + " + '%'";
+                                                cmd.Parameters.AddWithValue(form, context.Request[form]);
+                                                break;
+                                        }
+                                    }
                                 }
-                                if (!string.IsNullOrEmpty(context.Request["PUDU_GIVE_DATE_E"]))
-                                {
-                                    cmd.CommandText += " AND CONVERT(DATE,[採購日期]) <= @PUDU_GIVE_DATE_E";
-                                    cmd.Parameters.AddWithValue("PUDU_GIVE_DATE_E", context.Request["PUDU_GIVE_DATE_E"]);
-                                }              
-
-                                cmd.Parameters.AddWithValue("IVAN_TYPE", context.Request["IVAN_TYPE"]);
-                                cmd.Parameters.AddWithValue("TMP_TYPE", context.Request["TMP_TYPE"]);
-                                cmd.Parameters.AddWithValue("FACT_NO", context.Request["FACT_NO"]);
-                                cmd.Parameters.AddWithValue("FACT_S_NAME", context.Request["FACT_S_NAME"]);
-                                cmd.Parameters.AddWithValue("PUDU_NO", context.Request["PUDU_NO"]);
-                                cmd.Parameters.AddWithValue("FACT_TYPE", context.Request["FACT_TYPE"]);
 
                                 cmd.CommandText += @" GROUP BY P.採購單號,P.廠商簡稱,P.頤坊型號,P.採購數量,P.客戶簡稱,P.暫時型號,P.單位,P.產品說明
                                                      ,P.工作類別,P.樣品號碼

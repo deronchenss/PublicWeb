@@ -58,7 +58,6 @@
                     { title: "工作類別" },
                     { title: "結案" },
                     { title: "序號" },
-                    { title: "序號B" },
                     { title: "<%=Resources.MP.Update_User%>" },
                     { title: "<%=Resources.MP.Update_Date%>" }
                 ],
@@ -107,6 +106,11 @@
                         $('#Div_DT_Search').css('display', '');
                         $('#BT_Cancel').css('display', '');
 
+                        //如果有修改內容切回選擇將到貨TABLE貼回去
+                        if ($('#Table_EXEC_Data > tbody tr[role=row]').length != 0) {
+                            $('#Table_CHS_Data').DataTable().clear().rows.add($('#Table_EXEC_Data').find('tbody tr[role=row]').clone()).draw(); 
+                        }
+
                         V_BT_CHG($('#BT_S_CHS'));
                         break;
                     case "EXEC":
@@ -130,10 +134,13 @@
                             $('#Div_IMG_DETAIL').css('display', 'none');
                             $('#Div_Exec_Section').css('display', '');
                             V_BT_CHG($('#BT_S_ARR'));
-
+                   
                             $('#Table_EXEC_Data').DataTable().clear().rows.add($('#Table_CHS_Data').find('tbody tr[role=row]').clone()).draw(); //將選擇後TABLE 複製至第二面
                             $('#Table_EXEC_info').text('Showing ' + $('#Table_EXEC_Data > tbody tr[role=row]').length + ' entries'); //顯示TABLE 列數
-                            $('#E_CHK_CNT').text('到貨筆數: ' + $('#Table_EXEC_Data > tbody tr[role=row]').length); 
+                            $('#E_CNT').text('到貨筆數: ' + $('#Table_EXEC_Data > tbody tr[role=row]').length); 
+
+                            //計算總金額
+                            calAmt();
 
                             var $inputObj = $('#Table_EXEC_Data .tableInput');
                             $inputObj.attr('disabled', false);
@@ -148,12 +155,64 @@
 
                         $('#Table_EXEC_Data').DataTable().clear().rows.add($('#Table_CHS_Data').find('tbody tr[role=row]').clone()).draw(); //將選擇後TABLE 複製至第二面
                         $('#Table_EXEC_info').text('Showing ' + $('#Table_EXEC_Data > tbody tr[role=row]').length + ' entries'); //顯示TABLE 列數
-                        $('#E_CHK_CNT').text('到貨筆數: ' + $('#Table_EXEC_Data > tbody tr[role=row]').length); 
+                        $('#E_CNT').text('到貨筆數: ' + $('#Table_EXEC_Data > tbody tr[role=row]').length); 
 
                         V_BT_CHG($('#BT_S_EX_IMG'));
                         break;
                 }
             }
+
+            function calAmt() {
+                //帶出總金額欄位
+                var execCnt = $('#Table_EXEC_Data > tbody tr[role=row]').length;
+                var foreignAmt = 0;
+                var usd = 0;
+                var ntd = 0;
+
+                for (var tableCnt = 1; tableCnt <= execCnt; tableCnt++) {
+                    var $tableRow = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')');
+                    var arrCnt = $tableRow.find('#E_ARR_CNT').val();
+
+                    if (arrCnt != '' && parseInt(arrCnt) != 0) {
+                        var index = $('#Table_EXEC_Data thead th:contains(外幣)').index() + 1;
+                        var money = $tableRow.find('td:nth-child(' + index + ')').text();
+                        if (money != '') {
+                            foreignAmt += parseFloat(money) * parseFloat(arrCnt);
+                        }
+
+                        index = $('#Table_EXEC_Data thead th:contains(美元單價)').index() + 1;
+                        money = $tableRow.find('td:nth-child(' + index + ')').text();
+                        if (money != '') {
+                            console.log(usd);
+                            usd += parseFloat(money) * parseFloat(arrCnt);
+                            console.log(usd);
+                        }
+
+                        index = $('#Table_EXEC_Data thead th:contains(台幣單價)').index() + 1;
+                        money = $tableRow.find('td:nth-child(' + index + ')').text();
+                        if (money != '') {
+                            ntd += parseFloat(money) * parseFloat(arrCnt);
+                        }
+                    }
+                }
+
+                if (foreignAmt != 0) {
+                    $('#E_TOT_AMT').val(foreignAmt.toFixed(2));
+                }
+                else if (usd != 0) {
+                    $('#E_TOT_AMT').val(usd.toFixed(2));
+                }
+                else if (ntd != 0) {
+                    $('#E_TOT_AMT').val(ntd.toFixed(2));
+                }
+                else {
+                    $('#E_TOT_AMT').val('');
+                }
+            }
+
+            $('#Table_EXEC_Data tbody').on('change', 'tr', function () {
+                calAmt();
+            });
 
             function Search_IMG(factNo, IvanType) {
                 $.ajax({
@@ -185,39 +244,34 @@
             };       
 
             function Item_Move(click_tr, ToTable, FromTable, Full) {
+                var seqIndex = FromTable.find('thead th:contains(序號)').index() + 1;
                 if (Full) {
-                    ToTable.DataTable().rows.add(FromTable.find('tbody tr[role=row]').clone()).draw();
-                    FromTable.DataTable().rows(FromTable.find('tbody tr[role=row]')).remove().draw();
+                    console.log(FromTable.find('tbody tr[role=row]'));
+                    FromTable.find('tbody tr[role=row]').each(function () {
+                        var OT = $(this).find('td:nth-child(' + seqIndex + ')').text();
+                        if (ToTable.find('td:nth-child(' + seqIndex + ')').filter(function () { return $(this).text() == OT; }).length === 0) {
+                            ToTable.DataTable().row.add($(this).clone());
+                        }
+                        else {
+                            console.warn($(this));
+                        }
+                        FromTable.DataTable().rows($(this)).remove();
+                    });
+                    ToTable.DataTable().draw();
+                    FromTable.DataTable().draw();
                 }
                 else {
-
-                    ToTable.DataTable().row.add(click_tr.clone()).draw();
                     FromTable.DataTable().rows(click_tr).remove().draw();
+                    if (ToTable.find('td:nth-child(' + seqIndex + ')').filter(function () { return $(this).text() == click_tr.find('td:nth-child(' + seqIndex + ')').text(); }).length === 0) {
+                        ToTable.DataTable().row.add(click_tr.clone()).draw();
+                    }
                 }
-                    
-                //移除重複ROWS
-                removeDuplicateRows();
 
                 $('#Table_CHS_Data_info').text('Showing ' + $('#Table_CHS_Data > tbody tr[role=row]').length + ' entries');
                 $('#Table_Search_Pudu_info').text('Showing ' + $('#Table_Search_Pudu > tbody tr[role=row]').length + ' entries');
                 $('#BT_Next').toggle(Boolean($('#Table_CHS_Data').find('tbody tr').length > 0));
             }
-
-            //移除 DATATABLE 重複ROWS
-            function removeDuplicateRows() {
-                function getVisibleRowText($row) {
-                    return $row.find('td:visible').text().toLowerCase();
-                }
-
-                $('#Table_CHS_Data').find('tr').each(function (index, row) {
-                    var $row = $(row);
-                    $row.nextAll('tr').each(function (index, next) {
-                        var $next = $(next);
-                        if (getVisibleRowText($next) == getVisibleRowText($row))
-                            $('#Table_CHS_Data').DataTable().rows($row).remove().draw();
-                    })
-                });
-            }
+           
             function V_BT_CHG(buttonChs) {
                 $('.V_BT').attr('disabled', false);
                 buttonChs.attr('disabled', 'disabled');
@@ -228,14 +282,14 @@
                     url: apiUrl,
                     data:{
                         "Call_Type": "SEARCH_PUDU",    
-                        "CHK_BATCH_NO": $('#Q_CHK_BATCH_NO').val(),
-                        "PUDU_NO": $('#Q_PUDU_NO').val(),
-                        "IVAN_TYPE": $('#Q_IVAN_TYPE').val(),
-                        "TMP_TYPE": $('#Q_TMP_TYPE').val(),
-                        "CHK_DATE_S": $('#Q_CHK_DATE_S').val(),
-                        "CHK_DATE_E": $('#Q_CHK_DATE_E').val(),
-                        "FACT_NO": $('#Q_FACT_NO').val(),
-                        "FACT_S_NAME": $('#Q_FACT_S_NAME').val(),
+                        "點收批號": $('#Q_CHK_BATCH_NO').val(),
+                        "採購單號": $('#Q_PUDU_NO').val(),
+                        "頤坊型號": $('#Q_IVAN_TYPE').val(),
+                        "暫時型號": $('#Q_TMP_TYPE').val(),
+                        "點收日期_S": $('#Q_CHK_DATE_S').val(),
+                        "點收日期_E": $('#Q_CHK_DATE_E').val(),
+                        "廠商編號": $('#Q_FACT_NO').val(),
+                        "廠商簡稱": $('#Q_FACT_S_NAME').val(),
                         "WRITE_OFF": $('#Q_WRITEOFF').val()
                     },
                     cache: false,
@@ -256,13 +310,6 @@
                             $('#Table_Search_Pudu_Tmp').DataTable({
                                 "data": response,
                                 "destroy": true,
-                                //維持scroll bar 位置
-                                "preDrawCallback": function (settings) {
-                                    pageScrollPos = $('div.dataTables_scrollBody').scrollTop();
-                                },
-                                "drawCallback": function (settings) {
-                                    $('div.dataTables_scrollBody').scrollTop(pageScrollPos);
-                                },
                                 "columns": [
                                     { data: "點收批號", title: "點收批號" },
                                     { data: "廠商簡稱", title: "廠商簡稱" },
@@ -284,7 +331,7 @@
                                     {
                                         data: null, title: '發票異常',
                                         render: function (data, type, row) {
-                                            return '<input type="checkbox" style="text-align:center" class="tbChkBox" />'
+                                            return '<input type="checkbox" id="E_INVOICE_ERR" style="text-align:center" class="tbChkBox" />'
                                         },
                                         orderable: false
                                     },
@@ -314,7 +361,6 @@
                                     { data: "工作類別", title: "工作類別" },
                                     { data: "結案", title: "結案" },
                                     { data: "序號", title: "序號" },
-                                    { data: "序號B", title: "序號B" },
                                     { data: "更新人員", title: "<%=Resources.MP.Update_User%>" },
                                     { data: "更新日期", title: "<%=Resources.MP.Update_Date%>" }
                                 ],
@@ -364,7 +410,6 @@
                                     { title: "工作類別" },
                                     { title: "結案" },
                                     { title: "序號" },
-                                    { title: "序號B" },
                                     { title: "<%=Resources.MP.Update_User%>" },
                                     { title: "<%=Resources.MP.Update_Date%>" }
                                 ],
@@ -414,7 +459,6 @@
                                     { title: "工作類別" },
                                     { title: "結案" },
                                     { title: "序號" },
-                                    { title: "序號B" },
                                     { title: "<%=Resources.MP.Update_User%>" },
                                     { title: "<%=Resources.MP.Update_Date%>" }
                                ],
@@ -445,75 +489,49 @@
             };          
  
             //寫入點收 TABLE
-            function INSERT_RECUA() {
+            function INSERT_RECU() {
                 var liSeq = [];
-                var liChkCnt = [];
-                var liIvanType = [];
-                var liFactNo = [];
-                var liNetWeight = [];
-                //var liShipDeal = [];
-                var liWeight = [];
-                var liLen = [];
-                var liWidth = [];
-                var liHeight = [];
+                var liArrCnt = [];
+                var liInvoiceErr = [];
+                var liShipArrDeal = [];
                 var execCnt = $('#Table_EXEC_Data > tbody tr[role=row]').length;
 
                 for (var tableCnt = 1; tableCnt <= execCnt; tableCnt++) {
-                    var chkCnt = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_CHK_CNT').val();
-                    if (chkCnt == '' || chkCnt == 0) {
-                        alert('第' + tableCnt + '筆，到貨數量不可為 0!');
-                        return;
-                    }
-
-                    var ivanTypeIndex = $('#Table_EXEC_Data thead th:contains(頤坊型號)').index() + 1; //頤坊型號INDEX
-                    var ivanType = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('td:nth-child(' + ivanTypeIndex + ')').text();
-                    var netWeight = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_NET_WEIGHT').val();
-                    if (ivanType.indexOf(".") == -1 && (netWeight == '' || netWeight == 0)) {
-                        alert('第' + tableCnt + '筆，頤坊型號:' + ivanType +'，單位重不可為 0!');
+                    var $tableRow = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')');
+                    var arrCnt = $tableRow.find('#E_ARR_CNT').val();
+                    if (arrCnt == '' || arrCnt == 0) {
+                        alert('第' + tableCnt + '筆，本次到貨不可為 0!');
                         return;
                     }
 
                     var seqIndex = $('#Table_EXEC_Data thead th:contains(序號)').index() + 1; //序號INDEX
-                    var seq = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('td:nth-child(' + seqIndex + ')').text();
-                    //var shipDeal = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_SHIP_ARR_DEAL').val();
-                    var factNoIndex = $('#Table_EXEC_Data thead th:contains(廠商編號)').index() + 1; //廠商編號INDEX
-                    var factNo = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('td:nth-child(' + factNoIndex + ')').text();
+                    var seq = $tableRow.find('td:nth-child(' + seqIndex + ')').text();
+                    var invoiceErr = $tableRow.find('#E_INVOICE_ERR').is(":checked");
+                    var shipArrDeal = $tableRow.find('#E_SHIP_ARR_DEAL').val();
 
-                    var weight = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_WEIGHT').val();
-                    var len = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_LENGTH').val();
-                    var width = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_WIDTH').val();
-                    var height = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')').find('#E_HEIGHT').val();
 
                     liSeq.push(seq);
-                    liIvanType.push(ivanType);
-                    liFactNo.push(factNo);
-                    liChkCnt.push(chkCnt);
-                    liNetWeight.push(netWeight);
-                    //liShipDeal.push(shipDeal);
-                    liWeight.push(weight);
-                    liLen.push(len);
-                    liWidth.push(width);
-                    liHeight.push(height);
+                    liArrCnt.push(arrCnt);
+                    liInvoiceErr.push(invoiceErr);
+                    liShipArrDeal.push(shipArrDeal);
                 }
 
                 $.ajax({
                     url: apiUrl,
                     data: {
-                        "Call_Type": "INSERT_RECUA",
+                        "Call_Type": "INSERT_RECU",
                         "SEQ": liSeq,
-                        "IVAN_TYPE": liIvanType,
-                        "FACT_NO": liFactNo,
-                        "CHK_CNT": liChkCnt,
-                        "CHK_BATCH_NO": $('#E_CHK_BATCH_NO').val(),
-                        "CHK_DATE": $('#E_CHK_DATE').val(),
-                        "TRANSFER_NO": $('#E_TRANS_WAY_NO').val(),
-                        "TRANSFER_S_NAME": $('#E_TRANS_WAY').val(),
-                        "NET_WEIGHT": liNetWeight,
-                        //"SHIP_DEAL": liShipDeal,
-                        "WEIGHT": liWeight,
-                        "LEN": liLen,
-                        "WIDTH": liWidth,
-                        "HEIGHT": liHeight
+                        "INVOICE_ERR": liInvoiceErr,
+                        "SHIP_ARR_REMARK": liShipArrDeal,
+                        "ARR_CNT": liArrCnt,
+                        "SHIP_GO_DATE": $('#E_SHIP_GO_DATE').val(),
+                        "SHIP_ARR_DATE": $('#E_SHIP_ARR_DATE').val(),
+                        "SHIP_ARR_NO": $('#E_SHIP_ARR_NO').val(),
+                        "ORDER_ARR_DATE": $('#E_ORDER_ARR_DATE').val(),
+                        "NO_PAY": $('#E_SAMPLE_NO_PAY').is(":checked"),
+                        "FORCE_CLOSE": $('#E_FORCE_CLOSE').is(":checked"),
+                        "INVOICE_TYPE": $('#E_INVOICE_TYPE').val(),
+                        "INVOICE_NO": $('#E_INVOICE_NO').val()
                     },
                     cache: false,
                     type: "POST",
@@ -527,7 +545,7 @@
                             return;
                         }
                         else {
-                            alert('已寫入點收檔，筆數:' + execCnt);
+                            alert('已寫入到貨檔，筆數:' + execCnt);
                             $('#Table_EXEC_Data').DataTable().rows().remove().draw();
                             $('#Table_CHS_Data').DataTable().rows().remove().draw();
 
@@ -593,7 +611,7 @@
                     return;
                 }  
 
-                INSERT_RECUA();
+                INSERT_RECU();
             });
 
             $('#Table_EXEC_Data').on('click', 'tbody tr', function () {
@@ -764,7 +782,7 @@
                         <td style="height: 2vh; font-size: smaller;" >&nbsp</td>
                     </tr>
                     <tr class="trCenterstyle" >
-                        <td colspan="2"  id="E_CHK_CNT" style="font-size:20px" >到貨筆數:</td>
+                        <td colspan="2"  id="E_CNT" style="font-size:20px" >到貨筆數:</td>
                     </tr>
                     <tr> 
                         <td style="height: 10vh; font-size: smaller;" >&nbsp</td>
@@ -796,8 +814,9 @@
                     <tr class="trCenterstyle">
                         <td class="tdhstyle" style="font-size:20px">發票樣式</td>
                         <td class="tdbstyle">
-                            <select id="Q_INVOICE_TYPE" >
-                                <option selected="selected"value="21">21-三聯式</option>
+                            <select id="E_INVOICE_TYPE" >
+                                <option selected="selected"value=""></option>
+                                <option value="21">21-三聯式</option>
                                 <option value="22">22-二聯式</option>
                                 <option value="23">23-三聯式折讓單</option>
                                 <option value="24">24-二聯式折讓單</option>
@@ -821,16 +840,6 @@
                         </td>
                         
                     </tr>
-                    <%--<tr class="trCenterstyle">
-                        <td class="tdEditstyle" style="font-size:20px">樣品不付款</td>
-                        <td class="tdbstyle">
-                             <input id="E_SAMPLE_NO_PAY" type="checkbox"  />
-                        </td>
-                        <td class="tdEditstyle" style="font-size:20px">強制結案</td>
-                        <td class="tdbstyle">
-                            <input id="E_FORCE_CLOSE" type="checkbox"  />
-                        </td>
-                    </tr>--%>
                     <tr class="trCenterstyle">
                         <td class="tdhstyle" style="font-size:20px">總金額</td>
                         <td class="tdbstyle">

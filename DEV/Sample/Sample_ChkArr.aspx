@@ -188,39 +188,34 @@
             };       
 
             function Item_Move(click_tr, ToTable, FromTable, Full) {
+                var seqIndex = FromTable.find('thead th:contains(序號)').index() + 1;
                 if (Full) {
-                    ToTable.DataTable().rows.add(FromTable.find('tbody tr[role=row]').clone()).draw();
-                    FromTable.DataTable().rows(FromTable.find('tbody tr[role=row]')).remove().draw();
+                    console.log(FromTable.find('tbody tr[role=row]'));
+                    FromTable.find('tbody tr[role=row]').each(function () {
+                        var OT = $(this).find('td:nth-child(' + seqIndex + ')').text();
+                        if (ToTable.find('td:nth-child(' + seqIndex + ')').filter(function () { return $(this).text() == OT; }).length === 0) {
+                            ToTable.DataTable().row.add($(this).clone());
+                        }
+                        else {
+                            console.warn($(this));
+                        }
+                        FromTable.DataTable().rows($(this)).remove();
+                    });
+                    ToTable.DataTable().draw();
+                    FromTable.DataTable().draw();
                 }
                 else {
-
-                    ToTable.DataTable().row.add(click_tr.clone()).draw();
                     FromTable.DataTable().rows(click_tr).remove().draw();
+                    if (ToTable.find('td:nth-child(' + seqIndex + ')').filter(function () { return $(this).text() == click_tr.find('td:nth-child(' + seqIndex + ')').text(); }).length === 0) {
+                        ToTable.DataTable().row.add(click_tr.clone()).draw();
+                    }
                 }
-                    
-                //移除重複ROWS
-                removeDuplicateRows();
 
                 $('#Table_CHS_Data_info').text('Showing ' + $('#Table_CHS_Data > tbody tr[role=row]').length + ' entries');
                 $('#Table_Search_Pudu_info').text('Showing ' + $('#Table_Search_Pudu > tbody tr[role=row]').length + ' entries');
                 $('#BT_Next').toggle(Boolean($('#Table_CHS_Data').find('tbody tr').length > 0));
             }
 
-            //移除 DATATABLE 重複ROWS
-            function removeDuplicateRows() {
-                function getVisibleRowText($row) {
-                    return $row.find('td:visible').text().toLowerCase();
-                }
-
-                $('#Table_CHS_Data').find('tr').each(function (index, row) {
-                    var $row = $(row);
-                    $row.nextAll('tr').each(function (index, next) {
-                        var $next = $(next);
-                        if (getVisibleRowText($next) == getVisibleRowText($row))
-                            $('#Table_CHS_Data').DataTable().rows($row).remove().draw();
-                    })
-                });
-            }
             function V_BT_CHG(buttonChs) {
                 $('.V_BT').attr('disabled', false);
                 buttonChs.attr('disabled', 'disabled');
@@ -232,14 +227,14 @@
                     url: apiUrl,
                     data:{
                         "Call_Type": "SEARCH_PUDU",    
-                        "IVAN_TYPE": $('#Q_IVAN_TYPE').val(),
-                        "TMP_TYPE": $('#Q_TMP_TYPE').val(),
-                        "PUDU_GIVE_DATE_S": $('#Q_PUDU_GIVE_DATE_S').val(),
-                        "PUDU_GIVE_DATE_E": $('#Q_PUDU_GIVE_DATE_E').val(),
-                        "FACT_NO": $('#Q_FACT_NO').val(),
-                        "FACT_S_NAME": $('#Q_FACT_S_NAME').val(),
-                        "PUDU_NO": $('#Q_PUDU_NO').val(),
-                        "FACT_TYPE": $('#Q_FACT_TYPE').val(),
+                        "頤坊型號": $('#Q_IVAN_TYPE').val(),
+                        "暫時型號": $('#Q_TMP_TYPE').val(),
+                        "採購日期_S": $('#Q_PUDU_GIVE_DATE_S').val(),
+                        "採購日期_E": $('#Q_PUDU_GIVE_DATE_E').val(),
+                        "廠商編號": $('#Q_FACT_NO').val(),
+                        "廠商簡稱": $('#Q_FACT_S_NAME').val(),
+                        "採購單號": $('#Q_PUDU_NO').val(),
+                        "廠商型號": $('#Q_FACT_TYPE').val(),
                         "WRITE_OFF": $('#Q_WRITEOFF').val()
                     },
                     cache: false,
@@ -415,10 +410,10 @@
                            $('#Table_CHS_Data').DataTable({
                                "destroy": true,
                                "preDrawCallback": function (settings) {
-                                   pageScrollPos = $('div.dataTables_scrollBody').scrollTop();
+                                   pageScrollPos = $('#Table_CHS_Data_wrapper div.dataTables_scrollBody').scrollTop();
                                },
                                "drawCallback": function (settings) {
-                                   $('div.dataTables_scrollBody').scrollTop(pageScrollPos);
+                                   $('#Table_CHS_Data_wrapper div.dataTables_scrollBody').scrollTop(pageScrollPos);
                                },
                                 "columns": [
                                     { title: "採購單號" },

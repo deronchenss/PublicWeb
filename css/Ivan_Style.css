@@ -71,20 +71,6 @@ td.tdtstyleLeft /* ©³ */ {
     .buttonStyle:hover {
         opacity: 0.8;
     }
-.V_BT {
-    background-color: azure;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    font-size: 15px;
-    text-align: center;
-    text-decoration: none;
-}
-
-    .V_BT:hover {
-        background-color: #f8981d;
-        color: white;
-    }
 
 .search_section_all {
     background-color: #e1d6c7;
@@ -121,3 +107,22 @@ td.tdtstyleLeft /* ©³ */ {
     background-color: #f8981d;
     color: white;
 }
+
+input:disabled:not([type=button]), select[disabled], textarea[disabled] {
+    background-color: #FFFFDE;
+}
+
+.V_BT {
+    background-color: azure !important;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    text-align: center;
+    text-decoration: none;
+}
+
+    .V_BT:hover {
+        background-color: #f8981d;
+        color: white;
+    }

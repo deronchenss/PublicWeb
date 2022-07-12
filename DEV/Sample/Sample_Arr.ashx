@@ -56,38 +56,45 @@ public class Sample_Arr : IHttpHandler, IRequiresSessionState
                                                                    ,P.工作類別
                                                                    ,CASE WHEN P.結案 = 1 THEN '是' ELSE '否' END 結案
                                                                    ,P.序號
-                                                                   ,S.序號 序號B
                                                                    ,P.更新人員
                                                                    ,CONVERT(VARCHAR,P.更新日期, 111) 更新日期
                                                      FROM pudu P
                                                      INNER JOIN SUPLU S ON P.頤坊型號=S.頤坊型號 AND P.廠商編號=S.廠商編號 
                                                      LEFT JOIN RECUA RA ON P.序號 = RA.PUDU_SEQ
                                                      LEFT JOIN RECU R ON P.序號 = R.PUDU_SEQ
-                                                     WHERE ISNULL(RA.[點收批號],'') LIKE @CHK_BATCH_NO + '%' 
-                                                     AND ISNULL(P.[採購單號],'') LIKE @PUDU_NO + '%'
-                                                     AND ISNULL(P.[頤坊型號],'') LIKE @IVAN_TYPE + '%'
-                                                     AND ISNULL(P.[暫時型號],'') LIKE @TMP_TYPE + '%'
-                                                     AND ISNULL(P.[廠商編號],'') LIKE @FACT_NO + '%'
-                                                     AND ISNULL(P.[廠商簡稱],'') LIKE '%' + @FACT_S_NAME + '%'
+                                                     WHERE 1=1
                                               ";
 
-                                if (!string.IsNullOrEmpty(context.Request["CHK_DATE_S"]))
+                                //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
+                                foreach (string form in context.Request.Form)
                                 {
-                                    cmd.CommandText += " AND CONVERT(DATE,[點收日期]) >= @CHK_DATE_S";
-                                    cmd.Parameters.AddWithValue("CHK_DATE_S", context.Request["CHK_DATE_S"]);
+                                    if(!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type" && form != "WRITE_OFF")
+                                    {
+                                        switch (form)
+                                        {
+                                            case "點收日期_S":
+                                                cmd.CommandText += " AND CONVERT(DATE,[點收日期]) >= @點收日期_S";
+                                                cmd.Parameters.AddWithValue(form, context.Request[form]);
+                                                break;
+                                            case "點收日期_E":
+                                                cmd.CommandText += " AND CONVERT(DATE,[點收日期]) <= @點收日期_E";
+                                                cmd.Parameters.AddWithValue(form, context.Request[form]);
+                                                break;
+                                            case "廠商簡稱":
+                                                cmd.CommandText += " AND ISNULL(P.[廠商簡稱],'') LIKE '%' + @廠商簡稱 + '%'";
+                                                cmd.Parameters.AddWithValue(form, context.Request[form]);
+                                                break;
+                                            case "點收批號":
+                                                cmd.CommandText += " AND ISNULL(RA.[" + form + "],'') LIKE @" + form + " + '%'";
+                                                cmd.Parameters.AddWithValue(form, context.Request[form]);
+                                                break;
+                                            default:
+                                                cmd.CommandText += " AND ISNULL(P.[" + form + "],'') LIKE @" + form + " + '%'";
+                                                cmd.Parameters.AddWithValue(form, context.Request[form]);
+                                                break;
+                                        }
+                                    }
                                 }
-                                if (!string.IsNullOrEmpty(context.Request["CHK_DATE_E"]))
-                                {
-                                    cmd.CommandText += " AND CONVERT(DATE,[點收日期]) <= @CHK_DATE_E";
-                                    cmd.Parameters.AddWithValue("CHK_DATE_E", context.Request["CHK_DATE_E"]);
-                                }
-
-                                cmd.Parameters.AddWithValue("CHK_BATCH_NO", context.Request["CHK_BATCH_NO"]);
-                                cmd.Parameters.AddWithValue("PUDU_NO", context.Request["PUDU_NO"]);
-                                cmd.Parameters.AddWithValue("IVAN_TYPE", context.Request["IVAN_TYPE"]);
-                                cmd.Parameters.AddWithValue("TMP_TYPE", context.Request["TMP_TYPE"]);
-                                cmd.Parameters.AddWithValue("FACT_NO", context.Request["FACT_NO"]);
-                                cmd.Parameters.AddWithValue("FACT_S_NAME", context.Request["FACT_S_NAME"]);
 
                                 cmd.CommandText += @" GROUP BY  P.廠商簡稱,P.採購單號,P.頤坊型號,P.採購數量
                                                                ,P.台幣單價,P.美元單價,P.外幣單價
@@ -99,94 +106,116 @@ public class Sample_Arr : IHttpHandler, IRequiresSessionState
                                 //未結案
                                 if (!string.IsNullOrEmpty(context.Request["WRITE_OFF"]) && context.Request["WRITE_OFF"] == "0")
                                 {
-                                    cmd.CommandText += " HAVING ISNULL(SUM(RA.點收數量),0) <> ISNULL(SUM(R.到貨數量),0)";
+                                    cmd.CommandText += " HAVING (ISNULL(SUM(RA.點收數量),0) > ISNULL(SUM(R.到貨數量),0)) OR (ISNULL(SUM(R.到貨數量),0) = 0 AND P.採購數量 != 0)";
                                 }
 
                                 cmd.CommandText += " ORDER BY P.採購單號,P.頤坊型號";
                                 break;
-                            case "INSERT_RECUA":
+                            case "INSERT_RECU":
                                 string[] seqArray = context.Request["SEQ[]"].Split(',');
-                                string[] chkCntArr = context.Request["CHK_CNT[]"].Split(',');
-                                string[] netWeiArray = context.Request["NET_WEIGHT[]"].Split(',');
-                                string[] weiArray = context.Request["WEIGHT[]"].Split(',');
-                                string[] lenArr = context.Request["LEN[]"].Split(',');
-                                string[] widthArray = context.Request["WIDTH[]"].Split(',');
-                                string[] heightArr = context.Request["HEIGHT[]"].Split(',');
-                                string[] ivanType = context.Request["IVAN_TYPE[]"].Split(',');
-                                string[] factNo = context.Request["FACT_NO[]"].Split(',');
+                                string[] invErrArray = context.Request["INVOICE_ERR[]"].Split(',');
+                                string[] shipRemarkArray = context.Request["SHIP_ARR_REMARK[]"].Split(',');
+                                string[] shipArrCnt = context.Request["ARR_CNT[]"].Split(',');
 
                                 for (int cnt = 0; cnt < seqArray.Length; cnt++)
                                 {
-                                    cmd.CommandText = @" INSERT INTO [dbo].[recua]
-                                                                       ([序號]
-                                                                       ,[PUDU_SEQ]
-                                                                       ,[點收批號]
-                                                                       ,[採購單號]
-                                                                       ,[樣品號碼]
-                                                                       ,[廠商編號]
-                                                                       ,[廠商簡稱]
-                                                                       ,[頤坊型號]
-                                                                       ,[暫時型號]
-                                                                       ,[廠商型號]
-                                                                       ,[單位]
-                                                                       ,[點收日期]
-                                                                       ,[點收數量]
-                                                                       ,[核銷數量]
-                                                                       ,[運輸編號]
-                                                                       ,[運輸簡稱]
-                                                                       ,[運送方式]
-                                                                       ,[變更日期]
-                                                                       ,[更新人員]
-                                                                       ,[更新日期])
-                                                           SELECT		(Select IsNull(Max(序號),0)+1 From recua) [序號]
-                                                                       ,@SEQ [PUDU_SEQ]
-                                                                       ,@CHK_BATCH_NO [點收批號]
-                                                                       ,[採購單號]
-                                                                       ,[樣品號碼]
-                                                                       ,[廠商編號]
-                                                                       ,[廠商簡稱]
-                                                                       ,[頤坊型號]
-                                                                       ,[暫時型號]
-                                                                       ,[廠商型號]
-                                                                       ,[單位]
-                                                                       ,@CHK_DATE [點收日期]
-                                                                       ,@CHK_CNT [點收數量]
-                                                                       ,NULL [核銷數量]
-                                                                       ,@TRANSFER_NO [運輸編號]
-                                                                       ,@TRANSFER_S_NAME [運輸簡稱]
-                                                                       ,NULL [運送方式]
-                                                                       ,NULL [變更日期]
-                                                                       ,@UPD_USER [更新人員]
-                                                                       ,GETDATE()[更新日期]
-                                                           FROM pudu
-                                                           WHERE 序號 = @SEQ
-                                                         
-                                                           UPDATE SUPLU
-                                                           SET 單位淨重 = @NET_WEI
-                                                              ,單位毛重 = @WEI
-                                                              ,產品長度 = @LEN
-                                                              ,產品寬度 = @WIDTH
-                                                              ,產品高度 = @HEIGHT
-                                                           WHERE 頤坊型號 = @IVAN_TYPE
-                                                           AND 廠商編號 = @FACT_NO ";
+                                    cmd.CommandText = @" INSERT INTO [dbo].[recu]
+                                                               ([序號]
+                                                               ,[PUDU_SEQ]
+                                                               ,[採購單號]
+                                                               ,[樣品號碼]
+                                                               ,[廠商編號]
+                                                               ,[廠商簡稱]
+                                                               ,[頤坊型號]
+                                                               ,[暫時型號]
+                                                               ,[廠商型號]
+                                                               ,[單位]
+                                                               ,[出貨日期]
+                                                               ,[到貨日期]
+                                                               ,[到貨單號]
+                                                               ,[到貨數量]
+                                                               ,[到單日期]
+                                                               ,[運送方式]
+                                                               ,[不付款]
+                                                               ,[發票樣式]
+                                                               ,[發票號碼]
+                                                               ,[發票異常]
+                                                               ,[歸屬年]
+                                                               ,[歸屬月]
+                                                               ,[到貨備註]
+                                                               ,[部門]
+                                                               ,[變更日期]
+                                                               ,[更新人員]
+                                                               ,[更新日期])
+                                                         SELECT TOP 1 (Select IsNull(Max(序號),0)+1 From Recu) [序號]
+                                                               ,P.[序號] [PUDU_SEQ]
+                                                               ,P.[採購單號]
+                                                               ,P.[樣品號碼]
+                                                               ,P.[廠商編號]
+                                                               ,P.[廠商簡稱]
+                                                               ,P.[頤坊型號]
+                                                               ,P.[暫時型號]
+                                                               ,P.[廠商型號]
+                                                               ,P.[單位]
+                                                               ,@SHIP_GO_DATE [出貨日期]
+                                                               ,@SHIP_ARR_DATE [到貨日期]
+                                                               ,@SHIP_ARR_NO [到貨單號]
+                                                               ,@SHIP_ARR_CNT [到貨數量]
+                                                               ,@ORDER_ARR_DATE [到單日期]
+                                                               ,null [運送方式]
+                                                               ,@NO_PAY [不付款]
+                                                               ,@INVOICE_TYPE [發票樣式]
+                                                               ,@INVOICE_NO [發票號碼]
+                                                               ,@INVOICE_ERR [發票異常]
+                                                               ,NULL [歸屬年]
+                                                               ,NULL [歸屬月]
+                                                               ,@SHIP_ARR_REMARK [到貨備註]
+                                                               ,NULL [部門]
+                                                               ,NULL [變更日期]
+                                                               ,@UPD_USER [更新人員]
+                                                               ,GETDATE() [更新日期]
+	                                                      FROM pudu P
+	                                                      WHERE P.序號 = @SEQ
+                                                          
+                                                        ";
                                     cmd.Parameters.Clear();
                                     cmd.Parameters.AddWithValue("SEQ", seqArray[cnt]);
-                                    cmd.Parameters.AddWithValue("CHK_CNT", chkCntArr[cnt]);
-                                    cmd.Parameters.AddWithValue("CHK_BATCH_NO", context.Request["CHK_BATCH_NO"]);
-                                    cmd.Parameters.AddWithValue("TRANSFER_NO", context.Request["TRANSFER_NO"]);
-                                    cmd.Parameters.AddWithValue("CHK_DATE", context.Request["CHK_DATE"]);
-                                    cmd.Parameters.AddWithValue("TRANSFER_S_NAME", context.Request["TRANSFER_S_NAME"]);
+                                    cmd.Parameters.AddWithValue("SHIP_GO_DATE", context.Request["SHIP_GO_DATE"]);
+                                    cmd.Parameters.AddWithValue("SHIP_ARR_DATE", context.Request["SHIP_ARR_DATE"]);
+                                    cmd.Parameters.AddWithValue("SHIP_ARR_NO", context.Request["SHIP_ARR_NO"]);
+                                    cmd.Parameters.AddWithValue("ORDER_ARR_DATE", context.Request["ORDER_ARR_DATE"]);
+                                    cmd.Parameters.AddWithValue("NO_PAY", context.Request["NO_PAY"]);
+                                    cmd.Parameters.AddWithValue("INVOICE_TYPE", context.Request["INVOICE_TYPE"]);
+                                    cmd.Parameters.AddWithValue("INVOICE_NO", context.Request["INVOICE_NO"]);
+                                    cmd.Parameters.AddWithValue("INVOICE_ERR", invErrArray[cnt]);
+                                    cmd.Parameters.AddWithValue("SHIP_ARR_REMARK", shipRemarkArray[cnt]);
+                                    cmd.Parameters.AddWithValue("SHIP_ARR_CNT", shipArrCnt[cnt]);
                                     cmd.Parameters.AddWithValue("UPD_USER", "IVAN10");
-                                    cmd.Parameters.AddWithValue("NET_WEI", string.IsNullOrEmpty(netWeiArray[cnt]) ? "0" : netWeiArray[cnt]);
-                                    cmd.Parameters.AddWithValue("WEI", string.IsNullOrEmpty(weiArray[cnt]) ? "0" : weiArray[cnt]);
-                                    cmd.Parameters.AddWithValue("LEN", string.IsNullOrEmpty(lenArr[cnt]) ? "0" : lenArr[cnt]);
-                                    cmd.Parameters.AddWithValue("WIDTH", string.IsNullOrEmpty(widthArray[cnt]) ? "0" : widthArray[cnt]);
-                                    cmd.Parameters.AddWithValue("HEIGHT", string.IsNullOrEmpty(heightArr[cnt]) ? "0" : heightArr[cnt]);
-                                    cmd.Parameters.AddWithValue("IVAN_TYPE", ivanType[cnt]);
-                                    cmd.Parameters.AddWithValue("FACT_NO", factNo[cnt]);
+
+                                    if (context.Request["FORCE_CLOSE"] == "true")
+                                    {
+                                        cmd.CommandText += @"UPDATE PUDU
+                                                             SET 強制結案 = 1, 結案 = 1
+                                                             WHERE 序號 = @SEQ";
+                                    }
 
                                     cmd.ExecuteNonQuery();
                                 }
+
+                                //根據寫入到貨數量 一次更新結案狀態
+                                cmd.CommandText = @"UPDATE pudu
+                                                    SET 結案 = 1
+                                                    FROM pudu P
+                                                    WHERE P.序號 IN (SELECT pudu.序號 
+                                                                     FROM pudu 
+                                                                     JOIN recu R on pudu.序號 = R.PUDU_SEQ
+                                                                     GROUP BY pudu.序號, pudu.工作類別, pudu.採購數量, pudu.台幣單價, pudu.美元單價, pudu.外幣單價, pudu.結案
+                                                                     HAVING CASE WHEN pudu.工作類別 LIKE '%詢%' THEN ISNULL(台幣單價,0) + ISNULL(美元單價,0) + ISNULL(外幣單價,0)
+                                                                                 ELSE 1 END <> 0
+                                                                     AND SUM(ISNULL(R.到貨數量,0)) >= pudu.採購數量
+                                                                     AND ISNULL(pudu.結案,0) != 1    )";
+
+                                cmd.ExecuteNonQuery();
 
                                 context.Response.StatusCode = 200;
                                 context.Response.Write(seqArray.Length);
@@ -202,15 +231,12 @@ public class Sample_Arr : IHttpHandler, IRequiresSessionState
                                 break;
                         }
 
-                        if (!context.Request["Call_Type"].Equals("INSERT_RECUA"))
-                        {
-                            SqlDataAdapter sqlData = new SqlDataAdapter(cmd);
-                            sqlData.Fill(dt);
+                        SqlDataAdapter sqlData = new SqlDataAdapter(cmd);
+                        sqlData.Fill(dt);
 
-                            var json = JsonConvert.SerializeObject(dt);
-                            context.Response.ContentType = "text/json";
-                            context.Response.Write(json);
-                        }
+                        var json = JsonConvert.SerializeObject(dt);
+                        context.Response.ContentType = "text/json";
+                        context.Response.Write(json);
                     }
                 }
             }
