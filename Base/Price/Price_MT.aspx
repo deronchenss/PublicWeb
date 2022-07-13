@@ -207,7 +207,7 @@
                                 { data: "PRI", title: "<%=Resources.MP.Price_Information%>" },
                                 { data: "S_No", title: "<%=Resources.MP.Supplier_No%>" },
                                 { data: "C_No", title: "<%=Resources.MP.Customer_No%>" },
-                                { data: "COST_SEQ", title: "<%=Resources.MP.Product_SEQ%>" },
+                                { data: "SUPLU_SEQ", title: "<%=Resources.MP.Product_SEQ%>" },
                                 { data: "Update_User", title: "<%=Resources.MP.Update_User%>" },
                                 { data: "Update_Date", title: "<%=Resources.MP.Update_Date%>" }
                             ],
@@ -544,13 +544,13 @@
             $('#SPD_Table_Product').on('click', '.BTN_Green', function () {
                 switch (PS_Control) {
                     case "NU"://New&Update
-                        $('#HDN_M2_COST_SEQ').val($(this).parent().parent().find('td:nth(1)').text());
+                        $('#HDN_M2_SUPLU_SEQ').val($(this).parent().parent().find('td:nth(1)').text());
                         $('#TB_M2_IM').val($(this).parent().parent().find('td:nth(3)').text());
                         $('#TB_M2_S_No').val($(this).parent().parent().find('td:nth(4)').text());
                         $('#TB_M2_S_SName').val($(this).parent().parent().find('td:nth(5)').text());
                         break;
                     case "C"://Copy
-                        $('#HDN_CD_COST_SEQ').val($(this).parent().parent().find('td:nth(1)').text());
+                        $('#HDN_CD_SUPLU_SEQ').val($(this).parent().parent().find('td:nth(1)').text());
                         $('#TB_CD_IM').val($(this).parent().parent().find('td:nth(3)').text());
                         $('#TB_CD_S_No').val($(this).parent().parent().find('td:nth(4)').text());
                         $('#TB_CD_S_SName').val($(this).parent().parent().find('td:nth(5)').text());
@@ -997,7 +997,7 @@
                 <td style="text-align:left;">
                     <div style="width: 90%; float: left; z-index: -10;">
                         <input id="TB_CD_IM" class="disabled" required="required" disabled="disabled" style="width: 100%;" />
-                        <input type="hidden" id="HDN_CD_COST_SEQ" />
+                        <input type="hidden" id="HDN_CD_SUPLU_SEQ" />
                     </div>
                     <div style="width: 10%; float: right; z-index: 10;">
                         <input id="BT_CD_Product_Selector" type="button" value="…" style="float: right; z-index: 10; width: 100%;" />
@@ -1183,7 +1183,7 @@
                     <td style="text-align: left; width: 15%;" colspan="3">
                         <div style="width: 90%; float: left; z-index: -10;">
                             <input id="TB_M2_IM" class="disabled" required="required" disabled="disabled" style="width: 100%;" />
-                            <input type="hidden" id="HDN_M2_COST_SEQ" />
+                            <input type="hidden" id="HDN_M2_SUPLU_SEQ" />
                         </div>
                         <div class="M2_For_NU" style="width: 10%; float: right; z-index: 10;display: none;">
                             <input id="BT_M2_Product_Selector" type="button" value="…" disabled="disabled" style="float: right; z-index: 10;width:100%;" />

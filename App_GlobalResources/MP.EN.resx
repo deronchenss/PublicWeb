@@ -243,7 +243,7 @@
   <data name="Copy_Success" xml:space="preserve">
     <value>Copy Success</value>
   </data>
-  <data name="COST_SEQ" xml:space="preserve">
+  <data name="SUPLU_SEQ" xml:space="preserve">
     <value>Cost Sequence</value>
   </data>
   <data name="Create_Date" xml:space="preserve">
@@ -552,7 +552,7 @@
   <data name="PD_IMG" xml:space="preserve">
     <value>Material Image</value>
   </data>
-  <data name="D_COST_SEQ" xml:space="preserve">
+  <data name="D_SUPLU_SEQ" xml:space="preserve">
     <value>Material Sequence</value>
   </data>
   <data name="Person_Commodity" xml:space="preserve">
@@ -801,22 +801,53 @@
   <data name="Z" xml:space="preserve">
     <value>Pinyin</value>
   </data>
-  <data name="Quote_MT" xml:space="preserve">
+  <data name="Big_Stock" xml:space="preserve">
+    <value>Big Stock</value>
+  </data>
+  <data name="Cost_Class" xml:space="preserve">
+    <value>Cost Class</value>
+  </data>
+  <data name="Last_Order" xml:space="preserve">
+    <value>Last Order Day</value>
+  </data>
+  <data name="Location_1" xml:space="preserve">
+    <value>Location_大貨</value>
+  </data>
+  <data name="Location_1_Area" xml:space="preserve">
+    <value>Location_大貨 Stock Area</value>
+  </data>
+  <data name="Location_2" xml:space="preserve">
+    <value>Location_分配</value>
+  </data>
+  <data name="On_the_way_Stock" xml:space="preserve">
+    <value>On the way Stock</value>
+  </data>
+  <data name="Safe_Stock" xml:space="preserve">
+    <value>Safe Stock</value>
+  </data>
+  <data name="Stock" xml:space="preserve">
+    <value>Stock</value>
+  </data>
+  <data name="Style" xml:space="preserve">
+    <value>Style</value>
+  </data>
+
+	<data name="Quote_MT" xml:space="preserve">
     <value>Quote Maintain</value>
   </data>
-  <data name="Quote_Query" xml:space="preserve">
+	<data name="Quote_Query" xml:space="preserve">
     <value>Quote Search</value>
   </data>
-  <data name="Quote_Base" xml:space="preserve">
+	<data name="Quote_Base" xml:space="preserve">
     <value>Quotation Create</value>
   </data>
-  <data name="Transfer_no" xml:space="preserve">
+	<data name="Transfer_no" xml:space="preserve">
     <value>Transfer_no</value>
   </data>
-  <data name="Transfer_Short_Name" xml:space="preserve">
+	<data name="Transfer_Short_Name" xml:space="preserve">
     <value>Transfer_Short_Name</value>
   </data>
-  <data name="Transfer_Type" xml:space="preserve">
+	<data name="Transfer_Type" xml:space="preserve">
     <value>Transfer_Type</value>
   </data>
 </root>

@@ -295,12 +295,13 @@
                     $('#TB_CD_S_No').css('background-color', 'red');
                     Check_Item = false;
                 }
-                if (Check_Item){
+                if (Check_Item) {
                     $.ajax({
                         url: "/Base/Cost/Cost_Search.ashx",
                         data: {
+                            "IM": $('#TB_CD_IM').val(),
                             "S_No": $('#TB_CD_S_No').val(),
-                            "Call_Type": "Supplier_No_Check"
+                            "Call_Type": "Copy_ALL_Check"
                         },
                         cache: false,
                         async: false,
@@ -308,41 +309,15 @@
                         datatype: "json",
                         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                         success: function (response) {
-                            if (response.length === 0) {
-                                Alert_Message += "\r\n廠商編號不存在";
+                            if (response.length > 0) {
+                                Alert_Message += "\r\n已存在相同頤坊型號&廠商編號";
+                                $('#TB_CD_IM').css('background-color', 'red');
                                 $('#TB_CD_S_No').css('background-color', 'red');
                                 Check_Item = false;
                             }
                             else {
-                                $.ajax({
-                                    url: "/Base/Cost/Cost_Search.ashx",
-                                    data: {
-                                        "IM": $('#TB_CD_IM').val(),
-                                        "S_No": $('#TB_CD_S_No').val(),
-                                        "Call_Type": "Copy_ALL_Check"
-                                    },
-                                    cache: false,
-                                    async: false,
-                                    type: "POST",
-                                    datatype: "json",
-                                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                                    success: function (response) {
-                                        if (response.length > 0) {
-                                            Alert_Message += "\r\n已存在相同頤坊型號&廠商編號";
-                                            $('#TB_CD_IM').css('background-color', 'red');
-                                            $('#TB_CD_S_No').css('background-color', 'red');
-                                            Check_Item = false;
-                                        }
-                                        else {
-                                            $('#TB_CD_IM').css('background-color', '');
-                                            $('#TB_CD_S_No').css('background-color', '');
-                                        }
-                                    },
-                                    error: function (ex) {
-                                        alert(ex);
-                                    }
-                                });
-
+                                $('#TB_CD_IM').css('background-color', '');
+                                $('#TB_CD_S_No').css('background-color', '');
                             }
                         },
                         error: function (ex) {

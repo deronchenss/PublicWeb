@@ -1,4 +1,8 @@
-﻿<%@ Page Title="Cost Approve" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Cost_Approve.aspx.cs" Inherits="Cost_Cost_Approve" %>
+﻿<%@ Page Title="Cost Class Maintain" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Cost_Class.aspx.cs" Inherits="Cost_Cost_Class" %>
+<%@ Register TagPrefix="uc1" TagName="uc1" Src="~/User_Control/Dia_Supplier_Selector.ascx" %>
+<%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_ALL.ascx" %>
+
+
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
 </asp:Content>
@@ -7,15 +11,39 @@
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
     <script src="/js/jquery.dataTables.min.js"></script>
     <script src="/js/dataTables.bootstrap4.min.js"></script>
-
+    
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
             var IMG_Has_Read = false;
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
+            DDL();
 
-            $('#TB_Date_S').val($.datepicker.formatDate('yy-mm-dd', new Date(new Date().setDate(new Date().getDate() - 14)) ));
+            $('#BT_Product_Selector').on('click', function () {
+                $("#Search_Supplier_Dialog").dialog('open');
+            });
+
+            function Re_Bind_Inner_JS() {
+                $('.Call_Product_Tool').off('click');
+                $('.Call_Product_Tool').on('click', function (e) {
+                    e.stopPropagation();
+                    $('#PAD_HDN_SUPLU_SEQ').val($(this).attr('SUPLU_SEQ'));
+                    $("#Product_ALL_Dialog").dialog('open');
+                });
+            };
+
+            $('#TB_S_No').on('change', function () {
+                $('#TB_S_SName').val('');
+            });
+
+            $('#SSD_Table_Supplier').on('click', '.SUP_SEL', function () {
+                $('#TB_S_No').val($(this).parent().parent().find('td:nth(2)').text());
+                $('#TB_S_SName').val($(this).parent().parent().find('td:nth(3)').text());
+                $("#Search_Supplier_Dialog").dialog('close');
+            });
+
+            $('#TB_Date_S').val($.datepicker.formatDate('yy-mm-dd', new Date(new Date().setDate(new Date().getDate() - 14))));
             $('#TB_Date_E').val($.datepicker.formatDate('yy-mm-dd', new Date()));
 
             window.document.body.onbeforeunload = function () {
@@ -27,18 +55,21 @@
                 switch (Form_Mode) {
                     case "Base":
                         $('#BT_Search, .For_S').css('display', '');
-                        $('#BT_Cancel, #Div_DT_View, #Div_Data_Control, #Div_Exec_Data, #BT_Re_Select, #BT_Approve').css('display', 'none');
+                        $('#BT_Cancel, #Div_DT_View, #Div_Data_Control, #Div_Exec_Data, #BT_Re_Select, #BT_Save, .For_U').css('display', 'none');
                         $('#RB_DV_DIMG').prop('checked', true);
+                        $('input[type=radio][name=DIMG]').attr('disabled', 'disabled');
                         break;
                     case "Search":
                         $('#BT_Cancel, #Div_DT_View, #Div_Data_Control, #Div_Exec_Data').css('display', '');
-                        $('#BT_Search, #BT_Re_Select, #BT_Approve, .For_S').css('display', 'none');
+                        //$('#BT_Search, #BT_Re_Select, #BT_Save, .For_S, .For_U').css('display', 'none');
+                        $('#BT_Re_Select, #BT_Save, .For_U').css('display', 'none');
                         $('#Div_DT_View').css('width', '60%');
                         $('#Div_Exec_Data').css('width', '35%');
+                        $('input[type=radio][name=DIMG]').attr('disabled', false);
                         break;
                     case "Review_Data":
                         $('#BT_Cancel, #Div_DT_View, #Div_Data_Control').css('display', 'none');
-                        $('#BT_Re_Select, #BT_Approve').css('display', '');
+                        $('#BT_Re_Select, #BT_Save, .For_U').css('display', '');
                         $('#Div_Exec_Data').css('width', '100%');
                         break;
                 }
@@ -64,13 +95,12 @@
                 $.ajax({
                     url: "/Base/Cost/Cost_Search.ashx",
                     data: {
-                        "Call_Type": "Cost_Apply_Search",
-                        "IM": $('#TB_IM').val(),
-                        "S_No": $('#TB_S_No').val(),
-                        "Date_S": $('#TB_Date_S').val(),
-                        "Date_E": $('#TB_Date_E').val(),
-                        "DVN": $('#DDL_DVN').val(),
-                        "Search_Where": Search_Where ?? ""
+                        "Call_Type": "Cost_Class_Search"
+                        //"IM": $('#TB_IM').val(),
+                        //"S_No": $('#TB_S_No').val(),
+                        //"Date_S": $('#TB_Date_S').val(),
+                        //"Date_E": $('#TB_Date_E').val(),
+                        //"DVN": $('#DDL_DVN').val(),
                     },
                     cache: false,
                     type: "POST",
@@ -83,54 +113,72 @@
                             Form_Mode_Change("Base");
                         }
                         else {
-
                             var Table_HTML =
                                 '<thead><tr>'
-                                + '</th><th>' + '<%=Resources.MP.Developing%>'
-                                + '</th><th>' + '<%=Resources.MP.Supplier_Short_Name%>'
                                 + '</th><th>' + '<%=Resources.MP.Ivan_Model%>'
                                 + '</th><th>' + '<%=Resources.MP.Supplier_Model%>'
                                 + '</th><th>' + '<%=Resources.MP.Sale_Model%>'
-                                + '</th><th>' + '<%=Resources.MP.Product_Information%>'
-                                + '</th><th class="DIMG">' + '<%=Resources.MP.Image%>'
-                                + '</th><th>' + '<%=Resources.MP.Apply_Reason%>'
+                                + '</th><th>' + '<%=Resources.MP.Supplier_Short_Name%>'
                                 + '</th><th>' + '<%=Resources.MP.Unit%>'
-                                + '</th><th>' + '<%=Resources.MP.Price_TWD%>'
-                                + '</th><th>' + '<%=Resources.MP.Price_USD%>'
-                                + '</th><th>' + '<%=Resources.MP.Currency%>'
-                                + '</th><th>' + '<%=Resources.MP.Price_Curr%>'
-                                + '</th><th>' + 'MSRP'
-                                + '</th><th>' + 'Cost'
-                                + '</th><th>' + 'GP'
-                                + '</th><th>' + '<%=Resources.MP.Last_Price_Day%>'
+                                + '</th><th>' + '<%=Resources.MP.Rank%>1'
+                                + '</th><th>' + '<%=Resources.MP.Rank%>2'
+                                + '</th><th>' + '<%=Resources.MP.Rank%>3'
+                                + '</th><th>' + '<%=Resources.MP.Rank%>1_V3'
+                                + '</th><th>' + '<%=Resources.MP.Rank%>2_V3'
+                                + '</th><th>MSRP'
+                                + '</th><th>' + '<%=Resources.MP.Product_Information%>'
+                                + '</th><th>' + '<%=Resources.MP.Last_Order%>'
+                                + '</th><th>' + '<%=Resources.MP.Location_1%><%=Resources.MP.Speace%><%=Resources.MP.Stock%>'
+                                + '</th><th>' + '<%=Resources.MP.Location_2%><%=Resources.MP.Speace%><%=Resources.MP.Stock%>'
+                                + '</th><th>' + '<%=Resources.MP.On_the_way_Stock%>'
+                                + '</th><th>' + '<%=Resources.MP.Location_1%><%=Resources.MP.Speace%><%=Resources.MP.Safe_Stock%>'
+                                + '</th><th>' + 'TPE<%=Resources.MP.Speace%><%=Resources.MP.Safe_Stock%>'
+                                + '</th><th>' + 'ISP<%=Resources.MP.Speace%><%=Resources.MP.Safe_Stock%>'
+                                + '</th><th>UN'
+                                + '</th><th>' + '<%=Resources.MP.International_No%>'
+                                + '</th><th>' + '<%=Resources.MP.Style%>'
+                                + '</th><th>' + '<%=Resources.MP.Location_1_Area%>'
                                 + '</th><th>' + '<%=Resources.MP.Supplier_No%>'
+                                + '</th><th class="DIMG">' + '<%=Resources.MP.Image%>'
+                                //Has_IMG
                                 + '</th><th>' + '<%=Resources.MP.SEQ%>'
                                 + '</th><th>' + '<%=Resources.MP.Update_User%>'
                                 + '</th><th>' + '<%=Resources.MP.Update_Date%>'
                                 + '</th></tr></thead><tbody>';
-
                             $(response).each(function (i) {
-                                Table_HTML +=
-                                    '<tr><td>' + String(response[i].DVN ?? "") +
-                                    '</td><td>' + String(response[i].S_SName ?? "") +
-                                    '</td><td>' + String(response[i].IM ?? "") +
+                                Table_HTML +=//
+                                    //'<tr><td>' + String(response[i].IM ?? "") +
+                                    //'<input class="Call_Product_Tool" type="button" value="…" style="float: right;z-index:1000;" />' +
+                                    '<tr><td><input class="Call_Product_Tool" SUPLU_SEQ = "' + String(response[i].SEQ ?? "")
+                                        + '" type="button" value="' + String(response[i].IM ?? "")
+                                        + '" style="text-align:left;width:100%;z-index:1000;' + ((response[i].Has_IMG) ? 'background: #90ee90;': '') + '" />' +
                                     '</td><td>' + String(response[i].SM ?? "") +
                                     '</td><td>' + String(response[i].SaleM ?? "") +
-                                    '</td><td>' + String(response[i].PI ?? "") +
-                                    (((response[i].Change_Log ?? "").length > 0) ? ('<br /><span style="color:blue;" title="' + (response[i].Change_Log ?? "") + '">移入檢視變更記錄</sapn>') : '') +
-                                    '</td><td class="DIMG" style="text-align:center;">' +
-                                    ((response[i].Has_IMG) ? ('<img type="Product" SEQ="' + String(response[i].SEQ ?? "") + '" />') : ('<%=Resources.MP.Image_NotExists%>')) +
-                                    '</td><td>' + String(response[i].Apply_Reason ?? "") + 
+                                    '</td><td>' + String(response[i].S_SName ?? "") +
                                     '</td><td>' + String(response[i].Unit ?? "") +
-                                    '</td><td style="text-align:right;">' + ((response[i].TWD_P != 0) ? String(response[i].TWD_P ?? "") : "") +
-                                    '</td><td style="text-align:right;">' + ((response[i].USD_P != 0) ? String(response[i].USD_P ?? "") : "")  +
-                                    '</td><td>' + String(response[i].Curr ?? "") +
-                                    '</td><td style="text-align:right;">' + ((response[i].Curr_P != 0) ? String(response[i].Curr_P ?? ""): "")  +
-                                    '</td><td style="text-align:right;">' + ((response[i].MSRP != 0) ? String(response[i].MSRP ?? ""): "")  +
-                                    '</td><td style="text-align:right;">' + ((response[i].Cost != 0) ? String(response[i].Cost ?? ""): "")  +
-                                    '</td><td style="text-align:right;">' + ((response[i].GP != 0) ? String(response[i].GP ?? "") : "") +
-                                    '</td><td>' + String(response[i].LSTP_Day ?? "") +
+                                    '</td><td>' + String(response[i].Rank1 ?? "") +
+                                    '</td><td>' + String(response[i].Rank2 ?? "") +
+                                    '</td><td>' + String(response[i].Rank3 ?? "") +
+                                    '</td><td>' + String(response[i].Rank1_V3 ?? "") +
+                                    '</td><td>' + String(response[i].Rank2_V3 ?? "") +
+                                    '</td><td>' + String(response[i].MSRP ?? "") +
+                                    '</td><td>' + String(response[i].PI ?? "") +
+                                    '</td><td>' + String(response[i].LS_ORD ?? "") +
+                                    '</td><td style="text-align:right;">' + ((response[i].Location_1_Stock != 0) ? String(response[i].Location_1_Stock ?? "") : "") +
+                                    '</td><td style="text-align:right;">' + ((response[i].Location_2_Stock != 0) ? String(response[i].Location_2_Stock ?? "") : "") +
+                                    '</td><td>' + String(response[i].SUM_PUD ?? "") +
+                                    '</td><td style="text-align:right;">' + ((response[i].Location_1_Safe != 0) ? String(response[i].Location_1_Safe ?? "") : "") +
+                                    '</td><td style="text-align:right;">' + ((response[i].Location_TPE_Safe != 0) ? String(response[i].Location_TPE_Safe ?? "") : "") +
+                                    '</td><td style="text-align:right;">' + ((response[i].Location_ISP_Safe != 0) ? String(response[i].Location_ISP_Safe ?? "") : "") +
+                                    '</td><td>' + String(response[i].UN ?? "") +
+                                    '</td><td>' + String(response[i].I_No ?? "") +
+                                    '</td><td>' + String(response[i].P_Style ?? "") +
+                                    '</td><td>' + String(response[i].Location_1_Area ?? "") +
                                     '</td><td>' + String(response[i].S_No ?? "") +
+                                //Has_IMG
+                                '</td><td class="DIMG" style="text-align:center;">' +
+                                ((response[i].Has_IMG) ? ('<img type="Product" SEQ="' + String(response[i].SEQ ?? "") + '" />') : ('<%=Resources.MP.Image_NotExists%>')) +
+                                '</td><td class="For_U" style="display:none;">' +
                                     '</td><td class="SEQ">' + String(response[i].SEQ ?? "") +
                                     '</td><td>' + String(response[i].Update_User ?? "") +
                                     '</td><td>' + String(response[i].Update_Date ?? "") +
@@ -139,6 +187,7 @@
 
                             Table_HTML += '</tbody>';
                             $('#Table_Search_Cost').html(Table_HTML);
+
                             $('.DIMG').toggle(!$('#RB_DV_DIMG').prop('checked'));
                             $('#Table_Search_Cost_info').text('Showing ' + $('#Table_Search_Cost > tbody tr').length + ' entries');
                             IMG_Has_Read = false;//初始化IMG讀取
@@ -146,9 +195,7 @@
                             $('#Table_Search_Cost').css('white-space', 'nowrap');
                             $('#Table_Search_Cost thead th').css('text-align', 'center');
 
-
-                            //$('#Table_Exec_Data_info').text('');
-                            //$('#Table_Exec_Data').html('');
+                            Re_Bind_Inner_JS();
                         }
                     },
                     error: function (ex) {
@@ -200,6 +247,7 @@
                     });
                     IMG_Has_Read = true;
                 }
+
             });
 
             $('#BT_Next').on('click', function () {
@@ -207,24 +255,31 @@
                 Form_Mode_Change("Review_Data");
             });
             
-            $('#BT_Approve').on('click', function () {
-                if (confirm("確認要核准以下資料嗎？")) {
+            $('#BT_Fill_Reason').on('click', function () {
+                if (confirm('<%=Resources.MP.Confirm_Fill_Reason%>')) {
+                    $('.U_Element').val($('#TB_ALL_Reason').val());
+                }
+            });
+
+            $('#BT_Save').on('click', function () {
+                if (confirm("<%=Resources.MP.Save_Alert%>")) {
                     $('#Table_Exec_Data tbody tr').each(function () {
+                        console.warn('SEQ: ' + $(this).find('.SEQ').text() + ', Reason: ' + $(this).find('.U_Element').val());
                         $.ajax({
                             url: "/Base/Cost/Cost_Save.ashx",
                             data: {
                                 "SEQ":$(this).find('.SEQ').text(),
-                                "Call_Type": "Cost_Approve"
+                                "Reason": $(this).find('.U_Element').val(),
+                                "Call_Type": "Cost_Apply"
                             },
                             cache: false,
                             type: "POST",
-                            async: false,
                             datatype: "json",
                             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                             success: function (response) {
-                                Edit_Mode = "Approve";
+                                //console.warn(response);
+                                Edit_Mode = "Save";
                                 Form_Mode_Change("Base");
-                                console.warn(response);
                             },
                             error: function (ex) {
                                 alert(ex);
@@ -232,7 +287,7 @@
                             }
                         });
                     });
-                    alert('核准完成');
+                    alert("<%=Resources.MP.Add_Success%>");
                 }
             });
 
@@ -247,7 +302,10 @@
                     if (Full) {
                         FromTable.find('.SEQ').each(function () {
                             var OT = $(this).text();
-                            if (ToTable.find('.SEQ').filter(function () { return $(this).text() == OT; }).length === 0) {
+                            //if (ToTable.find('.SEQ:contains(' + $(this).text() + ')').length === 0) {
+                            //    ToTable.append($(this).parent().clone());
+                            //}
+                            if (ToTable.find('.SEQ').filter(function () { return $(this).text() == OT; })) {
                                 ToTable.append($(this).parent().clone());
                             }
                             else {
@@ -257,12 +315,12 @@
                         });
                     }
                     else {
-                        click_tr.remove();
-                        //if (ToTable.find('.SEQ:contains(' + click_tr.find('.SEQ').text() + ')').length === 0) {
-                        if (ToTable.find('.SEQ').filter(function () { return $(this).text() == click_tr.find('.SEQ').text(); }).length === 0) {
+                        if (ToTable.find('.SEQ:contains(' + click_tr.find('.SEQ').text() + ')').length === 0) {
                             ToTable.append(click_tr.clone());
                         }
+                        click_tr.remove();
                     }
+
                     if (FromTable.find('tbody tr').length === 0) {
                         FromTable.html('');
                     }
@@ -270,8 +328,10 @@
                     $('#Table_Search_Cost_info').text('Showing ' + $('#Table_Search_Cost > tbody tr').length + ' entries');
 
                     $('#BT_Next').toggle(Boolean($('#Table_Exec_Data').find('tbody tr').length > 0));
+                    Re_Bind_Inner_JS();
                 }
             }
+
             $('#Table_Search_Cost').on('click', 'tbody tr', function () {
                 Item_Move($(this), $('#Table_Exec_Data'), $('#Table_Search_Cost'), false);
             });
@@ -282,8 +342,30 @@
                 Item_Move($(this), $('#Table_Exec_Data'), $('#Table_Search_Cost'), true);
             });
             $('#BT_ATL').on('click', function () {
-                Item_Move($(this), $('#Table_Search_Cost'), $('#Table_Exec_Data'),  true);
+                Item_Move($(this), $('#Table_Search_Cost'), $('#Table_Exec_Data'), true);
             });
+
+            function DDL() {
+                $.ajax({
+                    url: "/Web_Service/DDL_DataBind.asmx/Product_Class",
+                    cache: false,
+                    dataType: "json",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        var Json_Response = JSON.parse(data.d);
+                        var DDL_Option = "<option></option>";
+
+                        $.each(Json_Response, function (i, value) {
+                            DDL_Option += '<option value="' + value.val + '">' + value.txt + '</option>';
+                        });
+                        $('#DDL_PC').html(DDL_Option);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    },
+                });
+            }
         });
     </script>
 
@@ -305,6 +387,15 @@
             background-color: #f8981d;
             color: white;
         }
+        .Call_Product_Tool{
+            border-radius: 4px;
+            border:5px blue none;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+            background: Gainsboro;
+        }
+        .Call_Product_Tool:hover {
+            opacity: 0.8;
+        }
         .BTN_Green {
             color: white;
             border-radius: 4px;
@@ -319,6 +410,9 @@
             opacity: 0.8;
         }
     </style>
+    <uc1:uc1 ID="uc1" runat="server" /> 
+    <uc2:uc2 ID="uc2" runat="server" /> 
+
     <table class="table_th" style="text-align: left;">
         <tr>
             <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
@@ -328,64 +422,106 @@
             <td style="text-align: left; width: 15%;">
                 <input id="TB_IM" autocomplete="off" style="width: 100%;" />
             </td>
+            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Product_Class%></td>
+            <td style="text-align: left; width: 15%;">
+                <select id="DDL_PC" style="width:100%;"></select>
+            </td>
             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Update_Date%></td>
             <td style="text-align: left; width: 15%;">
                 <input id="TB_Date_S" type="date" style="width: 50%;" /><input id="TB_Date_E" type="date" style="width: 50%;" />
             </td>
+            <td></td><td></td>
         </tr>
         <tr class="For_S">
             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Supplier_No%></td>
             <td style="text-align: left; width: 15%;">
-                <input id="TB_S_No" autocomplete="off" style="width: 100%;" /><%--暫先不用ATC placeholder="<%=Resources.MP.S_No_ATC_Hint%>"--%>
+                <div style="width: 90%; float: left; z-index: -10;">
+                    <input id="TB_S_No" style="width: 100%; z-index: -10;" />
+                </div>
+                <div style="width: 10%; float: right; z-index: 10;">
+                    <input id="BT_Product_Selector" type="button" value="…" style="float: right; z-index: 10; width: 100%;" />
+                </div>
             </td>
-            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Developing%></td>
+            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Supplier_Short_Name%></td>
             <td style="text-align: left; width: 15%;">
-                <select id="DDL_DVN">
-                    <option selected="selected" value="R">申請中</option>
-                    <option value="N">正式</option>
-                    <option>ALL</option>
+                <input id="TB_S_SName" class="disabled" disabled="disabled" style="width: 100%;" />
+            </td>
+            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Sale_Model%></td>
+            <td style="text-align: left; width: 15%;">
+                <input id="TB_SaleM" style="width: 100%;" />
+            </td>
+            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Product_Information%></td>
+            <td style="text-align: left; width: 15%;">
+                <input id="TB_PI" style="width: 100%;" />
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Big_Stock%></td>
+            <td style="text-align: left; width: 15%;">
+                <select id="DDL_BigS">
+                    <option selected="selected">ALL</option>
+                    <option value="Y">有</option>
+                    <option value="N">無</option>
                 </select>
+            </td>
+            <td style="text-align: right; text-wrap: none; width: 10%;">MSRP</td>
+            <td style="text-align: left; width: 15%;">
+                <select id="DDL_MSRP">
+                    <option selected="selected">ALL</option>
+                    <option value="Y">有</option>
+                    <option value="N">無</option>
+                </select>
+            </td>
+            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Product_Class%></td>
+            <td style="text-align: left; width: 15%;">
+                <select id="DDL_PC_NEX">
+                    <option selected="selected">ALL</option>
+                    <option value="1">無一階</option>
+                    <option value="2">無二階</option>
+                    <option value="3">無三階</option>
+                </select>
+            </td>
+            <td style="text-align: right; text-wrap: none; width: 10%;"></td>
+            <td style="text-align: left; width: 15%;">
+                <input id="CB_Not_Leather" type="checkbox" checked="checked" />
+                <label for="CB_Not_Leather">排除皮革</label>
             </td>
         </tr>
         <tr>
             <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
         </tr>
         <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td style="width: 10%;">
+            <td class="tdtstyleRight" colspan="8">
                 <input type="button" id="BT_Search" class="M_BT" value="<%=Resources.MP.Search%>" />
-            </td>
-            <td style="width: 10%;">
                 <input type="button" id="BT_Cancel" class="M_BT" value="<%=Resources.MP.Cancel%>" style="display: none;" />
-            </td>
-            <td style="width: 10%;">
                 <input type="button" id="BT_Re_Select" class="M_BT" value="<%=Resources.MP.Re_Selet%>" style="display:none;" />
+                <input type="button" id="BT_Save" class="M_BT" value="<%=Resources.MP.Save%>" style="display:none;" />
             </td>
-            <td style="width: 10%;">
-                <input type="button" id="BT_Approve" class="M_BT" value="<%=Resources.MP.Approve%>" style="display:none;" />
-            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td style="width: 10%;"></td>
+            <td style="width: 10%;"></td>
+            <td style="width: 10%;"></td>
+            <td style="width: 10%;"></td>
             <td style="width: 80%;"></td>
         </tr>
         <tr>
-            <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
-        </tr>
-        <tr>
             <td colspan="8">
-                <input id="RB_DV_DIMG" type="radio" name="DIMG" checked="checked" onclick="$('.DIMG').css('display', 'none');" />
+                <input id="RB_DV_DIMG" type="radio" name="DIMG" disabled="disabled" checked="checked" />
                 <label for="RB_DV_DIMG"><%=Resources.MP.Not_Show_Image%></label>
-                <input id="RB_V_DIMG" type="radio" name="DIMG" onclick="$('.DIMG').css('display', '');$('.DIMG img').css('height', '');" />
+                <input id="RB_V_DIMG" type="radio" name="DIMG" disabled="disabled" />
                 <label for="RB_V_DIMG"><%=Resources.MP.Show_Original_Image%></label>
-                <input id="RB_SM_DIMG" type="radio" name="DIMG" onclick="$('.DIMG').css('display', '');$('.DIMG img').css('height', '100px');" />
+                <input id="RB_SM_DIMG" type="radio" name="DIMG" disabled="disabled" />
                 <label for="RB_SM_DIMG"><%=Resources.MP.Show_Small_Image%></label>
             </td>
         </tr>
     </table>
     <br />
-    
     <div style="width: 98%; margin: 0 auto;">
-        <div id="Div_DT_View" style="width: 60%; height: 75vh; overflow: auto; display: none; float: left;border-style:solid;border-width:1px; ">
+        <div id="Div_DT_View" style="width: 60%; height: 70vh; overflow: auto; display: none; float: left;border-style:solid;border-width:1px; ">
             <span class="dataTables_info" id="Table_Search_Cost_info" role="status" aria-live="polite"></span>
             <table id="Table_Search_Cost" style="width: 99%;" class="table table-striped table-bordered">
                 <thead></thead>
@@ -393,7 +529,7 @@
             </table>
         </div>
 
-        <div id="Div_Data_Control" style="width: 5%; margin: 0 auto; text-align: center; height: 75vh; float: left; display: none;">
+        <div id="Div_Data_Control" style="width: 5%; margin: 0 auto; text-align: center; height: 70vh; float: left; display: none;">
             <table style="width: 100%; height: 100%;">
                 <tr>
                     <td style="width: 100%; height: 100%; vertical-align: middle;">
@@ -409,16 +545,22 @@
             </table>
         </div>
 
-        <div id="Div_Exec_Data" style="width: 35%; height: 75vh; overflow: auto; display: none; float: right;border-style:solid;border-width:1px; ">
+        <div id="Div_Exec_Data" style="width: 35%; height: 70vh; overflow: auto; display: none; float: right;border-style:solid;border-width:1px; ">
             <span class="dataTables_info" id="Table_Exec_Data_info" role="status" aria-live="polite"></span>
+            <div class="For_U">
+                <div style="display: flex;align-items: center;">
+                    <textarea id="TB_ALL_Reason" style="width: 300px;"></textarea>
+                    &nbsp;&nbsp;&nbsp;
+                    <input type="button" id="BT_Fill_Reason" value="<%=Resources.MP.Batch_Update_Reason%>" style="height: 54px; background-color: cadetblue; padding: 8px 10px; border-radius: 10px;" />
+                </div>
+            </div>
             <table id="Table_Exec_Data" style="width: 100%;" class="table table-striped table-bordered">
                 <thead></thead>
                 <tbody></tbody>
             </table>
         </div>
     </div>
-    
+
     <br />
     <br />
 </asp:Content>
-

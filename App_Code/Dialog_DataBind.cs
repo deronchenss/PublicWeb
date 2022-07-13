@@ -14,7 +14,7 @@ using System.Web.Script.Serialization;
 [WebService(Namespace = "http://tempuri.org/")]
 [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
 // 若要允許使用 ASP.NET AJAX 從指令碼呼叫此 Web 服務，請取消註解下列一行。
-// [System.Web.Script.Services.ScriptService]
+[System.Web.Script.Services.ScriptService]
 public class Dialog_DataBind : System.Web.Services.WebService
 {
 
@@ -97,6 +97,48 @@ public class Dialog_DataBind : System.Web.Services.WebService
     }
 
     [WebMethod]
+    public void Product_ALL_Search(string SUPLU_SEQ)
+    {
+        List<object> Cost = new List<object>();
+        SqlConnection conn = new SqlConnection();
+
+        conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
+        SqlCommand cmd = new SqlCommand();
+        cmd.CommandText = @" SELECT *, (SELECT 圖檔 FROM [192.168.1.135].pic.dbo.xpic I WHERE I.SUPLU_SEQ = C.[序號]) [IMG]
+                             FROM Dc2..suplu C
+                                INNER JOIN Dc2..sup S ON C.廠商編號 = S.廠商編號
+                             WHERE C.[序號] = @SUPLU_SEQ ";
+        cmd.Parameters.AddWithValue("SUPLU_SEQ", SUPLU_SEQ);
+        cmd.Connection = conn;
+        conn.Open();
+        SqlDataReader sdr = cmd.ExecuteReader();
+        while (sdr.Read())
+        {
+            Cost.Add(new
+            {
+                SEQ = sdr["序號"],
+                IM = sdr["頤坊型號"],
+                SupM = sdr["廠商型號"],
+                S_No = sdr["廠商編號"],
+                S_SName = sdr["廠商簡稱"],
+                TempM = sdr["暫時型號"],
+                SaleM = sdr["銷售型號"],
+                Unit = sdr["單位"],
+                DVN = sdr["開發中"],
+                PST = sdr["產品狀態"],
+                SD = sdr["停用日期"],
+                ACC = sdr["帳務分類"],
+                PI = sdr["產品說明"],
+                PID = sdr["產品詳述"],
+                IMG = sdr["IMG"],
+            });
+        }
+        conn.Close();
+        var json = (new JavaScriptSerializer().Serialize(Cost));
+        Context.Response.Write(json);
+    }
+
+    [WebMethod]
     public void Transfer_Search(string S_No, string S_Type)
     {
         List<object> Supplier = new List<object>();
@@ -129,4 +171,5 @@ public class Dialog_DataBind : System.Web.Services.WebService
         var json = (new JavaScriptSerializer().Serialize(Supplier));
         Context.Response.Write(json);
     }
+
 }

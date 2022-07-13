@@ -67,9 +67,9 @@
                                         { data: "DVN", title: "<%=Resources.MP.Developing%>" },
                                         <%--{ data: "SEQ", title: "<%=Resources.MP.SEQ%>" },--%>
                                         {
-                                            data: "SEQ", title: "<%=Resources.MP.COST_SEQ%>",
+                                            data: "SEQ", title: "<%=Resources.MP.SUPLU_SEQ%>",
                                             render: function (data, type, row) {
-                                                return '<span class="Cost_SEQ">' + data + '</span>';
+                                                return '<span class="SUPLU_SEQ">' + data + '</span>';
                                             }
                                         },
                                         { data: "Update_User", title: "<%=Resources.MP.Update_User%>" },
@@ -132,11 +132,11 @@
                                         { data: "SEQ", title: "<%=Resources.MP.SEQ%>" },
                                         { data: "Update_User", title: "<%=Resources.MP.Update_User%>" },
                                         { data: "Update_Date", title: "<%=Resources.MP.Update_Date%>" },
-                                        <%--{ data: "Cost_SEQ", title: "<%=Resources.MP.COST_SEQ%>" },--%>
+                                        <%--{ data: "SUPLU_SEQ", title: "<%=Resources.MP.SUPLU_SEQ%>" },--%>
                                         {
-                                            data: "Cost_SEQ", title: "<%=Resources.MP.COST_SEQ%>",
+                                            data: "SUPLU_SEQ", title: "<%=Resources.MP.SUPLU_SEQ%>",
                                             render: function (data, type, row) {
-                                                return '<span class="Cost_SEQ">' + data + '</span>';
+                                                return '<span class="SUPLU_SEQ">' + data + '</span>';
                                             }
                                         },
                                     ],
@@ -161,7 +161,7 @@
                     $(this).css('background-color', '#5a1400');
                     $(this).css('color', 'white');
 
-                    var SEQ = $(this).find('.Cost_SEQ').text().toString().trim();
+                    var SEQ = $(this).find('.SUPLU_SEQ').text().toString().trim();
 
                     $('.M2_For_U').css('display', '');
                     $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
@@ -171,7 +171,7 @@
                     $.ajax({
                         url: "/Base/BOM/BOM_Search.ashx",
                         data: {
-                            "COST_SEQ": SEQ,
+                            "SUPLU_SEQ": SEQ,
                             "Call_Type": "GET_IMG"
                         },
                         cache: false,

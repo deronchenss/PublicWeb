@@ -36,7 +36,7 @@ public class Price_Search : IHttpHandler, IRequiresSessionState
                                          	CONVERT(VARCHAR(20),[最後單價日],23) [最後單價日], 
                                          	CONVERT(VARCHAR(20),[停用日期],23) [停用日期], 
                                          	[產品說明], [廠商編號], [客戶編號], [序號], [更新人員], 
-                                         	LEFT(RTRIM(CONVERT(VARCHAR(20),[更新日期],20)),16) [更新日期], [更新日期] [Sort], COST_SEQ
+                                         	LEFT(RTRIM(CONVERT(VARCHAR(20),[更新日期],20)),16) [更新日期], [更新日期] [Sort], SUPLU_SEQ
                                          FROM Dc2..byrlu
                                          WHERE 1=1 ";
                     if (!string.IsNullOrEmpty(context.Request["Search_Where"]))
@@ -53,7 +53,7 @@ public class Price_Search : IHttpHandler, IRequiresSessionState
                                          	REPLACE(CONVERT(VARCHAR(40),CAST([台幣單價] AS MONEY),1),'.00','') [台幣單價], 
                                          	[美元單價], [單價_2], [單價_3], [單價_4], [MIN_1], [MIN_2], [MIN_3], [MIN_4], [更新人員], 
                                          	LEFT(RTRIM(CONVERT(VARCHAR(20),[更新日期],20)),16) [更新日期], [備註],
-                                         	(SELECT TOP 1 b.[圖檔] FROM [192.168.1.135].Pic.dbo.xpic b WHERE b.COST_SEQ = P.[序號]) [IMG]
+                                         	(SELECT TOP 1 b.[圖檔] FROM [192.168.1.135].Pic.dbo.xpic b WHERE b.SUPLU_SEQ = P.[序號]) [IMG]
                                          FROM Dc2..byrlu P
                                          WHERE [序號] = @SEQ ";
                     cmd.Parameters.AddWithValue("SEQ", context.Request["SEQ"]);
@@ -86,7 +86,7 @@ public class Price_Search : IHttpHandler, IRequiresSessionState
                             SEQ = sdr["序號"],
                             Update_User = sdr["更新人員"],
                             Update_Date = sdr["更新日期"],
-                            COST_SEQ = sdr["COST_SEQ"],
+                            SUPLU_SEQ = sdr["SUPLU_SEQ"],
                         });
                     }
                     break;

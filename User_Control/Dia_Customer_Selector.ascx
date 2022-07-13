@@ -22,7 +22,7 @@
             $.ajax({
                 url: "/Base/Customer/Customer_Search.ashx",
                 data: {
-                    "Call_Type": "SCD_Search",
+                    "Call_Type": "Customer_Search",
                     "C_No": $('#SCD_TB_C_No').val(),
                     "C_SName": $('#SCD_TB_C_SName').val(),
                 },
@@ -43,7 +43,7 @@
                             {
                                 data: null, title: "",
                                 render: function (data, type, row) {
-                                    return '<input type="button" class="CUST_SEL" value="' + '<%=Resources.MP.Select%>' + '">'
+                                    return '<input type="button" class="CUST_SEL" value="' + '<%=Resources.MP.Select%>' + '" />'
                                     }
                                 },
                                 { data: "SEQ", title: "<%=Resources.MP.SEQ%>" },

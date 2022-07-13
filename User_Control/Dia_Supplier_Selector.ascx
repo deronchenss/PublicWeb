@@ -33,8 +33,7 @@
                 //contentType: "application/json; charset=utf-8",
                 //success: function (response) {
                 success: function (response) {
-                    console.warn(JSON.parse(response));
-                    
+                    //console.warn(JSON.parse(response));
                     $('#SSD_Table_Supplier').DataTable({
                         "data": JSON.parse(response),
                         "destroy": true,
@@ -47,10 +46,10 @@
                             {
                                 data: null, title: "",
                                 render: function (data, type, row) {
-                                    return '<input type="button" class="SUP_SEL" value="' + '<%=Resources.MP.Select%>' + '">'
+                                    return '<input type="button" class="SUP_SEL" value="' + '<%=Resources.MP.Select%>' + '" />'
                                 }
                             },
-                            { data: "SEQ", title: "<%=Resources.MP.COST_SEQ%>" },
+                            { data: "SEQ", title: "<%=Resources.MP.SUPLU_SEQ%>" },
                             <%--{ data: "DVN", title: "<%=Resources.MP.Developing%>" },--%>
                             { data: "S_No", title: "<%=Resources.MP.Supplier_No%>" },
                             { data: "S_SName", title: "<%=Resources.MP.Supplier_Short_Name%>" },

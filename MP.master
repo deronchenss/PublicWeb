@@ -25,9 +25,9 @@
     <script src="/js/jquery.sticky.js"></script>
     <script src="/js/main.js"></script>
     <script src="/js/jquery-ui.js"></script>
-    <link rel="stylesheet" href="/css/Ivan_Style.css">
     <link href="/css/jquery.loading.min.css" rel="stylesheet" />
     <script src="/js/jquery.loading.min.js"></script>
+    <link href="/css/Ivan_Style.css" rel="stylesheet" />
 
     <style type="text/css">
         .dataTables_length, .dataTables_length select{ font-size: 13px;}
@@ -73,7 +73,7 @@
     <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>
 </head>
-<body>
+<body style="width:auto;height:auto">
     <form id="form1" runat="server">
         <div class="site-mobile-menu site-navbar-target">
             <div class="site-mobile-menu-header">
@@ -112,8 +112,6 @@
                                                     </a></li>
                                                 <li><a href="/Base/Supplier/Supplier_MT.aspx" IVM_PERMISSIONS="25"><%--廠商維護--%><%=Resources.MP.Supplier%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
                                                     </a></li>
-                                                <li><a href="#" IVM_PERMISSIONS="26"><%--廠商類別設定--%><%=Resources.MP.Supplier%><%=Resources.MP.Speace%><%=Resources.MP.Type%><%=Resources.MP.Speace%><%=Resources.MP.Settings%>(X)
-                                                    </a></li>
                                             </ul>
                                         </li>
                                         <li class="has-children">
@@ -131,6 +129,8 @@
                                             </a>
                                             <ul class="dropdown">
                                                 <li><a href="/Base/Cost/Cost_MT.aspx" IVM_PERMISSIONS="30"><%=Resources.MP.Product%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
+                                                    </a></li>
+                                                <li><a href="/Base/Cost/Cost_Class.aspx" IVM_PERMISSIONS="26"><%=Resources.MP.Cost_Class%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
                                                     </a></li>
                                                 <li><a href="/Base/Cost/Cost_Apply.aspx" IVM_PERMISSIONS="33"><%=Resources.MP.Product%><%=Resources.MP.Speace%><%=Resources.MP.Applyopen%>
                                                     </a></li>
@@ -218,7 +218,7 @@
                                     </ul>
                                 </li>
                                 <li class="has-children">
-                                    <a href="#about-section" class="nav-link" style="vertical-align: sub;" ivm_permissions="4"><%--開發--%>理樣</a>
+                                    <a href="#about-section" class="nav-link" style="vertical-align: sub;" ivm_permissions="4">理樣</a>
                                     <ul class="dropdown">
                                         <li >
                                             <a href="/DEV/Sample/Sample_ChkArr.aspx">樣品點收</a>
@@ -290,8 +290,6 @@
                 D_PERMISSIONS_ALL.forEach(function (j) {
                     $('[IVMD_PERMISSIONS=' + j.trim() + ']').css('display', '');
                 })--%>
-
-
 
                 /* Cookie版權限
                 let Cookie_ALL = document.cookie.split(';');

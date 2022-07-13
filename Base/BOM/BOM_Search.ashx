@@ -30,7 +30,7 @@ public class BOM_Search : IHttpHandler, IRequiresSessionState
             switch (context.Request["Call_Type"])
             {
                 case "BOM1_Search":
-                    cmd.CommandText = @" SELECT TOP 500 [COST_SEQ], [序號], [頤坊型號], [開發中], [最後完成者], [完成者簡稱], [註記], [更新人員],
+                    cmd.CommandText = @" SELECT TOP 500 [SUPLU_SEQ], [序號], [頤坊型號], [開發中], [最後完成者], [完成者簡稱], [註記], [更新人員],
                                          	LEFT(RTRIM(CONVERT(VARCHAR(20),[更新日期],20)),16) [更新日期]
                                          FROM Dc2..bom
                                          WHERE 1 = 1 ";
@@ -41,30 +41,30 @@ public class BOM_Search : IHttpHandler, IRequiresSessionState
                     cmd.CommandText += " ORDER BY [序號] DESC ";
                     break;
                 case "BOM1_Selected":
-                    cmd.CommandText = @" SELECT A.[COST_SEQ], A.[序號], ISNULL(A.[PARENT_SEQ],-1) [PARENT_SEQ], DP.[頤坊型號] [材料型號], A.[D_COST_SEQ], A.[階層], A.[更新人員], 
+                    cmd.CommandText = @" SELECT A.[SUPLU_SEQ], A.[序號], ISNULL(A.[PARENT_SEQ],-1) [PARENT_SEQ], DP.[頤坊型號] [材料型號], A.[D_SUPLU_SEQ], A.[階層], A.[更新人員], 
                                          	   LEFT(RTRIM(CONVERT(VARCHAR(20),A.[更新日期],20)),16) [更新日期],
-                                         	   CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[COST_SEQ] = A.[D_COST_SEQ]),0) AS BIT) [Has_IMG],
+                                         	   CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = A.[D_SUPLU_SEQ]),0) AS BIT) [Has_IMG],
                                          	   CAST(ISNULL((SELECT TOP 1 1 FROM Dc2..bomsub X WHERE X.[PARENT_SEQ] = A.[序號]),0) AS BIT) [Has_Child],
                                          	   CASE WHEN A.[階層] = 1 THEN '0'
                                          	   		WHEN A.[階層] = 2 THEN DP.[頤坊型號]
-                                         	        ELSE (SELECT X2.[頤坊型號] FROM Dc2..suplu X2 WHERE X2.序號 = (SELECT TOP 1 X.[D_COST_SEQ] FROM Dc2..bomsub X WHERE X.[序號] = A.[PARENT_SEQ])) END [Sort_Group],
+                                         	        ELSE (SELECT X2.[頤坊型號] FROM Dc2..suplu X2 WHERE X2.序號 = (SELECT TOP 1 X.[D_SUPLU_SEQ] FROM Dc2..bomsub X WHERE X.[序號] = A.[PARENT_SEQ])) END [Sort_Group],
                                          	   MP.[頤坊型號], DP.[廠商簡稱], A.[材料用量], A.[採購], A.[轉入單位], MP.[廠商編號] [最後完成者], MP.[廠商簡稱] [完成者簡稱], DP.[廠商編號],
 	                                           A.[原料銷售], A.[不發單], A.[不展開], A.[不計成本],
                                          	   DP.[開發中], DP.[單位], DP.[產品說明], DP.[台幣單價], DP.[美元單價], 
                                          	   LEFT(RTRIM(CONVERT(VARCHAR(20),DP.[停用日期],20)),16) [停用日期],
-                                               (SELECT X.備註 FROM Dc2..bom X WHERE X.[COST_SEQ] = A.[COST_SEQ]) [M_Remark]
+                                               (SELECT X.備註 FROM Dc2..bom X WHERE X.[SUPLU_SEQ] = A.[SUPLU_SEQ]) [M_Remark]
                                          FROM Dc2..bomsub A
-                                         	LEFT JOIN Dc2..suplu DP ON DP.[序號] = A.[D_COST_SEQ]
-											LEFT JOIN Dc2..suplu MP ON MP.[序號] = A.[COST_SEQ]
-                                         WHERE A.[COST_SEQ] = @COST_SEQ ";
+                                         	LEFT JOIN Dc2..suplu DP ON DP.[序號] = A.[D_SUPLU_SEQ]
+											LEFT JOIN Dc2..suplu MP ON MP.[序號] = A.[SUPLU_SEQ]
+                                         WHERE A.[SUPLU_SEQ] = @SUPLU_SEQ ";
                     cmd.CommandText += " ORDER BY [Sort_Group], [階層], [材料型號] ";
-                    cmd.Parameters.AddWithValue("COST_SEQ", context.Request["COST_SEQ"]);
+                    cmd.Parameters.AddWithValue("SUPLU_SEQ", context.Request["SUPLU_SEQ"]);
                     break;
                 case "GET_IMG":
-                    cmd.CommandText = @" SELECT TOP 1 [COST_SEQ], [圖檔] [P_IMG]
+                    cmd.CommandText = @" SELECT TOP 1 [SUPLU_SEQ], [圖檔] [P_IMG]
                                          FROM [192.168.1.135].pic.dbo.xpic
-                                         WHERE [COST_SEQ] = @COST_SEQ ";
-                    cmd.Parameters.AddWithValue("COST_SEQ", context.Request["COST_SEQ"]);
+                                         WHERE [SUPLU_SEQ] = @SUPLU_SEQ ";
+                    cmd.Parameters.AddWithValue("SUPLU_SEQ", context.Request["SUPLU_SEQ"]);
                     break;
                 case "Product_Search":
                     cmd.CommandText = @" SELECT TOP 100 [序號], [開發中], [頤坊型號], [廠商編號], [廠商簡稱], [單位], [產品說明]
@@ -84,7 +84,7 @@ public class BOM_Search : IHttpHandler, IRequiresSessionState
                     {
                         BOM.Add(new
                         {
-                            COST_SEQ = sdr["COST_SEQ"],
+                            SUPLU_SEQ = sdr["SUPLU_SEQ"],
                             SEQ = sdr["序號"],
                             IM = sdr["頤坊型號"],
                             DVN = sdr["開發中"],
@@ -101,11 +101,11 @@ public class BOM_Search : IHttpHandler, IRequiresSessionState
                     {
                         BOM.Add(new
                         {
-                            COST_SEQ = sdr["COST_SEQ"],
+                            SUPLU_SEQ = sdr["SUPLU_SEQ"],
                             SEQ = sdr["序號"],
                             Parent_SEQ = sdr["PARENT_SEQ"],
                             Material_Model = sdr["材料型號"],
-                            D_COST_SEQ = sdr["D_COST_SEQ"],
+                            D_SUPLU_SEQ = sdr["D_SUPLU_SEQ"],
                             Rank = sdr["階層"],
 
                             DVN = sdr["開發中"],
@@ -139,7 +139,7 @@ public class BOM_Search : IHttpHandler, IRequiresSessionState
                     {
                         BOM.Add(new
                         {
-                            COST_SEQ = sdr["COST_SEQ"],
+                            SUPLU_SEQ = sdr["SUPLU_SEQ"],
                             P_IMG = sdr["P_IMG"],
                         });
                     }

@@ -52,7 +52,7 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                                                               [設計人員], [設計圖號], [備註給採購], [備註給開發],
                                                               [開發中], RTRIM([產品狀態]) [產品狀態], [停用日期], [更新人員], 
                                                               LEFT(RTRIM(CONVERT(VARCHAR(20),[更新日期],20)),16) [更新日期],
-                                                              (SELECT TOP 1 b.[圖檔] FROM [192.168.1.135].Pic.dbo.xpic b WHERE COST_SEQ = a.[序號]) [IMG],
+                                                              (SELECT TOP 1 b.[圖檔] FROM [192.168.1.135].Pic.dbo.xpic b WHERE SUPLU_SEQ = a.[序號]) [IMG],
                                                               [變更記錄],
                                                               LEFT(RTRIM(CONVERT(VARCHAR(20),[新增日期],20)),16) [新增日期],
                                                               [製造規格], 
@@ -63,32 +63,28 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                                                  WHERE [序號] = @SEQ ";
                     cmd.Parameters.AddWithValue("SEQ", context.Request["SEQ"]);
                     break;
-                case "Supplier_No_Check":
-                    cmd.CommandText = @" SELECT 1 [Rows] FROM Dc2..sup WHERE [廠商編號] = @S_No ";
-                    cmd.Parameters.AddWithValue("S_No", context.Request["S_No"]);
-                    break;
                 case "Copy_ALL_Check":
                     cmd.CommandText = @" SELECT 1 [Rows] FROM Dc2..suplu WHERE [頤坊型號] = @IM AND [廠商編號] = @S_No ";
                     cmd.Parameters.AddWithValue("IM", context.Request["IM"]);
                     cmd.Parameters.AddWithValue("S_No", context.Request["S_No"]);
                     break;
-                case "Copy_Apply_Search":
+                case "Cost_Apply_Search":
                     cmd.CommandText = @" DECLARE @PUR_USD_Rate float = (SELECT [內容] FROM Dc2..refdata WHERE [代碼] = 'PUR_Rate')
                                          DECLARE @ORD_USD_Rate float = (SELECT [內容] FROM Dc2..refdata WHERE [代碼] = 'ORD_Rate')
                                          SELECT IIF(ISNULL(A.[MSRP],0) = 0,'0', CAST(ROUND( (A.MSRP - A.Cost) / A.MSRP * 100 ,2,2) AS VARCHAR(20)) + '%' )  [GP], * 
                                          FROM (
-                                            SELECT TOP 500 P.[開發中], P.[廠商簡稱], P.[頤坊型號], P.[產品說明], P.[單位], 
+                                            SELECT TOP 500 P.[開發中], P.[廠商簡稱], P.[頤坊型號], P.[廠商型號], P.[銷售型號], P.[產品說明], P.[單位], 
                                                 REPLACE(CONVERT(VARCHAR(40),CAST(P.[台幣單價] AS MONEY),1),'.00','') [台幣單價], 
                                                 P.[美元單價], P.[外幣幣別], P.[外幣單價], REPLACE(P.[變更記錄],'""','') [變更記錄], P.[MSRP], 
                                             	CASE WHEN ISNULL(P.[MSRP],0) = 0 THEN 0
-                                            		 WHEN (SELECT 1 FROM Dc2..bom BM WHERE BM.COST_SEQ = P.[序號]) IS NULL THEN ROUND(P.[美元單價] + (P.[台幣單價] / @PUR_USD_Rate),2)
+                                            		 WHEN (SELECT 1 FROM Dc2..bom BM WHERE BM.SUPLU_SEQ = P.[序號]) IS NULL THEN ROUND(P.[美元單價] + (P.[台幣單價] / @PUR_USD_Rate),2)
                                             		 ELSE (SELECT ROUND( SUM( (BDP.[美元單價] * BD.[材料用量]) + (BDP.[台幣單價] * BD.[材料用量] / @PUR_USD_Rate )) ,2)
                                             			   FROM Dc2..bomsub BD 
-                                            				INNER JOIN Dc2..suplu BDP ON BDP.[序號]	= BD.D_COST_SEQ  
-                                            			   WHERE BD.COST_SEQ = P.[序號] AND BD.[不計成本] = 0 ) END [Cost],
+                                            				INNER JOIN Dc2..suplu BDP ON BDP.[序號]	= BD.D_SUPLU_SEQ  
+                                            			   WHERE BD.SUPLU_SEQ = P.[序號] AND BD.[不計成本] = 0 ) END [Cost],
                                             	CONVERT(VARCHAR(20),P.[最後單價日],23) [最後單價日], P.[廠商編號], P.[序號], P.[申請原因],
                                             	P.[更新人員], LEFT(RTRIM(CONVERT(VARCHAR(20),P.[更新日期],20)),16) [更新日期], 
-                                            	CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[COST_SEQ] = P.[序號]),0) AS BIT) [Has_IMG]
+                                            	CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = P.[序號]),0) AS BIT) [Has_IMG]
                                             FROM Dc2..suplu P
                                             WHERE (P.[開發中] = @DVN OR @DVN = 'ALL')
                                                    AND P.[頤坊型號] LIKE @IM + '%'
@@ -102,7 +98,23 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                     cmd.Parameters.AddWithValue("Date_E", context.Request["Date_E"]);
                     cmd.Parameters.AddWithValue("DVN", context.Request["DVN"]);
                     break;
-
+                case "Cost_Class_Search":
+                    cmd.CommandText = @" SELECT TOP 500 
+                                         	[頤坊型號], [廠商型號], [銷售型號], [廠商簡稱], [單位], [產品一階], [產品二階], [產品三階], [一階V3], [二階V3], [MSRP], [產品說明], 
+                                         	'ORD' [最後接單], 
+                                         --(SELECT Max(接單日期) From ORD A WHERE A.頤坊型號=T1.頤坊型號 AND A.廠商編號=T1.廠商編號 AND A.訂單數量>0) AS 最後接單,
+                                         	[大貨庫存數], [分配庫存數], 
+                                         	'PUD' 庫存在途, 
+                                         --(SELECT Sum(採購數量-點收數量) From PUD A WHERE A.頤坊型號=T1.頤坊型號 AND A.廠商編號=T1.廠商編號 AND IsNull(A.採購單號,'')<>'' AND (A.採購數量-A.點收數量)>0 AND (A.訂單號碼 Like 'X%' Or A.訂單號碼 Like 'WR%') AND IsNull(A.已刪除,0)=0) AS 庫存在途,
+                                         	[大貨安全數], [台北安全數], [ISP安全數], [UNActive], [國際條碼], [樣式], [大貨庫位], [廠商編號], 
+                                            --[圖型啟用], 
+                                            CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = C.[序號]),0) AS BIT) [Has_IMG],
+                                            [序號], [更新人員], LEFT(RTRIM(CONVERT(VARCHAR(20),[更新日期],20)),16) [更新日期], [更新日期] [Sort]
+                                         FROM Dc2..suplu C
+                                         WHERE 1 = 1
+                                         ORDER BY [Sort] desc ";
+                    //cmd.Parameters.AddWithValue("S_No", context.Request["S_No"]);
+                    break;
             }
             cmd.Connection = conn;
             conn.Open();
@@ -193,15 +205,6 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                         });
                     }
                     break;
-                case "Supplier_No_Check":
-                    while (sdr.Read())
-                    {
-                        Cost.Add(new
-                        {
-                            Rows = sdr["Rows"],
-                        });
-                    }
-                    break;
                 case "Copy_ALL_Check":
                     while (sdr.Read())
                     {
@@ -211,7 +214,7 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                         });
                     }
                     break;
-                case "Copy_Apply_Search":
+                case "Cost_Apply_Search":
                     while (sdr.Read())
                     {
                         Cost.Add(new
@@ -219,6 +222,8 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                             DVN = sdr["開發中"].ToString().Trim(),
                             S_SName = sdr["廠商簡稱"],
                             IM = sdr["頤坊型號"],
+                            SM = sdr["廠商型號"],
+                            SaleM = sdr["銷售型號"],
                             PI = sdr["產品說明"],
                             Unit = sdr["單位"],
                             TWD_P = sdr["台幣單價"],
@@ -239,13 +244,49 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                         });
                     }
                     break;
+                case "Cost_Class_Search":
+                    while (sdr.Read())
+                    {
+                        Cost.Add(new
+                        {
+                            IM = sdr["頤坊型號"],
+                            SM = sdr["廠商型號"],
+                            SaleM = sdr["銷售型號"],
+                            S_SName = sdr["廠商簡稱"],
+                            Unit = sdr["單位"],
+                            Rank1 = sdr["產品一階"],
+                            Rank2 = sdr["產品二階"],
+                            Rank3 = sdr["產品三階"],
+                            Rank1_V3 = sdr["一階V3"],
+                            Rank2_V3 = sdr["二階V3"],
+                            MSRP = sdr["MSRP"],
+                            PI = sdr["產品說明"],
+                            LS_ORD = sdr["最後接單"],
+                            Location_1_Stock = sdr["大貨庫存數"],
+                            Location_2_Stock = sdr["分配庫存數"],
+                            SUM_PUD = sdr["庫存在途"],
+                            Location_1_Safe = sdr["大貨安全數"],
+                            Location_TPE_Safe = sdr["台北安全數"],
+                            Location_ISP_Safe = sdr["ISP安全數"],
+                            UN = sdr["UNActive"],
+                            I_No = sdr["國際條碼"],
+                            P_Style = sdr["樣式"],
+                            Location_1_Area = sdr["大貨庫位"],
+                            S_No = sdr["廠商編號"],
+                            Has_IMG = sdr["Has_IMG"],
+                            SEQ = sdr["序號"],
+                            Update_User = sdr["更新人員"],
+                            Update_Date = sdr["更新日期"],
+                        });
+                    }
+                    break;
             }
 
             SqlDataAdapter SQL_DA = new SqlDataAdapter(cmd);
             conn.Close();
             SQL_DA.Fill(DT);
 
-                //CRPT_Test
+            //CRPT_Test
             if (context.Request["Call_Type"] == "Cost_MT_Selected")
             {
                 //ReportDocument rptDoc = new ReportDocument();

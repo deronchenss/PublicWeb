@@ -66,7 +66,7 @@
                 $.ajax({
                     url: "/Base/Cost/Cost_Search.ashx",
                     data: {
-                        "Call_Type": "Copy_Apply_Search",
+                        "Call_Type": "Cost_Apply_Search",
                         "IM": $('#TB_IM').val(),
                         "S_No": $('#TB_S_No').val(),
                         "Date_S": $('#TB_Date_S').val(),
@@ -91,8 +91,10 @@
                                 + '</th><th>' + '<%=Resources.MP.Developing%>'
                                 + '</th><th>' + '<%=Resources.MP.Supplier_Short_Name%>'
                                 + '</th><th>' + '<%=Resources.MP.Ivan_Model%>'
+                                + '</th><th>' + '<%=Resources.MP.Supplier_Model%>'
+                                + '</th><th>' + '<%=Resources.MP.Sale_Model%>'
                                 + '</th><th>' + '<%=Resources.MP.Product_Information%>'
-                                + '</th><th class="DIMG">' + '<%=Resources.MP.PD_IMG%>'
+                                + '</th><th class="DIMG">' + '<%=Resources.MP.Image%>'
                                 + '</th><th class="For_U" style="display:none;">' + '<%=Resources.MP.Apply_Reason%>'
                                 + '</th><th>' + '<%=Resources.MP.Unit%>'
                                 + '</th><th>' + '<%=Resources.MP.Price_TWD%>'
@@ -135,6 +137,8 @@
                                     '<tr><td>' + String(response[i].DVN ?? "") +
                                     '</td><td>' + String(response[i].S_SName ?? "") +
                                     '</td><td>' + String(response[i].IM ?? "") +
+                                    '</td><td>' + String(response[i].SM ?? "") +
+                                    '</td><td>' + String(response[i].SaleM ?? "") +
                                     '</td><td>' + String(response[i].PI ?? "") +
                                         (((response[i].Change_Log ?? "").length > 0) ? ('<br /><span style="color:blue;" title="' + (response[i].Change_Log ?? "") + '">移入檢視變更記錄</sapn>') : '') +
                                     '</td><td class="DIMG" style="text-align:center;">' +
@@ -198,7 +202,7 @@
                             url: "/Base/BOM/BOM_Search.ashx",
                             data: {
                                 "Call_Type": "GET_IMG",
-                                "P_SEQ": $(this).attr('SEQ')//response[i].SEQ
+                                "SUPLU_SEQ": $(this).attr('SEQ')//response[i].SEQ
                             },
                             cache: false,
                             //async: false,
@@ -274,10 +278,7 @@
                     if (Full) {
                         FromTable.find('.SEQ').each(function () {
                             var OT = $(this).text();
-                            //if (ToTable.find('.SEQ:contains(' + $(this).text() + ')').length === 0) {
-                            //    ToTable.append($(this).parent().clone());
-                            //}
-                            if (ToTable.find('.SEQ').filter(function () { return $(this).text() == OT; })) {
+                            if (ToTable.find('.SEQ').filter(function () { return $(this).text() == OT; }).length === 0) {
                                 ToTable.append($(this).parent().clone());
                             }
                             else {
@@ -287,7 +288,8 @@
                         });
                     }
                     else {
-                        if (ToTable.find('.SEQ:contains(' + click_tr.find('.SEQ').text() + ')').length === 0) {
+                        //if (ToTable.find('.SEQ:contains(' + click_tr.find('.SEQ').text() + ')').length === 0) {
+                        if (ToTable.find('.SEQ').filter(function () { return $(this).text() == click_tr.find('.SEQ').text(); }).length === 0) {
                             ToTable.append(click_tr.clone());
                         }
                         click_tr.remove();

@@ -105,7 +105,7 @@
                         $.ajax({
                             url: "/Base/BOM/BOM_Save.ashx",
                             data: {
-                                "COST_SEQ": $('#HDN_M2_COST_SEQ').val(),
+                                "SUPLU_SEQ": $('#HDN_M2_SUPLU_SEQ').val(),
                                 "IM": $('#TB_M2_IM').val(),
                                 "DVN": $('#HDN_M2_DVN').val(),
                                 "S_No": $('#TB_M2_FNS').val(),
@@ -179,7 +179,7 @@
                                 [5, 10, 20, "All"],
                             ],
                             "columns": [
-                                { data: "COST_SEQ", title: "<%=Resources.MP.COST_SEQ%>" },
+                                { data: "SUPLU_SEQ", title: "<%=Resources.MP.SUPLU_SEQ%>" },
                                 { data: "SEQ", title: "<%=Resources.MP.M_SEQ%>" },
                                 { data: "IM", title: "<%=Resources.MP.Ivan_Model%>" },
                                 { data: "DVN", title: "<%=Resources.MP.Developing%>" },
@@ -214,11 +214,11 @@
             $('#BT_ED_Save').on('click', function () {
                 if (confirm("<%=Resources.MP.Edit_Alert%>")) {
                     //BOM_M_Save
-                    var COST_SEQ = $('#TB_M2_COST_SEQ').val();
+                    var SUPLU_SEQ = $('#TB_M2_SUPLU_SEQ').val();
                     $.ajax({
                         url: "/Base/BOM/BOM_Save.ashx",
                         data: {
-                            "COST_SEQ": COST_SEQ,
+                            "SUPLU_SEQ": SUPLU_SEQ,
                             "Remark": $('#TB_M2_Remark').val(),
                             "Call_Type": "BOM_M_Save"
                         },
@@ -263,7 +263,7 @@
                                     });
                             }
                             alert("<%=Resources.MP.Update_Success%>");
-                            Search_BOM_D(COST_SEQ,'');//Re-Search總計金額
+                            Search_BOM_D(SUPLU_SEQ,'');//Re-Search總計金額
                             Edit_Mode = "Edit_Save";
                             Form_Mode_Change("Search_D");
                         },
@@ -290,15 +290,15 @@
                     focus: true,
                     buttons: {
                         "Copy": function () {
-                            var Old_COST_SEQ = $('#TB_M2_COST_SEQ').val();
-                            var New_COST_SEQ = $('#CDN_HDN_COST_SEQ').val();
+                            var Old_SUPLU_SEQ = $('#TB_M2_SUPLU_SEQ').val();
+                            var New_SUPLU_SEQ = $('#CDN_HDN_SUPLU_SEQ').val();
                             var Copy_Check = true;
                             if ($('#CDN_TB_IM').val().length === 0) {
                                 alert('<%=Resources.MP.Select_Product_Alert%>');
                                 Copy_Check  = false;
                             }
-                            if (Old_COST_SEQ === New_COST_SEQ ) {
-                                //不能Insert 同COST_SEQ
+                            if (Old_SUPLU_SEQ === New_SUPLU_SEQ ) {
+                                //不能Insert 同SUPLU_SEQ
                                 alert('<%=Resources.MP.Repeat_Copy_Product%>');
                                 Copy_Check  = false;
                             }
@@ -306,8 +306,8 @@
                                 $.ajax({
                                     url: "/Base/BOM/BOM_Save.ashx",
                                     data: {
-                                        "Old_COST_SEQ": Old_COST_SEQ,
-                                        "New_COST_SEQ": New_COST_SEQ,
+                                        "Old_SUPLU_SEQ": Old_SUPLU_SEQ,
+                                        "New_SUPLU_SEQ": New_SUPLU_SEQ,
                                         "Call_Type": "BOM_Copy"
                                     },
                                     cache: false,
@@ -380,10 +380,10 @@
                                 {
                                     data: null, title: "",
                                     render: function (data, type, row) {
-                                        return '<input type="button" class="BTN_Green" value="' + '<%=Resources.MP.Select%>' + '">'
+                                        return '<input type="button" class="BTN_Green" value="' + '<%=Resources.MP.Select%>' + '" />'
                                     }
                                 },
-                                { data: "SEQ", title: "<%=Resources.MP.COST_SEQ%>" },
+                                { data: "SEQ", title: "<%=Resources.MP.SUPLU_SEQ%>" },
                                 { data: "DVN", title: "<%=Resources.MP.Developing%>" },
                                 { data: "IM", title: "<%=Resources.MP.Ivan_Model%>" },
                                 { data: "S_No", title: "<%=Resources.MP.Supplier_No%>" },
@@ -411,22 +411,22 @@
                 $(Click_tr).parent().find('tr').css('color', 'black');
                 $(Click_tr).css('background-color', '#5a1400');
                 $(Click_tr).css('color', 'white');
-                var COST_SEQ = $(Click_tr).find('td:nth-child(1)').text().toString().trim();
-                $('#TB_M2_COST_SEQ').val(COST_SEQ);
+                var SUPLU_SEQ = $(Click_tr).find('td:nth-child(1)').text().toString().trim();
+                $('#TB_M2_SUPLU_SEQ').val(SUPLU_SEQ);
                 $('#TB_M2_M_SEQ').val($(Click_tr).find('td:nth-child(2)').text().toString().trim());
                 $('#TB_M2_Update_User').val($(Click_tr).find('td:nth-child(8)').text().toString().trim());
                 $('#TB_M2_Update_Date').val($(Click_tr).find('td:nth-child(9)').text().toString().trim());
 
-                Search_BOM_D(COST_SEQ, '');
+                Search_BOM_D(SUPLU_SEQ, '');
                 Form_Mode_Change("Search_D");
             };
 
-            function Search_BOM_D(COST_SEQ, Type) {
+            function Search_BOM_D(SUPLU_SEQ, Type) {
                 $.ajax({
                     //async: false,
                     url: "/Base/BOM/BOM_Search.ashx",
                     data: {
-                        "COST_SEQ": COST_SEQ,
+                        "SUPLU_SEQ": SUPLU_SEQ,
                         "Call_Type": "BOM1_Selected"
                     },
                     cache: false,
@@ -475,7 +475,7 @@
                                     url: "/Base/BOM/BOM_Search.ashx",
                                     data: {
                                         "Call_Type": "GET_IMG",
-                                        "COST_SEQ": response[i].D_COST_SEQ
+                                        "SUPLU_SEQ": response[i].D_SUPLU_SEQ
                                     },
                                     cache: false,
                                     async: false,
@@ -519,7 +519,7 @@
                                     '<span class="V_M_Amount">' + String(response[i].M_Amount ?? "") + '</span>' +
                                     '<input class="U_M_Amount" style="text-align:right;display:none;width:80px;" type="number" step="0.1" value="' + String(response[i].M_Amount ?? 0) + '" />' +
                                 '</td><td>' + String(response[i].PI ?? "") +
-                                    '<input type="hidden" class="D_D_COST_SEQ" value="' + String(response[i].D_COST_SEQ ?? "") + '" />' +
+                                    '<input type="hidden" class="D_D_SUPLU_SEQ" value="' + String(response[i].D_SUPLU_SEQ ?? "") + '" />' +
                                 '</td><td style="text-align:right;">' + String(response[i].TWD_P ?? "") +
                                 '</td><td style="text-align:right;">' + String(response[i].USD_P ?? "") +
                                 '</td><td>' + String(response[i].D_S_No ?? "") + '-' + String(response[i].D_S_SName ?? "") +
@@ -573,7 +573,7 @@
             };
 
             $('#Table_Search_BOM_D').on('click', '.D_T_ADD', function () {
-                var COST_SEQ = $('#TB_M2_COST_SEQ').val();
+                var SUPLU_SEQ = $('#TB_M2_SUPLU_SEQ').val();
                 var Parent_SEQ = $(this).parent().parent().parent().find('td:nth(1)').text().trim();
                 var Parent_IM = $(this).parent().parent().parent().find('td:nth(3)').text().trim();
                 var Parent_Rank = $(this).parent().parent().parent().find('td:nth(4)').text().trim();
@@ -603,8 +603,8 @@
                                 alert('<%=Resources.MP.Select_Product_Alert%>');
                                             Detail_Add_Check = false;
                                         }
-                                        if (COST_SEQ === $('#NDDN_HDN_COST_SEQ').val()) {
-                                            //不能Insert 1階 COST_SEQ
+                                        if (SUPLU_SEQ === $('#NDDN_HDN_SUPLU_SEQ').val()) {
+                                            //不能Insert 1階 SUPLU_SEQ
                                             alert('<%=Resources.MP.Repeat_1_Rank_Product%>');
                                             Detail_Add_Check = false;
                                         }
@@ -613,14 +613,14 @@
                                                 url: "/Base/BOM/BOM_Save.ashx",
                                                 data: {
                                                     "Parent_SEQ": Parent_SEQ,
-                                                    "COST_SEQ": COST_SEQ,
+                                                    "SUPLU_SEQ": SUPLU_SEQ,
                                                     "Parent_IM": Parent_IM,
                                                     "Parent_Supplier_S_No": Parent_Supplier_No,
                                                     "Parent_Supplier_S_SName": Parent_Supplier_SName,
                                                     "New_S_No": $('#NDDN_HDN_S_No').val(),
                                                     "New_S_SName": $('#NDDN_HDN_S_SName').val(),
                                                     "New_IM": $('#NDDN_TB_IM').val(),
-                                                    "New_COST_SEQ": $('#NDDN_HDN_COST_SEQ').val(),
+                                                    "New_SUPLU_SEQ": $('#NDDN_HDN_SUPLU_SEQ').val(),
                                                     "M_Amount": $('#NDDN_TB_M_Amount').val(),
                                                     "New_Rank": Number(Parent_Rank) + 1,
                                                     "Call_Type": "BOM_D_New"
@@ -638,7 +638,7 @@
                                                         $("#New_Detail_Dialog").dialog('close');
                                                         Edit_Mode = "NEW_D_Save";
                                                         alert("<%=Resources.MP.Add_Success%>");
-                                                        Search_BOM_D(COST_SEQ, 'Continue_Edit');
+                                                        Search_BOM_D(SUPLU_SEQ, 'Continue_Edit');
                                                     }
                                                 },
                                                 error: function (ex) {
@@ -664,7 +664,7 @@
             $('#SPD_Table_Product').on('click', '.BTN_Green', function () {
                 switch (Dialog_Control) {
                     case "M"://Master_Add
-                        $('#HDN_M2_COST_SEQ').val($(this).parent().parent().find('td:nth(1)').text());
+                        $('#HDN_M2_SUPLU_SEQ').val($(this).parent().parent().find('td:nth(1)').text());
                         $('#HDN_M2_DVN').val($(this).parent().parent().find('td:nth(2)').text());
                         $('#TB_M2_IM').val($(this).parent().parent().find('td:nth(3)').text());
                         $('#TB_M2_FNS').val($(this).parent().parent().find('td:nth(4)').text());
@@ -672,7 +672,7 @@
                         $('#TB_M2_P_IM').val($(this).parent().parent().find('td:nth(7)').text());
                         break;
                     case "D"://Detail_Add
-                        $('#NDDN_HDN_COST_SEQ').val($(this).parent().parent().find('td:nth(1)').text());
+                        $('#NDDN_HDN_SUPLU_SEQ').val($(this).parent().parent().find('td:nth(1)').text());
                         $('#NDDN_HDN_S_No').val($(this).parent().parent().find('td:nth(4)').text());
                         $('#NDDN_HDN_S_SName').val($(this).parent().parent().find('td:nth(5)').text());
                         $('#NDDN_TB_IM').val($(this).parent().parent().find('td:nth(3)').text());
@@ -680,7 +680,7 @@
                         $('#NDDN_TB_P_IM').val($(this).parent().parent().find('td:nth(7)').text());
                         break;
                     case "C"://Copy
-                        $('#CDN_HDN_COST_SEQ').val($(this).parent().parent().find('td:nth(1)').text());
+                        $('#CDN_HDN_SUPLU_SEQ').val($(this).parent().parent().find('td:nth(1)').text());
                         $('#CDN_HDN_S_No').val($(this).parent().parent().find('td:nth(4)').text());
                         $('#CDN_HDN_S_SName').val($(this).parent().parent().find('td:nth(5)').text());
                         $('#CDN_TB_IM').val($(this).parent().parent().find('td:nth(3)').text());
@@ -692,17 +692,17 @@
             });
 
             $('#Table_Search_BOM_D').on('click', '.D_T_DEL', function () {
-                var COST_SEQ = $('#TB_M2_COST_SEQ').val();
+                var SUPLU_SEQ = $('#TB_M2_SUPLU_SEQ').val();
                 var D_SEQ = $(this).parent().parent().parent().find('td:nth(1)').text().trim();
-                var D_D_COST_SEQ = $(this).parent().parent().parent().find('.D_D_COST_SEQ').val();
+                var D_D_SUPLU_SEQ = $(this).parent().parent().parent().find('.D_D_SUPLU_SEQ').val();
                 var D_Product = $(this).parent().parent().parent().find('td:nth(3)').text().trim();
 
                 if (confirm('確定刪除 明細序號：' + D_SEQ + ', 材料型號：' + D_Product)) {
-                    //console.warn('D_SEQ:' + D_SEQ + ', COST_SEQ:' + COST_SEQ + ', D_D_COST_SEQ:' + D_D_COST_SEQ)
+                    //console.warn('D_SEQ:' + D_SEQ + ', SUPLU_SEQ:' + SUPLU_SEQ + ', D_D_SUPLU_SEQ:' + D_D_SUPLU_SEQ)
                     var Delete_Other_Check = true;
                     var Will_Delete_Master = false;
 
-                    if (COST_SEQ === D_D_COST_SEQ) {
+                    if (SUPLU_SEQ === D_D_SUPLU_SEQ) {
                         Will_Delete_Master = true;
                         Delete_Other_Check = confirm('本筆為1階成品，會連同主檔一起刪除，確定執行？');
                     };
@@ -717,7 +717,7 @@
                             url: "/Base/BOM/BOM_Delete.ashx",
                             data: {
                                 "D_SEQ": D_SEQ,
-                                "COST_SEQ": COST_SEQ,
+                                "SUPLU_SEQ": SUPLU_SEQ,
                                 "Call_Type": "BOM_D_Delete"
                             },
                             cache: false,
@@ -732,7 +732,7 @@
                                     Search_BOM_M();
                                 }
                                 else {
-                                    Search_BOM_D(COST_SEQ, 'Continue_Edit');
+                                    Search_BOM_D(SUPLU_SEQ, 'Continue_Edit');
                                 }
                             },
                             error: function (ex) {
@@ -1030,7 +1030,7 @@
                         <option value="[最後完成者]"><%=Resources.MP.Master_Supplier_S_No%></option>
                         <option value="[序號]"><%=Resources.MP.M_SEQ%></option>
                         <option value="[更新人員]"><%=Resources.MP.Update_User%></option>
-                        <option value="[COST_SEQ]"><%=Resources.MP.COST_SEQ%></option>
+                        <option value="[SUPLU_SEQ]"><%=Resources.MP.SUPLU_SEQ%></option>
                     </select>
                 </td>
                 <td style="width: 20%;">
@@ -1158,7 +1158,7 @@
                         <div style="width: 20%; float: right; z-index: 10;">
                             <input id="CDN_BT_Product_Selector" type="button" value="…" style="float: right; z-index: 10;" />
                         </div>
-                        <input type="hidden" id="CDN_HDN_COST_SEQ" />
+                        <input type="hidden" id="CDN_HDN_SUPLU_SEQ" />
                     </td>
                     <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Material_Supplier_ALL%></td>
                     <td style="text-align: left; width: 15%;">
@@ -1254,7 +1254,7 @@
                         <div style="width: 20%; float: right; z-index: 10;">
                             <input id="NDDN_BT_Product_Selector" type="button" value="…" style="float: right; z-index: 10;" />
                         </div>
-                        <input type="hidden" id="NDDN_HDN_COST_SEQ" />
+                        <input type="hidden" id="NDDN_HDN_SUPLU_SEQ" />
                     </td>
                     <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Material_Supplier_ALL%></td>
                     <td style="text-align: left; width: 15%;">
@@ -1326,9 +1326,9 @@
         <div id="Div_M2" class="Div_D">
             <table style="font-size: 15px; border-collapse: separate; border-spacing: 0px 8px;">
                 <tr class="M2_For_U" style="display: none;">
-                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.COST_SEQ%></td>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.SUPLU_SEQ%></td>
                     <td style="text-align: left; width: 15%;">
-                        <input id="TB_M2_COST_SEQ" class="disable" disabled="disabled" style="width: 90%;" />
+                        <input id="TB_M2_SUPLU_SEQ" class="disable" disabled="disabled" style="width: 90%;" />
                     </td>
                     <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.M_SEQ%></td>
                     <td style="text-align: left; width: 15%;">
@@ -1352,7 +1352,7 @@
                         <div class="M2_For_N" style="width: 10%; float: right; z-index: 10; display: none;">
                             <input id="BT_M2_Product_Selector" type="button" value="…" disabled="disabled" style="float: right; z-index: 10;" />
                         </div>
-                        <input type="hidden" id="HDN_M2_COST_SEQ" />
+                        <input type="hidden" id="HDN_M2_SUPLU_SEQ" />
                         <input type="hidden" id="HDN_M2_DVN" />
                     </td>
 
