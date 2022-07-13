@@ -222,6 +222,7 @@
                                     <ul class="dropdown">
                                         <li >
                                             <a href="/DEV/Sample/Sample_ChkArr.aspx">樣品點收</a>
+                                            <a href="/DEV/Sample/Sample_Chk_MT.aspx">樣品點收維護</a>
                                         </li>
                                     </ul>
                                 </li>

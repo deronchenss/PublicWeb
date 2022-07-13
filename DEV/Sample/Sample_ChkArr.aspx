@@ -742,7 +742,7 @@
             &nbsp;
             <input type="button" id="BT_S_CHS" class="V_BT" value="選擇"  disabled="disabled" />
             <input type="button" id="BT_S_CHK" class="V_BT" value="點收內容" />
-            <input type="button" id="BT_S_EX_IMG" class="V_BT" value="圖例" />
+            <input type="button" id="BT_S_EX_IMG" class="V_BT" value="圖型" />
         </div>
 
         <div id="Div_DT_Search" class=" Div_D">
