@@ -84,13 +84,13 @@ public class Quote_Base : IHttpHandler, IRequiresSessionState
 
                                     cmd.CommandText = @" INSERT INTO [dbo].[quah]
                                                        ([序號],[報價單號],[報價日期],[客戶編號],[客戶簡稱]
-                                                       ,[頤坊型號],[暫時型號_Del],[產品說明],[單位],[美元單價],[台幣單價]
-                                                       ,[歐元單價],[單價_2],[單價_3],[單價_4],[min_1],[min_2],[min_3],[min_4]
-                                                       ,[外幣幣別],[外幣單價],[S_FROM],[廠商編號],[廠商簡稱],[變更日期],[更新人員],[更新日期],[PRICE_SEQ])
+                                                       ,[頤坊型號],[產品說明],[單位],[美元單價],[台幣單價]
+                                                       ,[單價_2],[單價_3],[單價_4],[min_1],[min_2],[min_3],[min_4]
+                                                       ,[S_FROM],[廠商編號],[廠商簡稱],[變更日期],[更新人員],[更新日期],[BYRLU_SEQ])
                                                     SELECT  (Select IsNull(Max(序號),0)+1 From Quah) [序號], @SEQ [報價單號], GETDATE() [報價日期],[客戶編號],[客戶簡稱]
-                                                       ,[頤坊型號], '' [暫時型號_Del],[產品說明],[單位],[美元單價],[台幣單價]
-                                                       ,[歐元單價],[單價_2],[單價_3],[單價_4],[min_1],[min_2],[min_3],[min_4]
-                                                       ,[外幣幣別],[外幣單價],"
+                                                       ,[頤坊型號],[產品說明],[單位],[美元單價],[台幣單價]
+                                                       ,[單價_2],[單價_3],[單價_4],[min_1],[min_2],[min_3],[min_4]
+                                                       ,"
                                                             + fromSQl + @"[S_FROM],[廠商編號],[廠商簡稱],[變更日期], 'IVAN' [更新人員], GETDATE() [更新日期],[序號]
                                                     FROM byrlu
                                                     WHERE 頤坊型號 = @IVAN_TYPE 
@@ -123,9 +123,9 @@ public class Quote_Base : IHttpHandler, IRequiresSessionState
 			                                           ,CASE WHEN Q.美元單價 > 0 THEN 'USD'
 					                                         ELSE 'NTD' END 幣別
 			                                           ,C.大備註
-                                                       ,(SELECT TOP 1 X.[圖檔] FROM [192.168.1.135].Pic.dbo.xpic X WHERE X.P_SEQ = (SELECT P_SEQ FROM byrlu where 序號 = Q.PRICE_SEQ)) 圖檔
+                                                       ,(SELECT TOP 1 X.[圖檔] FROM [192.168.1.135].Pic.dbo.xpic X WHERE X.SUPLU_SEQ = (SELECT SUPLU_SEQ FROM byrlu where 序號 = Q.BYRLU_SEQ)) 圖檔
 			                                           ,'' 圖檔路徑
-			                                           ,ISNULL((SELECT TOP 1 'Y' FROM [192.168.1.135].Pic.dbo.xpic X WHERE X.P_SEQ = (SELECT P_SEQ FROM byrlu where 序號 = Q.PRICE_SEQ)), '') 列印圖檔
+			                                           ,ISNULL((SELECT TOP 1 'Y' FROM [192.168.1.135].Pic.dbo.xpic X WHERE X.SUPLU_SEQ = (SELECT SUPLU_SEQ FROM byrlu where 序號 = Q.BYRLU_SEQ)), '') 列印圖檔
 			                                           ,(SELECT TOP 1 R.RI_IMAGE FROM [192.168.1.135].pic.dbo.REF_IMAGE R WHERE R.RI_REFENCE_KEY = @SIGN) 簽名圖檔
 			                                           ,'' 簽名圖檔路徑
 			                                           ,ISNULL((SELECT TOP 1 'Y' FROM [192.168.1.135].pic.dbo.REF_IMAGE R WHERE R.RI_REFENCE_KEY = @SIGN), '') 簽名列印圖檔
@@ -161,7 +161,7 @@ public class Quote_Base : IHttpHandler, IRequiresSessionState
 		                                        JOIN QUAH Q ON TMP.序號 = Q.序號
 		                                        INNER JOIN BYR B ON Q.客戶編號=B.客戶編號 
 		                                        LEFT JOIN QUAHM C ON Q.報價單號=C.報價單號 
-		                                        INNER JOIN BYRLU D ON Q.PRICE_SEQ=D.序號
+		                                        INNER JOIN BYRLU D ON Q.BYRLU_SEQ=D.序號
 		                                        ORDER BY Q.頤坊型號, Q.min_1 ";
 
                                 cmd.Parameters.AddWithValue("QUAH_NO", context.Request["QUAH_NO"]);

@@ -116,7 +116,7 @@
                 $('#I_FACT_S_NAME').val(clickData['廠商簡稱']);
                 $('#I_PROD_DESC').val(clickData['產品說明']);
                 $('#I_RPT_REMARK').val(clickData['大備註']);
-                Search_IMG(clickData['PRICE_SEQ']);
+                Search_IMG(clickData['BYRLU_SEQ']);
             }
             
             function V_BT_CHG(buttonChs) {
@@ -185,7 +185,7 @@
                                     { data: "更新人員", title: "<%=Resources.MP.Update_User%>" },
                                     { data: "更新日期", title: "<%=Resources.MP.Update_Date%>" },
                                     { data: "大備註", title: "大備註", visible: false },
-                                    { data: "PRICE_SEQ", title: "PRICE_SEQ", visible: false }
+                                    { data: "BYRLU_SEQ", title: "BYRLU_SEQ", visible: false }
                                 ],
                                 "order": [[1, "asc"]], //根據 報價單號 排序
                                 "scrollX": true,
@@ -206,12 +206,11 @@
             };        
 
             function Search_IMG(priceSeq) {
-                var binary = '';
                 $.ajax({
-                    url: apiUrl,
+                    url: "/CommonAshx/Common.ashx",
                     data: {
-                        "Call_Type": "GET_IMG",
-                        "PRICE_SEQ": priceSeq
+                        "Call_Type": "GET_IMG_BY_BYRLU_SEQ",
+                        "SEQ": priceSeq
                     },
                     cache: false,
                     async: false,

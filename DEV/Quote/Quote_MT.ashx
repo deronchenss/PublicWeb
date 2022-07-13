@@ -46,7 +46,7 @@ public class Quote_MT : IHttpHandler, IRequiresSessionState
                                                             ,Quah.S_FROM 出貨地
                                                             , Quah.序號, Quah.更新人員, CONVERT(VARCHAR, Quah.更新日期, 120) 更新日期
                                                             ,ISNULL(quahm.大備註,'') 大備註
-                                                            ,PRICE_SEQ
+                                                            ,BYRLU_SEQ
                                                      FROM Dc2..Quah 
                                                      LEFT JOIN quahm ON Quah.報價單號 = quahm.報價單號
                                                      WHERE Quah.[頤坊型號] LIKE @IVAN_TYPE + '%'
@@ -147,13 +147,6 @@ public class Quote_MT : IHttpHandler, IRequiresSessionState
 
                                 context.Response.StatusCode = cmd.ExecuteNonQuery() == 1 ? 200 : 404;
                                 context.Response.End();
-                                break;
-                            case "GET_IMG":
-                                cmd.CommandText = @" SELECT TOP 1 [P_SEQ], [圖檔] [P_IMG]
-                                                     FROM [192.168.1.135].pic.dbo.xpic
-                                                     WHERE [P_SEQ] = (SELECT P_SEQ FROM byrlu where 序號 = @PRICE_SEQ) ";
-                                cmd.Parameters.AddWithValue("PRICE_SEQ", context.Request["PRICE_SEQ"]);
-
                                 break;
                         }
 

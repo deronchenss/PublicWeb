@@ -1,4 +1,4 @@
-﻿<%@ WebHandler Language = "C#" Class="Sample_Chk_MT" %>
+﻿<%@ WebHandler Language = "C#" Class="Sample_Arr_MT" %>
 
 using System.Collections.Generic;
 using System.Web;
@@ -10,7 +10,7 @@ using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using CrystalDecisions.CrystalReports.Engine;
 
-public class Sample_Chk_MT : IHttpHandler, IRequiresSessionState
+public class Sample_Arr_MT : IHttpHandler, IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
     {
@@ -33,27 +33,38 @@ public class Sample_Chk_MT : IHttpHandler, IRequiresSessionState
 
                         switch (context.Request["Call_Type"])
                         {
-                            case "Search_Recua":
-                                cmd.CommandText = @" SELECT TOP 500 RA.[序號]
-                                                                   ,RA.[採購單號]
-                                                                   ,RA.[樣品號碼]
+                            case "Search_Recu":
+                                cmd.CommandText = @" SELECT TOP 500 R.[序號]
+                                                                   ,R.[點收批號]
+                                                                   ,R.[採購單號]
+                                                                   ,R.[樣品號碼]
                                                                    ,P.[廠商編號]
                                                                    ,P.[廠商簡稱]
                                                                    ,P.[頤坊型號]
                                                                    ,P.[暫時型號]
                                                                    ,P.[廠商型號]
                                                                    ,P.[產品說明]
-                                                                   ,RA.[單位]
-                                                                   ,RA.[點收批號]
-                                                                   ,IIF(RA.[點收數量] = 0, NULL, RA.[點收數量]) 點收數量
-                                                                   ,IIF(RA.[核銷數量] = 0, NULL, RA.[核銷數量]) 核銷數量
-                                                                   ,CONVERT(VARCHAR,RA.[點收日期],23) [點收日期]
-                                                                   ,RA.[運輸編號]
-                                                                   ,RA.[運輸簡稱]
-                                                                   ,RA.[更新人員]
-                                                                   ,CONVERT(VARCHAR,RA.[更新日期],23) [更新日期]
+                                                                   ,R.[單位]
+                                                                   ,CONVERT(VARCHAR,R.[出貨日期],23) [出貨日期]
+                                                                   ,CONVERT(VARCHAR,R.[到貨日期],23) [到貨日期]
+                                                                   ,CONVERT(VARCHAR,R.[到單日期],23) [到單日期]
+                                                                   ,IIF(R.[到貨數量] = 0, NULL, R.[到貨數量]) 到貨數量
+                                                                   ,R.[到貨單號]
+                                                                   ,IIF(P.[台幣單價] = 0, NULL, P.[台幣單價]) 台幣單價
+                                                                   ,IIF(P.[美元單價] = 0, NULL, P.[美元單價]) 美元單價
+                                                                   ,P.[外幣幣別]
+                                                                   ,IIF(P.[外幣單價] = 0, NULL, P.[外幣單價]) 外幣單價
+                                                                   ,IIF(R.[不付款] = 1, '是', '否') 不付款
+                                                                   ,IIF(R.[發票異常] = 1, '是', '否') 發票異常
+                                                                   ,ISNULL(R.[發票樣式],'') 發票樣式
+                                                                   ,ISNULL(R.[發票號碼],'') 發票號碼
+                                                                   ,R.[到貨備註]
+                                                                   ,IIF(R.[調整額01] = 0, NULL, R.[調整額01]) 調整額01
+                                                                   ,IIF(R.[調整額02] = 0, NULL, R.[調整額02]) 調整額02
+                                                                   ,R.[更新人員]
+                                                                   ,CONVERT(VARCHAR,R.[更新日期],23) [更新日期]
                                                      FROM Dc2..pudu P
-                                                     INNER JOIN RECUA RA ON P.序號 = RA.PUDU_SEQ
+                                                     INNER JOIN RECU R ON P.序號 = R.PUDU_SEQ
                                                      WHERE 1=1
                                               ";
 
@@ -65,20 +76,20 @@ public class Sample_Chk_MT : IHttpHandler, IRequiresSessionState
                                         string debug = context.Request[form];
                                         switch (form)
                                         {
-                                            case "點收日期_S":
-                                                cmd.CommandText += " AND CONVERT(DATE,[點收日期]) >= @點收日期_S";
+                                            case "到貨日期_S":
+                                                cmd.CommandText += " AND CONVERT(DATE,[到貨日期]) >= @到貨日期_S";
                                                 cmd.Parameters.AddWithValue(form, context.Request[form]);
                                                 break;
-                                            case "點收日期_E":
-                                                cmd.CommandText += " AND CONVERT(DATE,[點收日期]) <= @點收日期_E";
+                                            case "到貨日期_E":
+                                                cmd.CommandText += " AND CONVERT(DATE,[到貨日期]) <= @到貨日期_E";
                                                 cmd.Parameters.AddWithValue(form, context.Request[form]);
                                                 break;
                                             case "廠商簡稱":
-                                                cmd.CommandText += " AND ISNULL(RA.[廠商簡稱],'') LIKE '%' + @廠商簡稱 + '%'";
+                                                cmd.CommandText += " AND ISNULL(R.[廠商簡稱],'') LIKE '%' + @廠商簡稱 + '%'";
                                                 cmd.Parameters.AddWithValue(form, context.Request[form]);
                                                 break;
                                             default:
-                                                cmd.CommandText += " AND ISNULL(RA.[" + form + "],'') LIKE @" + form + " + '%'";
+                                                cmd.CommandText += " AND ISNULL(R.[" + form + "],'') LIKE @" + form + " + '%'";
                                                 cmd.Parameters.AddWithValue(form, context.Request[form]);
                                                 break;
                                         }
@@ -86,11 +97,11 @@ public class Sample_Chk_MT : IHttpHandler, IRequiresSessionState
                                 }
 
                                 break;
-                            case "UPD_RECUA":
+                            case "UPD_RECU":
                                 string sql = "";
 
                                 cmd.Parameters.Clear();
-                                cmd.CommandText = @" UPDATE [dbo].[RECUA]
+                                cmd.CommandText = @" UPDATE [dbo].[RECU]
                                                         SET [更新人員] = @UPD_USER
                                                            ,[更新日期] = GETDATE()
                                                            {0}
@@ -122,9 +133,9 @@ public class Sample_Chk_MT : IHttpHandler, IRequiresSessionState
                                 context.Response.End();
                                 break;
 
-                            case "DELETE_RECUA":
+                            case "DELETE_RECU":
                                 cmd.Parameters.Clear();
-                                cmd.CommandText = @" DELETE FROM RECUA 
+                                cmd.CommandText = @" DELETE FROM RECU
                                                      WHERE [序號] = @SEQ ";
 
                                 cmd.Parameters.AddWithValue("SEQ", context.Request["SEQ"]);

@@ -45,7 +45,6 @@
                     { title: "外幣" },
                     { title: "發票異常" },
                     { title: "到貨備註" },
-                    { title: "調整額01" },
                     { title: "採購交期" },
                     { title: "產品說明" },
                     { title: "單位" },
@@ -342,13 +341,6 @@
                                         },
                                         orderable: false
                                     },
-                                    {
-                                        data: null, title: "調整額01",
-                                        render: function (data, type, row) {
-                                            return '<input type="number" id="E_ADJ_AMT" class="tableInput" style="width:80px;text-align: left;" disabled="disabled" value = "0"   />'
-                                        },
-                                        orderable: false
-                                    },
                                     { data: "採購交期", title: "採購交期" },
                                     { data: "產品說明", title: "產品說明" },
                                     { data: "單位", title: "單位" },
@@ -397,7 +389,6 @@
                                     { title: "外幣" },
                                     { title: "發票異常" },
                                     { title: "到貨備註" },
-                                    { title: "調整額01" },
                                     { title: "採購交期" },
                                     { title: "產品說明" },
                                     { title: "單位" },
@@ -446,7 +437,6 @@
                                     { title: "外幣" },
                                     { title: "發票異常" },
                                     { title: "到貨備註" },
-                                    { title: "調整額01" },
                                     { title: "採購交期" },
                                     { title: "產品說明" },
                                     { title: "單位" },

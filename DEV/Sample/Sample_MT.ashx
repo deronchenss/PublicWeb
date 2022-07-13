@@ -303,9 +303,9 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                 context.Response.End();
                                 break;
                             case "GET_IMG":
-                                cmd.CommandText = @" SELECT TOP 1 [P_SEQ], [圖檔] [P_IMG]
+                                cmd.CommandText = @" SELECT TOP 1 [COST_SEQ], [圖檔] [P_IMG]
                                                      FROM [192.168.1.135].pic.dbo.xpic
-                                                     WHERE [P_SEQ] = (SELECT TOP 1 P_SEQ FROM byrlu where 廠商編號 = @FACT_NO AND 頤坊型號 = @IVAN_TYPE) ";
+                                                     WHERE [COST_SEQ] = (SELECT TOP 1 COST_SEQ FROM byrlu where 廠商編號 = @FACT_NO AND 頤坊型號 = @IVAN_TYPE) ";
                                 cmd.Parameters.AddWithValue("FACT_NO", context.Request["FACT_NO"]);
                                 cmd.Parameters.AddWithValue("IVAN_TYPE", context.Request["IVAN_TYPE"]);
                                 break;

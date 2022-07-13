@@ -106,7 +106,7 @@ public class Sample_Arr : IHttpHandler, IRequiresSessionState
                                 //未結案
                                 if (!string.IsNullOrEmpty(context.Request["WRITE_OFF"]) && context.Request["WRITE_OFF"] == "0")
                                 {
-                                    cmd.CommandText += " HAVING (ISNULL(SUM(RA.點收數量),0) > ISNULL(SUM(R.到貨數量),0)) OR (ISNULL(SUM(R.到貨數量),0) = 0 AND P.採購數量 != 0)";
+                                    cmd.CommandText += " HAVING (ISNULL(SUM(RA.點收數量),0) > ISNULL(SUM(R.到貨數量),0)) OR (ISNULL(採購數量,0) > ISNULL(SUM(R.到貨數量),0))";
                                 }
 
                                 cmd.CommandText += " ORDER BY P.採購單號,P.頤坊型號";
@@ -122,6 +122,7 @@ public class Sample_Arr : IHttpHandler, IRequiresSessionState
                                     cmd.CommandText = @" INSERT INTO [dbo].[recu]
                                                                ([序號]
                                                                ,[PUDU_SEQ]
+                                                               ,[點收批號]
                                                                ,[採購單號]
                                                                ,[樣品號碼]
                                                                ,[廠商編號]
@@ -149,6 +150,7 @@ public class Sample_Arr : IHttpHandler, IRequiresSessionState
                                                                ,[更新日期])
                                                          SELECT TOP 1 (Select IsNull(Max(序號),0)+1 From Recu) [序號]
                                                                ,P.[序號] [PUDU_SEQ]
+                                                               ,RA.點收批號
                                                                ,P.[採購單號]
                                                                ,P.[樣品號碼]
                                                                ,P.[廠商編號]
@@ -175,6 +177,7 @@ public class Sample_Arr : IHttpHandler, IRequiresSessionState
                                                                ,@UPD_USER [更新人員]
                                                                ,GETDATE() [更新日期]
 	                                                      FROM pudu P
+                                                          LEFT JOIN RECUA RA ON P.序號 = RA.PUDU_SEQ
 	                                                      WHERE P.序號 = @SEQ
                                                           
                                                         ";
@@ -223,9 +226,9 @@ public class Sample_Arr : IHttpHandler, IRequiresSessionState
                                 break;
 
                             case "GET_IMG":
-                                cmd.CommandText = @" SELECT TOP 1 [P_SEQ], [圖檔] [P_IMG]
+                                cmd.CommandText = @" SELECT TOP 1 [COST_SEQ], [圖檔] [P_IMG]
                                                      FROM [192.168.1.135].pic.dbo.xpic
-                                                     WHERE [P_SEQ] = (SELECT TOP 1 P_SEQ FROM byrlu where 廠商編號 = @FACT_NO AND 頤坊型號 = @IVAN_TYPE) ";
+                                                     WHERE [COST_SEQ] = (SELECT TOP 1 COST_SEQ FROM byrlu where 廠商編號 = @FACT_NO AND 頤坊型號 = @IVAN_TYPE) ";
                                 cmd.Parameters.AddWithValue("FACT_NO", context.Request["FACT_NO"]);
                                 cmd.Parameters.AddWithValue("IVAN_TYPE", context.Request["IVAN_TYPE"]);
                                 break;

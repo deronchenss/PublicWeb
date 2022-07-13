@@ -1,4 +1,4 @@
-﻿<%@ Page Title="樣品點收維護" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Chk_MT.aspx.cs" Inherits="Sample_Chk_MT" %>
+﻿<%@ Page Title="樣品到貨維護" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Arr_MT.aspx.cs" Inherits="Sample_Arr_MT" %>
 <%@ Register TagPrefix="uc" TagName="uc1" Src="~/User_Control/Dia_Transfer_Selector.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
-            var apiUrl = "/DEV/Sample/Sample_Chk_MT.ashx";
+            var apiUrl = "/DEV/Sample/Sample_Arr_MT.ashx";
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
 
@@ -65,7 +65,7 @@
                             $('.modeButton').css('display', 'none')
                             $('#Div_EDIT_Data').css('display', '');
                             $('#Div_DT_View').css('width', '60%');
-                            $('#Table_Search_Recua').DataTable().draw();
+                            $('#Table_Search_Recu').DataTable().draw();
 
                             $('#BT_DELETE').css('display', 'inline-block');
                             $('#BT_EDIT_SAVE').css('display', 'inline-block');
@@ -88,32 +88,26 @@
             function ClickToEdit(click_tr) {
                 $('#BT_Update').css('display', '');
 
-
                 //點擊賦予顏色
-                $('#Table_Search_Recua > tbody tr').removeClass("tableToEdit");
+                $('#Table_Search_Recu > tbody tr').removeClass("tableToEdit");
                 click_tr.addClass("tableToEdit");
 
-                var clickData = $('#Table_Search_Recua').DataTable().row(click_tr).data();
+                var clickData = $('#Table_Search_Recu').DataTable().row(click_tr).data();
 
                 //Edit page
-                $('#E_CHK_BATCH_NO').val(clickData['點收批號']);
-                $('#E_SEQ').val(clickData['序號']);
-                $('#E_IVAN_TYPE').val(clickData['頤坊型號']);
-                $('#E_FACT_NO').val(clickData['廠商編號']);
-                $('#E_FACT_S_NAME').val(clickData['廠商簡稱']);
-                $('#E_TMP_TYPE').val(clickData['暫時型號']);
-                $('#E_FACT_TYPE').val(clickData['廠商型號']);
-                $('#E_PROD_DESC').val(clickData['產品說明']);
-                $('#E_UNIT').val(clickData['單位']);
-                $('#E_PUDU_NO').val(clickData['採購單號']);
-                $('#E_SAMPLE_NO').val(clickData['樣品號碼']);
-                $('#E_CHECK_DATE').val(clickData['點收日期']);
-                $('#E_CHECK_CNT').val(clickData['點收數量']);
-                $('#E_APPROVE_CNT').val(clickData['核銷數量']);
-                $('#E_TRANS_NO').val(clickData['運輸編號']);
-                $('#E_TRANS_S_NAME').val(clickData['運輸簡稱']);
-                $('#E_UPD_USER').val(clickData['更新人員']);
-                $('#E_UPD_DATE').val(clickData['更新日期']);
+                for (var i = 0; i < $('#Table_Search_Recu').DataTable().columns().header().length; i++) {
+                    var titleName = $($('#Table_Search_Recu').DataTable().column(i).header()).text();
+
+                    if (titleName == '發票異常' || titleName == '不付款') {
+                        $("input[name='" + titleName + "']").prop('checked', clickData[titleName] == '是');
+                    }
+                    else if (titleName == '發票樣式') {
+                        $("select[name='" + titleName + "']").val(clickData[titleName]);
+                    }
+                    else {
+                        $("input[name='" + titleName + "']").val(clickData[titleName]);
+                    }
+                }
 
                 //IMG page
                 $('#I_IVAN_TYPE').val(clickData['頤坊型號']);
@@ -130,16 +124,17 @@
             }
 
             //ajax function
-            function Search_Recua() {
+            function Search_Recu() {
                 $.ajax({
                     url: apiUrl,
                     data: {
-                        "Call_Type": "Search_Recua", 
+                        "Call_Type": "Search_Recu", 
+                        "到貨單號": $('#Q_ARR_NO').val(),
                         "點收批號": $('#Q_CHK_BATCH_NO').val(),
                         "樣品號碼": $('#Q_SAMPLE_NO').val(),
                         "頤坊型號": $('#Q_IVAN_TYPE').val(),
-                        "點收日期_S": $('#Q_CHK_DATE_S').val(),
-                        "點收日期_E": $('#Q_CHK_DATE_E').val(),
+                        "到貨日期_S": $('#Q_ARR_DATE_S').val(),
+                        "到貨日期_E": $('#Q_ARR_DATE_E').val(),
                         "採購單號": $('#Q_PUDU_NO').val(),
                         "廠商編號": $('#Q_FACT_NO').val(),
                         "廠商簡稱": $('#Q_FACT_S_NAME').val()
@@ -155,7 +150,7 @@
                             Form_Mode_Change("Base");
                         }
                         else {       
-                            $('#Table_Search_Recua').DataTable({
+                            $('#Table_Search_Recu').DataTable({
                                 "data": response,
                                 "destroy": true,
                                 //維持scroll bar 位置
@@ -166,20 +161,35 @@
                                     $('div.dataTables_scrollBody').scrollTop(pageScrollPos);
                                 },
                                 "columns": [
-                                    { data: "序號", title: "序號" },
+                                    { data: "序號", title: "序號"},
                                     { data: "點收批號", title: "點收批號" },
                                     { data: "採購單號", title: "採購單號" },
-                                    { data: "點收日期", title: "點收日期" },
+                                    { data: "到貨日期", title: "到貨日期" },
                                     { data: "廠商簡稱", title: "廠商簡稱" },
                                     { data: "頤坊型號", title: "頤坊型號" },
                                     { data: "單位", title: "單位" },
-                                    { data: "點收數量", title: "點收數量" },
+                                    { data: "到貨數量", title: "到貨數量" },
+                                    { data: "到貨單號", title: "到貨單號" },
                                     { data: "樣品號碼", title: "樣品號碼" },
                                     { data: "更新人員", title: "<%=Resources.MP.Update_User%>" },
                                     { data: "更新日期", title: "<%=Resources.MP.Update_Date%>" },
-                                    { data: "核銷數量", title: "核銷數量", visible: false },
-                                    { data: "運輸編號", title: "運輸編號", visible: false },
-                                    { data: "運輸簡稱", title: "運輸簡稱", visible: false },
+                                    { data: "產品說明", title: "產品說明", visible: false },
+                                    { data: "出貨日期", title: "出貨日期", visible: false },
+                                    { data: "暫時型號", title: "暫時型號", visible: false },
+                                    { data: "廠商型號", title: "廠商型號", visible: false },
+                                    { data: "廠商編號", title: "廠商編號", visible: false },
+                                    { data: "不付款", title: "不付款", visible: false },
+                                    { data: "台幣單價", title: "台幣單價", visible: false },
+                                    { data: "美元單價", title: "美元單價", visible: false },
+                                    { data: "外幣幣別", title: "外幣幣別", visible: false },
+                                    { data: "外幣單價", title: "外幣單價", visible: false },
+                                    { data: "到單日期", title: "到單日期", visible: false },
+                                    { data: "發票樣式", title: "發票樣式", visible: false },
+                                    { data: "發票號碼", title: "發票號碼", visible: false },
+                                    { data: "發票異常", title: "發票異常", visible: false },
+                                    { data: "到貨備註", title: "到貨備註", visible: false },
+                                    { data: "調整額01", title: "調整額01", visible: false },
+                                    { data: "調整額02", title: "調整額02", visible: false }
                                 ],
                                 "order": [[2, "asc"]], //根據 採購單號 排序
                                 "scrollX": true,
@@ -190,8 +200,8 @@
                                 "autoWidth": false //欄位小於VIEW 長度，自動擴展
                             });
 
-                            $('#Table_Search_Recua').DataTable().draw();
-                            $('#Table_Search_Recu_info').text('Showing ' + $('#Table_Search_Recua > tbody tr[role=row]').length + ' entries');
+                            $('#Table_Search_Recu').DataTable().draw();
+                            $('#Table_Search_Recu_info').text('Showing ' + $('#Table_Search_Recu > tbody tr[role=row]').length + ' entries');
                         }
                     },
                     error: function (ex) {
@@ -231,7 +241,7 @@
             };             
 
             //更新DB
-            function UPD_RECUA() {
+            function UPD_RECU() {
                 if ($('#E_SEQ').val() === '') {
                     alert('請選擇要修改的資料');
                 }
@@ -239,14 +249,21 @@
                     $.ajax({
                         url: apiUrl,
                         data: {
-                            "Call_Type": "UPD_RECUA",
+                            "Call_Type": "UPD_RECU",
                             "SEQ": $('#E_SEQ').val(),
                             "點收批號": $('#E_CHK_BATCH_NO').val(),
-                            "採購單號": $('#E_PUDU_NO').val(),
                             "樣品號碼": $('#E_SAMPLE_NO').val(),
-                            "點收日期": $('#E_CHK_DATE').val(),
-                            "運輸編號": $('#E_TRANS_NO').val(),
-                            "運輸簡稱": $('#E_TRANS_S_NAME').val()
+                            "採購單號": $('#E_PUDU_NO').val(),
+                            "出貨日期": $('#E_SHIP_GO_DATE').val(),
+                            "到貨日期": $('#E_SHIP_ARR_DATE').val(),
+                            "不付款": $('#E_NO_PAY').is(":checked"),
+                            "到單日期": $('#E_ORDER_ARR_DATE').val(),
+                            "發票樣式": $('#E_INVOICE_TYPE').val(),
+                            "發票號碼": $('#E_INVOICE_NO').val(),
+                            "發票異常": $('#E_INVOICE_ERR').is(":checked"),
+                            "到貨備註": $('#E_ARR_REMARK').val(),
+                            "調整額01": $('#E_ADJ_AMT_01').val() == '' ? 0 : $('#E_ADJ_AMT_01').val(),
+                            "調整額02": $('#E_ADJ_AMT_02').val() == '' ? 0 : $('#E_ADJ_AMT_02').val()
                         },
                         cache: false,
                         type: "POST",
@@ -257,7 +274,7 @@
                             if (status === 'success') {
                                 alert('序號:' + $('#E_SEQ').val() + '已修改完成');
 
-                                Search_Recua();
+                                Search_Recu();
                             }
                             else {
                                 alert('修改資料有誤請通知資訊人員');
@@ -273,7 +290,7 @@
             };           
 
             //刪除單筆資料
-            function DELETE_RECUA() {
+            function DELETE_RECU() {
                 if ($('#E_SEQ').val() === '') {
                     alert('請選擇要刪除的資料');
                 }
@@ -281,7 +298,7 @@
                     $.ajax({
                         url: apiUrl,
                         data: {
-                            "Call_Type": "DELETE_RECUA",
+                            "Call_Type": "DELETE_RECU",
                             "SEQ": $('#E_SEQ').val()
                         },
                         cache: false,
@@ -292,7 +309,7 @@
                             console.log(status);
                             if (status === 'success') {
                                 alert('序號:' + $('#E_SEQ').val() + '已刪除完成');
-                                Search_Recua();
+                                Search_Recu();
                             }
                             else {
                                 alert('刪除資料有誤請通知資訊人員');
@@ -308,14 +325,14 @@
             };           
 
             //TABLE 功能設定
-            $('#Table_Search_Recua').on('click', 'tbody tr', function () {
+            $('#Table_Search_Recu').on('click', 'tbody tr', function () {
                 ClickToEdit($(this));
             });
 
             //BUTTON CLICK EVENT BASE 頁
             $('#BT_Search').on('click', function () {
                 Form_Mode_Change("Search");
-                Search_Recua();
+                Search_Recu();
             });
 
             $('#BT_Cancel').on('click', function () {
@@ -323,19 +340,19 @@
 
                 var Confirm_Check = confirm("<%=Resources.MP.Cancel_Alert%>");
                 if (Confirm_Check) {
-                    $('#Table_Search_Recua').DataTable().clear().draw();
+                    $('#Table_Search_Recu').DataTable().clear().draw();
                     Form_Mode_Change("Base");
                 }
             });
 
             $('#BT_EDIT_SAVE').on('click', function () {
-                UPD_RECUA();
+                UPD_RECU();
             });
 
             $('#BT_DELETE').on('click', function () {
                 var Confirm_Check = confirm("確認刪除嗎? 序號:" + $('#E_SEQ').val());
                 if (Confirm_Check) {
-                    DELETE_RECUA();
+                    DELETE_RECU();
                 }
             });
 
@@ -347,12 +364,12 @@
             $('#BT_E_CANCEL').on('click', function () {
                 Edit_Mode = "Search";
                 Form_Mode_Change("Search");
-                $('#Table_Search_Recua').DataTable().draw();
+                $('#Table_Search_Recu').DataTable().draw();
             });
 
             //功能選單
             $('#BT_S_BASE').on('click', function () {
-                if($('#Table_Search_Recua > tbody tr[role=row]').length > 0)
+                if($('#Table_Search_Recu > tbody tr[role=row]').length > 0)
                 {
                     Form_Mode_Change('Search');
                 }
@@ -378,17 +395,17 @@
                 </td>
             </tr>
             <tr class="trstyle">
-                <td class="tdhstyle">點收批號</td>
+                <td class="tdhstyle">到貨單號</td>
                 <td class="tdbstyle">
-                    <input id="Q_CHK_BATCH_NO" class="textbox_char" />
+                    <input id="Q_ARR_NO" class="textbox_char" />
                 </td>
                 <td class="tdhstyle">採購單號</td>
                 <td class="tdbstyle">
                     <input id="Q_PUDU_NO"  class="textbox_char" />
                 </td>
-                <td class="tdhstyle">點收日期</td>
+                <td class="tdhstyle">到貨日期</td>
                 <td class="tdbstyle">
-                    <input id="Q_CHK_DATE_S" type="date" class="date_S_style" />~<input id="Q_CHK_DATE_E" type="date" class="date_E_style" />
+                    <input id="Q_ARR_DATE_S" type="date" class="date_S_style" />~<input id="Q_ARR_DATE_E" type="date" class="date_E_style" />
                 </td>
             </tr>
             <tr class="trstyle">
@@ -399,6 +416,10 @@
                 <td class="tdhstyle">樣品號碼</td>
                 <td class="tdbstyle">
                     <input id="Q_SAMPLE_NO"  class="textbox_char" />
+                </td>
+                <td class="tdhstyle">點收批號</td>
+                <td class="tdbstyle">
+                    <input id="Q_CHK_BATCH_NO" class="textbox_char" />
                 </td>
             </tr>
              <tr class="trstyle">
@@ -432,7 +453,7 @@
         <div id="Div_DT">
             <div id="Div_DT_View" style=" width:60%;height:71vh; border-style:solid;border-width:1px; float:left;">
                 <div class="dataTables_info" id="Table_Search_Recu_info" role="status" aria-live="polite"></div>
-                <table id="Table_Search_Recua" class="Table_Search table table-striped table-bordered">
+                <table id="Table_Search_Recu" class="Table_Search table table-striped table-bordered">
                     <thead style="white-space:nowrap"></thead>
                     <tbody style="white-space:nowrap"></tbody>
                 </table>
@@ -441,99 +462,160 @@
             <div id="Div_EDIT_Data" class=" Div_D" style="width:35%; height:71vh;white-space:nowrap; border-style:solid; border-width:1px;  float:right; overflow:auto">
                 <table class="edit_section_control">
                     <tr> 
-                        <td style="height: 10vh; font-size: smaller;" >&nbsp</td>
+                        <td style="height: 5vh; font-size: smaller;" >&nbsp</td>
                     </tr>
                     <tr class="trstyle" >
                         <td class="tdhstyle">點收批號</td>
                         <td class="tdbstyle">
-                            <input id="E_CHK_BATCH_NO"  class="textbox_char" />
+                            <input id="E_CHK_BATCH_NO" name="點收批號"  class="textbox_char" />
                         </td>
                         <td class="tdhstyle">序號</td>
                         <td class="tdbstyle">
-                            <input id="E_SEQ"  class="textbox_char" disabled="disabled" />
+                            <input id="E_SEQ" name="序號"  class="textbox_char" disabled="disabled" />
                         </td>
                     </tr>
                     <tr class="trstyle">
                         <td class="tdhstyle">頤坊型號</td>
                         <td class="tdbstyle">
-                            <input id="E_IVAN_TYPE"  class="textbox_char" disabled="disabled" />
+                            <input id="E_IVAN_TYPE" name="頤坊型號"  class="textbox_char" disabled="disabled" />
+                        </td>
+                        <td class="tdhstyle ">樣品號碼</td>
+                        <td class="tdbstyle">
+                            <input id="E_SAMPLE_NO" name="樣品號碼"  class="textbox_char "/>
                         </td>
                     </tr>
                     <tr class="trstyle">
                         <td class="tdhstyle">廠商編號</td>
                         <td class="tdbstyle">
-                            <input id="E_FACT_NO"  class="textbox_char" disabled="disabled" />
+                            <input id="E_FACT_NO" name="廠商編號"  class="textbox_char" disabled="disabled" />
                         </td>
                         <td class="tdhstyle">廠商簡稱</td>
                         <td class="tdbstyle">
-                            <input id="E_FACT_S_NAME" class="textbox_char" disabled="disabled"  />
+                            <input id="E_FACT_S_NAME" name="廠商簡稱" class="textbox_char" disabled="disabled"  />
                         </td>
                     </tr>
                     <tr class="trstyle">
                         <td class="tdhstyle">暫時型號</td>
                         <td class="tdbstyle">
-                            <input id="E_TMP_TYPE"  class="textbox_char" disabled="disabled" />
+                            <input id="E_TMP_TYPE" name="暫時型號"   class="textbox_char" disabled="disabled" />
                         </td>
                         <td class="tdhstyle">廠商型號</td>
                         <td class="tdbstyle">
-                            <input id="E_FACT_TYPE" class="textbox_char" disabled="disabled"  />
+                            <input id="E_FACT_TYPE" name="廠商型號"  class="textbox_char" disabled="disabled"  />
                         </td>
                     </tr>
                     <tr class="trstyle">
                         <td class="tdhstyle">產品說明</td>
                         <td class="tdbstyle" colspan ="4">
-                            <input id="E_PROD_DESC" class="textbox_char " style="width:80%" disabled="disabled"  />
+                            <input id="E_PROD_DESC" name="產品說明"  class="textbox_char " style="width:80%" disabled="disabled"  />
                         </td>
                     </tr>     
                     <tr class="trstyle ">
                         <td class="tdhstyle">採購單號</td>
                         <td class="tdbstyle">
-                            <input id="E_PUDU_NO"  class="textbox_char " />
+                            <input id="E_PUDU_NO" name="採購單號"   class="textbox_char" />
                         </td>
-                        <td class="tdhstyle ">樣品號碼</td>
+                        <td class="tdhstyle">出貨日期</td>
                         <td class="tdbstyle">
-                            <input id="E_SAMPLE_NO"  class="textbox_char "/>
+                            <input id="E_SHIP_GO_DATE" name="出貨日期"  type="date" class="date_S_style"  />
                         </td>
                     </tr>
                     <tr class="trstyle ">
-                        <td class="tdhstyle">點收日期</td>
+                        <td class="tdhstyle">到貨日期</td>
                         <td class="tdbstyle">
-                            <input id="E_CHECK_DATE" type="date" class="date_S_style"  />
+                            <input id="E_SHIP_ARR_DATE" name="到貨日期"  type="date" class="date_S_style"  />
                         </td>
-                        <td class="tdhstyle">點收數量</td>
+                        <td class="tdhstyle">到貨數量</td>
                         <td class="tdbstyle">
-                            <input id="E_CHECK_CNT" class="textbox_char" type="number" disabled="disabled" />
+                            <input id="E_ARR_CNT" name="到貨數量"  class="textbox_char" type="number" disabled="disabled" />
                         </td>
                     </tr>
-                    <tr class="trstyle ">
+                     <tr class="trstyle ">
                         <td class="tdhstyle">單位</td>
                         <td class="tdbstyle">
-                            <input id="E_UNIT"  class="textbox_char" disabled="disabled" />
+                            <input id="E_UNIT" name="單位"  class="textbox_char" disabled="disabled" />
                         </td>
-                        <td class="tdhstyle">核銷數量</td>
+                        <td class="tdhstyle">不付款</td>
                         <td class="tdbstyle">
-                            <input id="E_APPROVE_CNT" class="textbox_char " type="number" disabled="disabled" />
+                            <input id="E_NO_PAY" name="不付款"  type="checkbox"  />
+                        </td>
+                    </tr>
+                    <tr class="trstyle ">
+                        <td class="tdhstyle">台幣單價</td>
+                        <td class="tdbstyle">
+                            <input id="E_NTD" name="台幣單價"  class="textbox_char" type="number" disabled="disabled" />
+                        </td>
+                        <td class="tdhstyle">美元單價</td>
+                        <td class="tdbstyle">
+                            <input id="E_USD" name="美元單價"  class="textbox_char" type="number" disabled="disabled" />
+                        </td>
+                    </tr>
+                    <tr class="trstyle ">
+                        <td class="tdhstyle">外幣幣別</td>
+                        <td class="tdbstyle">
+                            <input id="E_CURR_CODE" name="外幣幣別" class="textbox_char " disabled="disabled" />
+                        </td>
+                        <td class="tdhstyle">外幣單價</td>
+                        <td class="tdbstyle">
+                            <input id="E_FORE_AMT" name="外幣單價" class="textbox_char" type="number" disabled="disabled" />
+                        </td>
+                    </tr>
+                    <tr class="trstyle ">
+                        <td class="tdhstyle">到單日期</td>
+                        <td class="tdbstyle">
+                            <input id="E_ORDER_ARR_DATE" name="到單日期" type="date" class="date_S_style"  />
+                        </td>
+                        <td class="tdhstyle">到貨單號</td>
+                        <td class="tdbstyle">
+                            <input id="E_ARR_NO" name="到貨單號" class="textbox_char" disabled="disabled" />
                         </td>
                     </tr>
                     <tr class="trCenterstyle">
-                        <td class="tdhstyle" >運輸編號</td>
+                        <td class="tdhstyle">發票樣式</td>
                         <td class="tdbstyle">
-                            <input id="E_TRANS_NO"  class="textbox_char" disabled="disabled"  />
-                            <input id="BT_TRANS_WAY"  type="button" value="..." />
+                            <select id="E_INVOICE_TYPE" name="發票樣式"  >
+                                <option selected="selected"value=""></option>
+                                <option value="21">21-三聯式</option>
+                                <option value="22">22-二聯式</option>
+                                <option value="23">23-三聯式折讓單</option>
+                                <option value="24">24-二聯式折讓單</option>
+                                <option value="25">25-三聯式收銀機</option>
+                                <option value="99">99-香港-INVOICE</option>
+                            </select>
                         </td>
-                        <td class="tdhstyle">運輸簡稱</td>
+                        <td class="tdhstyle">發票號碼</td>
                         <td class="tdbstyle" >
-                            <input id="E_TRANS_S_NAME"  class="textbox_char" disabled="disabled"  />
+                            <input id="E_INVOICE_NO" name="發票號碼" class="textbox_char"   />
+                        </td>
+                    </tr>
+                    <tr class="trstyle ">
+                        <td class="tdhstyle">發票異常</td>
+                        <td class="tdbstyle">
+                            <input id="E_INVOICE_ERR" name="發票異常"  type="checkbox"   />
+                        </td>
+                        <td class="tdhstyle">到貨備註</td>
+                        <td class="tdbstyle">
+                            <input id="E_ARR_REMARK" name="到貨備註" class="textbox_char" />
+                        </td>
+                    </tr>
+                    <tr class="trstyle ">
+                        <td class="tdhstyle">調整額01-採購</td>
+                        <td class="tdbstyle">
+                            <input id="E_ADJ_AMT_01" name="調整額01" class="textbox_char" type="number"  />
+                        </td>
+                        <td class="tdhstyle">調整額02-會計</td>
+                        <td class="tdbstyle">
+                            <input id="E_ADJ_AMT_02" name="調整額02" class="textbox_char" type="number"  />
                         </td>
                     </tr>
                     <tr class="trstyle ">
                         <td class="tdhstyle">更新人員</td>
                         <td class="tdbstyle">
-                            <input id="E_UPD_USER"  class="textbox_char " disabled="disabled" />
+                            <input id="E_UPD_USER" name="更新人員" class="textbox_char " disabled="disabled" />
                         </td>
                         <td class="tdhstyle">更新日期</td>
                         <td class="tdbstyle">
-                            <input id="E_UPD_DATE" type="date" class="date_S_style " disabled="disabled" />
+                            <input id="E_UPD_DATE" name="更新日期" type="date" class="date_S_style " disabled="disabled" />
                         </td>
                     </tr>
                     <tr> 
