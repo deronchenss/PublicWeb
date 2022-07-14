@@ -103,6 +103,7 @@
                         //"DVN": $('#DDL_DVN').val(),
                     },
                     cache: false,
+                    async: false,
                     type: "POST",
                     datatype: "json",
                     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',

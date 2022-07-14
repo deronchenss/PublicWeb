@@ -1,4 +1,6 @@
 ﻿<%@ Page Title="Price Maintenance" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Price_MT.aspx.cs" Inherits="Price_MT" %>
+<%@ Register TagPrefix="uc1" TagName="uc1" Src="~/User_Control/Dia_Customer_Selector.ascx" %>
+<%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_Selector.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
 </asp:Content>
@@ -412,60 +414,7 @@
                 $("#Search_Customer_Dialog").dialog('open');
             });
 
-            $('#SCD_BT_Search').on('click', function () {
-                $.ajax({
-                    url: "/Base/Customer/Customer_Search.ashx",
-                    data: {
-                        "Call_Type": "SCD_Search",
-                        "C_No": $('#SCD_TB_C_No').val(),
-                        "C_SName": $('#SCD_TB_C_SName').val(),
-                        "Search_Where": ""
-                    },
-                    cache: false,
-                    type: "POST",
-                    datatype: "json",
-                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                    success: function (response) {
-                        $('#SCD_Table_Customer').DataTable({
-                            "data": response,
-                            "destroy": true,
-                            "order": [[2, "asc"]],
-                            "lengthMenu": [
-                                [5, 10, 20, -1],
-                                [5, 10, 20, "All"],
-                            ],
-                            "columns": [
-                                {
-                                    data: null, title: "",
-                                    render: function (data, type, row) {
-                                        return '<input type="button" class="BTN_Green" value="' + '<%=Resources.MP.Select%>' + '">'
-                                    }
-                                },
-                                { data: "SEQ", title: "<%=Resources.MP.SEQ%>" },
-                                { data: "C_No", title: "<%=Resources.MP.Customer_No%>" },
-                                { data: "C_SName", title: "<%=Resources.MP.Customer_Short_Name%>" },
-                                { data: "C_Name", title: "<%=Resources.MP.Customer_Name%>" },
-                                { data: "Principal", title: "<%=Resources.MP.Principal%>" },
-                                { data: "Mail", title: "Mail" },
-                                { data: "Remark", title: "<%=Resources.MP.Remark%>" }
-                            ],
-                            "columnDefs": [{
-                                targets: [0],
-                                className: "text-center"
-                            }],
-                        });
-
-                        $('#SCD_Table_Customer').css('white-space', 'nowrap');
-                        $('#SCD_Table_Customer thead th').css('text-align', 'center');
-                    },
-                    error: function (ex) {
-                        alert(ex);
-                    }
-                });
-                $('#SCD_Div_DT').css('display', '');
-            });
-
-            $('#SCD_Table_Customer').on('click', '.BTN_Green', function () {
+            $('#SCD_Table_Customer').on('click', '.CUST_SEL', function () {
                 switch (PS_Control) {
                     case "NU"://New&Update
                         $('#TB_M2_C_No').val($(this).parent().parent().find('td:nth(2)').text());
@@ -488,60 +437,7 @@
                 $("#Search_Product_Dialog").dialog('open');
             });
 
-            $('#SPD_BT_Search').on('click', function () {
-                $.ajax({
-                    url: "/Base/BOM/BOM_Search.ashx",
-                    data: {
-                        "Call_Type": "Product_Search",
-                        "IM": $('#SPD_TB_IM').val(),
-                        "S_No": $('#SPD_TB_S_No').val(),
-                        "Search_Where": ""
-                    },
-                    cache: false,
-                    type: "POST",
-                    datatype: "json",
-                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                    success: function (response) {
-                        $('#SPD_Table_Product').DataTable({
-                            "data": response,
-                            "destroy": true,
-                            "order": [[3, "asc"]],
-                            "lengthMenu": [
-                                [5, 10, 20, -1],
-                                [5, 10, 20, "All"],
-                            ],
-                            "columns": [
-                                {
-                                    data: null, title: "",
-                                    render: function (data, type, row) {
-                                        return '<input type="button" class="BTN_Green" value="' + '<%=Resources.MP.Select%>' + '">'
-                                    }
-                                },
-                                { data: "SEQ", title: "<%=Resources.MP.Product_SEQ%>" },
-                                { data: "DVN", title: "<%=Resources.MP.Developing%>" },
-                                { data: "IM", title: "<%=Resources.MP.Ivan_Model%>" },
-                                { data: "S_No", title: "<%=Resources.MP.Supplier_No%>" },
-                                { data: "S_SName", title: "<%=Resources.MP.Supplier_Short_Name%>" },
-                                { data: "Unit", title: "<%=Resources.MP.Unit%>" },
-                                { data: "PI", title: "<%=Resources.MP.Product_Information%>" }
-                            ],
-                            "columnDefs": [{
-                                targets: [0],
-                                className: "text-center"
-                            }],
-                        });
-
-                        $('#SPD_Table_Product').css('white-space', 'nowrap');
-                        $('#SPD_Table_Product thead th').css('text-align', 'center');
-                    },
-                    error: function (ex) {
-                        alert(ex);
-                    }
-                });
-                $('#SPD_Div_DT').css('display', '');
-            });
-
-            $('#SPD_Table_Product').on('click', '.BTN_Green', function () {
+            $('#SPD_Table_Product').on('click', '.PROD_SEL', function () {
                 switch (PS_Control) {
                     case "NU"://New&Update
                         $('#HDN_M2_SUPLU_SEQ').val($(this).parent().parent().find('td:nth(1)').text());
@@ -669,36 +565,6 @@
                         }
                     }
                 });
-
-                $("#Search_Customer_Dialog").dialog({
-                    autoOpen: false,
-                    modal: true,
-                    title: "<%=Resources.MP.Search_Confition%>",
-                    width: screen.width * 0.8,
-                    overlay: 0.5,
-                    focus: true,
-                    buttons: {
-                        "Cancel": function () {
-                            $("#Search_Customer_Dialog").dialog('close');
-                            $('#SCD_Div_DT').css('display', 'none');
-                        }
-                    }
-                });
-
-                $("#Search_Product_Dialog").dialog({
-                    autoOpen: false,
-                    modal: true,
-                    title: "<%=Resources.MP.Search_Confition%>",
-                    width: screen.width * 0.8,
-                    overlay: 0.5,
-                    focus: true,
-                    buttons: {
-                        "Cancel": function () {
-                            $("#Search_Product_Dialog").dialog('close');
-                            $('#SPD_Div_DT').css('display', 'none');
-                        }
-                    }
-                });
             };
 
             function DDL_Bind() {
@@ -786,6 +652,8 @@
             opacity: 0.8;
         }
     </style>
+    <uc1:uc1 ID="uc1" runat="server" /> 
+    <uc2:uc2 ID="uc2" runat="server" /> 
 
     <div id="dialog" style="display: none;">
         <div style="width: 100%; text-align: center;">
@@ -1015,67 +883,6 @@
                 </td>
             </tr>
         </table>
-    </div>
-    
-    <div id="Search_Customer_Dialog" style="display: none;">
-        <table border="0" style="margin: 0 auto;" id="SCD_Table">
-            <tr style="text-align: right;">
-                <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Customer_No%></td>
-                <td style="text-align: left; width: 15%;">
-                    <input style="width: 90%; height: 25px;" id="SCD_TB_C_No" />
-                </td>
-                <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Customer_Short_Name%></td>
-                <td style="text-align: left; width: 15%;">
-                    <input style="width: 90%; height: 25px;" id="SCD_TB_C_SName" />
-                </td>
-            </tr>
-            <tr><td><br /></td></tr>
-            <tr>
-                <td style="text-align: center;" colspan="4">
-                    <div style="display: flex; justify-content: center; align-items: center;">
-                        <input id="SCD_BT_Search" class="BTN" type="button" value="<%=Resources.MP.Search%>" style="width:10%;" />
-                    </div>
-                </td>
-            </tr>
-        </table>
-        <div id="SCD_Div_DT" style="margin: auto; width: 98%; overflow: auto; display: none;">
-            <br />
-            <table id="SCD_Table_Customer" style="width: 100%;" class="table table-striped table-bordered dt-responsive">
-                <thead></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="Search_Product_Dialog" style="display: none;">
-        <table border="0" style="margin: 0 auto;" id="SPD_Table">
-            <tr style="text-align: right;">
-                <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Ivan_Model%></td>
-                <td style="text-align: left; width: 15%;">
-                    <input style="width: 90%; height: 25px;" id="SPD_TB_IM" />
-                </td>
-
-                <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Supplier_No%></td>
-                <td style="text-align: left; width: 15%;">
-                    <input style="width: 90%; height: 25px;" id="SPD_TB_S_No" />
-                </td>
-            </tr>
-            <tr><td><br /></td></tr>
-            <tr>
-                <td style="text-align: center;" colspan="4">
-                    <div style="display: flex; justify-content: center; align-items: center;">
-                        <input id="SPD_BT_Search" class="BTN" type="button" value="<%=Resources.MP.Search%>" style="width:10%;" />
-                    </div>
-                </td>
-            </tr>
-        </table>
-        <div id="SPD_Div_DT" style="margin: auto; width: 98%; overflow: auto; display: none;">
-            <br />
-            <table id="SPD_Table_Product" style="width: 100%;" class="table table-striped table-bordered dt-responsive">
-                <thead></thead>
-                <tbody></tbody>
-            </table>
-        </div>
     </div>
 
     <table class="table_th" style="text-align:left;">

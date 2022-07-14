@@ -23,7 +23,7 @@
             buttons: {
                 "Cancel": function () {
                     $("#Product_ALL_Dialog").dialog('close');
-                    $('#PAD_Div_DT').css('display', 'none');
+                    $('#PAD_Div_DT').toggle(false);
                 }
             }
         });
@@ -40,38 +40,19 @@
                     datatype: "json",
                     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                     success: function (R) {
-                        var JR = JSON.parse(R);
-                        if (JR[0].IMG != null) {
-                            $('#PAD_IM_IMG_HINT').css('display', 'none');
-                            $('#PAD_IM_IMG').css('display', '');
-                            var binary = '';
-                            var bytes = new Uint8Array(JR[0].IMG);
-                            var len = bytes.byteLength;
-                            for (var j = 0; j < len; j++) {
-                                binary += String.fromCharCode(bytes[j]);
-                            }
-                            var SRC = 'data:image/png;base64,' + window.btoa(binary);
+                        var Has_IMG = (R[0].IMG != null);
+                        $('#PAD_IM_IMG').toggle(Has_IMG);
+                        $('#PAD_IM_IMG_HINT').toggle(!Has_IMG);
+                        if (Has_IMG) {
+                            var SRC = 'data:image/png;base64,' + R[0].IMG;
                             $('#PAD_IM_IMG').attr('src', SRC);
                         }
-                        else {
-                            $('#PAD_IM_IMG').css('display', 'none');
-                            $('#PAD_IM_IMG_HINT').css('display', '');
-                        }
-                        $('#PAD_TB_M2_IM').val(JR[0].IM);
-                        $('#PAD_TB_M2_SupM').val(JR[0].SupM);
-                        $('#PAD_TB_M2_S_No').val(JR[0].S_No);
-                        $('#PAD_TB_M2_S_SName').val(JR[0].S_SName);
-                        $('#PAD_TB_M2_TempM').val(JR[0].TempM);
-                        $('#PAD_TB_M2_SaleM').val(JR[0].SaleM);
-                        $('#PAD_TB_M2_Unit').val(JR[0].Unit);
-                        $('#PAD_TB_M2_DVN').val(JR[0].DVN);
-                        $('#PAD_DDL_M2_PS').val(JR[0].PST);
-                        $('#PAD_TB_M2_AC_Class').val(JR[0].ACC);
-                        $('#PAD_TB_M2_PI').val(JR[0].PI);
-                        $('#PAD_TB_M2_PID').val(JR[0].PID);
+                        $('[PAD_DT_Fill_Name]').each(function () {
+                            var DF = $(this).attr('PAD_DT_Fill_Name');
+                            $(this).val(R[0][DF]);
+                        })
                     }
                 });
-
             }
             else {
                 alert('Please re-search or notify IT.');
@@ -81,9 +62,9 @@
         $('.PADV_BT').on('click', function () {
             $('.PADV_BT').attr('disabled', false);
             $(this).attr('disabled', 'disabled');
-            $('.PAD_Div_D').css('display', 'none');
+            $('.PAD_Div_D').toggle(false);
             var Target = $(this).attr('target');
-            $('#' + Target).css('display', '');
+            $('#' + Target).toggle(true);
         });
 
         function PAD_DDL_Bind() {
@@ -139,19 +120,19 @@
             <tr>
                 <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Ivan_Model%></td>
                 <td style="text-align: left; width: 15%;">
-                    <input id="PAD_TB_M2_IM" disabled="disabled" style="width: 100%;" />
+                    <input id="PAD_TB_M2_IM" PAD_DT_Fill_Name="頤坊型號" disabled="disabled" style="width: 100%;" />
                 </td>
                 <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Supplier_Model%></td>
                 <td style="text-align: left; width: 15%;">
-                    <input id="PAD_TB_M2_SupM" disabled="disabled" style="width: 100%;" />
+                    <input id="PAD_TB_M2_SupM" PAD_DT_Fill_Name="廠商型號" disabled="disabled" style="width: 100%;" />
                 </td>
                 <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Supplier_No%></td>
                 <td style="text-align: left; width: 15%;">
-                    <input id="PAD_TB_M2_S_No" disabled="disabled" style="width: 100%;" />
+                    <input id="PAD_TB_M2_S_No" PAD_DT_Fill_Name="廠商編號" disabled="disabled" style="width: 100%;" />
                 </td>
                 <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Supplier_Short_Name%></td>
                 <td style="text-align: left; width: 15%;">
-                    <input id="PAD_TB_M2_S_SName" disabled="disabled" style="width: 100%;" />
+                    <input id="PAD_TB_M2_S_SName" PAD_DT_Fill_Name="廠商簡稱" disabled="disabled" style="width: 100%;" />
                 </td>
                 <%--<td rowspan="6" style="text-align:center;">
                     <img id="PAD_IM_IMG" src="#" />
@@ -161,46 +142,46 @@
             <tr>
                 <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Sample_Product_No%></td>
                 <td style="text-align: left; width: 15%;">
-                    <input id="PAD_TB_M2_TempM" disabled="disabled" style="width: 100%;" />
+                    <input id="PAD_TB_M2_TempM" PAD_DT_Fill_Name="暫時型號" disabled="disabled" style="width: 100%;" />
                 </td>
                 <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Sale_Model%></td>
                 <td style="text-align: left; width: 15%;">
-                    <input id="PAD_TB_M2_SaleM" disabled="disabled" style="width: 100%;" />
+                    <input id="PAD_TB_M2_SaleM" PAD_DT_Fill_Name="銷售型號" disabled="disabled" style="width: 100%;" />
                 </td>
                 <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Unit%></td>
                 <td style="text-align: left; width: 15%;">
-                    <input id="PAD_TB_M2_Unit" disabled="disabled" style="width: 100%;" />
+                    <input id="PAD_TB_M2_Unit" PAD_DT_Fill_Name="單位" disabled="disabled" style="width: 100%;" />
                 </td>
                 <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Developing%></td>
                 <td style="text-align: left; width: 15%;">
-                    <input id="PAD_TB_M2_DVN" disabled="disabled" style="width: 100%;" />
+                    <input id="PAD_TB_M2_DVN" PAD_DT_Fill_Name="開發中" disabled="disabled" style="width: 100%;" />
                 </td>
             </tr>
             <tr>
                 <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Product_Status%></td>
                 <td style="text-align: left; width: 15%;">
-                    <select id="PAD_DDL_M2_PS" disabled="disabled" style="width: 100%;">
+                    <select id="PAD_DDL_M2_PS" PAD_DT_Fill_Name="產品狀態" disabled="disabled" style="width: 100%;">
                     </select>
                 </td>
                 <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Stop_Date%></td>
                 <td style="text-align: left; width: 15%;">
-                    <input id="PAD_TB_M2_SD" type="datetime" disabled="disabled" style="width: 100%;" />
+                    <input id="PAD_TB_M2_SD" PAD_DT_Fill_Name="停用日期" type="datetime" disabled="disabled" style="width: 100%;" />
                 </td>
                 <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Account_Class%></td>
                 <td style="text-align: left; width: 15%;">
-                    <input id="PAD_TB_M2_AC_Class" disabled="disabled" style="width: 100%;" />
+                    <input id="PAD_TB_M2_AC_Class" PAD_DT_Fill_Name="帳務分類" disabled="disabled" style="width: 100%;" />
                 </td>
             </tr>
             <tr>
                 <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Product_Information%></td>
                 <td style="text-align: left; width: 15%;" colspan="7">
-                    <input id="PAD_TB_M2_PI" autocomplete="off" disabled="disabled" style="width: 100%;" />
+                    <input id="PAD_TB_M2_PI" PAD_DT_Fill_Name="產品說明" disabled="disabled" style="width: 100%;" />
                 </td>
             </tr>
             <tr>
                 <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Product_Information_Detail%></td>
                 <td style="text-align: left; width: 15%;" colspan="7">
-                    <textarea id="PAD_TB_M2_PID" style="width: 100%; height: 100px;" maxlength="560" disabled="disabled"></textarea>
+                    <textarea id="PAD_TB_M2_PID" PAD_DT_Fill_Name="產品詳述" style="width: 100%; height: 100px;" maxlength="560" disabled="disabled"></textarea>
                 </td>
             </tr>
             <tr>

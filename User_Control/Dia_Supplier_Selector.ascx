@@ -8,19 +8,19 @@
             title: "<%=Resources.MP.Search_Confition%>",
             width: screen.width * 0.8,
             overlay: 0.5,
+            position: { my: "center", at: "top" },
             focus: true,
             buttons: {
                 "Cancel": function () {
                     $("#Search_Supplier_Dialog").dialog('close');
-                    $('#SSD_Div_DT').css('display', 'none');
+                    $('#SSD_Div_DT').toggle(false);
                 }
             }
         });
-        $('#SSD_BT_Search').on('click', function () {
-            $('#SSD_Div_DT').css('display', '');
 
+        $('#SSD_BT_Search').on('click', function () {
+            $('#SSD_Div_DT').toggle(true);
             $.ajax({
-                //url: "/User_Control/UC_Search.ashx",
                 url: "/Web_Service/Dialog_DataBind.asmx/Supplier_Search",
                 data: {
                     "S_No": $('#SSD_TB_S_No').val(),
@@ -30,12 +30,9 @@
                 type: "POST",
                 datatype: "json",
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                //contentType: "application/json; charset=utf-8",
-                //success: function (response) {
-                success: function (response) {
-                    //console.warn(JSON.parse(response));
+                success: function (R) {
                     $('#SSD_Table_Supplier').DataTable({
-                        "data": JSON.parse(response),
+                        "data": R,
                         "destroy": true,
                         "order": [[2, "asc"]],
                         "lengthMenu": [
@@ -49,13 +46,12 @@
                                     return '<input type="button" class="SUP_SEL" value="' + '<%=Resources.MP.Select%>' + '" />'
                                 }
                             },
-                            { data: "SEQ", title: "<%=Resources.MP.SUPLU_SEQ%>" },
-                            <%--{ data: "DVN", title: "<%=Resources.MP.Developing%>" },--%>
-                            { data: "S_No", title: "<%=Resources.MP.Supplier_No%>" },
-                            { data: "S_SName", title: "<%=Resources.MP.Supplier_Short_Name%>" },
-                            { data: "Purchase_Person", title: "<%=Resources.MP.Purchase_Person%>" },
-                            { data: "TEL", title: "<%=Resources.MP.Tel%>" },
-                            { data: "Address", title: "<%=Resources.MP.Company_Address%>" }
+                            { data: "序號", title: "<%=Resources.MP.SUPLU_SEQ%>" },
+                            { data: "廠商編號", title: "<%=Resources.MP.Supplier_No%>" },
+                            { data: "廠商簡稱", title: "<%=Resources.MP.Supplier_Short_Name%>" },
+                            { data: "連絡人採購", title: "<%=Resources.MP.Purchase_Person%>" },
+                            { data: "電話", title: "<%=Resources.MP.Tel%>" },
+                            { data: "公司地址", title: "<%=Resources.MP.Company_Address%>" }
                         ],
                         "columnDefs": [{
                             targets: [0],
@@ -111,7 +107,7 @@
             </td>
         </tr>
     </table>
-    <div id="SSD_Div_DT" style="margin: auto; width: 98%; overflow: auto; display: none;">
+    <div id="SSD_Div_DT" style="margin: auto; width: 98%; overflow: auto; display: none;height:50vh;">
         <br />
         <table id="SSD_Table_Supplier" style="width: 100%;" class="table table-striped table-bordered dt-responsive">
             <thead></thead>

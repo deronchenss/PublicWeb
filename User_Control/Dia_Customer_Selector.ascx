@@ -8,11 +8,12 @@
             title: "<%=Resources.MP.Search_Confition%>",
             width: screen.width * 0.8,
             overlay: 0.5,
+            position: { my: "center", at: "top" },
             focus: true,
             buttons: {
                 "Cancel": function () {
                     $("#Search_Customer_Dialog").dialog('close');
-                    $('#SCD_Div_DT').css('display', 'none');
+                    $('#SCD_Div_DT').toggle(false);
                 }
             }
         });
@@ -20,9 +21,8 @@
         $('#SCD_BT_Search').on('click', function () {
             $('#SCD_Div_DT').css('display', '');
             $.ajax({
-                url: "/Base/Customer/Customer_Search.ashx",
+                url: "/Web_Service/Dialog_DataBind.asmx/Customer_Search",
                 data: {
-                    "Call_Type": "Customer_Search",
                     "C_No": $('#SCD_TB_C_No').val(),
                     "C_SName": $('#SCD_TB_C_SName').val(),
                 },
@@ -30,9 +30,9 @@
                 type: "POST",
                 datatype: "json",
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                success: function (response) {
+                success: function (R) {
                     $('#SCD_Table_Customer').DataTable({
-                        "data": response,
+                        "data": R,
                         "destroy": true,
                         "order": [[2, "asc"]],
                         "lengthMenu": [
@@ -44,15 +44,15 @@
                                 data: null, title: "",
                                 render: function (data, type, row) {
                                     return '<input type="button" class="CUST_SEL" value="' + '<%=Resources.MP.Select%>' + '" />'
-                                    }
-                                },
-                                { data: "SEQ", title: "<%=Resources.MP.SEQ%>" },
-                                { data: "C_No", title: "<%=Resources.MP.Customer_No%>" },
-                                { data: "C_SName", title: "<%=Resources.MP.Customer_Short_Name%>" },
-                                { data: "C_Name", title: "<%=Resources.MP.Customer_Name%>" },
-                                { data: "Principal", title: "<%=Resources.MP.Principal%>" },
-                                { data: "Mail", title: "Mail" },
-                                { data: "Remark", title: "<%=Resources.MP.Remark%>" }
+                                }
+                            },
+                            { data: "序號", title: "<%=Resources.MP.SEQ%>" },
+                            { data: "客戶編號", title: "<%=Resources.MP.Customer_No%>" },
+                            { data: "客戶簡稱", title: "<%=Resources.MP.Customer_Short_Name%>" },
+                            { data: "客戶名稱", title: "<%=Resources.MP.Customer_Name%>" },
+                            { data: "負責人", title: "<%=Resources.MP.Principal%>" },
+                            { data: "email", title: "Mail" },
+                            { data: "備註", title: "<%=Resources.MP.Remark%>" }
                             ],
                             "columnDefs": [{
                                 targets: [0],
@@ -104,7 +104,7 @@
                 </td>
             </tr>
         </table>
-        <div id="SCD_Div_DT" style="margin: auto; width: 98%; overflow: auto; display: none;">
+        <div id="SCD_Div_DT" style="margin: auto; width: 98%; overflow: auto; display: none;height:50vh;">
             <br />
             <table id="SCD_Table_Customer" style="width: 100%;" class="table table-striped table-bordered dt-responsive">
                 <thead></thead>

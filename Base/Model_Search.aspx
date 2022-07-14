@@ -12,6 +12,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             document.body.style.overflow = 'hidden';
+            Search_Product();
 
             $('#BT_Search').on('click', function () {
                 Search_Product();
