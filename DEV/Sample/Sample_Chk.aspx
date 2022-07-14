@@ -1,4 +1,4 @@
-﻿<%@ Page Title="樣品點收" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_ChkArr.aspx.cs" Inherits="Sample_ChkArr" %>
+﻿<%@ Page Title="樣品點收" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Chk.aspx.cs" Inherits="Sample_Chk" %>
 <%@ Register TagPrefix="uc" TagName="uc1" Src="~/User_Control/Dia_Transfer_Selector.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
-            var apiUrl = "/DEV/Sample/Sample_ChkArr.ashx";
+            var apiUrl = "/DEV/Sample/Sample_Chk.ashx";
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
 
@@ -190,7 +190,6 @@
             function Item_Move(click_tr, ToTable, FromTable, Full) {
                 var seqIndex = FromTable.find('thead th:contains(序號)').index() + 1;
                 if (Full) {
-                    console.log(FromTable.find('tbody tr[role=row]'));
                     FromTable.find('tbody tr[role=row]').each(function () {
                         var OT = $(this).find('td:nth-child(' + seqIndex + ')').text();
                         if (ToTable.find('td:nth-child(' + seqIndex + ')').filter(function () { return $(this).text() == OT; }).length === 0) {
@@ -272,50 +271,38 @@
                                         render: function (data, type, row) {
                                             return '<input type="number" id="E_CHK_CNT" class="tableInput" disabled="disabled" style="width:80px;text-align: right;" value = "0"  />'
                                         },
-                                        orderable: false
                                     },
                                     { data: "點收數量", title: "已點收數量" },
                                     { data: "客戶簡稱", title: "客戶簡稱" },
-                                    //{
-                                    //    data: null, title: "到貨處理",
-                                    //    render: function (data, type, row) {
-                                    //        return '<input type="text" id="E_SHIP_ARR_DEAL" class="tableInput" style="width:300px;text-align: left;" disabled="disabled" value = "' + row.到貨處理 + '"   />'
-                                    //    },
-                                    //    orderable: false
-                                    //},
                                     {
-                                        data: null, title: "單位重-g",
+                                        data: "單位淨重", title: "單位重-g",
                                         render: function (data, type, row) {
-                                            return '<input type="number" id="E_NET_WEIGHT" class="tableInput" style="width:80px;text-align: right;" disabled="disabled" value = "' + row.單位淨重 + '"  />'
+                                            return '<input type="number" id="E_NET_WEIGHT" class="tableInput" style="width:80px;text-align: right;" disabled="disabled" value = "' + data + '"  />'
                                         },
-                                        orderable: false
                                     },
                                     {
-                                        data: null, title: "單位毛-g",
+                                        data: "單位毛重", title: "單位毛-g",
                                         render: function (data, type, row) {
-                                            return '<input type="number" id="E_WEIGHT" class="tableInput" style="width:80px;text-align: right;" disabled="disabled" value = "' + row.單位毛重 + '"  />'
+                                            return '<input type="number" id="E_WEIGHT" class="tableInput" style="width:80px;text-align: right;" disabled="disabled" value = "' + data + '"  />'
                                         },
                                         orderable: false },
                                     {
-                                        data: null, title: "產品長度",
+                                        data: "產品長度", title: "產品長度",
                                         render: function (data, type, row) {
-                                            return '<input type="number" id="E_LENGTH" class="tableInput" style="width:80px;text-align: right;" disabled="disabled" value = "' + row.產品長度 + '"  />'
+                                            return '<input type="number" id="E_LENGTH" class="tableInput" style="width:80px;text-align: right;" disabled="disabled" value = "' + data + '"  />'
                                         },
-                                        orderable: false
                                     },
                                     {
-                                        data: null, title: "產品寬度",
+                                        data: "產品寬度", title: "產品寬度",
                                         render: function (data, type, row) {
-                                            return '<input type="number" id="E_WIDTH" class="tableInput"  style="width:80px;text-align: right;" disabled="disabled" value = "' + row.產品寬度 + '"  />'
+                                            return '<input type="number" id="E_WIDTH" class="tableInput"  style="width:80px;text-align: right;" disabled="disabled" value = "' + data + '"  />'
                                         },
-                                        orderable: false
                                     },
                                     {
-                                        data: null, title: "產品高度",
+                                        data: "產品高度", title: "產品高度",
                                         render: function (data, type, row) {
-                                            return '<input type="number" id="E_HEIGHT" class="tableInput" style="width:80px;text-align: right;" disabled="disabled"  value = "' + row.產品高度 + '"  />'
+                                            return '<input type="number" id="E_HEIGHT" class="tableInput" style="width:80px;text-align: right;" disabled="disabled"  value = "' + data + '"  />'
                                         },
-                                        orderable: false
                                     },
                                     { data: "暫時型號", title: "暫時型號" },
                                     { data: "單位", title: "單位" },
@@ -367,12 +354,11 @@
                                     { title: "本次點收" },
                                     { title: "已點收數量" },
                                     { title: "客戶簡稱" },
-                                    //{ title: "到貨處理" },
-                                    { title: "單位重-g" },
-                                    { title: "單位毛-g" },
-                                    { title: "產品長度" },
-                                    { title: "產品寬度" },
-                                    { title: "產品高度" },
+                                    { title: "單位重-g", orderable: false },
+                                    { title: "單位毛-g", orderable: false },
+                                    { title: "產品長度", orderable: false },
+                                    { title: "產品寬度", orderable: false },
+                                    { title: "產品高度", orderable: false },
                                     { title: "暫時型號" },
                                     { title: "單位" },
                                     { title: "產品說明" },
@@ -390,11 +376,11 @@
                                     { title: "結案" },
                                     { title: "序號" },
                                     { title: "<%=Resources.MP.Update_User%>" },
-                                   { title: "<%=Resources.MP.Update_Date%>" },
-                                   { title: "原單位毛重" },
-                                   { title: "原產品長度" },
-                                   { title: "原產品寬度" },
-                                   { title: "原產品高度" }
+                                    { title: "<%=Resources.MP.Update_Date%>" },
+                                    { title: "原單位毛重" },
+                                    { title: "原產品長度" },
+                                    { title: "原產品寬度" },
+                                    { title: "原產品高度" }
                                 ],
                                 columnDefs: [{
                                     className: "text-center",// 新增class
@@ -407,7 +393,7 @@
                                "bInfo": false //顯示幾筆隱藏
                            });
 
-                           $('#Table_CHS_Data').DataTable({
+                            $('#Table_CHS_Data').DataTable({
                                "destroy": true,
                                "preDrawCallback": function (settings) {
                                    pageScrollPos = $('#Table_CHS_Data_wrapper div.dataTables_scrollBody').scrollTop();
@@ -421,19 +407,18 @@
                                     { title: "頤坊型號" },
                                     { title: "採購數量" },
                                     { title: "本次點收" },
+                                    { title: "已點收數量" },
                                     { title: "客戶簡稱" },
-                                    //{ title: "到貨處理" },
-                                    { title: "單位重-g" },
-                                    { title: "單位毛-g" },
-                                    { title: "產品長度" },
-                                    { title: "產品寬度" },
-                                    { title: "產品高度" },
+                                    { title: "單位重-g", orderable: false },
+                                    { title: "單位毛-g", orderable: false },
+                                    { title: "產品長度", orderable: false },
+                                    { title: "產品寬度", orderable: false },
+                                    { title: "產品高度", orderable: false },
                                     { title: "暫時型號" },
                                     { title: "單位" },
                                     { title: "產品說明" },
                                     { title: "採購日期" },
                                     { title: "採購交期" },
-                                    { title: "點收數量" },
                                     { title: "點收日期" },
                                     { title: "到貨數量" },
                                     { title: "到貨日期" },

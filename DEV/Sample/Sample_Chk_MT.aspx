@@ -242,8 +242,6 @@
                             "Call_Type": "UPD_RECUA",
                             "SEQ": $('#E_SEQ').val(),
                             "點收批號": $('#E_CHK_BATCH_NO').val(),
-                            "採購單號": $('#E_PUDU_NO').val(),
-                            "樣品號碼": $('#E_SAMPLE_NO').val(),
                             "點收日期": $('#E_CHK_DATE').val(),
                             "運輸編號": $('#E_TRANS_NO').val(),
                             "運輸簡稱": $('#E_TRANS_S_NAME').val()
@@ -488,11 +486,11 @@
                     <tr class="trstyle ">
                         <td class="tdhstyle">採購單號</td>
                         <td class="tdbstyle">
-                            <input id="E_PUDU_NO"  class="textbox_char " />
+                            <input id="E_PUDU_NO"  class="textbox_char" disabled="disabled"  />
                         </td>
                         <td class="tdhstyle ">樣品號碼</td>
                         <td class="tdbstyle">
-                            <input id="E_SAMPLE_NO"  class="textbox_char "/>
+                            <input id="E_SAMPLE_NO"  class="textbox_char" disabled="disabled" />
                         </td>
                     </tr>
                     <tr class="trstyle ">

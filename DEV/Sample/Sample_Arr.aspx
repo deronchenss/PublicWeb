@@ -182,9 +182,7 @@
                         index = $('#Table_EXEC_Data thead th:contains(美元單價)').index() + 1;
                         money = $tableRow.find('td:nth-child(' + index + ')').text();
                         if (money != '') {
-                            console.log(usd);
                             usd += parseFloat(money) * parseFloat(arrCnt);
-                            console.log(usd);
                         }
 
                         index = $('#Table_EXEC_Data thead th:contains(台幣單價)').index() + 1;
@@ -245,7 +243,6 @@
             function Item_Move(click_tr, ToTable, FromTable, Full) {
                 var seqIndex = FromTable.find('thead th:contains(序號)').index() + 1;
                 if (Full) {
-                    console.log(FromTable.find('tbody tr[role=row]'));
                     FromTable.find('tbody tr[role=row]').each(function () {
                         var OT = $(this).find('td:nth-child(' + seqIndex + ')').text();
                         if (ToTable.find('td:nth-child(' + seqIndex + ')').filter(function () { return $(this).text() == OT; }).length === 0) {
@@ -330,14 +327,14 @@
                                     {
                                         data: null, title: '發票異常',
                                         render: function (data, type, row) {
-                                            return '<input type="checkbox" id="E_INVOICE_ERR" style="text-align:center" class="tbChkBox" />'
+                                            return '<input type="checkbox" id="E_INVOICE_ERR"  style="text-align:center" class="tableInput tbChkBox" disabled="disabled" />'
                                         },
                                         orderable: false
                                     },
                                     {
-                                        data: null, title: "到貨備註",
+                                        data: "到貨備註", title: "到貨備註",
                                         render: function (data, type, row) {
-                                            return '<input type="text" id="E_SHIP_ARR_DEAL" class="tableInput" style="width:300px;text-align: left;" disabled="disabled" value = "' + row.到貨備註 + '"   />'
+                                            return '<input type="text" id="E_SHIP_ARR_DEAL" class="tableInput" style="width:300px;text-align: left;" disabled="disabled" value = "' + data + '"   />'
                                         },
                                         orderable: false
                                     },
@@ -404,9 +401,10 @@
                                     { title: "<%=Resources.MP.Update_User%>" },
                                     { title: "<%=Resources.MP.Update_Date%>" }
                                 ],
-                                columnDefs: [{
-                                    className: "text-center",// 新增class
-                                }],
+                                columnDefs: [
+                                    { className: 'text-right', targets: [4, 5, 7, 8, 9, 10] }, //金額靠右
+                                    { className: 'text-center', targets: [11] } //checkbox置中
+                                ],
                                "order": [[0, "asc"]], //根據 採購單號 排序
                                "scrollX": true,
                                "scrollY": "62vh",
@@ -451,6 +449,10 @@
                                     { title: "序號" },
                                     { title: "<%=Resources.MP.Update_User%>" },
                                     { title: "<%=Resources.MP.Update_Date%>" }
+                               ],
+                               columnDefs: [
+                                   { className: 'text-right', targets: [4, 5, 7, 8, 9, 10] }, //金額靠右
+                                    { className: 'text-center', targets: [11] } //checkbox置中
                                ],
                                "order": [[0, "asc"]], //根據 點收批號 排序
                                "scrollX": true,

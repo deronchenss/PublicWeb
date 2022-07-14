@@ -35,9 +35,8 @@ public class Sample_Arr_MT : IHttpHandler, IRequiresSessionState
                         {
                             case "Search_Recu":
                                 cmd.CommandText = @" SELECT TOP 500 R.[序號]
-                                                                   ,R.[點收批號]
-                                                                   ,R.[採購單號]
-                                                                   ,R.[樣品號碼]
+                                                                   ,P.[採購單號]
+                                                                   ,P.[樣品號碼]
                                                                    ,P.[廠商編號]
                                                                    ,P.[廠商簡稱]
                                                                    ,P.[頤坊型號]

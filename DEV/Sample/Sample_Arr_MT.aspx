@@ -1,4 +1,4 @@
-﻿<%@ Page Title="樣品到貨維護" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Arr_MT.aspx.cs" Inherits="Sample_Arr_MT" %>
+﻿<%@ Page Title="樣品到貨查詢維護" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Arr_MT.aspx.cs" Inherits="Sample_Arr_MT" %>
 <%@ Register TagPrefix="uc" TagName="uc1" Src="~/User_Control/Dia_Transfer_Selector.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
@@ -99,13 +99,10 @@
                     var titleName = $($('#Table_Search_Recu').DataTable().column(i).header()).text();
 
                     if (titleName == '發票異常' || titleName == '不付款') {
-                        $("input[name='" + titleName + "']").prop('checked', clickData[titleName] == '是');
-                    }
-                    else if (titleName == '發票樣式') {
-                        $("select[name='" + titleName + "']").val(clickData[titleName]);
+                        $("[DT_Fill_Name='" + titleName + "']").prop('checked', clickData[titleName] == '是');
                     }
                     else {
-                        $("input[name='" + titleName + "']").val(clickData[titleName]);
+                        $("[DT_Fill_Name='" + titleName + "']").val(clickData[titleName]);
                     }
                 }
 
@@ -130,7 +127,6 @@
                     data: {
                         "Call_Type": "Search_Recu", 
                         "到貨單號": $('#Q_ARR_NO').val(),
-                        "點收批號": $('#Q_CHK_BATCH_NO').val(),
                         "樣品號碼": $('#Q_SAMPLE_NO').val(),
                         "頤坊型號": $('#Q_IVAN_TYPE').val(),
                         "到貨日期_S": $('#Q_ARR_DATE_S').val(),
@@ -162,7 +158,6 @@
                                 },
                                 "columns": [
                                     { data: "序號", title: "序號"},
-                                    { data: "點收批號", title: "點收批號" },
                                     { data: "採購單號", title: "採購單號" },
                                     { data: "到貨日期", title: "到貨日期" },
                                     { data: "廠商簡稱", title: "廠商簡稱" },
@@ -251,9 +246,6 @@
                         data: {
                             "Call_Type": "UPD_RECU",
                             "SEQ": $('#E_SEQ').val(),
-                            "點收批號": $('#E_CHK_BATCH_NO').val(),
-                            "樣品號碼": $('#E_SAMPLE_NO').val(),
-                            "採購單號": $('#E_PUDU_NO').val(),
                             "出貨日期": $('#E_SHIP_GO_DATE').val(),
                             "到貨日期": $('#E_SHIP_ARR_DATE').val(),
                             "不付款": $('#E_NO_PAY').is(":checked"),
@@ -417,10 +409,6 @@
                 <td class="tdbstyle">
                     <input id="Q_SAMPLE_NO"  class="textbox_char" />
                 </td>
-                <td class="tdhstyle">點收批號</td>
-                <td class="tdbstyle">
-                    <input id="Q_CHK_BATCH_NO" class="textbox_char" />
-                </td>
             </tr>
              <tr class="trstyle">
                 <td class="tdhstyle">廠商編號</td>
@@ -431,9 +419,6 @@
                 <td class="tdbstyle">
                     <input id="Q_FACT_S_NAME" class="textbox_char" />
                 </td>
-            </tr>
-            <tr>
-                <td style="height: 5px; font-size: smaller;" colspan="8">&nbsp</td>
             </tr>
             <tr class="trstyle">
                 <td class="tdtstyleRight" colspan="8">
@@ -465,115 +450,111 @@
                         <td style="height: 5vh; font-size: smaller;" >&nbsp</td>
                     </tr>
                     <tr class="trstyle" >
-                        <td class="tdhstyle">點收批號</td>
-                        <td class="tdbstyle">
-                            <input id="E_CHK_BATCH_NO" name="點收批號"  class="textbox_char" />
-                        </td>
                         <td class="tdhstyle">序號</td>
                         <td class="tdbstyle">
-                            <input id="E_SEQ" name="序號"  class="textbox_char" disabled="disabled" />
+                            <input id="E_SEQ" DT_Fill_Name="序號"  class="textbox_char" disabled="disabled" />
                         </td>
                     </tr>
                     <tr class="trstyle">
                         <td class="tdhstyle">頤坊型號</td>
                         <td class="tdbstyle">
-                            <input id="E_IVAN_TYPE" name="頤坊型號"  class="textbox_char" disabled="disabled" />
+                            <input id="E_IVAN_TYPE" DT_Fill_Name="頤坊型號"  class="textbox_char" disabled="disabled" />
                         </td>
                         <td class="tdhstyle ">樣品號碼</td>
                         <td class="tdbstyle">
-                            <input id="E_SAMPLE_NO" name="樣品號碼"  class="textbox_char "/>
+                            <input id="E_SAMPLE_NO" DT_Fill_Name="樣品號碼" disabled="disabled" class="textbox_char "/>
                         </td>
                     </tr>
                     <tr class="trstyle">
                         <td class="tdhstyle">廠商編號</td>
                         <td class="tdbstyle">
-                            <input id="E_FACT_NO" name="廠商編號"  class="textbox_char" disabled="disabled" />
+                            <input id="E_FACT_NO" DT_Fill_Name="廠商編號"  class="textbox_char" disabled="disabled" />
                         </td>
                         <td class="tdhstyle">廠商簡稱</td>
                         <td class="tdbstyle">
-                            <input id="E_FACT_S_NAME" name="廠商簡稱" class="textbox_char" disabled="disabled"  />
+                            <input id="E_FACT_S_NAME" DT_Fill_Name="廠商簡稱" class="textbox_char" disabled="disabled"  />
                         </td>
                     </tr>
                     <tr class="trstyle">
                         <td class="tdhstyle">暫時型號</td>
                         <td class="tdbstyle">
-                            <input id="E_TMP_TYPE" name="暫時型號"   class="textbox_char" disabled="disabled" />
+                            <input id="E_TMP_TYPE" DT_Fill_Name="暫時型號"   class="textbox_char" disabled="disabled" />
                         </td>
                         <td class="tdhstyle">廠商型號</td>
                         <td class="tdbstyle">
-                            <input id="E_FACT_TYPE" name="廠商型號"  class="textbox_char" disabled="disabled"  />
+                            <input id="E_FACT_TYPE" DT_Fill_Name="廠商型號"  class="textbox_char" disabled="disabled"  />
                         </td>
                     </tr>
                     <tr class="trstyle">
                         <td class="tdhstyle">產品說明</td>
                         <td class="tdbstyle" colspan ="4">
-                            <input id="E_PROD_DESC" name="產品說明"  class="textbox_char " style="width:80%" disabled="disabled"  />
+                            <input id="E_PROD_DESC" DT_Fill_Name="產品說明"  class="textbox_char " style="width:80%" disabled="disabled"  />
                         </td>
                     </tr>     
                     <tr class="trstyle ">
                         <td class="tdhstyle">採購單號</td>
                         <td class="tdbstyle">
-                            <input id="E_PUDU_NO" name="採購單號"   class="textbox_char" />
+                            <input id="E_PUDU_NO" DT_Fill_Name="採購單號" disabled="disabled"  class="textbox_char" />
                         </td>
                         <td class="tdhstyle">出貨日期</td>
                         <td class="tdbstyle">
-                            <input id="E_SHIP_GO_DATE" name="出貨日期"  type="date" class="date_S_style"  />
+                            <input id="E_SHIP_GO_DATE" DT_Fill_Name="出貨日期"  type="date" class="date_S_style"  />
                         </td>
                     </tr>
                     <tr class="trstyle ">
                         <td class="tdhstyle">到貨日期</td>
                         <td class="tdbstyle">
-                            <input id="E_SHIP_ARR_DATE" name="到貨日期"  type="date" class="date_S_style"  />
+                            <input id="E_SHIP_ARR_DATE" DT_Fill_Name="到貨日期"  type="date" class="date_S_style"  />
                         </td>
                         <td class="tdhstyle">到貨數量</td>
                         <td class="tdbstyle">
-                            <input id="E_ARR_CNT" name="到貨數量"  class="textbox_char" type="number" disabled="disabled" />
+                            <input id="E_ARR_CNT" DT_Fill_Name="到貨數量"  class="textbox_char" type="number" disabled="disabled" />
                         </td>
                     </tr>
                      <tr class="trstyle ">
                         <td class="tdhstyle">單位</td>
                         <td class="tdbstyle">
-                            <input id="E_UNIT" name="單位"  class="textbox_char" disabled="disabled" />
+                            <input id="E_UNIT" DT_Fill_Name="單位"  class="textbox_char" disabled="disabled" />
                         </td>
                         <td class="tdhstyle">不付款</td>
                         <td class="tdbstyle">
-                            <input id="E_NO_PAY" name="不付款"  type="checkbox"  />
+                            <input id="E_NO_PAY" DT_Fill_Name="不付款"  type="checkbox"  />
                         </td>
                     </tr>
                     <tr class="trstyle ">
                         <td class="tdhstyle">台幣單價</td>
                         <td class="tdbstyle">
-                            <input id="E_NTD" name="台幣單價"  class="textbox_char" type="number" disabled="disabled" />
+                            <input id="E_NTD" DT_Fill_Name="台幣單價"  class="textbox_char" type="number" disabled="disabled" />
                         </td>
                         <td class="tdhstyle">美元單價</td>
                         <td class="tdbstyle">
-                            <input id="E_USD" name="美元單價"  class="textbox_char" type="number" disabled="disabled" />
+                            <input id="E_USD" DT_Fill_Name="美元單價"  class="textbox_char" type="number" disabled="disabled" />
                         </td>
                     </tr>
                     <tr class="trstyle ">
                         <td class="tdhstyle">外幣幣別</td>
                         <td class="tdbstyle">
-                            <input id="E_CURR_CODE" name="外幣幣別" class="textbox_char " disabled="disabled" />
+                            <input id="E_CURR_CODE" DT_Fill_Name="外幣幣別" class="textbox_char " disabled="disabled" />
                         </td>
                         <td class="tdhstyle">外幣單價</td>
                         <td class="tdbstyle">
-                            <input id="E_FORE_AMT" name="外幣單價" class="textbox_char" type="number" disabled="disabled" />
+                            <input id="E_FORE_AMT" DT_Fill_Name="外幣單價" class="textbox_char" type="number" disabled="disabled" />
                         </td>
                     </tr>
                     <tr class="trstyle ">
                         <td class="tdhstyle">到單日期</td>
                         <td class="tdbstyle">
-                            <input id="E_ORDER_ARR_DATE" name="到單日期" type="date" class="date_S_style"  />
+                            <input id="E_ORDER_ARR_DATE" DT_Fill_Name="到單日期" type="date" class="date_S_style"  />
                         </td>
                         <td class="tdhstyle">到貨單號</td>
                         <td class="tdbstyle">
-                            <input id="E_ARR_NO" name="到貨單號" class="textbox_char" disabled="disabled" />
+                            <input id="E_ARR_NO" DT_Fill_Name="到貨單號" class="textbox_char" disabled="disabled" />
                         </td>
                     </tr>
                     <tr class="trCenterstyle">
                         <td class="tdhstyle">發票樣式</td>
                         <td class="tdbstyle">
-                            <select id="E_INVOICE_TYPE" name="發票樣式"  >
+                            <select id="E_INVOICE_TYPE" DT_Fill_Name="發票樣式"  >
                                 <option selected="selected"value=""></option>
                                 <option value="21">21-三聯式</option>
                                 <option value="22">22-二聯式</option>
@@ -585,37 +566,37 @@
                         </td>
                         <td class="tdhstyle">發票號碼</td>
                         <td class="tdbstyle" >
-                            <input id="E_INVOICE_NO" name="發票號碼" class="textbox_char"   />
+                            <input id="E_INVOICE_NO" DT_Fill_Name="發票號碼" class="textbox_char"   />
                         </td>
                     </tr>
                     <tr class="trstyle ">
                         <td class="tdhstyle">發票異常</td>
                         <td class="tdbstyle">
-                            <input id="E_INVOICE_ERR" name="發票異常"  type="checkbox"   />
+                            <input id="E_INVOICE_ERR" DT_Fill_Name="發票異常"  type="checkbox"   />
                         </td>
                         <td class="tdhstyle">到貨備註</td>
                         <td class="tdbstyle">
-                            <input id="E_ARR_REMARK" name="到貨備註" class="textbox_char" />
+                            <input id="E_ARR_REMARK" DT_Fill_Name="到貨備註" class="textbox_char" />
                         </td>
                     </tr>
                     <tr class="trstyle ">
                         <td class="tdhstyle">調整額01-採購</td>
                         <td class="tdbstyle">
-                            <input id="E_ADJ_AMT_01" name="調整額01" class="textbox_char" type="number"  />
+                            <input id="E_ADJ_AMT_01" DT_Fill_Name="調整額01" class="textbox_char" type="number"  />
                         </td>
                         <td class="tdhstyle">調整額02-會計</td>
                         <td class="tdbstyle">
-                            <input id="E_ADJ_AMT_02" name="調整額02" class="textbox_char" type="number"  />
+                            <input id="E_ADJ_AMT_02" DT_Fill_Name="調整額02" class="textbox_char" type="number"  />
                         </td>
                     </tr>
                     <tr class="trstyle ">
                         <td class="tdhstyle">更新人員</td>
                         <td class="tdbstyle">
-                            <input id="E_UPD_USER" name="更新人員" class="textbox_char " disabled="disabled" />
+                            <input id="E_UPD_USER" DT_Fill_Name="更新人員" class="textbox_char " disabled="disabled" />
                         </td>
                         <td class="tdhstyle">更新日期</td>
                         <td class="tdbstyle">
-                            <input id="E_UPD_DATE" name="更新日期" type="date" class="date_S_style " disabled="disabled" />
+                            <input id="E_UPD_DATE" DT_Fill_Name="更新日期" type="date" class="date_S_style " disabled="disabled" />
                         </td>
                     </tr>
                     <tr> 
