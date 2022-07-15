@@ -58,7 +58,8 @@
                     { title: "結案" },
                     { title: "序號" },
                     { title: "<%=Resources.MP.Update_User%>" },
-                    { title: "<%=Resources.MP.Update_Date%>" }
+                    { title: "<%=Resources.MP.Update_Date%>" },
+                    { title: "SUPLU_SEQ" }
                 ],
                 columnDefs: [{
                     className: "text-center",// 新增class
@@ -211,13 +212,12 @@
                 calAmt();
             });
 
-            function Search_IMG(factNo, IvanType) {
+            function Search_IMG(supluSeq) {
                 $.ajax({
-                    url: apiUrl,
+                    url: "/CommonAshx/Common.ashx",
                     data: {
-                        "Call_Type": "GET_IMG",
-                        "FACT_NO": factNo,
-                        "IVAN_TYPE": IvanType
+                        "Call_Type": "GET_IMG_BY_SUPLU_SEQ",
+                        "SEQ": supluSeq
                     },
                     cache: false,
                     async: false,
@@ -351,7 +351,8 @@
                                     { data: "結案", title: "結案" },
                                     { data: "序號", title: "序號" },
                                     { data: "更新人員", title: "<%=Resources.MP.Update_User%>" },
-                                    { data: "更新日期", title: "<%=Resources.MP.Update_Date%>" }
+                                    { data: "更新日期", title: "<%=Resources.MP.Update_Date%>" },
+                                    { data: "SUPLU_SEQ", title: "SUPLU_SEQ" }
                                 ],
                                 columnDefs: [{
                                     className: "text-center",// 新增class
@@ -399,7 +400,8 @@
                                     { title: "結案" },
                                     { title: "序號" },
                                     { title: "<%=Resources.MP.Update_User%>" },
-                                    { title: "<%=Resources.MP.Update_Date%>" }
+                                    { title: "<%=Resources.MP.Update_Date%>" },
+                                    { title: "SUPLU_SEQ" }
                                 ],
                                 columnDefs: [
                                     { className: 'text-right', targets: [4, 5, 7, 8, 9, 10] }, //金額靠右
@@ -448,7 +450,8 @@
                                     { title: "結案" },
                                     { title: "序號" },
                                     { title: "<%=Resources.MP.Update_User%>" },
-                                    { title: "<%=Resources.MP.Update_Date%>" }
+                                    { title: "<%=Resources.MP.Update_Date%>" },
+                                    { title: "SUPLU_SEQ" }
                                ],
                                columnDefs: [
                                    { className: 'text-right', targets: [4, 5, 7, 8, 9, 10] }, //金額靠右
@@ -621,7 +624,9 @@
                 $('#I_FACT_S_NAME').val(clickData[index]);
                 index = $('#Table_EXEC_Data thead th:contains(產品說明)').index(); 
                 $('#I_PROD_DESC').val(clickData[index]);
-                Search_IMG($('#I_FACT_NO').val(), $('#I_IVAN_TYPE').val());
+                index = $('#Table_EXEC_Data thead th:contains(SUPLU_SEQ)').index();
+                $('#I_SUPLU_SEQ').val(clickData[index]);
+                Search_IMG($('#I_SUPLU_SEQ').val());
             });
 
             $('#BT_EXECUTE_CANCEL').on('click', function () {
@@ -858,6 +863,7 @@
                     <tr class="trstyle">
                         <td class="tdEditstyle">頤坊型號</td>
                         <td class="tdbstyle">
+                            <input id="I_SUPLU_SEQ" type="hidden" class="textbox_char" />
                             <input id="I_IVAN_TYPE" class="textbox_char" disabled="disabled"   />
                         </td>
                         <td class="tdEditstyle">廠商編號</td>

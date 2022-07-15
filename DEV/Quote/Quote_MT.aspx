@@ -1,5 +1,6 @@
 ﻿<%@ Page Title="報價作業維護" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Quote_MT.aspx.cs" Inherits="Quote_MT" %>
 <%@ Register TagPrefix="uc" TagName="uc1" Src="~/User_Control/Dia_Customer_Selector.ascx" %>
+<%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_Selector.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
@@ -30,6 +31,20 @@
                 $('#E_CUST_NO').val($(this).parent().parent().find('td:nth(2)').text());
                 $('#E_CUST_S_NAME').val($(this).parent().parent().find('td:nth(3)').text());
                 $("#Search_Customer_Dialog").dialog('close');
+            });
+
+            $('#BT_E_IVAN_TYPE').on('click', function () {
+                $("#Search_Product_Dialog").dialog('open');
+            });
+
+            $('#SPD_Table_Product').on('click', '.PROD_SEL', function () {
+                $('#E_IVAN_TYPE').val($(this).parent().parent().find('td:nth(3)').text());
+                $('#E_FACT_NO').val($(this).parent().parent().find('td:nth(4)').text());
+                $('#E_FACT_S_NAME').val($(this).parent().parent().find('td:nth(5)').text());
+                $('#E_UNIT').val($(this).parent().parent().find('td:nth(5)').text());
+                $('#E_PROD_DESC').val($(this).parent().parent().find('td:nth(7)').text());
+
+                $("#Search_Product_Dialog").dialog('close');
             });
 
             //$('#Q_QUAH_DATE_S').val($.datepicker.formatDate('yy-mm-dd', new Date()));
@@ -372,6 +387,7 @@
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
     <uc:uc1 ID="uc1" runat="server" /> 
+    <uc2:uc2 ID="uc2" runat="server" /> 
     <div style="width:98%;margin:0 auto; ">
         <div class="search_section_all">
             <table class="search_section_control">
@@ -482,6 +498,7 @@
                         <td class="tdEditstyle">頤坊型號</td>
                         <td class="tdbstyle">
                             <input id="E_IVAN_TYPE"  class="textbox_char" />
+                            <input id="BT_E_IVAN_TYPE" style="font-size:15px" type="button" value="..." />
                         </td>
                         <td class="tdhstyle"></td>
                         <td class="tdbstyle"></td>

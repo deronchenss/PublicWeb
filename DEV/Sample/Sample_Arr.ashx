@@ -56,6 +56,7 @@ public class Sample_Arr : IHttpHandler, IRequiresSessionState
                                                                    ,P.工作類別
                                                                    ,CASE WHEN P.結案 = 1 THEN '是' ELSE '否' END 結案
                                                                    ,P.序號
+                                                                   ,P.SUPLU_SEQ
                                                                    ,P.更新人員
                                                                    ,CONVERT(VARCHAR,P.更新日期, 111) 更新日期
                                                      FROM pudu P
@@ -96,12 +97,12 @@ public class Sample_Arr : IHttpHandler, IRequiresSessionState
                                     }
                                 }
 
-                                cmd.CommandText += @" GROUP BY  P.廠商簡稱,P.採購單號,P.頤坊型號,P.採購數量
+                                cmd.CommandText += @" GROUP BY P.廠商簡稱,P.採購單號,P.頤坊型號,P.採購數量
                                                                ,P.台幣單價,P.美元單價,P.外幣單價
                                                                ,P.到貨處理, P.採購交期,P.產品說明
                                                                ,P.單位,P.暫時型號,P.廠商型號,P.廠商編號
                                                                ,P.採購日期,P.工作類別,P.結案,P.序號
-                                                               ,S.序號,P.更新人員,P.更新日期";
+                                                               ,S.序號,P.SUPLU_SEQ,P.更新人員,P.更新日期";
 
                                 //未結案
                                 if (!string.IsNullOrEmpty(context.Request["WRITE_OFF"]) && context.Request["WRITE_OFF"] == "0")
@@ -223,14 +224,6 @@ public class Sample_Arr : IHttpHandler, IRequiresSessionState
                                 context.Response.StatusCode = 200;
                                 context.Response.Write(seqArray.Length);
                                 context.Response.End();
-                                break;
-
-                            case "GET_IMG":
-                                cmd.CommandText = @" SELECT TOP 1 [COST_SEQ], [圖檔] [P_IMG]
-                                                     FROM [192.168.1.135].pic.dbo.xpic
-                                                     WHERE [COST_SEQ] = (SELECT TOP 1 COST_SEQ FROM byrlu where 廠商編號 = @FACT_NO AND 頤坊型號 = @IVAN_TYPE) ";
-                                cmd.Parameters.AddWithValue("FACT_NO", context.Request["FACT_NO"]);
-                                cmd.Parameters.AddWithValue("IVAN_TYPE", context.Request["IVAN_TYPE"]);
                                 break;
                         }
 

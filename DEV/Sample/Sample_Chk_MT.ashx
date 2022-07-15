@@ -35,15 +35,16 @@ public class Sample_Chk_MT : IHttpHandler, IRequiresSessionState
                         {
                             case "Search_Recua":
                                 cmd.CommandText = @" SELECT TOP 500 RA.[序號]
-                                                                   ,RA.[採購單號]
-                                                                   ,RA.[樣品號碼]
+                                                                   ,P.[採購單號]
+                                                                   ,P.[樣品號碼]
+                                                                   ,P.[SUPLU_SEQ]
                                                                    ,P.[廠商編號]
                                                                    ,P.[廠商簡稱]
                                                                    ,P.[頤坊型號]
                                                                    ,P.[暫時型號]
                                                                    ,P.[廠商型號]
                                                                    ,P.[產品說明]
-                                                                   ,RA.[單位]
+                                                                   ,P.[單位]
                                                                    ,RA.[點收批號]
                                                                    ,IIF(RA.[點收數量] = 0, NULL, RA.[點收數量]) 點收數量
                                                                    ,IIF(RA.[核銷數量] = 0, NULL, RA.[核銷數量]) 核銷數量
@@ -131,14 +132,6 @@ public class Sample_Chk_MT : IHttpHandler, IRequiresSessionState
                                 res = cmd.ExecuteNonQuery();
                                 context.Response.StatusCode = res == 1 ? 200 : 404;
                                 context.Response.End();
-                                break;
-
-                            case "GET_IMG":
-                                cmd.CommandText = @" SELECT TOP 1 [COST_SEQ], [圖檔] [P_IMG]
-                                                     FROM [192.168.1.135].pic.dbo.xpic
-                                                     WHERE [COST_SEQ] = (SELECT TOP 1 COST_SEQ FROM byrlu where 廠商編號 = @FACT_NO AND 頤坊型號 = @IVAN_TYPE) ";
-                                cmd.Parameters.AddWithValue("FACT_NO", context.Request["FACT_NO"]);
-                                cmd.Parameters.AddWithValue("IVAN_TYPE", context.Request["IVAN_TYPE"]);
                                 break;
                         }
 

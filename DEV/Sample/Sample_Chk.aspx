@@ -62,6 +62,7 @@
                     { title: "客戶編號" },
                     { title: "結案" },
                     { title: "序號" },
+                    { title: "SUPLU_SEQ" },
                     { title: "<%=Resources.MP.Update_User%>" },
                     { title: "<%=Resources.MP.Update_Date%>" },
                     { title: "原單位毛重" },
@@ -117,7 +118,7 @@
                         V_BT_CHG($('#BT_S_CHS'));
                         break;
                     case "EXEC":
-                        if ($('#Table_Search_Pudu > tbody tr[role=row]').length === 0) {
+                        if ($('#Table_Search_Pudu > tbody tr[role=row]').length === 0 && $('#Table_CHS_Data > tbody tr[role=row]').length === 0) {
                             alert('請先查詢');
                             Edit_Mode = "Base";
                             Form_Mode_Change("Base");
@@ -153,18 +154,22 @@
                         $('#Div_Exec_Section').css('display', 'none');
                         $('#Div_IMG_DETAIL').css('display', '');
 
+                        if ($('#Table_CHS_Data > tbody tr[role=row]').length > 0) {
+                            $('#Table_EXEC_Data').DataTable().clear().rows.add($('#Table_CHS_Data').find('tbody tr[role=row]').clone()).draw(); //將選擇後TABLE 複製至第二面
+                            return;
+                        }
+
                         V_BT_CHG($('#BT_S_EX_IMG'));
                         break;
                 }
             }
 
-            function Search_IMG(factNo, IvanType) {
+            function Search_IMG(supluSeq) {
                 $.ajax({
-                    url: apiUrl,
+                    url: "/CommonAshx/Common.ashx",
                     data: {
-                        "Call_Type": "GET_IMG",
-                        "FACT_NO": factNo,
-                        "IVAN_TYPE": IvanType
+                        "Call_Type": "GET_IMG_BY_SUPLU_SEQ",
+                        "SEQ": supluSeq
                     },
                     cache: false,
                     async: false,
@@ -320,6 +325,7 @@
                                     { data: "客戶編號", title: "客戶編號" },
                                     { data: "結案", title: "結案" },
                                     { data: "序號", title: "序號" },
+                                    { data: "SUPLU_SEQ", title: "SUPLU_SEQ" },
                                     { data: "更新人員", title: "<%=Resources.MP.Update_User%>" },
                                     { data: "更新日期", title: "<%=Resources.MP.Update_Date%>" },
                                     { data: "單位毛重", title: "原單位毛重" },
@@ -375,6 +381,7 @@
                                     { title: "客戶編號" },
                                     { title: "結案" },
                                     { title: "序號" },
+                                    { title: "SUPLU_SEQ" },
                                     { title: "<%=Resources.MP.Update_User%>" },
                                     { title: "<%=Resources.MP.Update_Date%>" },
                                     { title: "原單位毛重" },
@@ -430,6 +437,7 @@
                                     { title: "客戶編號" },
                                     { title: "結案" },
                                     { title: "序號" },
+                                    { title: "SUPLU_SEQ" },
                                     { title: "<%=Resources.MP.Update_User%>" },
                                     { title: "<%=Resources.MP.Update_Date%>" },
                                     { title: "原單位毛重" },
@@ -630,7 +638,9 @@
                 $('#I_FACT_S_NAME').val(clickData[index]);
                 index = $('#Table_EXEC_Data thead th:contains(產品說明)').index(); 
                 $('#I_PROD_DESC').val(clickData[index]);
-                Search_IMG($('#I_FACT_NO').val(), $('#I_IVAN_TYPE').val());
+                index = $('#Table_EXEC_Data thead th:contains(SUPLU_SEQ)').index();
+                $('#I_SUPLU_SEQ').val(clickData[index]);
+                Search_IMG($('#I_SUPLU_SEQ').val());
             });
 
             $('#BT_EXECUTE_CANCEL').on('click', function () {
@@ -834,6 +844,7 @@
                         <td class="tdEditstyle">頤坊型號</td>
                         <td class="tdbstyle">
                             <input id="I_IVAN_TYPE" class="textbox_char" disabled="disabled"   />
+                            <input id="I_SUPLU_SEQ" class="textbox_char" type="hidden"   />
                         </td>
                         <td class="tdEditstyle">廠商編號</td>
                         <td class="tdbstyle">

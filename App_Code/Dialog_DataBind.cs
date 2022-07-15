@@ -114,7 +114,7 @@ public class Dialog_DataBind : System.Web.Services.WebService
 
         conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
         SqlCommand cmd = new SqlCommand();
-        cmd.CommandText = @" SELECT TOP 100 [運輸編號], [運輸簡稱]
+        cmd.CommandText = @" SELECT TOP 100 [運輸編號] S_No, [運輸簡稱] S_S_Name
                              FROM Dc2..TRF
                              WHERE [運輸編號] LIKE @S_No + '%' 
                              AND 運輸區分 Like '%' + @S_Type + '%'
@@ -126,17 +126,11 @@ public class Dialog_DataBind : System.Web.Services.WebService
 
         cmd.Connection = conn;
         conn.Open();
-        SqlDataReader sdr = cmd.ExecuteReader();
-        while (sdr.Read())
-        {
-            Supplier.Add(new
-            {
-                S_No = sdr["運輸編號"],
-                S_S_Name = sdr["運輸簡稱"]
-            });
-        }
+        SqlDataAdapter SDA = new SqlDataAdapter(cmd);
+        SDA.Fill(dt);
         conn.Close();
-        var json = (new JavaScriptSerializer().Serialize(Supplier));
+        var json = JsonConvert.SerializeObject(dt);
+        Context.Response.ContentType = "text/json";
         Context.Response.Write(json);
     }
 

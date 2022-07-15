@@ -98,6 +98,7 @@
                 //Edit page
                 $('#E_CHK_BATCH_NO').val(clickData['點收批號']);
                 $('#E_SEQ').val(clickData['序號']);
+                $('#E_SUPLU_SEQ').val(clickData['SUPLU_SEQ']);
                 $('#E_IVAN_TYPE').val(clickData['頤坊型號']);
                 $('#E_FACT_NO').val(clickData['廠商編號']);
                 $('#E_FACT_S_NAME').val(clickData['廠商簡稱']);
@@ -121,7 +122,7 @@
                 $('#I_FACT_S_NAME').val(clickData['廠商簡稱']);
                 $('#I_PROD_DESC').val(clickData['產品說明']);
                 $('#I_RPT_REMARK').val(clickData['大備註']);
-                Search_IMG(clickData['廠商編號'], clickData['頤坊型號']);
+                Search_IMG(clickData['SUPLU_SEQ']);
             }
             
             function V_BT_CHG(buttonChs) {
@@ -180,6 +181,7 @@
                                     { data: "核銷數量", title: "核銷數量", visible: false },
                                     { data: "運輸編號", title: "運輸編號", visible: false },
                                     { data: "運輸簡稱", title: "運輸簡稱", visible: false },
+                                    { data: "SUPLU_SEQ", title: "SUPLU_SEQ", visible: false }
                                 ],
                                 "order": [[2, "asc"]], //根據 採購單號 排序
                                 "scrollX": true,
@@ -201,13 +203,12 @@
                 });
             };        
 
-            function Search_IMG(factNo, IvanType) {
+            function Search_IMG(supluSeq) {
                 $.ajax({
-                    url: apiUrl,
+                    url: "/CommonAshx/Common.ashx",
                     data: {
-                        "Call_Type": "GET_IMG",
-                        "FACT_NO": factNo,
-                        "IVAN_TYPE": IvanType
+                        "Call_Type": "GET_IMG_BY_SUPLU_SEQ",
+                        "SEQ": supluSeq
                     },
                     cache: false,
                     async: false,
@@ -449,6 +450,7 @@
                         <td class="tdhstyle">序號</td>
                         <td class="tdbstyle">
                             <input id="E_SEQ"  class="textbox_char" disabled="disabled" />
+                            <input id="E_SUPLU_SEQ" type="hidden" class="textbox_char" />
                         </td>
                     </tr>
                     <tr class="trstyle">

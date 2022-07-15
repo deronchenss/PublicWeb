@@ -8,6 +8,7 @@
             title: "<%=Resources.MP.Search_Confition%>",
             width: screen.width * 0.8,
             overlay: 0.5,
+            position: { my: "center", at: "top" },
             focus: true,
             buttons: {
                 "Cancel": function () {
@@ -32,7 +33,7 @@
                 success: function (response) {
                     
                     $('#SSD_Table_Transfer').DataTable({
-                        "data": JSON.parse(response),
+                        "data": response,
                         "destroy": true,
                         "order": [[2, "asc"]],
                         "lengthMenu": [
@@ -53,6 +54,7 @@
                             targets: [0],
                             className: "text-center"
                         }],
+                        "scrollY": "35vh"
                     });
 
                     $('#SSD_Table_Transfer').css('white-space', 'nowrap');

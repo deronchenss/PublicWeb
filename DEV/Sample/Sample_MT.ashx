@@ -35,6 +35,7 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                         {
                             case "Sample_Base":
                                 cmd.CommandText = @" SELECT TOP 500 pudu.[序號]
+                                                                  ,pudu.SUPLU_SEQ
                                                                   ,pudu.[採購單號]
                                                                   ,CONVERT(VARCHAR,pudu.[採購日期],23) 採購日期
                                                                   ,pudu.[樣品號碼]
@@ -127,7 +128,7 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                 cmd.Parameters.AddWithValue("PROD_DES", context.Request["PROD_DES"]);
                                 cmd.Parameters.AddWithValue("WRITE_OFF", context.Request["WRITE_OFF"]);
 
-                                cmd.CommandText += @" GROUP BY pudu.[序號],pudu.[採購單號],pudu.[採購日期],pudu.[樣品號碼]
+                                cmd.CommandText += @" GROUP BY pudu.[序號],pudu.[SUPLU_SEQ],pudu.[採購單號],pudu.[採購日期],pudu.[樣品號碼]
                                                               ,pudu.[工作類別],pudu.[廠商編號],pudu.[廠商簡稱],pudu.[頤坊型號]
                                                               ,pudu.[暫時型號],pudu.[廠商型號],pudu.[產品說明],pudu.[單位]
                                                               ,pudu.[台幣單價],pudu.[美元單價],pudu.[人民幣單價],pudu.[單價_2]
@@ -152,10 +153,12 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                 if (context.Request["Call_Type"] == "UPD_SAMPLE")
                                 {
                                     cmd.CommandText = @" UPDATE [dbo].[pudu]
-                                                         SET [採購單號] = @PUDU_NO
+                                                         SET SUPLU_SEQ = @SUPLU_SEQ
+                                                            ,[採購單號] = @PUDU_NO
                                                             ,[採購日期] = @PUDU_DATE
                                                             ,[樣品號碼] = @SAMPLE_NO
                                                             ,[強制結案] = @FORCE_CLOSE
+                                                            ,[結案] = CASE WHEN @FORCE_CLOSE = 1 THEN 1 ELSE 結案 END
                                                             ,[工作類別] = @WORK_TYPE
                                                             ,[廠商編號] = @FACT_NO
                                                             ,[廠商簡稱] = @FACT_S_NAME
@@ -185,10 +188,6 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                                          WHERE [序號] = @SEQ ";
 
                                     cmd.Parameters.AddWithValue("FORCE_CLOSE", context.Request["FORCE_CLOSE"]);
-                                    cmd.Parameters.AddWithValue("PUDU_NO", context.Request["PUDU_NO"]);
-                                    cmd.Parameters.AddWithValue("PUDU_DATE", context.Request["PUDU_DATE"]);
-                                    cmd.Parameters.AddWithValue("PUDU_CNT", context.Request["PUDU_CNT"]);
-                                    cmd.Parameters.AddWithValue("PUDU_GIVE_DATE", context.Request["PUDU_GIVE_DATE"]);
                                     cmd.Parameters.AddWithValue("GIVE_STATUS", context.Request["GIVE_STATUS"]);
                                     cmd.Parameters.AddWithValue("CHECK_NO", context.Request["CHECK_NO"]);
                                     cmd.Parameters.AddWithValue("CHECK_DATE", context.Request["CHECK_DATE"]);
@@ -196,7 +195,6 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                     cmd.Parameters.AddWithValue("ACC_SHIP_CNT", context.Request["ACC_SHIP_CNT"]);
                                     cmd.Parameters.AddWithValue("GIVE_SHIP_DATE", context.Request["GIVE_SHIP_DATE"]);
                                     cmd.Parameters.AddWithValue("ACC_SHIP_DATE", context.Request["ACC_SHIP_DATE"]);
-                                    cmd.Parameters.AddWithValue("UNIT", context.Request["UNIT"]);
                                     cmd.Parameters.AddWithValue("USD", context.Request["USD"]);
                                     cmd.Parameters.AddWithValue("NTD", context.Request["NTD"]);
                                     cmd.Parameters.AddWithValue("FORE_CODE", context.Request["FORE_CODE"]);
@@ -210,23 +208,25 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                 else
                                 {
                                     cmd.CommandText = @" INSERT INTO [dbo].[pudu]
-                                                               (序號,[樣品號碼],[工作類別],[廠商編號],[廠商簡稱]
+                                                               (序號,SUPLU_SEQ,[樣品號碼],[工作類別],[廠商編號],[廠商簡稱]
                                                                ,[頤坊型號],[暫時型號],[廠商型號],[產品說明]
                                                                ,[客戶編號],[客戶簡稱],[到貨處理],[強制結案]
-                                                               --,[採購單號],[採購日期],[採購數量],[採購交期]
+                                                               ,[採購單號],[採購日期],[採購數量],[採購交期]
+                                                               ,[單位]
                                                                --,[到貨數量],[出貨日期],[到貨日期]
                                                                --,[點收批號],[點收數量],[點收日期]
-                                                               --,[交期狀況],[列表小備註],[單位],[美元單價],[台幣單價]
+                                                               --,[交期狀況],[列表小備註],[美元單價],[台幣單價]
                                                                --,[單價_2]  ,[單價_3],[min_1] ,[min_2],[min_3] 
                                                                ,[更新人員] ,[更新日期])
-                                                         SELECT (Select IsNull(Max(序號),0)+1 From pudu)
+                                                         SELECT (Select IsNull(Max(序號),0)+1 From pudu), @SUPLU_SEQ
                                                                ,@SAMPLE_NO,@WORK_TYPE,@FACT_NO,@FACT_S_NAME
                                                                ,@IVAN_TYPE,@TMP_TYPE,@FACT_TYPE,@PROD_DESC
                                                                ,@CUST_NO,@CUST_S_NAME,@GIVE_WAY, 0
-                                                               --,@PUDU_NO,@PUDU_DATE,@PUDU_CNT,@PUDU_GIVE_DATE
+                                                               ,@PUDU_NO,@PUDU_DATE,@PUDU_CNT,@PUDU_GIVE_DATE
+                                                               ,@UNIT
                                                                --,@ACC_SHIP_CNT,@GIVE_SHIP_DATE,@ACC_SHIP_DATE
                                                                --,@CHECK_NO,@CHECK_CNT,@CHECK_DATE
-                                                               --,@GIVE_STATUS,@RPT_REMARK,@UNIT
+                                                               --,@GIVE_STATUS,@RPT_REMARK
                                                                --,IIF(@USD = '', 0,CONVERT(DECIMAL,@USD))
                                                                --,IIF(@NTD = '', 0,CONVERT(DECIMAL,@NTD))
                                                                --,IIF(@PRICE_2 = '', 0,CONVERT(DECIMAL,@PRICE_2))
@@ -238,6 +238,8 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                 }
                                 
                                 cmd.Parameters.AddWithValue("SEQ", context.Request["SEQ"]);
+                                cmd.Parameters.AddWithValue("SUPLU_SEQ", context.Request["SUPLU_SEQ"]);
+                                cmd.Parameters.AddWithValue("UNIT", context.Request["UNIT"]);
                                 cmd.Parameters.AddWithValue("SAMPLE_NO", context.Request["SAMPLE_NO"]);
                                 cmd.Parameters.AddWithValue("IVAN_TYPE", context.Request["IVAN_TYPE"]);
                                 cmd.Parameters.AddWithValue("FACT_NO", context.Request["FACT_NO"]);
@@ -250,6 +252,10 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                 cmd.Parameters.AddWithValue("CUST_NO", context.Request["CUST_NO"]);
                                 cmd.Parameters.AddWithValue("CUST_S_NAME", context.Request["CUST_S_NAME"]);
                                 cmd.Parameters.AddWithValue("GIVE_WAY", context.Request["GIVE_WAY"]);
+                                cmd.Parameters.AddWithValue("PUDU_NO", context.Request["PUDU_NO"]);
+                                cmd.Parameters.AddWithValue("PUDU_DATE", context.Request["PUDU_DATE"]);
+                                cmd.Parameters.AddWithValue("PUDU_CNT", context.Request["PUDU_CNT"]);
+                                cmd.Parameters.AddWithValue("PUDU_GIVE_DATE", context.Request["PUDU_GIVE_DATE"]);
                                 cmd.Parameters.AddWithValue("UPD_USER", "IVAN");
                                 
                                 res = cmd.ExecuteNonQuery();
@@ -301,13 +307,6 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                 context.Response.StatusCode = res != 1 ? 200 : 404;
                                 context.Response.Write(res);
                                 context.Response.End();
-                                break;
-                            case "GET_IMG":
-                                cmd.CommandText = @" SELECT TOP 1 [COST_SEQ], [圖檔] [P_IMG]
-                                                     FROM [192.168.1.135].pic.dbo.xpic
-                                                     WHERE [COST_SEQ] = (SELECT TOP 1 COST_SEQ FROM byrlu where 廠商編號 = @FACT_NO AND 頤坊型號 = @IVAN_TYPE) ";
-                                cmd.Parameters.AddWithValue("FACT_NO", context.Request["FACT_NO"]);
-                                cmd.Parameters.AddWithValue("IVAN_TYPE", context.Request["IVAN_TYPE"]);
                                 break;
                             case "UPD_RPT_REMARK":
                                 cmd.CommandText = @" DELETE FROM pudum WHERE [採購單號] = @PUDU_NO
@@ -421,9 +420,10 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                                                 P.採購單號 群組一, P.到貨處理 列印到貨處理
                                                          FROM PUDU P 
                                                          INNER JOIN SUP S ON P.廠商編號=S.廠商編號 
-                                                         LEFT JOIN PUDUM PU ON P.採購單號=PU.採購單號 
-                                                         WHERE IsNull(P.採購數量,0) - IsNull(P.到貨數量,0) > 0   
-                                                         AND (1=0 ";
+                                                         LEFT JOIN PUDUM PU ON P.採購單號=PU.採購單號
+                                                         LEFT JOIN RECU R ON P.序號 = R.PUDU_SEQ 
+                                                         WHERE (1=0
+                                                           ";
 
                                     if(context.Request["PUDU_NO_1"] != "")
                                     {
@@ -452,6 +452,14 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                     }
 
                                     cmd.CommandText += ")";
+
+                                    cmd.CommandText += @" GROUP BY P.採購單號,P.採購日期,P.樣品號碼,P.工作類別,P.廠商編號,P.廠商簡稱,P.頤坊型號,P.頤坊型號,P.廠商型號,P.產品說明,P.單位,
+                                                              P.台幣單價,P.美元單價,P.單價_2,P.單價_3,P.MIN_1,P.MIN_2,P.MIN_3,P.外幣幣別,P.外幣單價,P.採購數量,P.採購交期,P.列表小備註,
+                                                              S.廠商名稱,S.連絡人採購,S.公司地址,S.電話,S.傳真,S.幣別,
+                                                              S.所在地,PU.大備註一,PU.大備註二,PU.大備註三,
+                                                              P.採購單號, P.到貨處理
+                                                     HAVING IsNull(P.採購數量,0) - SUM(IsNull(R.到貨數量,0)) > 0   ";
+
                                 }
 
                                 SqlDataAdapter sqlDatai = new SqlDataAdapter(cmd);

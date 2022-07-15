@@ -10,6 +10,7 @@ using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using CrystalDecisions.CrystalReports.Engine;
 
+
 public class Sample_Arr_MT : IHttpHandler, IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
@@ -37,13 +38,14 @@ public class Sample_Arr_MT : IHttpHandler, IRequiresSessionState
                                 cmd.CommandText = @" SELECT TOP 500 R.[序號]
                                                                    ,P.[採購單號]
                                                                    ,P.[樣品號碼]
+                                                                   ,P.[SUPLU_SEQ]
                                                                    ,P.[廠商編號]
                                                                    ,P.[廠商簡稱]
                                                                    ,P.[頤坊型號]
                                                                    ,P.[暫時型號]
                                                                    ,P.[廠商型號]
                                                                    ,P.[產品說明]
-                                                                   ,R.[單位]
+                                                                   ,P.[單位]
                                                                    ,CONVERT(VARCHAR,R.[出貨日期],23) [出貨日期]
                                                                    ,CONVERT(VARCHAR,R.[到貨日期],23) [到貨日期]
                                                                    ,CONVERT(VARCHAR,R.[到單日期],23) [到單日期]
@@ -143,12 +145,86 @@ public class Sample_Arr_MT : IHttpHandler, IRequiresSessionState
                                 context.Response.End();
                                 break;
 
-                            case "GET_IMG":
-                                cmd.CommandText = @" SELECT TOP 1 [COST_SEQ], [圖檔] [P_IMG]
-                                                     FROM [192.168.1.135].pic.dbo.xpic
-                                                     WHERE [COST_SEQ] = (SELECT TOP 1 COST_SEQ FROM byrlu where 廠商編號 = @FACT_NO AND 頤坊型號 = @IVAN_TYPE) ";
-                                cmd.Parameters.AddWithValue("FACT_NO", context.Request["FACT_NO"]);
-                                cmd.Parameters.AddWithValue("IVAN_TYPE", context.Request["IVAN_TYPE"]);
+                            case "PRINT_RPT":
+                                string rptDir = "~/DEV/Sample/Rpt/Invoice_Tot_Amt.rpt";
+
+                                switch (context.Request["RPT_TYPE"])
+                                {
+                                    case "0":
+                                        rptDir = "~/DEV/Sample/Rpt/Invoice_Tot_Amt.rpt";
+                                        break;
+                                }
+
+                                cmd.CommandText = @" SELECT P.廠商簡稱
+                                                           ,R.出貨日期
+                                                           ,R.發票號碼
+                                                           ,R.到貨備註
+                                                           ,SUM(ROUND(台幣單價*到貨數量,0)+IsNull(調整額01,0) + IsNull(調整額02,0)) AS 金額
+                                                           ,SUM(IsNull(調整額01,0)) 調整額01
+                                                           ,SUM(IsNull(調整額02,0)) 調整額02
+                                                           ,CASE WHEN R.發票樣式 IN ('08','09') THEN 0 
+                                                                 ELSE ROUND(SUM(ROUND(台幣單價*到貨數量,0)+IsNull(調整額01,0) + IsNull(調整額02,0)) * 0.05,0) END 稅額
+                                                           ,SUM(ROUND(台幣單價*到貨數量,0)+IsNull(調整額01,0) + IsNull(調整額02,0)) + CASE WHEN R.發票樣式 IN ('08','09') THEN 0 
+                                                                                                                                         ELSE ROUND(SUM(ROUND(台幣單價*到貨數量,0)+IsNull(調整額01,0) + IsNull(調整額02,0)) * 0.05,0) END 總額
+                                                           ,'出貨日期 : ' + @出貨日期_S + @出貨日期_E 印表條件
+                                                           ,IIF(ISNULL(發票異常,0) = '1', '*', '') 列印發票異常
+                                                           ,P.廠商編號 群組一
+                                                     FROM PUDU P 
+                                                     INNER JOIN RECU R ON P.序號=R.PUDU_SEQ 
+                                                     WHERE IsNull(台幣單價,0) > 0   ";
+
+                                foreach (string form in context.Request.Form)
+                                {
+                                    if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type" && form != "RPT_TYPE")
+                                    {
+                                        string debug = context.Request[form];
+                                        switch (form)
+                                        {
+                                            case "出貨日期_S":
+                                                cmd.CommandText += " AND CONVERT(DATE,[出貨日期]) >= @出貨日期_S";
+                                                cmd.Parameters.AddWithValue(form, context.Request[form]);
+                                                break;
+                                            case "出貨日期_E":
+                                                cmd.CommandText += " AND CONVERT(DATE,[出貨日期]) <= @出貨日期_E";
+                                                cmd.Parameters.AddWithValue(form, context.Request[form]);
+                                                break;
+                                            default:
+                                                cmd.CommandText += " AND ISNULL(R.[" + form + "],'') LIKE @" + form + " + '%'";
+                                                cmd.Parameters.AddWithValue(form, context.Request[form]);
+                                                break;
+                                        }
+                                    }
+                                }
+
+                                cmd.CommandText += " GROUP BY P.廠商簡稱,R.出貨日期,R.發票號碼,R.到貨備註, R.發票樣式, 發票異常, P.廠商編號";
+
+                                SqlDataAdapter sqlDatai = new SqlDataAdapter(cmd);
+                                sqlDatai.Fill(dt);
+
+                                if (dt != null && dt.Rows.Count > 0)
+                                {
+                                    ReportDocument rptDoc = new ReportDocument();
+                                    rptDoc.Load(context.Server.MapPath(rptDir));
+                                    rptDoc.SetDataSource(dt);
+                                    System.IO.Stream stream = rptDoc.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+                                    byte[] bytes = new byte[stream.Length];
+                                    stream.Read(bytes, 0, bytes.Length);
+                                    stream.Seek(0, System.IO.SeekOrigin.Begin);
+
+                                    string filename = "樣品出貨.pdf";
+                                    context.Response.ClearContent();
+                                    context.Response.ClearHeaders();
+                                    context.Response.AddHeader("content-disposition", "attachment;filename=" + filename);
+                                    context.Response.ContentType = "application/pdf";
+                                    context.Response.OutputStream.Write(bytes, 0, bytes.Length);
+                                    context.Response.Flush();
+                                    context.Response.End();
+                                }
+                                else
+                                {
+                                    context.Response.StatusCode = 204;
+                                    context.Response.End();
+                                }
                                 break;
                         }
 

@@ -1,5 +1,4 @@
 ﻿<%@ Page Title="樣品到貨查詢維護" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Arr_MT.aspx.cs" Inherits="Sample_Arr_MT" %>
-<%@ Register TagPrefix="uc" TagName="uc1" Src="~/User_Control/Dia_Transfer_Selector.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
@@ -13,7 +12,7 @@
     </style>
     <script type="text/javascript">
         $(document).ready(function () {
-            var Edit_Mode;
+            var Edit_Mode = "Base";
             var apiUrl = "/DEV/Sample/Sample_Arr_MT.ashx";
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
@@ -21,19 +20,11 @@
             //init CONTROLER
             Form_Mode_Change("Base");
 
-            //$('#Q_QUAH_DATE_S').val($.datepicker.formatDate('yy-mm-dd', new Date()));
-            //$('#Q_QUAH_DATE_E').val($.datepicker.formatDate('yy-mm-dd', new Date()));          
-
-            //Dialog
-            $('#BT_TRANS_WAY').on('click', function () {
-                $("#Search_Transfer_Dialog").dialog('open');
-            });
-
-            $('#SSD_Table_Transfer').on('click', '.SUP_SEL', function () {
-                $('#E_TRANS_NO').val($(this).parent().parent().find('td:nth(1)').text());
-                $('#E_TRANS_S_NAME').val($(this).parent().parent().find('td:nth(2)').text());
-                $("#Search_Transfer_Dialog").dialog('close');
-            });
+            //報表預設前一個月
+            var dateToday = new Date();
+            var date = new Date(dateToday.setMonth(dateToday.getMonth() - 1));
+            $('#R_INVOICE_DATE_S').val($.datepicker.formatDate('yy-mm-dd',new Date(date.getFullYear(), date.getMonth(), 1)));
+            $('#R_INVOICE_DATE_E').val($.datepicker.formatDate('yy-mm-dd',new Date(date.getFullYear(), date.getMonth() + 1, 0)));
 
             window.document.body.onbeforeunload = function () {
                 if (Edit_Mode === "Insert" || Edit_Mode === "Edit") {
@@ -79,9 +70,23 @@
                         $('.Div_D').css('display', 'none');
                         $('#Div_DT_View').css('width', '60%');
                         $('#Div_IMG_DETAIL').css('display', '');
+                        if ($('#Table_Search_Recu > tbody tr[role=row]').length != 0) {
+                            $('#Table_Search_Recu').DataTable().draw();
+                        }
 
                         V_BT_CHG($('#BT_S_IMG'));
                         break;       
+                    case "RPT":
+                        $('.Div_D').css('display', 'none');
+                        $('#Div_DT_View').css('width', '60%');
+                        $('#Div_RPT_DETAIL').css('display', '');
+
+                        if ($('#Table_Search_Recu > tbody tr[role=row]').length != 0) {
+                            $('#Table_Search_Recu').DataTable().draw();
+                        }
+
+                        V_BT_CHG($('#BT_S_RPT'));
+                        break;      
                 }
             }
 
@@ -112,7 +117,7 @@
                 $('#I_FACT_S_NAME').val(clickData['廠商簡稱']);
                 $('#I_PROD_DESC').val(clickData['產品說明']);
                 $('#I_RPT_REMARK').val(clickData['大備註']);
-                Search_IMG(clickData['廠商編號'], clickData['頤坊型號']);
+                Search_IMG($('#E_SUPLU_SEQ').val());
             }
             
             function V_BT_CHG(buttonChs) {
@@ -184,7 +189,8 @@
                                     { data: "發票異常", title: "發票異常", visible: false },
                                     { data: "到貨備註", title: "到貨備註", visible: false },
                                     { data: "調整額01", title: "調整額01", visible: false },
-                                    { data: "調整額02", title: "調整額02", visible: false }
+                                    { data: "調整額02", title: "調整額02", visible: false },
+                                    { data: "SUPLU_SEQ", title: "SUPLU_SEQ", visible: false }
                                 ],
                                 "order": [[2, "asc"]], //根據 採購單號 排序
                                 "scrollX": true,
@@ -206,13 +212,12 @@
                 });
             };        
 
-            function Search_IMG(factNo, IvanType) {
+            function Search_IMG(supluSeq) {
                 $.ajax({
-                    url: apiUrl,
+                    url: "/CommonAshx/Common.ashx",
                     data: {
-                        "Call_Type": "GET_IMG",
-                        "FACT_NO": factNo,
-                        "IVAN_TYPE": IvanType
+                        "Call_Type": "GET_IMG_BY_SUPLU_SEQ",
+                        "SEQ": supluSeq
                     },
                     cache: false,
                     async: false,
@@ -316,6 +321,67 @@
                 }
             };           
 
+            //產生報表
+            function PRINT_RPT() {
+                if ($('#R_INVOICE_DATE_S').val() == '' || $('#R_INVOICE_DATE_E').val() == '') {
+                    alert('請填寫發票區間');
+                }
+                else {
+                    $("body").loading(); // 遮罩開始
+                    $.ajax({
+                        url: apiUrl,
+                        data: {
+                            "Call_Type": "PRINT_RPT",
+                            "RPT_TYPE": $('#R_RPT_TYPE').val(),
+                            "出貨日期_S": $('#R_INVOICE_DATE_S').val(),
+                            "出貨日期_E": $('#R_INVOICE_DATE_E').val(),
+                            "廠商編號": $('#R_FACT_NO').val()
+                        },
+                        cache: false,
+                        type: "POST",
+                        datatype: "json",
+                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                        xhr: function () {// Seems like the only way to get access to the xhr object
+                            var xhr = new XMLHttpRequest();
+                            xhr.responseType = 'blob'
+                            return xhr;
+                        },
+                        success: function (response, status) {
+                            if (status === 'nocontent') {
+                                alert('採購單號查無資料');
+                            }
+                            else if (status !== 'success') {
+                                alert(response);
+                            }
+                            else {
+                                var blob = new Blob([response], { type: "application/pdf" });
+                                var url = window.URL || window.webkitURL;
+                                link = url.createObjectURL(blob);
+                                var a = $("<a />");
+                                switch ($('#R_RPT_TYPE').val()) {
+                                    case "0":
+                                        a.attr("download", "發票金額統計表.pdf");
+                                        break;
+                                }
+
+                                a.attr("href", link);
+                                $("body").append(a);
+
+                                a[0].click();
+                                $("body").remove(a);
+                            }
+                            $("body").loading("stop") // 遮罩停止
+                        },
+                        error: function (ex) {
+                            console.log(ex.responseText);
+                            $("body").loading("stop") // 遮罩停止
+                            alert('產生報表有誤請通知資訊人員');
+                            return;
+                        }
+                    });
+                }
+            };    
+
             //TABLE 功能設定
             $('#Table_Search_Recu').on('click', 'tbody tr', function () {
                 ClickToEdit($(this));
@@ -359,6 +425,11 @@
                 $('#Table_Search_Recu').DataTable().draw();
             });
 
+            //報表頁
+            $('#BT_R_PRINT').on('click', function () {
+                PRINT_RPT();
+            });
+            
             //功能選單
             $('#BT_S_BASE').on('click', function () {
                 if($('#Table_Search_Recu > tbody tr[role=row]').length > 0)
@@ -369,16 +440,19 @@
                     Form_Mode_Change("Base");
                 }
             });    
-           
+
             $('#BT_S_IMG').on('click', function () {
                 Form_Mode_Change("IMG");
+            });   
+
+            $('#BT_S_RPT').on('click', function () {
+                Form_Mode_Change("RPT");
             });   
 
         });
     </script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
-    <uc:uc1 ID="uc1" runat="server" /> 
     <div style="width:98%;margin:0 auto; ">
         <div class="search_section_all">
             <table class="search_section_control">
@@ -433,6 +507,7 @@
             &nbsp;
             <input type="button" id="BT_S_BASE" class="V_BT" value="主檔"  disabled="disabled" />
             <input type="button" id="BT_S_IMG" class="V_BT" value="圖型" />
+            <input type="button" id="BT_S_RPT" class="V_BT" value="報表" />
         </div>
 
         <div id="Div_DT">
@@ -453,6 +528,7 @@
                         <td class="tdhstyle">序號</td>
                         <td class="tdbstyle">
                             <input id="E_SEQ" DT_Fill_Name="序號"  class="textbox_char" disabled="disabled" />
+                            <input id="E_SUPLU_SEQ" DT_Fill_Name="SUPLU_SEQ"  class="textbox_char" type="hidden" />
                         </td>
                     </tr>
                     <tr class="trstyle">
@@ -646,6 +722,45 @@
                             <img id="I_IMG" src="#" style="display:none" />
                             <span id="I_NO_IMG" >查無圖檔</span>
                         </td>
+                    </tr>
+
+                </table>
+            </div> 
+            <div id="Div_RPT_DETAIL" class=" Div_D" style="width:35%;height:71vh; border-style:solid;border-width:1px; float:right; overflow:auto ">
+                <table class="search_section_control"style="width:80%">
+                    <tr class="trstyle"> 
+                        <td class="tdbstyle" style="height: 10vh; font-size: smaller;" >&nbsp</td>
+                    </tr>
+                    <tr class="trCenterstyle">
+                        <td class="tdhstyle" style="font-size:20px;">報表類型</td>
+                        <td class="tdbstyle" >
+                            <select id="R_RPT_TYPE" >
+                                <option selected="selected" value="0">發票金額統計表</option>
+                            </select>
+                         </td>
+                    </tr>
+                    <tr class="trCenterstyle">
+                        <td class="tdhstyle" style="font-size:20px;">發票日期</td>
+                        <td class="tdbstyle" >
+                            <input id="R_INVOICE_DATE_S"  type="date" class="date_S_style" />~<input id="R_INVOICE_DATE_E"  type="date" class="date_E_style" />
+                        </td>
+                    </tr>
+                    <tr class="trCenterstyle">
+                        <td class="tdhstyle" style="font-size:10px;">(出貨日期)</td>
+                    </tr>
+                    <tr class="trCenterstyle">
+                        <td class="tdhstyle" style="font-size:20px;" >廠商編號</td>
+                        <td class="tdbstyle" >
+                            <input id="R_FACT_NO"  class="textbox_char" />
+                        </td>
+                    </tr>
+                     <tr class="trstyle"> 
+                        <td class="tdbstyle" style="height: 10vh; font-size: smaller;" >&nbsp</td>
+                    </tr>
+                     <tr class="trCenterstyle"> 
+                         <td colspan="2" style="text-align:center" >
+                            <input type="button" id="BT_R_PRINT" style="display:inline-block" class="BTN" value="列印"  />
+                         </td>
                     </tr>
 
                 </table>

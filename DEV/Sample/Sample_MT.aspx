@@ -1,5 +1,6 @@
 ﻿<%@ Page Title="樣品開發維護" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_MT.aspx.cs" Inherits="Sample_MT" %>
 <%@ Register TagPrefix="uc" TagName="uc1" Src="~/User_Control/Dia_Customer_Selector.ascx" %>
+<%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_Selector.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
@@ -33,6 +34,23 @@
                 $('#E_CUST_NO').val($(this).parent().parent().find('td:nth(2)').text());
                 $('#E_CUST_S_NAME').val($(this).parent().parent().find('td:nth(3)').text());
                 $("#Search_Customer_Dialog").dialog('close');
+            });
+            
+            $('#BT_E_IVAN_TYPE').on('click', function () {
+                $("#Search_Product_Dialog").dialog('open');
+            });
+
+            $('#SPD_Table_Product').on('click', '.PROD_SEL', function () {
+                $('#E_SUPLU_SEQ').val($(this).parent().parent().find('td:nth(1)').text());
+                $('#E_IVAN_TYPE').val($(this).parent().parent().find('td:nth(3)').text());
+                $('#E_FACT_NO').val($(this).parent().parent().find('td:nth(4)').text());
+                $('#E_FACT_S_NAME').val($(this).parent().parent().find('td:nth(5)').text());
+                $('#E_UNIT').val($(this).parent().parent().find('td:nth(5)').text());
+                $('#E_PROD_DESC').val($(this).parent().parent().find('td:nth(7)').text());
+                $('#E_TMP_TYPE').val($(this).parent().parent().find('td:nth(8)').text());
+                $('#E_FACT_TYPE').val($(this).parent().parent().find('td:nth(9)').text());
+
+                $("#Search_Product_Dialog").dialog('close');
             });
 
             window.document.body.onbeforeunload = function () {
@@ -90,6 +108,9 @@
                             $('#E_SEQ').val('');
                             $('#E_FORCE_CLOSE').prop('checked', false);
                             $('.editReset').val('');
+
+                            $('#E_PUDU_DATE').val($.datepicker.formatDate('yy-mm-dd', new Date()))
+                            $('#E_PUDU_GIVE_DATE').val($.datepicker.formatDate('yy-mm-dd', new Date()))
                         }
                         else {
                             $('.editReset').val('');
@@ -196,6 +217,7 @@
                 else {
                     $('#E_FORCE_CLOSE').prop('checked', false);
                 }
+                $('#E_SUPLU_SEQ').val(clickData['SUPLU_SEQ']);
                 $('#E_IVAN_TYPE').val(clickData['頤坊型號']);
                 $('#E_FACT_NO').val(clickData['廠商編號']);
                 $('#E_FACT_S_NAME').val(clickData['廠商簡稱']);
@@ -214,7 +236,7 @@
                 $('#I_FACT_S_NAME').val(clickData['廠商簡稱']);
                 $('#I_PROD_DESC').val(clickData['產品說明']);
                 $('#I_RPT_REMARK').val(clickData['大備註']);
-                Search_IMG(clickData['廠商編號'], clickData['頤坊型號']);
+                Search_IMG(clickData['SUPLU_SEQ']);
 
                 //SET SEQ PAGE
                 $('#S_SAMPLE_NO').val(clickData['樣品號碼']);
@@ -321,6 +343,7 @@
                                     { data: "廠商編號", title: "廠商編號" },
                                     { data: "更新人員", title: "<%=Resources.MP.Update_User%>" },
                                     { data: "更新日期", title: "<%=Resources.MP.Update_Date%>" },
+                                    { data: "SUPLU_SEQ", title: "SUPLU_SEQ", visible: false },
                                     { data: "基本量_1", title: "基本量_1", visible: false },
                                     { data: "台幣單價", title: "台幣單價", visible: false },
                                     { data: "客戶編號", title: "客戶編號", visible: false },
@@ -378,13 +401,12 @@
                 });
             };        
 
-            function Search_IMG(factNo, IvanType) {
+            function Search_IMG(supluSeq) {
                 $.ajax({
-                    url: apiUrl,
+                    url: "/CommonAshx/Common.ashx",
                     data: {
-                        "Call_Type": "GET_IMG",
-                        "FACT_NO": factNo,
-                        "IVAN_TYPE": IvanType
+                        "Call_Type": "GET_IMG_BY_SUPLU_SEQ",
+                        "SEQ": supluSeq
                     },
                     cache: false,
                     async: false,
@@ -454,6 +476,7 @@
                         data: {
                             "Call_Type": "INSERT_SAMPLE",
                             "SEQ": $('#E_SEQ').val(),
+                            "SUPLU_SEQ": $('#E_SUPLU_SEQ').val(),
                             "SAMPLE_NO": $('#E_SAMPLE_NO').val(),
                             "IVAN_TYPE": $('#E_IVAN_TYPE').val(),
                             "FACT_NO": $('#E_FACT_NO').val(),
@@ -465,7 +488,12 @@
                             "RPT_REMARK": $('#E_RPT_REMARK').val(),
                             "CUST_NO": $('#E_CUST_NO').val(),
                             "CUST_S_NAME": $('#E_CUST_S_NAME').val(),
-                            "GIVE_WAY": $('#E_GIVE_WAY').val()
+                            "GIVE_WAY": $('#E_GIVE_WAY').val(),
+                            "PUDU_NO": $('#E_PUDU_NO').val(),
+                            "PUDU_CNT": $('#E_PUDU_CNT').val(),
+                            "PUDU_DATE": $('#E_PUDU_DATE').val(),
+                            "PUDU_GIVE_DATE": $('#E_PUDU_GIVE_DATE').val(),
+                            "UNIT": $('#E_UNIT').val()
                         },
                         cache: false,
                         type: "POST",
@@ -502,6 +530,7 @@
                         data: {
                             "Call_Type": "UPD_SAMPLE",
                             "SEQ": $('#E_SEQ').val(),
+                            "SUPLU_SEQ": $('#E_SUPLU_SEQ').val(),
                             "SAMPLE_NO": $('#E_SAMPLE_NO').val(),
                             "FORCE_CLOSE": $('#E_FORCE_CLOSE').is(':checked') ? '1' : '0',
                             "IVAN_TYPE": $('#E_IVAN_TYPE').val(),
@@ -660,6 +689,8 @@
                     alert('請填寫採購單號');
                 }
                 else {
+                    $("body").loading(); // 遮罩開始
+
                     $.ajax({
                         url: apiUrl,
                         data: {
@@ -716,10 +747,12 @@
                                 a[0].click();
                                 $("body").remove(a);
                             }
+                            $("body").loading("stop") // 遮罩停止
                         },
                         error: function (ex) {
                             console.log(ex.responseText);
-                            alert('修改資料有誤請通知資訊人員');
+                            $("body").loading("stop") // 遮罩停止
+                            alert('下載報表有誤請通知資訊人員');
                             return;
                         }
                     });
@@ -847,6 +880,7 @@
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
     <uc:uc1 ID="uc1" runat="server" /> 
+    <uc2:uc2 ID="uc2" runat="server" /> 
     <div style="width:98%;margin:0 auto; ">
         <div class="search_section_all">
             <table class="search_section_control">
@@ -946,12 +980,14 @@
                         <td class="tdEditstyle">序號</td>
                         <td class="tdbstyle">
                             <input id="E_SEQ"  class="textbox_char editReset" disabled="disabled" />
+                            <input id="E_SUPLU_SEQ" type="hidden" class="textbox_char editReset" />
                         </td>
                     </tr>
                     <tr class="trstyle">
                         <td class="tdEditstyle">頤坊型號</td>
                         <td class="tdbstyle">
-                            <input id="E_IVAN_TYPE"  class="textbox_char editReset" />
+                            <input id="E_IVAN_TYPE"  class="textbox_char editReset" disabled="disabled" />
+                            <input id="BT_E_IVAN_TYPE" style="font-size:15px" type="button" value="..." />
                         </td>
                         <td class="tdEditstyle">強制結案</td>
                         <td class="tdbstyle">
@@ -961,7 +997,7 @@
                     <tr class="trstyle">
                         <td class="tdEditstyle">廠商編號</td>
                         <td class="tdbstyle">
-                            <input id="E_FACT_NO"  class="textbox_char editReset" />
+                            <input id="E_FACT_NO"  class="textbox_char editReset" disabled="disabled" />
                         </td>
                         <td class="tdEditstyle">廠商簡稱</td>
                         <td class="tdbstyle">
@@ -971,7 +1007,7 @@
                     <tr class="trstyle">
                         <td class="tdEditstyle">暫時型號</td>
                         <td class="tdbstyle">
-                            <input id="E_TMP_TYPE"  class="textbox_char editReset" />
+                            <input id="E_TMP_TYPE"  class="textbox_char editReset" disabled="disabled" />
                         </td>
                         <td class="tdEditstyle">廠商型號</td>
                         <td class="tdbstyle">
@@ -981,7 +1017,7 @@
                     <tr class="trstyle">
                         <td class="tdEditstyle">產品說明</td>
                         <td class="tdbstyle" colspan ="4">
-                            <input id="E_PROD_DESC" class="textbox_char editReset" style="width:80%"  />
+                            <input id="E_PROD_DESC" class="textbox_char editReset" style="width:80%" disabled="disabled"  />
                         </td>
                     </tr>     
                     <tr class="trstyle">
@@ -995,27 +1031,27 @@
                                 <option value="詢開">詢開</option>
                             </select>
                         </td>
-                        <td class="tdEditstyle">列印備註</td>
+                        <td class="tdEditstyle">單位</td>
                         <td class="tdbstyle">
-                            <input id="E_RPT_REMARK"  class="textbox_char editReset" />
+                            <input id="E_UNIT"  class="textbox_char editReset" disabled="disabled" />
                         </td>
                     </tr>
-                    <tr class="trstyle onlyEdit">
+                    <tr class="trstyle">
                         <td class="tdEditstyle">採購單號</td>
                         <td class="tdbstyle">
                             <input id="E_PUDU_NO"  class="textbox_char editReset" />
                         </td>
-                        <td class="tdEditstyle onlyEdit">採購數量</td>
+                        <td class="tdEditstyle">採購數量</td>
                         <td class="tdbstyle">
                             <input id="E_PUDU_CNT"  class="textbox_char editReset" type="number" />
                         </td>
                     </tr>
-                     <tr class="trstyle onlyEdit">
+                     <tr class="trstyle">
                         <td class="tdEditstyle">採購日期</td>
                         <td class="tdbstyle">
-                            <input id="E_PUDU_DATE"  class="textbox_char editReset" type="date" disabled="disabled" />
+                            <input id="E_PUDU_DATE"  class="textbox_char editReset" type="date"  />
                         </td>
-                        <td class="tdEditstyle onlyEdit">採購交期</td>
+                        <td class="tdEditstyle">採購交期</td>
                         <td class="tdbstyle">
                             <input id="E_PUDU_GIVE_DATE"  class="textbox_char editReset" type="date" />
                         </td>
@@ -1084,9 +1120,9 @@
                         </td>
                     </tr>
                     <tr class="trstyle onlyEdit">
-                        <td class="tdEditstyle">單位</td>
+                        <td class="tdEditstyle">列印備註</td>
                         <td class="tdbstyle">
-                            <input id="E_UNIT"  class="textbox_char editReset" />
+                            <input id="E_RPT_REMARK"  class="textbox_char editReset" />
                         </td>
                         <td class="tdEditstyle">台幣單價</td>
                         <td class="tdbstyle">

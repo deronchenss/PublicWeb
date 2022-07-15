@@ -12,8 +12,6 @@
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
 
-            <%=Session["QUAH_NO"] = null%>;
-
             //init CONTROLER
             Form_Mode_Change("Base");
 
@@ -385,6 +383,8 @@
                     alert('請填入報價單號')
                 }
                 else {
+                    $("body").loading(); // 遮罩開始
+
                     $.ajax({
                         url: apiUrl,
                         data: {
@@ -419,9 +419,13 @@
                                 a[0].click();
                                 $("body").remove(a);
                             }
+                            $("body").loading("stop") // 遮罩停止
                         },
                         error: function (ex) {
-                            alert(ex);
+                            console.log(ex.responseText);
+                            $("body").loading("stop") // 遮罩停止
+                            alert('下載報表有誤請通知資訊人員');
+                            return;
                         }
                     });
                 }
