@@ -1,4 +1,4 @@
-﻿<%@ Page Title="樣品到貨作業" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Arr.aspx.cs" Inherits="Sample_Arr" %>
+﻿<%@ Page Title="樣品點收分配" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Chk_Dist.aspx.cs" Inherits="Sample_Chk_Dist" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
@@ -13,7 +13,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
-            var apiUrl = "/DEV/Sample/Ashx/Sample_Arr.ashx";
+            var apiUrl = "/DEV/Sample/Ashx/Sample_Chk_Dist.ashx";
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
 

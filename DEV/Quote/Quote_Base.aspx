@@ -8,7 +8,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
-            var apiUrl = "/DEV/Quote/Quote_Base.ashx";
+            var apiUrl = "/DEV/Quote/Ashx/Quote_Base.ashx";
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
 

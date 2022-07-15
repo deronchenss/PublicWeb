@@ -13,7 +13,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode = "Base";
-            var apiUrl = "/DEV/Sample/Sample_Arr_MT.ashx";
+            var apiUrl = "/DEV/Sample/Ashx/Sample_Arr_MT.ashx";
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
 

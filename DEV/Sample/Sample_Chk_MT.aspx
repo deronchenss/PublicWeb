@@ -14,7 +14,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
-            var apiUrl = "/DEV/Sample/Sample_Chk_MT.ashx";
+            var apiUrl = "/DEV/Sample/Ashx/Sample_Chk_MT.ashx";
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
 

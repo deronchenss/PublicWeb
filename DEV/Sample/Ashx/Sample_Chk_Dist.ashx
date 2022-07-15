@@ -1,4 +1,4 @@
-﻿<%@ WebHandler Language = "C#" Class="Sample_Arr" %>
+﻿<%@ WebHandler Language = "C#" Class="Sample_Chk_Dist" %>
 
 using System.Collections.Generic;
 using System.Web;
@@ -10,7 +10,7 @@ using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using CrystalDecisions.CrystalReports.Engine;
 
-public class Sample_Arr : IHttpHandler, IRequiresSessionState
+public class Sample_Chk_Dist : IHttpHandler, IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
     {
