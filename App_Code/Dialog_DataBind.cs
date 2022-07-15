@@ -33,8 +33,8 @@ public class Dialog_DataBind : System.Web.Services.WebService
     {
         conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
         cmd.CommandText = @" SELECT TOP 100 [序號], [客戶編號], [客戶簡稱], [客戶名稱], [負責人], [email], LEFT([備註],30) + IIF(LEN([備註]) > 30,'...','')  [備註]
-                                         FROM Dc2..byr
-                                         WHERE [客戶編號] LIKE @C_No + '%' AND [客戶簡稱] LIKE '%' + @C_SName + '%' ";
+                             FROM Dc2..byr
+                             WHERE [客戶編號] LIKE @C_No + '%' AND [客戶簡稱] LIKE '%' + @C_SName + '%' ";
         cmd.Parameters.AddWithValue("C_No", C_No);
         cmd.Parameters.AddWithValue("C_SName", C_SName);
         cmd.Connection = conn;
@@ -53,9 +53,9 @@ public class Dialog_DataBind : System.Web.Services.WebService
         conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
         SqlCommand cmd = new SqlCommand();
         cmd.CommandText = @" SELECT TOP 100 [序號], [廠商編號], [廠商簡稱], [連絡人採購], [電話], [公司地址]
-                                         FROM Dc2..sup
-                                         WHERE [廠商編號] LIKE @S_No + '%' AND [廠商簡稱] LIKE '%' + @S_SName + '%'
-                                         ORDER BY [更新日期] DESC ";
+                             FROM Dc2..sup
+                             WHERE [廠商編號] LIKE @S_No + '%' AND [廠商簡稱] LIKE '%' + @S_SName + '%'
+                             ORDER BY [更新日期] DESC ";
         cmd.Parameters.AddWithValue("S_No", S_No);
         cmd.Parameters.AddWithValue("S_SName", S_SName);
         cmd.Connection = conn;
@@ -72,10 +72,10 @@ public class Dialog_DataBind : System.Web.Services.WebService
     {
         conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
         SqlCommand cmd = new SqlCommand();
-        cmd.CommandText = @" SELECT TOP 100 [序號], [開發中], [頤坊型號], [廠商編號], [廠商簡稱], [單位], [產品說明]
-                                         FROM Dc2..suplu
-                                         WHERE [頤坊型號] LIKE @IM + '%' AND [廠商編號] LIKE '%' + @S_No + '%'
-                                         ORDER BY [更新日期] DESC ";
+        cmd.CommandText = @" SELECT TOP 100 [序號], [開發中], [頤坊型號], [廠商編號], [廠商簡稱], [單位], [產品說明], [暫時型號], [廠商型號], [銷售型號]
+                             FROM Dc2..suplu
+                             WHERE [頤坊型號] LIKE @IM + '%' AND [廠商編號] LIKE '%' + @S_No + '%'
+                             ORDER BY [更新日期] DESC ";
         cmd.Parameters.AddWithValue("IM", IM);
         cmd.Parameters.AddWithValue("S_No", S_No);
         cmd.Connection = conn;

@@ -41,7 +41,7 @@
                         ],
                         "columns": [
                             {
-                                data: null, title: "",
+                                data: null, title: "", orderable: false,
                                 render: function (data, type, row) {
                                     return '<input type="button" class="PROD_SEL" value="' + '<%=Resources.MP.Select%>' + '" />'
                                 }
@@ -52,7 +52,10 @@
                             { data: "廠商編號", title: "<%=Resources.MP.Supplier_No%>" },
                             { data: "廠商簡稱", title: "<%=Resources.MP.Supplier_Short_Name%>" },
                             { data: "單位", title: "<%=Resources.MP.Unit%>" },
-                            { data: "產品說明", title: "<%=Resources.MP.Product_Information%>" }
+                            { data: "產品說明", title: "<%=Resources.MP.Product_Information%>" },
+                            { data: "暫時型號", title: "<%=Resources.MP.Sample_Product_No%>" },
+                            { data: "廠商型號", title: "<%=Resources.MP.Supplier_Model%>" },
+                            { data: "銷售型號", title: "<%=Resources.MP.Sale_Model%>" }
                         ],
                         "columnDefs": [{
                             targets: [0],

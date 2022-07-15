@@ -41,12 +41,12 @@
                         ],
                         "columns": [
                             {
-                                data: null, title: "",
+                                data: null, title: "", orderable: false,
                                 render: function (data, type, row) {
                                     return '<input type="button" class="SUP_SEL" value="' + '<%=Resources.MP.Select%>' + '" />'
                                 }
                             },
-                            { data: "序號", title: "<%=Resources.MP.SUPLU_SEQ%>" },
+                            { data: "序號", title: "<%=Resources.MP.SEQ%>" },
                             { data: "廠商編號", title: "<%=Resources.MP.Supplier_No%>" },
                             { data: "廠商簡稱", title: "<%=Resources.MP.Supplier_Short_Name%>" },
                             { data: "連絡人採購", title: "<%=Resources.MP.Purchase_Person%>" },

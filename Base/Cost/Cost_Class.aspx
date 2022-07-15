@@ -93,12 +93,16 @@
 
             function Search_Cost(Search_Where) {
                 $.ajax({
-                    url: "/Base/Cost/Cost_Search.ashx",
+                    url: "/Base/Cost/New_Cost_Search.ashx",
                     data: {
-                        "Call_Type": "Cost_Class_Search"
-                        //"IM": $('#TB_IM').val(),
-                        //"S_No": $('#TB_S_No').val(),
-                        //"Date_S": $('#TB_Date_S').val(),
+                        "Call_Type": "Cost_Class_Search",
+                        "IM": $('#TB_IM').val(),
+                        "PC": $('#DDL_PC').val(),
+                        "Date_S": $('#TB_Date_S').val(),
+                        "Date_E": $('#TB_Date_E').val(),
+                        "S_No": $('#TB_S_No').val(),
+                        "SaleM": $('#TB_SaleM').val(),
+                        "PI": $('#TB_PI').val()
                         //"Date_E": $('#TB_Date_E').val(),
                         //"DVN": $('#DDL_DVN').val(),
                     },
@@ -107,8 +111,8 @@
                     type: "POST",
                     datatype: "json",
                     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                    success: function (response) {
-                        if (response.length === 0) {
+                    success: function (R) {
+                        if (R.length === 0) {
                             alert('<%=Resources.MP.Data_Not_Exists_Alert%>');
                             Edit_Mode = "Base";
                             Form_Mode_Change("Base");
@@ -146,43 +150,40 @@
                                 + '</th><th>' + '<%=Resources.MP.Update_User%>'
                                 + '</th><th>' + '<%=Resources.MP.Update_Date%>'
                                 + '</th></tr></thead><tbody>';
-                            $(response).each(function (i) {
+                            $(R).each(function (i) {
                                 Table_HTML +=//
-                                    //'<tr><td>' + String(response[i].IM ?? "") +
-                                    //'<input class="Call_Product_Tool" type="button" value="…" style="float: right;z-index:1000;" />' +
-                                    '<tr><td><input class="Call_Product_Tool" SUPLU_SEQ = "' + String(response[i].SEQ ?? "")
-                                        + '" type="button" value="' + String(response[i].IM ?? "")
-                                        + '" style="text-align:left;width:100%;z-index:1000;' + ((response[i].Has_IMG) ? 'background: #90ee90;': '') + '" />' +
-                                    '</td><td>' + String(response[i].SM ?? "") +
-                                    '</td><td>' + String(response[i].SaleM ?? "") +
-                                    '</td><td>' + String(response[i].S_SName ?? "") +
-                                    '</td><td>' + String(response[i].Unit ?? "") +
-                                    '</td><td>' + String(response[i].Rank1 ?? "") +
-                                    '</td><td>' + String(response[i].Rank2 ?? "") +
-                                    '</td><td>' + String(response[i].Rank3 ?? "") +
-                                    '</td><td>' + String(response[i].Rank1_V3 ?? "") +
-                                    '</td><td>' + String(response[i].Rank2_V3 ?? "") +
-                                    '</td><td>' + String(response[i].MSRP ?? "") +
-                                    '</td><td>' + String(response[i].PI ?? "") +
-                                    '</td><td>' + String(response[i].LS_ORD ?? "") +
-                                    '</td><td style="text-align:right;">' + ((response[i].Location_1_Stock != 0) ? String(response[i].Location_1_Stock ?? "") : "") +
-                                    '</td><td style="text-align:right;">' + ((response[i].Location_2_Stock != 0) ? String(response[i].Location_2_Stock ?? "") : "") +
-                                    '</td><td>' + String(response[i].SUM_PUD ?? "") +
-                                    '</td><td style="text-align:right;">' + ((response[i].Location_1_Safe != 0) ? String(response[i].Location_1_Safe ?? "") : "") +
-                                    '</td><td style="text-align:right;">' + ((response[i].Location_TPE_Safe != 0) ? String(response[i].Location_TPE_Safe ?? "") : "") +
-                                    '</td><td style="text-align:right;">' + ((response[i].Location_ISP_Safe != 0) ? String(response[i].Location_ISP_Safe ?? "") : "") +
-                                    '</td><td>' + String(response[i].UN ?? "") +
-                                    '</td><td>' + String(response[i].I_No ?? "") +
-                                    '</td><td>' + String(response[i].P_Style ?? "") +
-                                    '</td><td>' + String(response[i].Location_1_Area ?? "") +
-                                    '</td><td>' + String(response[i].S_No ?? "") +
-                                //Has_IMG
-                                '</td><td class="DIMG" style="text-align:center;">' +
-                                ((response[i].Has_IMG) ? ('<img type="Product" SEQ="' + String(response[i].SEQ ?? "") + '" />') : ('<%=Resources.MP.Image_NotExists%>')) +
-                                '</td><td class="For_U" style="display:none;">' +
-                                    '</td><td class="SEQ">' + String(response[i].SEQ ?? "") +
-                                    '</td><td>' + String(response[i].Update_User ?? "") +
-                                    '</td><td>' + String(response[i].Update_Date ?? "") +
+                                    '<tr><td><input class="Call_Product_Tool" SUPLU_SEQ = "' + String(R[i].序號 ?? "")
+                                    + '" type="button" value="' + String(R[i].頤坊型號 ?? "")
+                                    + '" style="text-align:left;width:100%;z-index:1000;' + ((R[i].Has_IMG) ? 'background: #90ee90;' : '') + '" />' +
+                                    '</td><td>' + String(R[i].廠商型號 ?? "") +
+                                    '</td><td>' + String(R[i].銷售型號 ?? "") +
+                                    '</td><td>' + String(R[i].廠商編號 ?? "") +
+                                    '</td><td>' + String(R[i].單位 ?? "") +
+                                    '</td><td>' + String(R[i].產品一階 ?? "") +
+                                    '</td><td>' + String(R[i].產品二階 ?? "") +
+                                    '</td><td>' + String(R[i].產品三階 ?? "") +
+                                    '</td><td>' + String(R[i].一階V3 ?? "") +
+                                    '</td><td>' + String(R[i].二階V3 ?? "") +
+                                    '</td><td>' + String(R[i].MSRP ?? "") +
+                                    '</td><td>' + String(R[i].產品說明 ?? "") +
+                                    '</td><td>' + String(R[i].最後接單 ?? "") +
+                                    '</td><td style="text-align:right;">' + ((R[i].大貨庫存數 != 0) ? String(R[i].大貨庫存數 ?? "") : "") +
+                                    '</td><td style="text-align:right;">' + ((R[i].分配庫存數 != 0) ? String(R[i].分配庫存數 ?? "") : "") +
+                                    '</td><td>' + String(R[i].庫存在途 ?? "") +
+                                    '</td><td style="text-align:right;">' + ((R[i].大貨安全數 != 0) ? String(R[i].大貨安全數 ?? "") : "") +
+                                    '</td><td style="text-align:right;">' + ((R[i].台北安全數 != 0) ? String(R[i].台北安全數 ?? "") : "") +
+                                    '</td><td style="text-align:right;">' + ((R[i].ISP安全數 != 0) ? String(R[i].ISP安全數 ?? "") : "") +
+                                    '</td><td>' + String(R[i].UNActive ?? "") +
+                                    '</td><td>' + String(R[i].國際條碼 ?? "") +
+                                    '</td><td>' + String(R[i].樣式 ?? "") +
+                                    '</td><td>' + String(R[i].大貨庫位 ?? "") +
+                                    '</td><td>' + String(R[i].廠商編號 ?? "") +
+                                    '</td><td class="DIMG" style="text-align:center;">' +
+                                    ((R[i].Has_IMG) ? ('<img type="Product" SEQ="' + String(R[i].序號 ?? "") + '" />') : ('<%=Resources.MP.Image_NotExists%>')) +
+                                    '</td><td class="For_U" style="display:none;">' +
+                                    '</td><td class="SEQ">' + String(R[i].序號 ?? "") +
+                                    '</td><td>' + String(R[i].更新人員 ?? "") +
+                                    '</td><td>' + String(R[i].更新日期 ?? "") +
                                     '</td></tr>';
                             });
 
@@ -312,6 +313,8 @@
                             else {
                                 console.warn($(this));
                             }
+                            //console.warn($(this).parent());
+
                             $(this).parent().remove();
                         });
                     }
@@ -431,7 +434,7 @@
             <td style="text-align: left; width: 15%;">
                 <input id="TB_Date_S" type="date" style="width: 50%;" /><input id="TB_Date_E" type="date" style="width: 50%;" />
             </td>
-            <td></td><td></td>
+            <td><input type="reset"></td><td></td>
         </tr>
         <tr class="For_S">
             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Supplier_No%></td>

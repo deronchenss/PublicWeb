@@ -41,7 +41,7 @@
                         ],
                         "columns": [
                             {
-                                data: null, title: "",
+                                data: null, title: "", orderable: false,
                                 render: function (data, type, row) {
                                     return '<input type="button" class="CUST_SEL" value="' + '<%=Resources.MP.Select%>' + '" />'
                                 }

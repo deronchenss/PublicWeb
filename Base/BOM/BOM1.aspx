@@ -378,7 +378,7 @@
                             ],
                             "columns": [
                                 {
-                                    data: null, title: "",
+                                    data: null, title: "", orderable: false,
                                     render: function (data, type, row) {
                                         return '<input type="button" class="BTN_Green" value="' + '<%=Resources.MP.Select%>' + '" />'
                                     }
