@@ -103,7 +103,7 @@
                         V_BT_CHG($('#BT_S_CHS'));
                         break;
                     case "EXEC":
-                        if ($('#Table_Search_Pudu > tbody tr[role=row]').length === 0) {
+                        if ($('#Table_Search_Recu > tbody tr[role=row]').length === 0) {
                             alert('請先查詢');
                             Edit_Mode = "Base";
                             Form_Mode_Change("Base");
@@ -253,7 +253,7 @@
                 }
 
                 $('#Table_CHS_Data_info').text('Showing ' + $('#Table_CHS_Data > tbody tr[role=row]').length + ' entries');
-                $('#Table_Search_Pudu_info').text('Showing ' + $('#Table_Search_Pudu > tbody tr[role=row]').length + ' entries');
+                $('#Table_Search_Pudu_info').text('Showing ' + $('#Table_Search_Recu > tbody tr[role=row]').length + ' entries');
                 $('#BT_Next').toggle(Boolean($('#Table_CHS_Data').find('tbody tr').length > 0));
             }
            
@@ -262,11 +262,11 @@
                 buttonChs.attr('disabled', 'disabled');
             }
             //ajax function
-            function Search_Pudu() {
+            function Search_Recu() {
                 $.ajax({
                     url: apiUrl,
                     data:{
-                        "Call_Type": "SEARCH_PUDU",    
+                        "Call_Type": "SEARCH_RECU",    
                         "點收批號": $('#Q_CHK_BATCH_NO').val(),
                         "採購單號": $('#Q_PUDU_NO').val(),
                         "頤坊型號": $('#Q_IVAN_TYPE').val(),
@@ -274,8 +274,7 @@
                         "點收日期_S": $('#Q_CHK_DATE_S').val(),
                         "點收日期_E": $('#Q_CHK_DATE_E').val(),
                         "廠商編號": $('#Q_FACT_NO').val(),
-                        "廠商簡稱": $('#Q_FACT_S_NAME').val(),
-                        "WRITE_OFF": $('#Q_WRITEOFF').val()
+                        "廠商簡稱": $('#Q_FACT_S_NAME').val()
                     },
                     cache: false,
                     type: "POST",
@@ -292,7 +291,7 @@
                             Form_Mode_Change("Base");
                         }
                         else {
-                            $('#Table_Search_Pudu_Tmp').DataTable({
+                            $('#Table_Search_Recu_Tmp').DataTable({
                                 "data": response,
                                 "destroy": true,
                                 "columns": [
@@ -354,7 +353,7 @@
                                 "bInfo": false //顯示幾筆隱藏
                             });
 
-                            $('#Table_Search_Pudu').DataTable({
+                            $('#Table_Search_Recu').DataTable({
                                 "destroy": true,
                                 "preDrawCallback": function (settings) {
                                     pageScrollPudu = $('#Table_Search_Pudu_wrapper div.dataTables_scrollBody').scrollTop();
@@ -455,13 +454,13 @@
                            });
 
                             //input 欄位 Undefind 問題 調整為 先存TMP TABLE 再將 VALUE 複製到正式 table 
-                            $('#Table_Search_Pudu_Tmp').DataTable().draw();
-                            $('#Table_Search_Pudu').DataTable().draw();
-                            $('#Table_Search_Pudu').DataTable().clear().rows.add($('#Table_Search_Pudu_Tmp').find('tbody tr[role=row]').clone()).draw();
+                            $('#Table_Search_Recu_Tmp').DataTable().draw();
+                            $('#Table_Search_Recu').DataTable().draw();
+                            $('#Table_Search_Recu').DataTable().clear().rows.add($('#Table_Search_Recu_Tmp').find('tbody tr[role=row]').clone()).draw();
 
                             $('#Table_CHS_Data').DataTable().draw();
                             $('#Table_CHS_Data_info').text('Showing ' + $('#Table_CHS_Data > tbody tr[role=row]').length + ' entries');
-                            $('#Table_Search_Pudu_info').text('Showing ' + $('#Table_Search_Pudu > tbody tr[role=row]').length + ' entries');
+                            $('#Table_Search_Pudu_info').text('Showing ' + $('#Table_Search_Recu > tbody tr[role=row]').length + ' entries');
                         }
                     },
                     error: function (ex) {
@@ -534,7 +533,7 @@
                             $('#Table_CHS_Data').DataTable().rows().remove().draw();
 
                             //回到第一頁
-                            Search_Pudu();
+                            Search_Recu();
                             Edit_Mode = "Search";
                             Form_Mode_Change("Search");
                         }
@@ -548,17 +547,17 @@
             };         
 
             //TABLE 功能設定
-            $('#Table_Search_Pudu').on('click', 'tbody tr', function () {   
-                Item_Move($(this), $('#Table_CHS_Data'), $('#Table_Search_Pudu'), false);
+            $('#Table_Search_Recu').on('click', 'tbody tr', function () {   
+                Item_Move($(this), $('#Table_CHS_Data'), $('#Table_Search_Recu'), false);
             });
             $('#Table_CHS_Data').on('click', 'tbody tr', function () {
-                Item_Move($(this), $('#Table_Search_Pudu'), $('#Table_CHS_Data'), false);
+                Item_Move($(this), $('#Table_Search_Recu'), $('#Table_CHS_Data'), false);
             });
             $('#BT_ATR').on('click', function () {
-                Item_Move($(this), $('#Table_CHS_Data'), $('#Table_Search_Pudu'), true);
+                Item_Move($(this), $('#Table_CHS_Data'), $('#Table_Search_Recu'), true);
             });
             $('#BT_ATL').on('click', function () {            
-                Item_Move($(this), $('#Table_Search_Pudu'), $('#Table_CHS_Data'), true);
+                Item_Move($(this), $('#Table_Search_Recu'), $('#Table_CHS_Data'), true);
             });
             $('#BT_Next').on('click', function () {
                 Edit_Mode = "Edit";
@@ -570,11 +569,11 @@
             $('#BT_Search').on('click', function () {
                 Edit_Mode = "Base";
                 Form_Mode_Change("Search");
-                Search_Pudu();
+                Search_Recu();
             });
 
             $('#BT_Cancel').on('click', function () {
-                $('#Table_Search_Pudu').DataTable().clear().draw();
+                $('#Table_Search_Recu').DataTable().clear().draw();
                 $('#Table_CHS_Data').DataTable().clear().draw();
 
                 var Confirm_Check = confirm("<%=Resources.MP.Cancel_Alert%>");
@@ -631,7 +630,7 @@
             //功能選單
             $('#BT_S_CHS').on('click', function () {
                 Edit_Mode = "Base";
-                if($('#Table_Search_Pudu > tbody tr[role=row]').length > 0)
+                if($('#Table_Search_Recu > tbody tr[role=row]').length > 0)
                 {
                     Form_Mode_Change("Search");
                 }
@@ -656,7 +655,7 @@
         <div class="search_section_all">
             <table class="search_section_control">
             <tr class="trstyle"> 
-                <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
+                <td style="height: 5px; font-size: smaller;" colspan="8">&nbsp</td>
             </tr>
             <tr class="trstyle">
                 <td class="tdhstyle">點收批號</td>
@@ -677,19 +676,6 @@
                 <td class="tdbstyle">
                     <input id="Q_IVAN_TYPE"  class="textbox_char" />
                 </td>
-                <td class="tdhstyle">暫時型號</td>
-                <td class="tdbstyle">
-                    <input id="Q_TMP_TYPE"  class="textbox_char" />
-                </td>
-                <td class="tdhstyle">結案狀態</td>
-                <td class="tdbstyle">
-                    <select id="Q_WRITEOFF" >
-                        <option selected="selected"value="0">未結案</option>
-                        <option value="">全部</option>
-                    </select>
-                </td>
-            </tr>
-             <tr class="trstyle">
                 <td class="tdhstyle">廠商編號</td>
                 <td class="tdbstyle">
                     <input id="Q_FACT_NO"  class="textbox_char" />
@@ -698,8 +684,7 @@
                 <td class="tdbstyle">
                     <input id="Q_FACT_S_NAME" class="textbox_char" />
                 </td>
-            </tr>
-            
+            </tr>      
             <tr class="trstyle">
                 <td class="tdtstyleRight" colspan="6">
                     <input type="button" id="BT_Search" class="buttonStyle" value="<%=Resources.MP.Search%>" />
@@ -719,12 +704,12 @@
             <div id="Div_DT_View" style=" width:70%;height:71vh; border-style:solid;border-width:1px; float:left;">
                 <div class="dataTables_info" id="Table_Search_Pudu_info" role="status" aria-live="polite"></div>
                 <div style="display:none">
-                    <table id="Table_Search_Pudu_Tmp" class="Table_Search table table-striped table-bordered" >
+                    <table id="Table_Search_Recu_Tmp" class="Table_Search table table-striped table-bordered" >
                         <thead style="white-space:nowrap"></thead>
                         <tbody style="white-space:nowrap"></tbody>
                     </table>
                 </div>
-                <table id="Table_Search_Pudu" class="Table_Search table table-striped table-bordered">
+                <table id="Table_Search_Recu" class="Table_Search table table-striped table-bordered">
                     <thead style="white-space:nowrap"></thead>
                     <tbody style="white-space:nowrap"></tbody>
                 </table>

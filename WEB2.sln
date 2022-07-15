@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "WEB2", ".", "{95F26826-77B2-4EA0-8C4C-E5F79486DC06}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.7"
+		ProjectReferences = "{8fe623b9-b5c4-4c98-936a-e15a449a5a46}|Ivan_Log.dll;{e5ff57ed-c8be-4d9f-a7e6-9b8cef09cc77}|Ivan_Dal.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_49586"
 		Debug.AspNetCompiler.PhysicalPath = "..\WEB2\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_49586\"
@@ -24,13 +25,28 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "WEB2", ".", "{95F26826-77B2
 		SlnRelativePath = "..\WEB2\"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ivan_Log", "IvanLibrary\Ivan_Log\Ivan_Log.csproj", "{8FE623B9-B5C4-4C98-936A-E15A449A5A46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ivan_Dal", "IvanLibrary\Ivan_Dal\Ivan_Dal.csproj", "{E5FF57ED-C8BE-4D9F-A7E6-9B8CEF09CC77}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{95F26826-77B2-4EA0-8C4C-E5F79486DC06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{95F26826-77B2-4EA0-8C4C-E5F79486DC06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95F26826-77B2-4EA0-8C4C-E5F79486DC06}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{95F26826-77B2-4EA0-8C4C-E5F79486DC06}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{8FE623B9-B5C4-4C98-936A-E15A449A5A46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FE623B9-B5C4-4C98-936A-E15A449A5A46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FE623B9-B5C4-4C98-936A-E15A449A5A46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FE623B9-B5C4-4C98-936A-E15A449A5A46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5FF57ED-C8BE-4D9F-A7E6-9B8CEF09CC77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5FF57ED-C8BE-4D9F-A7E6-9B8CEF09CC77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5FF57ED-C8BE-4D9F-A7E6-9B8CEF09CC77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5FF57ED-C8BE-4D9F-A7E6-9B8CEF09CC77}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
