@@ -503,7 +503,7 @@
             //功能選單
             $('#BT_CHS').on('click', function () {
                 Edit_Mode = "Base";
-                if ($('#Table_Search_Quote > tbody tr[role=row]').length > 0) {
+                if ($('#Table_Search_Quote > tbody tr[role=row]').length > 0 || $('#Table_CHS_Data > tbody tr[role=row]').length > 0) {
                     Form_Mode_Change("Search");
                 }
                 else {

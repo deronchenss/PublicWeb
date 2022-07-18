@@ -24,8 +24,8 @@ namespace Ivan_Log
 
             logModel.LOG_DATE = DateTime.Now;
             logModel.USER = user == null ? "IVAN10" : user.ToString();
-            logModel.PROG_URL = context.Request.UrlReferrer.ToString();
-                switch (callType)
+            logModel.PROG_URL = System.IO.Path.GetFileName(context.Request.UrlReferrer.ToString());
+            switch (callType)
             {
                 case "S":
                     logModel.CALL_TYPE = "查詢";
@@ -39,11 +39,15 @@ namespace Ivan_Log
                 case "D":
                     logModel.CALL_TYPE = "刪除";
                     break;
+                //自定義動作
+                default:
+                    logModel.CALL_TYPE = callType;
+                    break;
             }
 
             logModel.CALL_CONTEXT = HttpUtility.UrlDecode(context.Request.Form.ToString(), Encoding.UTF8);
-            logModel.SQL_TEXT = sqlStr;
-            logModel.SERVER_IP = "";
+            logModel.SQL_TEXT = sqlStr.Replace("\t","").Replace("\r\n", "");
+            logModel.SERVER_IP = context.Request.Url.Authority;
             logModel.CLIENT_IP = context.Request.UserHostAddress;
             logModel.RESULT = result ? "SUCCESS" : "FAIL";
             dao.Insert(logModel);

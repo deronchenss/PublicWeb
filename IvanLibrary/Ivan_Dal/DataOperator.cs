@@ -15,6 +15,9 @@ namespace Ivan_Dal
         public string connStr = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
         bool isTran = false;
 
+        //最後寫入SQL語句 LOG用
+        public string sqlStr => cmd.CommandText;
+
         private void SetConnection()
         {
             conn.ConnectionString = connStr;

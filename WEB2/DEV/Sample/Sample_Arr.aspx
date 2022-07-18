@@ -1,19 +1,13 @@
-﻿<%@ Page Title="樣品點收分配" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Chk_Dist.aspx.cs" Inherits="Sample_Chk_Dist" %>
+﻿<%@ Page Title="樣品到貨作業" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Arr.aspx.cs" Inherits="Sample_Arr" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
     <script src="/js/jquery.dataTables.min.js"></script>
     <script src="/js/dataTables.bootstrap4.min.js"></script>
-    <style type="text/css">
-       .tableClick {
-            color: white;
-            background-color: rgb(90, 20, 0) !important;
-        }
-    </style>
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
-            var apiUrl = "/DEV/Sample/Ashx/Sample_Chk_Dist.ashx";
+            var apiUrl = "/DEV/Sample/Ashx/Sample_Arr.ashx";
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
 
@@ -70,16 +64,51 @@
                 "searching": false,
                 "paging": false,
                 "bInfo": false //顯示幾筆隱藏
-            });
-
-            //$('#TB_Date_S').val($.datepicker.formatDate('yy-mm-dd', new Date()));
-            //$('#TB_Date_E').val($.datepicker.formatDate('yy-mm-dd', new Date()));          
+            }); 
 
             window.document.body.onbeforeunload = function () {
                 if (Edit_Mode === "Edit") {
                     return '您尚未將編輯過的表單資料送出，請問您確定要離開網頁嗎？';
                 }
             }
+
+            //上下移功能 根據每個頁面客製
+            $(document).keydown(function (event) {
+                var key = (event.keyCode ? event.keyCode : event.which);
+                var clickIndex = $('#Table_EXEC_Data > tbody > tr.tableClick').index();
+                if (key == '40') {
+                    if (clickIndex < $('#Table_EXEC_Data tbody tr').length - 1) {
+                        clickIndex++;
+                        ClickAddClass($('#Table_EXEC_Data > tbody > tr:nth(' + clickIndex + ')'));
+                    }
+                }
+                else if (key == '38') {
+                    clickIndex--;
+                    ClickAddClass($('#Table_EXEC_Data > tbody > tr:nth(' + clickIndex + ')'));
+                }
+            });
+
+
+            function ClickAddClass($click) {
+                //點擊賦予顏色
+                $('#Table_EXEC_Data > tbody tr').removeClass("tableClick");
+                $click.addClass("tableClick");
+
+                //IMG page
+                var clickData = $('#Table_EXEC_Data').DataTable().row($click).data();
+                var index = $('#Table_EXEC_Data thead th:contains(頤坊型號)').index();
+                $('#I_IVAN_TYPE').val(clickData[index]);
+                index = $('#Table_EXEC_Data thead th:contains(廠商編號)').index();
+                $('#I_FACT_NO').val(clickData[index]);
+                index = $('#Table_EXEC_Data thead th:contains(廠商簡稱)').index();
+                $('#I_FACT_S_NAME').val(clickData[index]);
+                index = $('#Table_EXEC_Data thead th:contains(產品說明)').index();
+                $('#I_PROD_DESC').val(clickData[index]);
+                index = $('#Table_EXEC_Data thead th:contains(SUPLU_SEQ)').index();
+                $('#I_SUPLU_SEQ').val(clickData[index]);
+                Search_IMG($('#I_SUPLU_SEQ').val());
+            }
+
             //function region
             function Form_Mode_Change(Form_Mode) {
                 switch (Form_Mode) {
@@ -103,7 +132,7 @@
                         V_BT_CHG($('#BT_S_CHS'));
                         break;
                     case "EXEC":
-                        if ($('#Table_Search_Recu > tbody tr[role=row]').length === 0) {
+                        if ($('#Table_Search_Pudu > tbody tr[role=row]').length === 0 && $('#Table_CHS_Data > tbody tr[role=row]').length === 0) {
                             alert('請先查詢');
                             Edit_Mode = "Base";
                             Form_Mode_Change("Base");
@@ -253,20 +282,20 @@
                 }
 
                 $('#Table_CHS_Data_info').text('Showing ' + $('#Table_CHS_Data > tbody tr[role=row]').length + ' entries');
-                $('#Table_Search_Pudu_info').text('Showing ' + $('#Table_Search_Recu > tbody tr[role=row]').length + ' entries');
+                $('#Table_Search_Pudu_info').text('Showing ' + $('#Table_Search_Pudu > tbody tr[role=row]').length + ' entries');
                 $('#BT_Next').toggle(Boolean($('#Table_CHS_Data').find('tbody tr').length > 0));
             }
-           
+
             function V_BT_CHG(buttonChs) {
                 $('.V_BT').attr('disabled', false);
                 buttonChs.attr('disabled', 'disabled');
             }
             //ajax function
-            function Search_Recu() {
+            function Search_Pudu() {
                 $.ajax({
                     url: apiUrl,
                     data:{
-                        "Call_Type": "SEARCH_RECU",    
+                        "Call_Type": "SEARCH_PUDU",    
                         "點收批號": $('#Q_CHK_BATCH_NO').val(),
                         "採購單號": $('#Q_PUDU_NO').val(),
                         "頤坊型號": $('#Q_IVAN_TYPE').val(),
@@ -274,7 +303,8 @@
                         "點收日期_S": $('#Q_CHK_DATE_S').val(),
                         "點收日期_E": $('#Q_CHK_DATE_E').val(),
                         "廠商編號": $('#Q_FACT_NO').val(),
-                        "廠商簡稱": $('#Q_FACT_S_NAME').val()
+                        "廠商簡稱": $('#Q_FACT_S_NAME').val(),
+                        "WRITE_OFF": $('#Q_WRITEOFF').val()
                     },
                     cache: false,
                     type: "POST",
@@ -291,7 +321,7 @@
                             Form_Mode_Change("Base");
                         }
                         else {
-                            $('#Table_Search_Recu_Tmp').DataTable({
+                            $('#Table_Search_Pudu_Tmp').DataTable({
                                 "data": response,
                                 "destroy": true,
                                 "columns": [
@@ -353,7 +383,7 @@
                                 "bInfo": false //顯示幾筆隱藏
                             });
 
-                            $('#Table_Search_Recu').DataTable({
+                            $('#Table_Search_Pudu').DataTable({
                                 "destroy": true,
                                 "preDrawCallback": function (settings) {
                                     pageScrollPudu = $('#Table_Search_Pudu_wrapper div.dataTables_scrollBody').scrollTop();
@@ -454,13 +484,13 @@
                            });
 
                             //input 欄位 Undefind 問題 調整為 先存TMP TABLE 再將 VALUE 複製到正式 table 
-                            $('#Table_Search_Recu_Tmp').DataTable().draw();
-                            $('#Table_Search_Recu').DataTable().draw();
-                            $('#Table_Search_Recu').DataTable().clear().rows.add($('#Table_Search_Recu_Tmp').find('tbody tr[role=row]').clone()).draw();
+                            $('#Table_Search_Pudu_Tmp').DataTable().draw();
+                            $('#Table_Search_Pudu').DataTable().draw();
+                            $('#Table_Search_Pudu').DataTable().clear().rows.add($('#Table_Search_Pudu_Tmp').find('tbody tr[role=row]').clone()).draw();
 
                             $('#Table_CHS_Data').DataTable().draw();
                             $('#Table_CHS_Data_info').text('Showing ' + $('#Table_CHS_Data > tbody tr[role=row]').length + ' entries');
-                            $('#Table_Search_Pudu_info').text('Showing ' + $('#Table_Search_Recu > tbody tr[role=row]').length + ' entries');
+                            $('#Table_Search_Pudu_info').text('Showing ' + $('#Table_Search_Pudu > tbody tr[role=row]').length + ' entries');
                         }
                     },
                     error: function (ex) {
@@ -533,7 +563,7 @@
                             $('#Table_CHS_Data').DataTable().rows().remove().draw();
 
                             //回到第一頁
-                            Search_Recu();
+                            Search_Pudu();
                             Edit_Mode = "Search";
                             Form_Mode_Change("Search");
                         }
@@ -547,17 +577,17 @@
             };         
 
             //TABLE 功能設定
-            $('#Table_Search_Recu').on('click', 'tbody tr', function () {   
-                Item_Move($(this), $('#Table_CHS_Data'), $('#Table_Search_Recu'), false);
+            $('#Table_Search_Pudu').on('click', 'tbody tr', function () {   
+                Item_Move($(this), $('#Table_CHS_Data'), $('#Table_Search_Pudu'), false);
             });
             $('#Table_CHS_Data').on('click', 'tbody tr', function () {
-                Item_Move($(this), $('#Table_Search_Recu'), $('#Table_CHS_Data'), false);
+                Item_Move($(this), $('#Table_Search_Pudu'), $('#Table_CHS_Data'), false);
             });
             $('#BT_ATR').on('click', function () {
-                Item_Move($(this), $('#Table_CHS_Data'), $('#Table_Search_Recu'), true);
+                Item_Move($(this), $('#Table_CHS_Data'), $('#Table_Search_Pudu'), true);
             });
             $('#BT_ATL').on('click', function () {            
-                Item_Move($(this), $('#Table_Search_Recu'), $('#Table_CHS_Data'), true);
+                Item_Move($(this), $('#Table_Search_Pudu'), $('#Table_CHS_Data'), true);
             });
             $('#BT_Next').on('click', function () {
                 Edit_Mode = "Edit";
@@ -569,11 +599,11 @@
             $('#BT_Search').on('click', function () {
                 Edit_Mode = "Base";
                 Form_Mode_Change("Search");
-                Search_Recu();
+                Search_Pudu();
             });
 
             $('#BT_Cancel').on('click', function () {
-                $('#Table_Search_Recu').DataTable().clear().draw();
+                $('#Table_Search_Pudu').DataTable().clear().draw();
                 $('#Table_CHS_Data').DataTable().clear().draw();
 
                 var Confirm_Check = confirm("<%=Resources.MP.Cancel_Alert%>");
@@ -598,23 +628,7 @@
             });
 
             $('#Table_EXEC_Data').on('click', 'tbody tr', function () {
-                //點擊賦予顏色
-                $('#Table_EXEC_Data > tbody tr').removeClass("tableClick");
-                $(this).addClass("tableClick");
-
-                //IMG page
-                var clickData = $('#Table_EXEC_Data').DataTable().row($(this)).data();
-                var index = $('#Table_EXEC_Data thead th:contains(頤坊型號)').index(); 
-                $('#I_IVAN_TYPE').val(clickData[index]);
-                index = $('#Table_EXEC_Data thead th:contains(廠商編號)').index(); 
-                $('#I_FACT_NO').val(clickData[index]);
-                index = $('#Table_EXEC_Data thead th:contains(廠商簡稱)').index(); 
-                $('#I_FACT_S_NAME').val(clickData[index]);
-                index = $('#Table_EXEC_Data thead th:contains(產品說明)').index(); 
-                $('#I_PROD_DESC').val(clickData[index]);
-                index = $('#Table_EXEC_Data thead th:contains(SUPLU_SEQ)').index();
-                $('#I_SUPLU_SEQ').val(clickData[index]);
-                Search_IMG($('#I_SUPLU_SEQ').val());
+                ClickAddClass($(this));
             });
 
             $('#BT_EXECUTE_CANCEL').on('click', function () {
@@ -630,7 +644,7 @@
             //功能選單
             $('#BT_S_CHS').on('click', function () {
                 Edit_Mode = "Base";
-                if($('#Table_Search_Recu > tbody tr[role=row]').length > 0)
+                if ($('#Table_Search_Pudu > tbody tr[role=row]').length > 0 || $('#Table_CHS_Data > tbody tr[role=row]').length > 0)
                 {
                     Form_Mode_Change("Search");
                 }
@@ -655,7 +669,7 @@
         <div class="search_section_all">
             <table class="search_section_control">
             <tr class="trstyle"> 
-                <td style="height: 5px; font-size: smaller;" colspan="8">&nbsp</td>
+                <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
             </tr>
             <tr class="trstyle">
                 <td class="tdhstyle">點收批號</td>
@@ -676,6 +690,19 @@
                 <td class="tdbstyle">
                     <input id="Q_IVAN_TYPE"  class="textbox_char" />
                 </td>
+                <td class="tdhstyle">暫時型號</td>
+                <td class="tdbstyle">
+                    <input id="Q_TMP_TYPE"  class="textbox_char" />
+                </td>
+                <td class="tdhstyle">結案狀態</td>
+                <td class="tdbstyle">
+                    <select id="Q_WRITEOFF" >
+                        <option selected="selected"value="0">未結案</option>
+                        <option value="">全部</option>
+                    </select>
+                </td>
+            </tr>
+             <tr class="trstyle">
                 <td class="tdhstyle">廠商編號</td>
                 <td class="tdbstyle">
                     <input id="Q_FACT_NO"  class="textbox_char" />
@@ -684,7 +711,8 @@
                 <td class="tdbstyle">
                     <input id="Q_FACT_S_NAME" class="textbox_char" />
                 </td>
-            </tr>      
+            </tr>
+            
             <tr class="trstyle">
                 <td class="tdtstyleRight" colspan="6">
                     <input type="button" id="BT_Search" class="buttonStyle" value="<%=Resources.MP.Search%>" />
@@ -704,12 +732,12 @@
             <div id="Div_DT_View" style=" width:70%;height:71vh; border-style:solid;border-width:1px; float:left;">
                 <div class="dataTables_info" id="Table_Search_Pudu_info" role="status" aria-live="polite"></div>
                 <div style="display:none">
-                    <table id="Table_Search_Recu_Tmp" class="Table_Search table table-striped table-bordered" >
+                    <table id="Table_Search_Pudu_Tmp" class="Table_Search table table-striped table-bordered" >
                         <thead style="white-space:nowrap"></thead>
                         <tbody style="white-space:nowrap"></tbody>
                     </table>
                 </div>
-                <table id="Table_Search_Recu" class="Table_Search table table-striped table-bordered">
+                <table id="Table_Search_Pudu" class="Table_Search table table-striped table-bordered">
                     <thead style="white-space:nowrap"></thead>
                     <tbody style="white-space:nowrap"></tbody>
                 </table>
@@ -829,7 +857,7 @@
                 </table>
             </div> 
 
-            <div id="Div_IMG_DETAIL" style="height:71vh; border-style:solid;border-width:1px; float:right; overflow:auto ">
+            <div id="Div_IMG_DETAIL" style="width:28%;height:71vh; border-style:solid;border-width:1px; float:right; overflow:auto ">
                 <table class="edit_section_control">
                      <tr class="trstyle"> 
                         <td class="tdbstyle" style="height: 5vh; font-size: smaller;" >&nbsp</td>
@@ -862,7 +890,7 @@
 
                     <tr class="trstyle">
                         <td style="text-align:center" colspan="4">
-                            <img id="I_IMG" src="#" style="display:none" />
+                            <img id="I_IMG" src="#" style="max-width:100%; max-height:100%; display:none" />
                             <span id="I_NO_IMG" >查無圖檔</span>
                         </td>
                     </tr>

@@ -6,12 +6,6 @@
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
     <script src="/js/jquery.dataTables.min.js"></script>
     <script src="/js/dataTables.bootstrap4.min.js"></script>
-    <style type="text/css">
-       .tableToEdit {
-            color: white;
-            background-color: rgb(90, 20, 0) !important;
-        }
-    </style>
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
@@ -56,6 +50,22 @@
                 }
             }
 
+            //上下移功能 根據每個頁面客製
+            $(document).keydown(function (event) {
+                var key = (event.keyCode ? event.keyCode : event.which);
+                var clickIndex = $('#Table_Search_Quote > tbody > tr.tableClick').index();
+                if (key == '40') {
+                    if (clickIndex < $('#Table_Search_Quote tbody tr').length - 1) {
+                        clickIndex++;
+                        ClickToEdit($('#Table_Search_Quote > tbody > tr:nth(' + clickIndex + ')'));
+                    }
+                }
+                else if (key == '38') {
+                    clickIndex--;
+                    ClickToEdit($('#Table_Search_Quote > tbody > tr:nth(' + clickIndex + ')'));
+                }
+            });
+
             //function region
             function Form_Mode_Change(Form_Mode) {
                 switch (Form_Mode) {
@@ -92,8 +102,8 @@
             function ClickToEdit(click_tr) {
 
                 //點擊賦予顏色
-                $('#Table_Search_Quote > tbody tr').removeClass("tableToEdit");
-                click_tr.addClass("tableToEdit");
+                $('#Table_Search_Quote > tbody tr').removeClass("tableClick");
+                click_tr.addClass("tableClick");
 
                 var clickData = $('#Table_Search_Quote').DataTable().row(click_tr).data();
 
@@ -346,7 +356,6 @@
 
             $('#BT_Cancel').on('click', function () {
                 $('#Table_Search_Quote').DataTable().clear().draw();
-                $('#Table_CHS_Data').DataTable().clear().draw();
 
                 var Confirm_Check = confirm("<%=Resources.MP.Cancel_Alert%>");
                 if (Confirm_Check) {
@@ -366,7 +375,7 @@
             //功能選單
             $('#BT_BASE').on('click', function () {
                 Edit_Mode = "Base";
-                if($('#Table_Search_Quote > tbody tr[role=row]').length > 0)
+                if ($('#Table_Search_Quote > tbody tr[role=row]').length > 0)
                 {
                     Form_Mode_Change("Search");
                 }
@@ -655,7 +664,7 @@
                     <tr class="trstyle">
                         <td class="tdEditstyle">產品說明</td>
                         <td class="tdbstyle" colspan="4">
-                            <input id="I_PROD_DESC" class="textbox_char" style="width:80%" disabled="disabled" />
+                            <input id="I_PROD_DESC" class="textbox_char" style="max-width:100%; max-height:100%;" disabled="disabled" />
                         </td>
                     </tr>
 

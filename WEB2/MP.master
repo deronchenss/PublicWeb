@@ -224,6 +224,7 @@
                                         <li >
                                             <a href="/DEV/Sample/Sample_Chk.aspx">樣品點收</a>
                                             <a href="/DEV/Sample/Sample_Chk_MT.aspx">樣品點收查詢維護</a>
+                                            <a href="/DEV/Sample/Sample_Chk_Dist.aspx">樣品點收分配</a>
                                         </li>
                                     </ul>
                                 </li>

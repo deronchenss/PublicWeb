@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{E5FF57ED-C8BE-4D9F-A7E6-9B8CEF09CC77}</ProjectGuid>
+    <ProjectGuid>{CF899F1F-CBD6-429E-B81F-0B10B4471B97}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Ivan_Dal</RootNamespace>
-    <AssemblyName>Ivan_Dal</AssemblyName>
+    <RootNamespace>Ivan_Service</RootNamespace>
+    <AssemblyName>Ivan_Service</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
@@ -45,17 +45,19 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataOperator.cs" />
-    <Compile Include="Model\datalog.cs" />
+    <Compile Include="Logic\Dev\Dal_Sample_Chk_Dist.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Ivan_Dal\Ivan_Dal.csproj">
+      <Project>{E5FF57ED-C8BE-4D9F-A7E6-9B8CEF09CC77}</Project>
+      <Name>Ivan_Dal</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

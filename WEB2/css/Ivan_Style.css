@@ -126,3 +126,8 @@ input:disabled:not([type=button]), select[disabled], textarea[disabled] {
         background-color: #f8981d;
         color: white;
     }
+
+.tableClick {
+    color: white;
+    background-color: rgb(90, 20, 0) !important;
+}

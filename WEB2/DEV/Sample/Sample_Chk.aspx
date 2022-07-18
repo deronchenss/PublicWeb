@@ -18,7 +18,42 @@
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
 
-            <%=Session["QUAH_NO"] = null%>;
+            //上下移功能 根據每個頁面客製
+            $(document).keydown(function (event) {
+                var key = (event.keyCode ? event.keyCode : event.which);
+                var clickIndex = $('#Table_EXEC_Data > tbody > tr.tableClick').index();
+                if (key == '40') {
+                    if (clickIndex < $('#Table_EXEC_Data tbody tr').length - 1) {
+                        clickIndex++;
+                        ClickAddClass($('#Table_EXEC_Data > tbody > tr:nth(' + clickIndex + ')'));
+                    }
+                }
+                else if (key == '38') {
+                    clickIndex--;
+                    ClickAddClass($('#Table_EXEC_Data > tbody > tr:nth(' + clickIndex + ')'));
+                }
+            });
+
+
+            function ClickAddClass($click) {
+                //點擊賦予顏色
+                $('#Table_EXEC_Data > tbody tr').removeClass("tableClick");
+                $click.addClass("tableClick");
+
+                //IMG page
+                var clickData = $('#Table_EXEC_Data').DataTable().row($click).data();
+                var index = $('#Table_EXEC_Data thead th:contains(頤坊型號)').index();
+                $('#I_IVAN_TYPE').val(clickData[index]);
+                index = $('#Table_EXEC_Data thead th:contains(廠商編號)').index();
+                $('#I_FACT_NO').val(clickData[index]);
+                index = $('#Table_EXEC_Data thead th:contains(廠商簡稱)').index();
+                $('#I_FACT_S_NAME').val(clickData[index]);
+                index = $('#Table_EXEC_Data thead th:contains(產品說明)').index();
+                $('#I_PROD_DESC').val(clickData[index]);
+                index = $('#Table_EXEC_Data thead th:contains(SUPLU_SEQ)').index();
+                $('#I_SUPLU_SEQ').val(clickData[index]);
+                Search_IMG($('#I_SUPLU_SEQ').val());
+            }
 
             //init CONTROLER
             Form_Mode_Change("Base");
@@ -624,23 +659,7 @@
             });
 
             $('#Table_EXEC_Data').on('click', 'tbody tr', function () {
-                //點擊賦予顏色
-                $('#Table_EXEC_Data > tbody tr').removeClass("tableClick");
-                $(this).addClass("tableClick");
-
-                //IMG page
-                var clickData = $('#Table_EXEC_Data').DataTable().row($(this)).data();
-                var index = $('#Table_EXEC_Data thead th:contains(頤坊型號)').index(); 
-                $('#I_IVAN_TYPE').val(clickData[index]);
-                index = $('#Table_EXEC_Data thead th:contains(廠商編號)').index(); 
-                $('#I_FACT_NO').val(clickData[index]);
-                index = $('#Table_EXEC_Data thead th:contains(廠商簡稱)').index(); 
-                $('#I_FACT_S_NAME').val(clickData[index]);
-                index = $('#Table_EXEC_Data thead th:contains(產品說明)').index(); 
-                $('#I_PROD_DESC').val(clickData[index]);
-                index = $('#Table_EXEC_Data thead th:contains(SUPLU_SEQ)').index();
-                $('#I_SUPLU_SEQ').val(clickData[index]);
-                Search_IMG($('#I_SUPLU_SEQ').val());
+                ClickAddClass($(this));
             });
 
             $('#BT_EXECUTE_CANCEL').on('click', function () {
@@ -656,7 +675,7 @@
             //功能選單
             $('#BT_S_CHS').on('click', function () {
                 Edit_Mode = "Base";
-                if($('#Table_Search_Pudu > tbody tr[role=row]').length > 0)
+                if ($('#Table_Search_Pudu > tbody tr[role=row]').length > 0 || $('#Table_CHS_Data > tbody tr[role=row]').length > 0)
                 {
                     Form_Mode_Change("Search");
                 }
@@ -835,7 +854,7 @@
                 </table>
             </div> 
 
-            <div id="Div_IMG_DETAIL" style="height:71vh; border-style:solid;border-width:1px; float:right; overflow:auto ">
+            <div id="Div_IMG_DETAIL" style="width:28%;height:71vh; border-style:solid;border-width:1px; float:right; overflow:auto ">
                 <table class="edit_section_control">
                      <tr class="trstyle"> 
                         <td class="tdbstyle" style="height: 5vh; font-size: smaller;" >&nbsp</td>
@@ -868,7 +887,7 @@
 
                     <tr class="trstyle">
                         <td style="text-align:center" colspan="4">
-                            <img id="I_IMG" src="#" style="display:none" />
+                            <img id="I_IMG" src="#" style="max-width:100%; max-height:100%;display:none" />
                             <span id="I_NO_IMG" >查無圖檔</span>
                         </td>
                     </tr>
