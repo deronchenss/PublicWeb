@@ -1,6 +1,7 @@
 ﻿<%@ Page Title="Cost Class Maintain" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Cost_Class.aspx.cs" Inherits="Cost_Cost_Class" %>
 <%@ Register TagPrefix="uc1" TagName="uc1" Src="~/User_Control/Dia_Supplier_Selector.ascx" %>
 <%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_ALL.ascx" %>
+<%@ Register TagPrefix="uc3" TagName="uc3" Src="~/User_Control/Dia_Duo_Datetime_Picker.ascx" %>
 
 
 
@@ -466,6 +467,7 @@
     </style>
     <uc1:uc1 ID="uc1" runat="server" /> 
     <uc2:uc2 ID="uc2" runat="server" /> 
+    <uc3:uc3 ID="uc3" runat="server" /> 
 
     <table class="table_th" style="text-align: left;">
         <tr>
@@ -482,14 +484,18 @@
             </td>
             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Update_Date%></td>
             <td style="text-align: left; width: 15%;">
-                <input id="TB_Date_S" type="date" style="width: 50%;" /><input id="TB_Date_E" type="date" style="width: 50%;" />
-            </td>
-            <td>
-                <a id="Today_DSDE" href="#" onclick="$('#TB_Date_S, #TB_Date_E').val($.datepicker.formatDate('yy-mm-dd', new Date()));">Today</a>
+                <div style="width: 90%; float: left; z-index: -10;">
+                    <input id="TB_Date_S" class="TB_DS" type="date" style="width: 50%;" /><input id="TB_Date_E" type="date" class="TB_DE" style="width: 50%;" />
+                </div>
+                <div style="width: 10%; float: right; z-index: 10;">
+                    <%--<a id="Today_DSDE" href="#" onclick="$('#TB_Date_S, #TB_Date_E').val($.datepicker.formatDate('yy-mm-dd', new Date()));">Today</a>
                     <br />
-                <a id="Clear_DSDE" href="#" onclick="$('#TB_Date_S, #TB_Date_E').val('');">Clear</a>
+                    <a id="Clear_DSDE" href="#" onclick="$('#TB_Date_S, #TB_Date_E').val('');">Clear</a>--%>
+                    <input id="BT_Duo_Datetime_Picker" type="button" value="…" style="float: right; z-index: 10; width: 100%;" onclick="$('#Duo_Datetime_Picker_Dialog').dialog('open');" />
+                </div>
+
             </td>
-            <td></td>
+            <td></td><td></td>
         </tr>
         <tr class="For_S">
             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Supplier_No%></td>
