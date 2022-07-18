@@ -318,6 +318,12 @@
         .U_Element:hover {
             opacity: 0.8;
         }
+      
+        table thead tr th {
+            background-color:white;
+            position: sticky;
+            top: 0; /* 列首永遠固定於上 */
+        }
     </style>
     <table class="table_th" style="text-align: left;">
         <tr>

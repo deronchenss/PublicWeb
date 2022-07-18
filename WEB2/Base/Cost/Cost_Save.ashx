@@ -176,8 +176,8 @@ public class Cost_Save : IHttpHandler, IRequiresSessionState
                     cmd.Parameters.AddWithValue("PGW", context.Request["PGW"]);
                     cmd.Parameters.AddWithValue("PGH", context.Request["PGH"]);
                     break;
-                    case "Cost_Apply":
-                        cmd.CommandText = @" UPDATE Dc2..suplu
+                case "Cost_Apply":
+                    cmd.CommandText = @" UPDATE Dc2..suplu
                                              SET [開發中] = 'R',
                                              	[申請原因] = @Reason,
                                              	[更新人員] = 'Ivan10',
@@ -186,13 +186,27 @@ public class Cost_Save : IHttpHandler, IRequiresSessionState
                     cmd.Parameters.AddWithValue("SEQ", context.Request["SEQ"]);
                     cmd.Parameters.AddWithValue("Reason", context.Request["Reason"]);
                     break;
-                    case "Cost_Approve":
-                        cmd.CommandText = @" UPDATE Dc2..suplu
+                case "Cost_Approve":
+                    cmd.CommandText = @" UPDATE Dc2..suplu
                                              SET [開發中] = 'N',
                                              	[更新人員] = 'Ivan10',
                                              	[更新日期] = GETDATE()
                                              WHERE [序號] = @SEQ; ";
                     cmd.Parameters.AddWithValue("SEQ", context.Request["SEQ"]);
+                    break;
+                case "Cost_Class":
+                    cmd.CommandText = @" UPDATE Dc2..suplu
+                                         SET [產品一階] = @PC1,
+                                             [產品二階] = @PC2,
+                                             [產品三階] = @PC3,
+                                         	 [更新人員] = @Update_User,
+                                         	 [更新日期] = GETDATE()
+                                         WHERE [序號] = @SEQ; ";
+                    cmd.Parameters.AddWithValue("SEQ", context.Request["SEQ"]);
+                    cmd.Parameters.AddWithValue("PC1", context.Request["PC1"]);
+                    cmd.Parameters.AddWithValue("PC2", context.Request["PC2"]);
+                    cmd.Parameters.AddWithValue("PC3", context.Request["PC3"]);
+                    cmd.Parameters.AddWithValue("Update_User", context.Request["Update_User"]);
                     break;
             }
             cmd.Connection = conn;

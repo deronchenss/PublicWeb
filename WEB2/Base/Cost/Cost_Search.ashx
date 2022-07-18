@@ -90,7 +90,7 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                                             WHERE (P.[開發中] = @DVN OR @DVN = 'ALL')
                                                    AND P.[頤坊型號] LIKE @IM + '%'
                                                    AND P.[廠商編號] LIKE @S_No + '%'
-                                                   AND ((P.[更新日期] >= @Date_S AND DATEADD(DAY,-1,P.[更新日期]) <= @Date_E) OR (@Date_S ='' AND @Date_E = '' ))
+                                                   AND ((P.[更新日期] >= @Date_S AND P.[更新日期] <= DATEADD(DAY,+1,@Date_E)) OR (@Date_S ='' AND @Date_E = '' ))
                                          ) A
                                          ORDER BY [頤坊型號] ";
                     cmd.Parameters.AddWithValue("IM", context.Request["IM"]);
@@ -98,23 +98,6 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                     cmd.Parameters.AddWithValue("Date_S", context.Request["Date_S"]);
                     cmd.Parameters.AddWithValue("Date_E", context.Request["Date_E"]);
                     cmd.Parameters.AddWithValue("DVN", context.Request["DVN"]);
-                    break;
-                case "Cost_Class_Search":
-                    cmd.CommandText = @" SELECT TOP 500 
-                                         	[頤坊型號], [廠商型號], [銷售型號], [廠商簡稱], [單位], [產品一階], [產品二階], [產品三階], [一階V3], [二階V3], [MSRP], [產品說明], 
-                                         	'ORD' [最後接單], 
-                                         --(SELECT Max(接單日期) From ORD A WHERE A.頤坊型號=T1.頤坊型號 AND A.廠商編號=T1.廠商編號 AND A.訂單數量>0) AS 最後接單,
-                                         	[大貨庫存數], [分配庫存數], 
-                                         	'PUD' 庫存在途, 
-                                         --(SELECT Sum(採購數量-點收數量) From PUD A WHERE A.頤坊型號=T1.頤坊型號 AND A.廠商編號=T1.廠商編號 AND IsNull(A.採購單號,'')<>'' AND (A.採購數量-A.點收數量)>0 AND (A.訂單號碼 Like 'X%' Or A.訂單號碼 Like 'WR%') AND IsNull(A.已刪除,0)=0) AS 庫存在途,
-                                         	[大貨安全數], [台北安全數], [ISP安全數], [UNActive], [國際條碼], [樣式], [大貨庫位], [廠商編號], 
-                                            --[圖型啟用], 
-                                            CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = C.[序號]),0) AS BIT) [Has_IMG],
-                                            [序號], [更新人員], LEFT(RTRIM(CONVERT(VARCHAR(20),[更新日期],20)),16) [更新日期], [更新日期] [Sort]
-                                         FROM Dc2..suplu C
-                                         WHERE 1 = 1
-                                         ORDER BY [Sort] desc ";
-                    //cmd.Parameters.AddWithValue("S_No", context.Request["S_No"]);
                     break;
             }
             cmd.Connection = conn;
@@ -240,42 +223,6 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                             SEQ = sdr["序號"],
                             Apply_Reason = sdr["申請原因"],
                             Has_IMG = sdr["Has_IMG"],
-                            Update_User = sdr["更新人員"],
-                            Update_Date = sdr["更新日期"],
-                        });
-                    }
-                    break;
-                case "Cost_Class_Search":
-                    while (sdr.Read())
-                    {
-                        Cost.Add(new
-                        {
-                            IM = sdr["頤坊型號"],
-                            SM = sdr["廠商型號"],
-                            SaleM = sdr["銷售型號"],
-                            S_SName = sdr["廠商簡稱"],
-                            Unit = sdr["單位"],
-                            Rank1 = sdr["產品一階"],
-                            Rank2 = sdr["產品二階"],
-                            Rank3 = sdr["產品三階"],
-                            Rank1_V3 = sdr["一階V3"],
-                            Rank2_V3 = sdr["二階V3"],
-                            MSRP = sdr["MSRP"],
-                            PI = sdr["產品說明"],
-                            LS_ORD = sdr["最後接單"],
-                            Location_1_Stock = sdr["大貨庫存數"],
-                            Location_2_Stock = sdr["分配庫存數"],
-                            SUM_PUD = sdr["庫存在途"],
-                            Location_1_Safe = sdr["大貨安全數"],
-                            Location_TPE_Safe = sdr["台北安全數"],
-                            Location_ISP_Safe = sdr["ISP安全數"],
-                            UN = sdr["UNActive"],
-                            I_No = sdr["國際條碼"],
-                            P_Style = sdr["樣式"],
-                            Location_1_Area = sdr["大貨庫位"],
-                            S_No = sdr["廠商編號"],
-                            Has_IMG = sdr["Has_IMG"],
-                            SEQ = sdr["序號"],
                             Update_User = sdr["更新人員"],
                             Update_Date = sdr["更新日期"],
                         });

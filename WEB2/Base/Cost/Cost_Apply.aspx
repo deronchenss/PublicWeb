@@ -134,28 +134,28 @@
                                 //}
                                 //src = "data:image/png;base64,' + window.btoa(binary) + '"
                                 Table_HTML +=
-                                    '<tr><td>' + String(response[i].DVN ?? "") +
-                                    '</td><td>' + String(response[i].S_SName ?? "") +
-                                    '</td><td>' + String(response[i].IM ?? "") +
-                                    '</td><td>' + String(response[i].SM ?? "") +
-                                    '</td><td>' + String(response[i].SaleM ?? "") +
-                                    '</td><td>' + String(response[i].PI ?? "") +
+                                    '<tr><td data-th="<%=Resources.MP.Developing%>">' + String(response[i].DVN ?? "") +
+                                    '</td><td data-th="<%=Resources.MP.Supplier_Short_Name%>">' + String(response[i].S_SName ?? "") +
+                                    '</td><td data-th="<%=Resources.MP.Ivan_Model%>">' + String(response[i].IM ?? "") +
+                                    '</td><td data-th="<%=Resources.MP.Supplier_Model%>">' + String(response[i].SM ?? "") +
+                                    '</td><td data-th="<%=Resources.MP.Sale_Model%>">' + String(response[i].SaleM ?? "") +
+                                    '</td><td data-th="<%=Resources.MP.Product_Information%>">' + String(response[i].PI ?? "") +
                                         (((response[i].Change_Log ?? "").length > 0) ? ('<br /><span style="color:blue;" title="' + (response[i].Change_Log ?? "") + '">移入檢視變更記錄</sapn>') : '') +
-                                    '</td><td class="DIMG" style="text-align:center;">' +
+                                    '</td><td class="DIMG" style="text-align:center;" data-th="<%=Resources.MP.Image%>">' +
                                     ((response[i].Has_IMG) ? ('<img type="Product" SEQ="' + String(response[i].SEQ ?? "") + '" />') : ('<%=Resources.MP.Image_NotExists%>')) +
-                                    '</td><td class="For_U" style="display:none;">' +
+                                    '</td><td class="For_U" style="display:none;" data-th="<%=Resources.MP.Apply_Reason%>">' +
                                     '<textarea class="U_Element" style="width:300px;" maxlength="50" title="Max Length 50 words.">' + String(response[i].Apply_Reason ?? "") + '</textarea>' +
-                                    '</td><td>' + String(response[i].Unit ?? "") +
-                                    '</td><td style="text-align:right;">' + ((response[i].TWD_P != 0) ? String(response[i].TWD_P ?? "") : "") +
-                                    '</td><td style="text-align:right;">' + ((response[i].USD_P != 0) ? String(response[i].USD_P ?? "") : "") +
-                                    '</td><td>' + String(response[i].Curr ?? "") +
-                                    '</td><td style="text-align:right;">' + ((response[i].Curr_P != 0) ? String(response[i].Curr_P ?? "") : "") +
-                                    '</td><td style="text-align:right;">' + ((response[i].MSRP != 0) ? String(response[i].MSRP ?? "") : "") +
-                                    '</td><td>' + String(response[i].LSTP_Day ?? "") +
-                                    '</td><td>' + String(response[i].S_No ?? "") +
-                                    '</td><td class="SEQ">' + String(response[i].SEQ ?? "") +
-                                    '</td><td>' + String(response[i].Update_User ?? "") +
-                                    '</td><td>' + String(response[i].Update_Date ?? "") +
+                                    '</td><td data-th="<%=Resources.MP.Unit%>">' + String(response[i].Unit ?? "") +
+                                    '</td><td style="text-align:right;" data-th="<%=Resources.MP.Price_TWD%>">' + ((response[i].TWD_P != 0) ? String(response[i].TWD_P ?? "") : "") +
+                                    '</td><td style="text-align:right;" data-th="<%=Resources.MP.Price_USD%>">' + ((response[i].USD_P != 0) ? String(response[i].USD_P ?? "") : "") +
+                                    '</td><td data-th="<%=Resources.MP.Currency%>">' + String(response[i].Curr ?? "") +
+                                    '</td><td style="text-align:right;" data-th="<%=Resources.MP.Price_Curr%>">' + ((response[i].Curr_P != 0) ? String(response[i].Curr_P ?? "") : "") +
+                                    '</td><td style="text-align:right;" data-th="MSRP">' + ((response[i].MSRP != 0) ? String(response[i].MSRP ?? "") : "") +
+                                    '</td><td data-th="<%=Resources.MP.Last_Price_Day%>">' + String(response[i].LSTP_Day ?? "") +
+                                    '</td><td data-th="<%=Resources.MP.Supplier_No%>">' + String(response[i].S_No ?? "") +
+                                    '</td><td class="SEQ" data-th="<%=Resources.MP.SEQ%>">' + String(response[i].SEQ ?? "") +
+                                    '</td><td data-th="<%=Resources.MP.Update_User%>">' + String(response[i].Update_User ?? "") +
+                                    '</td><td data-th="<%=Resources.MP.Update_Date%>">' + String(response[i].Update_Date ?? "") +
                                     '</td></tr>';
                             });
 
@@ -192,6 +192,17 @@
                     case "RB_SM_DIMG":
                         Show_IMG = true;
                         $('.DIMG img').css('height', '100px');
+                        break;
+                    case "RB_New":
+                        Show_IMG = true;
+                        $('.DIMG img').css('height', '100px');
+
+                        $('#Table_Exec_Data thead').toggle(false);
+                        $('#Table_Exec_Data tbody tr').attr('style', 'display: block;border: 1px solid #01977a;margin: 10px 0;border - radius: 5pt;background-color: #fff;');
+                        $('#Table_Exec_Data tbody td').attr('style', 'display: block;text-align: left;padding: 5px 1rem 5px 2rem;color: black;');
+                        //$('#Table_Exec_Data tbody td').attr('style', 'color: #01977a;text - indent: -1rem;content: attr(data - th);font - weight: bold;display: block;');
+                        $('[data-th=廠商型號], [data-th=銷售型號], [data-th=外幣幣別], [data-th=外幣單價]').toggle(false);
+                        
                         break;
                 }
                 if (Show_IMG && !IMG_Has_Read) {//Need Show And Not Read Data
@@ -318,6 +329,23 @@
             });
         });
     </script>
+    
+    <style type="text/css">
+        
+      #Table_Exec_Data tbody td::before {
+        color: #01977a;
+        text-indent: -1rem;
+        content: attr(data-th);
+        font-weight: bold;
+        display: block;
+      }
+      
+        table thead tr th {
+            background-color:white;
+            position: sticky;
+            top: 0; /* 列首永遠固定於上 */
+        }
+    </style>
 
     <style type="text/css">
         .M_BT {
@@ -412,6 +440,8 @@
                 <label for="RB_V_DIMG"><%=Resources.MP.Show_Original_Image%></label>
                 <input id="RB_SM_DIMG" type="radio" name="DIMG" disabled="disabled" />
                 <label for="RB_SM_DIMG"><%=Resources.MP.Show_Small_Image%></label>
+                <input id="RB_New" type="radio" name="DIMG" disabled="disabled" style="display:none;" />
+                <label for="RB_New">New_<%=Resources.MP.Show_Small_Image%></label>
             </td>
         </tr>
     </table>

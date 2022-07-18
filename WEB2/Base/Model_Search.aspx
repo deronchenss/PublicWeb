@@ -8,9 +8,10 @@
     <script src="/js/jquery.dataTables.min.js"></script>
     <script src="/js/dataTables.bootstrap4.min.js"></script>
 
-
+    
     <script type="text/javascript">
         $(document).ready(function () {
+            var Click_tr_IDX;
             document.body.style.overflow = 'hidden';
             Search_Product();
 
@@ -19,6 +20,7 @@
             });
 
             function Search_Product() {
+                Click_tr_IDX = null;
                 $('#Div_Basic').html('<table id="Table_Product" style="width: 100%" class="table table-striped table-bordered"><thead></thead><tbody></tbody></table>');
 
                 switch ($('#DDL_Data_Souce').val()) {
@@ -153,53 +155,83 @@
                         break;
                 }
 
-                $('#Table_Product').attr('style', 'white-space:nowrap;');
-                $('#Table_Product thead th').attr('style', 'text-align:center;');
+                $('#Table_Product').css('white-space', 'nowrap');
+                $('#Table_Product thead th').css('text-align', 'center');
+
+                $('#Table_Product thead th').css('background-color', 'white');
+                $('#Table_Product thead th').css('position', 'sticky');
+                $('#Table_Product thead th').css('top', '0');
+                //    : ;
+                //    : 0; /* 列首永遠固定於上 */
 
                 $('#Table_Product').on('click', 'tbody tr', function () {
-                    $(this).parent().find('tr').css('background-color', '');
-                    $(this).parent().find('tr').css('color', 'black');
-                    $(this).css('background-color', '#5a1400');
-                    $(this).css('color', 'white');
-
-                    var SEQ = $(this).find('.SUPLU_SEQ').text().toString().trim();
-
-                    $('.M2_For_U').css('display', '');
-                    $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
-                    $('#BT_ED_Edit, #BT_ED_Copy').css('display', '');
-                    $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
-
-                    $.ajax({
-                        url: "/Base/BOM/BOM_Search.ashx",
-                        data: {
-                            "SUPLU_SEQ": SEQ,
-                            "Call_Type": "GET_IMG"
-                        },
-                        cache: false,
-                        type: "POST",
-                        datatype: "json",
-                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                        success: function (response) {
-                            var IMG_View = !(response[0] == null);
-                            $('#IMG_I_IMG').toggle(IMG_View);
-                            $('#IMG_I_IMG_Hint').toggle(!IMG_View);
-                            if (IMG_View) {
-                                var binary = '';
-                                var bytes = new Uint8Array(response[0].P_IMG);
-                                var len = bytes.byteLength;
-                                for (var i = 0; i < len; i++) {
-                                    binary += String.fromCharCode(bytes[i]);
-                                }
-                                $('#IMG_I_IMG').attr('src', 'data:image/png;base64,' + window.btoa(binary));
-                            }
-                        },
-                        error: function (ex) {
-                            alert(ex);
-                        }
-                    });
+                    Click_tr_IDX = $(this).index();
+                    FN_Tr_Click($(this));
+                    console.warn($(this));
                 });
             };
 
+            $(window).keydown(function (e) {
+                if (Click_tr_IDX != null) {
+                    switch (e.keyCode) {
+                        case 38://^
+                            if (Click_tr_IDX > 0) {
+                                Click_tr_IDX -= 1;
+                            }
+                            FN_Tr_Click($('#Table_Product tbody tr:nth(' + Click_tr_IDX + ')'));
+                            break;
+                        case 40://v
+                            if (Click_tr_IDX < ($('#Table_Product tbody tr').length - 1)) {
+                                Click_tr_IDX += 1;
+                            }
+                            FN_Tr_Click($('#Table_Product tbody tr:nth(' + Click_tr_IDX + ')'));
+                            break;
+                    }
+                }
+            });
+
+            function FN_Tr_Click(Click_tr) {
+                Click_tr.parent().find('tr').css('background-color', '');
+                Click_tr.parent().find('tr').css('color', 'black');
+                Click_tr.css('background-color', '#5a1400');
+                Click_tr.css('color', 'white');
+
+                var SEQ = Click_tr.find('.SUPLU_SEQ').text().toString().trim();
+
+                $('.M2_For_U').css('display', '');
+                $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
+                $('#BT_ED_Edit, #BT_ED_Copy').css('display', '');
+                $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
+
+                $.ajax({
+                    url: "/Base/BOM/BOM_Search.ashx",
+                    data: {
+                        "SUPLU_SEQ": SEQ,
+                        "Call_Type": "GET_IMG"
+                    },
+                    cache: false,
+                    type: "POST",
+                    datatype: "json",
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    success: function (response) {
+                        var IMG_View = !(response[0] == null);
+                        $('#IMG_I_IMG').toggle(IMG_View);
+                        $('#IMG_I_IMG_Hint').toggle(!IMG_View);
+                        if (IMG_View) {
+                            var binary = '';
+                            var bytes = new Uint8Array(response[0].P_IMG);
+                            var len = bytes.byteLength;
+                            for (var i = 0; i < len; i++) {
+                                binary += String.fromCharCode(bytes[i]);
+                            }
+                            $('#IMG_I_IMG').attr('src', 'data:image/png;base64,' + window.btoa(binary));
+                        }
+                    },
+                    error: function (ex) {
+                        alert(ex);
+                    }
+                });
+            }
 
             $('#TB_S_No').autocomplete({
                 autoFocus: true,
@@ -292,6 +324,33 @@
             });
         });
     </script>
+    
+    <style type="text/css">
+        .V_BT {
+            background-color: azure;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            text-align: center;
+            text-decoration: none;
+        }
+            .V_BT:hover {
+                background-color: #f8981d;
+                color: white;
+            }
+
+        #Table_Product tbody tr:hover {
+            background-color: #f8981d;
+            color: white;
+        }
+        
+        table thead tr th {
+            background-color:white;
+            position: sticky;
+            top: 0; /* 列首永遠固定於上 */
+        }
+    </style>
 
     <table class="table_th" style="width:98%">
         <tr>
@@ -381,26 +440,6 @@
         <input type="button" class="V_BT" value="<%=Resources.MP.Basic%>" onclick="$('.Div_D').css('display','none');$('#Div_Basic').css('width','100%');" disabled="disabled" />
         <input type="button" class="V_BT" value="<%=Resources.MP.Image%>" onclick="$('.Div_D').css('display','none');$('#Div_Image').css('display','');$('#Div_Basic').css('width','60%');$('#Div_Image').css('width','40%');" />
     </div>
-    <style type="text/css">
-        .V_BT {
-            background-color: azure;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            font-size: 15px;
-            text-align: center;
-            text-decoration: none;
-        }
-            .V_BT:hover {
-                background-color: #f8981d;
-                color: white;
-            }
-
-        #Table_Product tbody tr:hover {
-            background-color: #f8981d;
-            color: white;
-        }
-    </style>
     <script type="text/javascript">
         $(document).ready(function () {
             $('.V_BT').on('click', function () {

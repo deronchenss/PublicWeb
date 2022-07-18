@@ -46,10 +46,30 @@ public class New_Cost_Search : IHttpHandler
                                              OR (LEN(@PC) - LEN(REPLACE(@PC,'-',''))  = 3 AND @PC LIKE C.[產品三階] + '%' AND C.[產品三階] <> '')
                                              OR ISNULL(@PC,'') = ''
                                             )
-                                            AND ((C.[更新日期] >= @Date_S AND DATEADD(DAY,-1,C.[更新日期]) <= @Date_E) OR (@Date_S ='' AND @Date_E = '' ))
+                                            AND ((C.[更新日期] >= @Date_S AND C.[更新日期] <= DATEADD(DAY,+1,@Date_E)) OR (@Date_S ='' AND @Date_E = '' ))
                                             AND C.[廠商編號] LIKE @S_No + '%'
                                             AND C.[銷售型號] LIKE @SaleM + '%'
                                             AND C.[產品說明] LIKE '%' + @PI + '%'
+		                                    AND (
+			                                    (@BIgS = 'Y' AND ISNULL(C.[大貨庫存數],0) > 0)
+			                                    OR (@BIgS = 'N' AND ISNULL(C.[大貨庫存數],0) = 0)
+			                                    OR (@BIgS = 'ALL')
+			                                    )
+		                                    AND (
+			                                    (@MSRP = 'Y' AND ISNULL(C.[MSRP],0) > 0)
+			                                    OR (@MSRP = 'N' AND ISNULL(C.[MSRP],0) = 0)
+			                                    OR (@MSRP = 'ALL')
+			                                    )
+		                                    AND (
+			                                    (@PC_NEX = '1' AND ISNULL(C.[產品一階],'') = '')
+			                                    OR (@PC_NEX = '2' AND ISNULL(C.[產品二階],'') = '')
+			                                    OR (@PC_NEX = '3' AND ISNULL(C.[產品三階],'') = '')
+                                                OR (@PC_NEX = 'ALL')
+			                                    )
+                                            AND (
+                                                (@NO_L = 'True' AND ISNULL(C.[產品一階],'') <> '01') 
+                                                 OR (@NO_L = 'False')
+                                                )
                                          ORDER BY [Sort] desc ";
                 cmd.Parameters.AddWithValue("IM", context.Request["IM"]);
                 cmd.Parameters.AddWithValue("PC", context.Request["PC"]);
@@ -58,7 +78,10 @@ public class New_Cost_Search : IHttpHandler
                 cmd.Parameters.AddWithValue("S_No", context.Request["S_No"]);
                 cmd.Parameters.AddWithValue("SaleM", context.Request["SaleM"]);
                 cmd.Parameters.AddWithValue("PI", context.Request["PI"]);
-
+                cmd.Parameters.AddWithValue("BigS", context.Request["BigS"]);
+                cmd.Parameters.AddWithValue("MSRP", context.Request["MSRP"]);
+                cmd.Parameters.AddWithValue("PC_NEX", context.Request["PC_NEX"]);
+                cmd.Parameters.AddWithValue("NO_L", context.Request["NO_L"]);
                 break;
         }
         cmd.Connection = conn;
