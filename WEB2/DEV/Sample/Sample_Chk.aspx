@@ -862,12 +862,12 @@
                     <tr class="trstyle">
                         <td class="tdEditstyle">頤坊型號</td>
                         <td class="tdbstyle">
-                            <input id="I_IVAN_TYPE" class="textbox_char" disabled="disabled"   />
+                            <input id="I_IVAN_TYPE" class="textbox_char" disabled="disabled" style="width:100%"   />
                             <input id="I_SUPLU_SEQ" class="textbox_char" type="hidden"   />
                         </td>
                         <td class="tdEditstyle">廠商編號</td>
                         <td class="tdbstyle">
-                            <input id="I_FACT_NO"  class="textbox_char" disabled="disabled"   />
+                            <input id="I_FACT_NO"  class="textbox_char" disabled="disabled" style="width:100%"  />
                         </td>
                     </tr>
                     <tr class="trstyle">
@@ -875,7 +875,7 @@
                         <td class="tdbstyle"></td>
                         <td class="tdEditstyle">廠商簡稱</td>
                         <td class="tdbstyle" >
-                            <input id="I_FACT_S_NAME" class="textbox_char" disabled="disabled"   />
+                            <input id="I_FACT_S_NAME" class="textbox_char" disabled="disabled" style="width:100%"  />
                         </td>
                     </tr>
                     <tr class="trstyle">

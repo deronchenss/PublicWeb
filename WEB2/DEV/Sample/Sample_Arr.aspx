@@ -124,11 +124,6 @@
                         $('#Div_DT_Search').css('display', '');
                         $('#BT_Cancel').css('display', '');
 
-                        //如果有修改內容切回選擇將到貨TABLE貼回去
-                        if ($('#Table_EXEC_Data > tbody tr[role=row]').length != 0) {
-                            $('#Table_CHS_Data').DataTable().clear().rows.add($('#Table_EXEC_Data').find('tbody tr[role=row]').clone()).draw(); 
-                        }
-
                         V_BT_CHG($('#BT_S_CHS'));
                         break;
                     case "EXEC":
@@ -865,12 +860,12 @@
                     <tr class="trstyle">
                         <td class="tdEditstyle">頤坊型號</td>
                         <td class="tdbstyle">
-                            <input id="I_SUPLU_SEQ" type="hidden" class="textbox_char" />
+                            <input id="I_SUPLU_SEQ" type="hidden" class="textbox_char" style="width:100%" />
                             <input id="I_IVAN_TYPE" class="textbox_char" disabled="disabled"   />
                         </td>
                         <td class="tdEditstyle">廠商編號</td>
                         <td class="tdbstyle">
-                            <input id="I_FACT_NO"  class="textbox_char" disabled="disabled"   />
+                            <input id="I_FACT_NO"  class="textbox_char" disabled="disabled"  style="width:100%"  />
                         </td>
                     </tr>
                     <tr class="trstyle">
@@ -878,7 +873,7 @@
                         <td class="tdbstyle"></td>
                         <td class="tdEditstyle">廠商簡稱</td>
                         <td class="tdbstyle" >
-                            <input id="I_FACT_S_NAME" class="textbox_char" disabled="disabled"   />
+                            <input id="I_FACT_S_NAME" class="textbox_char" disabled="disabled" style="width:100%"  />
                         </td>
                     </tr>
                     <tr class="trstyle">

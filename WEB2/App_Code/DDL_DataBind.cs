@@ -126,4 +126,35 @@ public class DDL_DataBind : System.Web.Services.WebService
         var json = (new JavaScriptSerializer().Serialize(CT));
         return json;
     }
+
+    /// <summary>
+    /// 撈出員工中文姓名 FROM PASS
+    /// </summary>
+    /// <returns></returns>
+    [WebMethod]
+    public string PassDDL()
+    {
+        List<object> CT = new List<object>();
+        SqlConnection conn = new SqlConnection();
+        conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
+        SqlCommand cmd = new SqlCommand();
+        cmd.CommandText = @" SELECT 使用者中文 [txt], 使用者中文 [val]
+                             FROM Dc2..pass 
+                             WHERE 停用日期 IS NULL 
+                             ORDER BY 員工編號";
+        cmd.Connection = conn;
+        conn.Open();
+        SqlDataReader sdr = cmd.ExecuteReader();
+        while (sdr.Read())
+        {
+            CT.Add(new
+            {
+                txt = sdr["txt"],
+                val = sdr["val"]
+            });
+        }
+        conn.Close();
+        var json = (new JavaScriptSerializer().Serialize(CT));
+        return json;
+    }
 }
