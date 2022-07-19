@@ -37,8 +37,10 @@
                     }
                 }
                 else if (key == '38') {
-                    clickIndex--;
-                    ClickToEdit($('#Table_Search_Recu > tbody > tr:nth(' + clickIndex + ')'));
+                    if (clickIndex > 0) {
+                        clickIndex--;
+                        ClickToEdit($('#Table_Search_Recu > tbody > tr:nth(' + clickIndex + ')'));
+                    }
                 }
             });
 

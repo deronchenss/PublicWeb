@@ -83,8 +83,10 @@
                     }
                 }
                 else if (key == '38') {
-                    clickIndex--;
-                    ClickAddClass($('#Table_EXEC_Data > tbody > tr:nth(' + clickIndex + ')'));
+                    if (clickIndex > 0) {
+                        clickIndex--;
+                        ClickAddClass($('#Table_EXEC_Data > tbody > tr:nth(' + clickIndex + ')'));
+                    }
                 }
             });
 

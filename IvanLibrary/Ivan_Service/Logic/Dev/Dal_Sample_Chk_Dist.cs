@@ -198,5 +198,261 @@ namespace Ivan_Service
 			}
 			return res;
 		}
+
+		/// <summary>
+		/// 內部移轉 
+		/// </summary>
+		/// <param name="context"></param>
+		/// <returns></returns>
+		public int InsertStkioh(HttpContext context)
+		{
+			int res = 0;
+			string sqlStr = string.Format(@" INSERT INTO [dbo].[stkioh]
+													   ([序號]
+													   ,[訂單號碼]
+													   ,[單據編號]
+													   ,[異動日期]
+													   ,[帳務日期]
+													   ,[帳項]
+													   ,[帳項原因]
+													   ,[廠商編號]
+													   ,[廠商簡稱]
+													   ,[頤坊型號]
+													   ,[暫時型號]
+													   ,[單位]
+													   ,[台幣單價]
+													   ,[美元單價]
+													   ,[人民幣單價]
+													   ,[庫區]
+													   ,[入庫數]
+													   ,[出庫數]
+													   ,[庫位]
+													   ,[核銷數]
+													   ,[異動前庫存]
+													   ,[實扣快取數]
+													   ,[客戶編號]
+													   ,[客戶簡稱]
+													   ,[完成品型號]
+													   ,[備註]
+													   ,[內銷入庫]
+													   ,[已刪除]
+													   ,[變更日期]
+													   ,[更新人員]
+													   ,[更新日期]
+													   ,[SUPLU_SEQ])
+												 SELECT (Select IsNull(Max(序號),0)+1 From StkioH) [序號]
+													   ,'樣品入庫(移轉)' [訂單號碼]
+													   ,P.採購單號 [單據編號]
+													   ,GETDATE() [異動日期]
+													   ,NULL [帳務日期]
+													   ,'6' [帳項]
+													   ,NULL [帳項原因]
+													   ,P.[廠商編號]
+													   ,P.[廠商簡稱]
+													   ,P.[頤坊型號]
+													   ,P.[暫時型號]
+													   ,P.[單位]
+													   ,P.[台幣單價]
+													   ,P.[美元單價]
+													   ,P.[人民幣單價]
+													   ,'內湖' [庫區]
+													   ,@APP_CNT [入庫數]
+													   ,NULL [出庫數]
+													   ,S.內湖庫位 [庫位]
+													   ,NULL [核銷數]
+													   ,NULL [異動前庫存]
+													   ,NULL [實扣快取數]
+													   ,P.[客戶編號]
+													   ,P.[客戶簡稱]
+													   ,NULL [完成品型號]
+													   ,NULL [備註]
+													   ,NULL [內銷入庫]
+													   ,NULL [已刪除]
+													   ,NULL [變更日期]
+													   ,@USER [更新人員]
+													   ,GETDATE() [更新日期]
+													   ,S.序號 [SUPLU_SEQ]
+												   FROM recua A
+												   INNER JOIN pudu P ON A.PUDU_SEQ = P.序號
+												   INNER JOIN suplu S ON P.SUPLU_SEQ = S.序號
+												   WHERE A.序號 = @SEQ
+
+												INSERT INTO [dbo].[stkioh]
+													   ([序號]
+													   ,[訂單號碼]
+													   ,[單據編號]
+													   ,[異動日期]
+													   ,[帳務日期]
+													   ,[帳項]
+													   ,[帳項原因]
+													   ,[廠商編號]
+													   ,[廠商簡稱]
+													   ,[頤坊型號]
+													   ,[暫時型號]
+													   ,[單位]
+													   ,[台幣單價]
+													   ,[美元單價]
+													   ,[人民幣單價]
+													   ,[庫區]
+													   ,[入庫數]
+													   ,[出庫數]
+													   ,[庫位]
+													   ,[核銷數]
+													   ,[異動前庫存]
+													   ,[實扣快取數]
+													   ,[客戶編號]
+													   ,[客戶簡稱]
+													   ,[完成品型號]
+													   ,[備註]
+													   ,[內銷入庫]
+													   ,[已刪除]
+													   ,[變更日期]
+													   ,[更新人員]
+													   ,[更新日期]
+													   ,[SUPLU_SEQ])
+												 SELECT (Select IsNull(Max(序號),0)+1 From StkioH) [序號]
+													   ,'樣品出庫(移轉)' [訂單號碼]
+													   ,P.採購單號 [單據編號]
+													   ,GETDATE() [異動日期]
+													   ,NULL [帳務日期]
+													   ,'D' [帳項]
+													   ,NULL [帳項原因]
+													   ,P.[廠商編號]
+													   ,P.[廠商簡稱]
+													   ,P.[頤坊型號]
+													   ,P.[暫時型號]
+													   ,P.[單位]
+													   ,P.[台幣單價]
+													   ,P.[美元單價]
+													   ,P.[人民幣單價]
+													   ,'內湖' [庫區]
+													   ,@APP_CNT [入庫數]
+													   ,NULL [出庫數]
+													   ,S.內湖庫位 [庫位]
+													   ,NULL [核銷數]
+													   ,NULL [異動前庫存]
+													   ,NULL [實扣快取數]
+													   ,P.[客戶編號]
+													   ,P.[客戶簡稱]
+													   ,NULL [完成品型號]
+													   ,@REMARK [備註]
+													   ,NULL [內銷入庫]
+													   ,NULL [已刪除]
+													   ,NULL [變更日期]
+													   ,@USER [更新人員]
+													   ,GETDATE() [更新日期]
+													   ,S.序號 [SUPLU_SEQ]
+												   FROM recua A
+												   INNER JOIN pudu P ON A.PUDU_SEQ = P.序號
+												   INNER JOIN suplu S ON P.SUPLU_SEQ = S.序號
+												   WHERE A.序號 = @SEQ
+
+												UPDATE recua 
+												SET 核銷數量 = ISNULL(核銷數量,0) + @APP_CNT 
+												   ,更新人員 = @USER
+												   ,變更日期 = GETDATE()
+											    WHERE 序號 = @SEQ");
+
+			string[] seqArray = context.Request["SEQ[]"].Split(',');
+			string[] appCntArray = context.Request["APP_CNT[]"].Split(',');
+			for (int cnt = 0; cnt < seqArray.Length; cnt++)
+			{
+				this.ClearParameter();
+				this.SetParameters("SEQ", seqArray[cnt]);
+				this.SetParameters("APP_CNT", appCntArray[cnt]);
+				this.SetParameters("REMARK", context.Request["REMARK"]);
+				this.SetParameters("USER", "IVAN10");
+				res = Execute(sqlStr);
+			}
+			return res;
+		}
+
+		/// <summary>
+		/// 準備入庫 
+		/// </summary>
+		/// <param name="context"></param>
+		/// <returns></returns>
+		public int InsertStkio(HttpContext context)
+		{
+			int res = 0;
+			string sqlStr = string.Format(@" INSERT INTO [dbo].[stkio]
+													   ([序號]
+													   ,[訂單號碼]
+													   ,[單據編號]
+													   ,[異動日期]
+													   ,[帳項]
+													   ,[帳項原因]
+													   ,[廠商編號]
+													   ,[廠商簡稱]
+													   ,[頤坊型號]
+													   ,[暫時型號]
+													   ,[單位]
+													   ,[庫區]
+													   ,[入庫數]
+													   ,[出庫數]
+													   ,[庫位]
+													   ,[核銷數]
+													   ,[異動前庫存]
+													   ,[客戶編號]
+													   ,[客戶簡稱]
+													   ,[完成品型號]
+													   ,[備註]
+													   ,[內銷入庫]
+													   ,[已刪除]
+													   ,[變更日期]
+													   ,[更新人員]
+													   ,[更新日期]
+													   ,[SUPLU_SEQ])
+												 SELECT (Select IsNull(Max(序號),0)+1 From stkio) [序號]
+													   ,'樣品入庫' [訂單號碼]
+													   ,P.採購單號 [單據編號]
+													   ,GETDATE() [異動日期]
+													   ,'6' [帳項]
+													   ,NULL [帳項原因]
+													   ,P.[廠商編號]
+													   ,P.[廠商簡稱]
+													   ,P.[頤坊型號]
+													   ,P.[暫時型號]
+													   ,P.[單位]
+													   ,@ENTER_TO [庫區]
+													   ,@APP_CNT [入庫數]
+													   ,NULL [出庫數]
+													   ,S.內湖庫位 [庫位]
+													   ,NULL [核銷數]
+													   ,NULL [異動前庫存]
+													   ,P.[客戶編號]
+													   ,P.[客戶簡稱]
+													   ,NULL [完成品型號]
+													   ,NULL [備註]
+													   ,NULL [內銷入庫]
+													   ,NULL [已刪除]
+													   ,NULL [變更日期]
+													   ,@USER [更新人員]
+													   ,GETDATE() [更新日期]
+													   ,S.序號 [SUPLU_SEQ]
+												   FROM recua A
+												   INNER JOIN pudu P ON A.PUDU_SEQ = P.序號
+												   INNER JOIN suplu S ON P.SUPLU_SEQ = S.序號
+												   WHERE A.序號 = @SEQ
+
+												UPDATE recua 
+												SET 核銷數量 = ISNULL(核銷數量,0) + @APP_CNT 
+												   ,更新人員 = @USER
+												   ,變更日期 = GETDATE()
+											    WHERE 序號 = @SEQ");
+
+			string[] seqArray = context.Request["SEQ[]"].Split(',');
+			string[] appCntArray = context.Request["APP_CNT[]"].Split(',');
+			for (int cnt = 0; cnt < seqArray.Length; cnt++)
+			{
+				this.ClearParameter();
+				this.SetParameters("SEQ", seqArray[cnt]);
+				this.SetParameters("APP_CNT", appCntArray[cnt]);
+				this.SetParameters("ENTER_TO", context.Request["ENTER_TO"]);
+				this.SetParameters("USER", "IVAN10");
+				res = Execute(sqlStr);
+			}
+			return res;
+		}
 	}
 }

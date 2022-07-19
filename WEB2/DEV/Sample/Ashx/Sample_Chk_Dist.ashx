@@ -37,7 +37,7 @@ public class Sample_Chk_Dist : IHttpHandler, IRequiresSessionState
                         context.Response.End();
                         break;
                     case "INSERT_STKIOH":
-                        result = dal.InsertPaku2(context);
+                        result = dal.InsertStkioh(context);
 
                         Log.InsertLog(context, context.Session["Account"], dal.sqlStr);
                         context.Response.StatusCode = 200;
@@ -45,7 +45,7 @@ public class Sample_Chk_Dist : IHttpHandler, IRequiresSessionState
                         context.Response.End();
                         break;
                     case "INSERT_STKIO":
-                        result = dal.InsertPaku2(context);
+                        result = dal.InsertStkio(context);
 
                         Log.InsertLog(context, context.Session["Account"], dal.sqlStr);
                         context.Response.StatusCode = 200;
