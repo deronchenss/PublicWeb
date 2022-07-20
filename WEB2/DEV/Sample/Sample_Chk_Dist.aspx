@@ -561,6 +561,11 @@
 
             //內部移轉頁
             $('#IM_BT_EXECUTE').on('click', function () {
+                if ($('#IM_MOVE_TO').val() == '') {
+                    alert('請選擇接收人員!');
+                    return;
+                }
+
                 INSERT("INSERT_STKIOH");
             });
 
