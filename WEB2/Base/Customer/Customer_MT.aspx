@@ -10,6 +10,7 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
+            var Click_tr_IDX;
             var From_Mode;
 
             function Form_Mode_Change(Form_Mode) {
@@ -321,18 +322,39 @@
                 $('#TB_M2_C_SName ,#TB_RM_C_SName, #TB_CC_C_NO, #TB_M_C_SName, #TB_RF_C_SName').val($(this).val());
             });
 
-            //Will combine
             $('#Table_Search_Customer').on('click', 'tbody tr', function () {
+                Click_tr_IDX = $(this).index();
                 Table_Tr_Click($(this));
             });
 
+            $(window).keydown(function (e) {
+                if (Click_tr_IDX != null) {
+                    switch (e.keyCode) {
+                        case 38://^
+                            if (Click_tr_IDX > 0) {
+                                Click_tr_IDX -= 1;
+                            }
+                            Table_Tr_Click($('#Table_Search_Customer tbody tr:nth(' + Click_tr_IDX + ')'));
+                            break;
+                        case 40://v
+                            if (Click_tr_IDX < ($('#Table_Search_Customer tbody tr').length - 1)) {
+                                Click_tr_IDX += 1;
+                            }
+                            Table_Tr_Click($('#Table_Search_Customer tbody tr:nth(' + Click_tr_IDX + ')'));
+                            break;
+                    }
+                }
+            });
+
             function Table_Tr_Click(Click_tr) {
+
                 $(Click_tr).parent().find('tr').css('background-color', '');
                 $(Click_tr).parent().find('tr').css('color', 'black');
                 $(Click_tr).css('background-color', '#5a1400');
                 $(Click_tr).css('color', 'white');
 
                 var C_No = $(Click_tr).find('td:nth-child(1)').text().toString().trim();
+                console.warn(C_No);
                 Form_Mode_Change("Search_D");
                 $.ajax({
                     url: "/Base/Customer/Customer_Search.ashx",
@@ -421,6 +443,7 @@
             };
 
             function Search_Customer(Search_Where) {
+                Click_tr_IDX = null;
                 $.ajax({
                     url: "/Base/Customer/Customer_Search.ashx",
                     data: {
@@ -777,7 +800,7 @@
         </tr>
     </table>
 
-    <div id="Div_DT_View" style="margin: auto;width:98%;overflow:auto;display:none;">
+    <div id="Div_DT_View" style="margin: auto;width:98%;overflow:auto;display:none;height:45vh;">
         <table id="Table_Search_Customer" style="width:100%;" class="table table-striped table-bordered">
             <thead></thead>
             <tbody></tbody>

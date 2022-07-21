@@ -10,6 +10,7 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
+            var Click_tr_IDX;
             var Edit_Mode;
             var IMG_Has_Read = false;
             var Dialog_Control;
@@ -159,6 +160,7 @@
             });
 
             function Search_BOM_M(Search_Where) {
+                Click_tr_IDX = null;
                 $.ajax({
                     url: "/Base/BOM/BOM_Search.ashx",
                     data: {
@@ -193,6 +195,7 @@
                         $('#Table_Search_BOM').css('white-space','nowrap');
                         $('#Table_Search_BOM thead th').css('text-align','center');
                         $('#Table_Search_BOM').on('click', 'tbody tr', function () {
+                            Click_tr_IDX = $(this).index();
                             Table_Tr_Click($(this));
                         });
                     },
@@ -405,6 +408,25 @@
                     }
                 });
             };
+
+            $(window).keydown(function (e) {
+                if (Click_tr_IDX != null) {
+                    switch (e.keyCode) {
+                        case 38://^
+                            if (Click_tr_IDX > 0) {
+                                Click_tr_IDX -= 1;
+                            }
+                            Table_Tr_Click($('#Table_Search_BOM tbody tr:nth(' + Click_tr_IDX + ')'));
+                            break;
+                        case 40://v
+                            if (Click_tr_IDX < ($('#Table_Search_BOM tbody tr').length - 1)) {
+                                Click_tr_IDX += 1;
+                            }
+                            Table_Tr_Click($('#Table_Search_BOM tbody tr:nth(' + Click_tr_IDX + ')'));
+                            break;
+                    }
+                }
+            });
 
             function Table_Tr_Click(Click_tr) {
                 $(Click_tr).parent().find('tr').css('background-color', '');
@@ -1304,7 +1326,7 @@
         </tr>
     </table>
 
-    <div id="Div_DT_View" style="margin: auto; width: 98%; overflow: auto; display: none;">
+    <div id="Div_DT_View" style="margin: auto; width: 98%; overflow: auto; display: none;height:45vh;">
         <table id="Table_Search_BOM" style="width: 100%;" class="table table-striped table-bordered">
             <thead></thead>
             <tbody></tbody>

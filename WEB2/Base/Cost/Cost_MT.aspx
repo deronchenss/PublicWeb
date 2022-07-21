@@ -12,6 +12,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var From_Mode;
+            var Click_tr_IDX;
             ATC();
             DDL_Bind();
             Dialog();
@@ -89,6 +90,7 @@
                             data: {
                                 "IM": $('#TB_M2_IM').val(),
                                 "SM": $('#TB_M2_SM').val(),
+                                "SaleM": $('TB_M2_SaleM').val(),
                                 "S_No": $('#TB_M2_S_No').val(),
                                 "S_SName": $('#TB_M2_S_SName').val(),
                                 "Sample_PN": $('#TB_M2_Sample_P_No').val(),
@@ -181,6 +183,7 @@
                                 "SEQ": $('#TB_M2_SEQ').val(),
                                 "IM": $('#TB_M2_IM').val(),
                                 "SM": $('#TB_M2_SM').val(),
+                                "SaleM": $('#TB_M2_SaleM').val(),
                                 "S_No": $('#TB_M2_S_No').val(),
                                 "S_SName": $('#TB_M2_S_SName').val(),
                                 "Sample_PN": $('#TB_M2_Sample_P_No').val(),
@@ -349,7 +352,27 @@
             });
 
             $('#Table_Search_Customer').on('click', 'tbody tr', function () {
+                Click_tr_IDX = $(this).index();
                 Table_Tr_Click($(this));
+            });
+
+            $(window).keydown(function (e) {
+                if (Click_tr_IDX != null) {
+                    switch (e.keyCode) {
+                        case 38://^
+                            if (Click_tr_IDX > 0) {
+                                Click_tr_IDX -= 1;
+                            }
+                            Table_Tr_Click($('#Table_Search_Customer tbody tr:nth(' + Click_tr_IDX + ')'));
+                            break;
+                        case 40://v
+                            if (Click_tr_IDX < ($('#Table_Search_Customer tbody tr').length - 1)) {
+                                Click_tr_IDX += 1;
+                            }
+                            Table_Tr_Click($('#Table_Search_Customer tbody tr:nth(' + Click_tr_IDX + ')'));
+                            break;
+                    }
+                }
             });
             function Table_Tr_Click(Click_tr) {
                 $(Click_tr).parent().find('tr').css('background-color', '');
@@ -377,6 +400,7 @@
                     success: function (response) {
                         $('#TB_M2_IM').val(String(response[0].IM ?? ""));
                         $('#TB_M2_SM').val(String(response[0].SM ?? ""));
+                        $('#TB_M2_SaleM').val(String(response[0].SaleM ?? ""));
                         $('#TB_M2_S_No').val(String(response[0].S_No ?? ""));
                         $('#TB_M2_S_SName').val(String(response[0].S_SName ?? ""));
                         $('#TB_M2_Sample_P_No').val(String(response[0].Sample_PN ?? ""));
@@ -472,6 +496,7 @@
             };
 
             function Search_Cost(Search_Where) {
+                Click_tr_IDX = null;
                 $.ajax({
                     url: "/Base/Cost/Cost_Search.ashx",
                     data: {
@@ -485,8 +510,10 @@
                     success: function (response) {
                         $('#Table_Search_Customer').DataTable({
                             "data": response,
+                            "scrollX": true,
+                            "scrollY": "30vh",
                             "destroy": true,
-                            "order": [[17, "desc"]],
+                            "order": [[1, "asc"]],
                             "lengthMenu": [
                                 [5, 10, 20, -1],
                                 [5, 10, 20, "All"],
@@ -495,6 +522,7 @@
                                 { data: "SEQ", title: "<%=Resources.MP.SEQ%>" },
                                 { data: "IM", title: "<%=Resources.MP.Ivan_Model%>" },
                                 { data: "SM", title: "<%=Resources.MP.Supplier_Model%>" },
+                                { data: "SaleM", title: "<%=Resources.MP.Sale_Model%>" },
                                 { data: "S_No", title: "<%=Resources.MP.Supplier_Short_Name%>" },
                                 { data: "S_SName", title: "<%=Resources.MP.Supplier_Short_Name%>" },
                                 { data: "Sample_PN", title: "<%=Resources.MP.Sample_Product_No%>" },
@@ -515,6 +543,7 @@
 
                         $('#Table_Search_Customer').css('white-space','nowrap');
                         $('#Table_Search_Customer thead th').css('text-align','center');
+                        $('#Table_Search_Customer').DataTable().draw();
                     },
                     error: function (ex) {
                         alert(ex);
@@ -1027,7 +1056,7 @@
         </tr>
     </table>
 
-    <div id="Div_DT_View" style="margin: auto;width:98%;overflow:auto;display:none;">
+    <div id="Div_DT_View" style="margin: auto;width:98%;display:none;">
         <table id="Table_Search_Customer" style="width:100%;" class="table table-striped table-bordered">
             <thead></thead>
             <tbody></tbody>
@@ -1059,8 +1088,13 @@
                     </td>
 
                     <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Supplier_Model%></td>
-                    <td style="text-align: left; width: 15%;" colspan="3">
+                    <td style="text-align: left; width: 15%;" >
                         <input id="TB_M2_SM" autocomplete="off" disabled="disabled" style="width: 100%;" />
+                    </td>
+
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Sale_Model%></td>
+                    <td style="text-align: left; width: 15%;" >
+                        <input id="TB_M2_SaleM" autocomplete="off" disabled="disabled" style="width: 100%;" />
                     </td>
                 </tr>
                 <tr>

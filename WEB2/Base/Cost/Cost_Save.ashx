@@ -26,7 +26,7 @@ public class Cost_Save : IHttpHandler, IRequiresSessionState
                 case "Cost_New":
                     cmd.CommandText = @" INSERT INTO Dc2..suplu(
 	                                         序號, 
-	                                         頤坊型號, 廠商型號, 廠商編號, 廠商簡稱, 暫時型號, 
+	                                         頤坊型號, 廠商型號, 銷售型號, 廠商編號, 廠商簡稱, 暫時型號, 
 	                                         單位, 產品說明, 台幣單價, 美元單價, 台幣單價_2, 台幣單價_3, 
 	                                         MIN_1, MIN_2, MIN_3, 外幣幣別, 外幣單價, 外幣單價_2, 外幣單價_3, 
 	                                         設計人員, 設計圖號, 備註給採購, 備註給開發, 新增日期, 更新日期, 更新人員
@@ -34,6 +34,7 @@ public class Cost_Save : IHttpHandler, IRequiresSessionState
                                          SELECT [序號] = (SELECT COALESCE(MAX([序號]),0) +1 FROM Dc2..suplu), 
 	                                            [頤坊型號] = @IM, 
 	                                            [廠商型號] = @SM, 
+	                                            [銷售型號] = @SaleM, 
 	                                            [廠商編號] = @S_No, 
 	                                            [廠商簡稱] = @S_SName, 
 	                                            [暫時型號] = @Sample_PN, 
@@ -59,6 +60,7 @@ public class Cost_Save : IHttpHandler, IRequiresSessionState
 	                                            [更新人員] = 'Ivan10'; ";
                     cmd.Parameters.AddWithValue("IM", context.Request["IM"]);
                     cmd.Parameters.AddWithValue("SM", context.Request["SM"]);
+                    cmd.Parameters.AddWithValue("SaleM", context.Request["SaleM"]);
                     cmd.Parameters.AddWithValue("S_No", context.Request["S_No"]);
                     cmd.Parameters.AddWithValue("S_SName", context.Request["S_SName"]);
                     cmd.Parameters.AddWithValue("Sample_PN", context.Request["Sample_PN"]);
@@ -84,6 +86,7 @@ public class Cost_Save : IHttpHandler, IRequiresSessionState
                     cmd.CommandText = @" UPDATE Dc2..suplu
                                          SET [頤坊型號] = @IM,
 	                                         [廠商型號] = @SM,
+	                                         [銷售型號] = @SaleM,
 	                                         [廠商編號] = @S_No, 
 	                                         [廠商簡稱] = @S_SName,
 	                                         [暫時型號] = @Sample_PN, 
@@ -133,6 +136,7 @@ public class Cost_Save : IHttpHandler, IRequiresSessionState
                     cmd.Parameters.AddWithValue("SEQ", context.Request["SEQ"]);
                     cmd.Parameters.AddWithValue("IM", context.Request["IM"]);
                     cmd.Parameters.AddWithValue("SM", context.Request["SM"]);
+                    cmd.Parameters.AddWithValue("SaleM", context.Request["SaleM"]);
                     cmd.Parameters.AddWithValue("S_No", context.Request["S_No"]);
                     cmd.Parameters.AddWithValue("S_SName", context.Request["S_SName"]);
                     cmd.Parameters.AddWithValue("Sample_PN", context.Request["Sample_PN"]);

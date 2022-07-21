@@ -52,7 +52,7 @@ public class Price_Search : IHttpHandler, IRequiresSessionState
                                          	[客戶編號], [客戶簡稱], [頤坊型號], [單位], [廠商編號], [廠商簡稱], [產品說明], 
                                          	REPLACE(CONVERT(VARCHAR(40),CAST([台幣單價] AS MONEY),1),'.00','') [台幣單價], 
                                          	[美元單價], [單價_2], [單價_3], [單價_4], [MIN_1], [MIN_2], [MIN_3], [MIN_4], [更新人員], 
-                                         	LEFT(RTRIM(CONVERT(VARCHAR(20),[更新日期],20)),16) [更新日期], [備註],
+                                         	LEFT(RTRIM(CONVERT(VARCHAR(20),[更新日期],20)),16) [更新日期], [備註], [變更記錄],
                                          	(SELECT TOP 1 b.[圖檔] FROM [192.168.1.135].Pic.dbo.xpic b WHERE b.SUPLU_SEQ = P.[序號]) [IMG]
                                          FROM Dc2..byrlu P
                                          WHERE [序號] = @SEQ ";
@@ -120,6 +120,7 @@ public class Price_Search : IHttpHandler, IRequiresSessionState
                             Update_User = sdr["更新人員"],
                             Update_Date = sdr["更新日期"],
                             Remark = sdr["備註"],
+                            CL = sdr["變更記錄"],
                             IMG = sdr["IMG"],
                         });
                     }

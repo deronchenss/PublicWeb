@@ -10,6 +10,7 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
+            var Click_tr_IDX;
             var From_Mode;
             $('#BT_New').on('click', function () {
                 From_Mode = "New";
@@ -20,8 +21,6 @@
                 $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', false);
                 //CS && RF_NO
             });
-
-
 
             $('#BT_New_Save').on('click', function () {
                 if (confirm("<%=Resources.MP.Save_Alert%>")) {
@@ -76,7 +75,6 @@
                                 alert(ex);
                                 return false;
                             }
-
                         });
                     }
                 }
@@ -419,6 +417,7 @@
             };
 
              function Search_Supplier(Search_Where) {
+                 Click_tr_IDX = null;
                 $.ajax({
                     url: "/Base/Supplier/Sup_Search.ashx",
                     data: {
@@ -491,6 +490,7 @@
                         $('#Table_Search_Customer').attr('style', 'white-space:nowrap;');
                         $('#Table_Search_Customer thead th').attr('style', 'text-align:center;');
                         $('#Table_Search_Customer').on('click', 'tbody tr', function () {
+                            Click_tr_IDX = $(this).index();
                             Table_Tr_Click($(this));
                         });
 
@@ -501,7 +501,25 @@
                 });
             };
 
-
+            
+            $(window).keydown(function (e) {
+                if (Click_tr_IDX != null) {
+                    switch (e.keyCode) {
+                        case 38://^
+                            if (Click_tr_IDX > 0) {
+                                Click_tr_IDX -= 1;
+                            }
+                            Table_Tr_Click($('#Table_Search_Customer tbody tr:nth(' + Click_tr_IDX + ')'));
+                            break;
+                        case 40://v
+                            if (Click_tr_IDX < ($('#Table_Search_Customer tbody tr').length - 1)) {
+                                Click_tr_IDX += 1;
+                            }
+                            Table_Tr_Click($('#Table_Search_Customer tbody tr:nth(' + Click_tr_IDX + ')'));
+                            break;
+                    }
+                }
+            });
             //will Update
             $('#TB_Search_C_No').on('change', function () {
                 if ($.trim($(this).val()) == "") {
@@ -554,6 +572,24 @@
                     $('#TB_Search_C_SName').val(ui.item.name);
                     Search_Supplier();
                 },
+            });
+            $('#DDL_M2_Area').on('change', function () {
+                var ACC;
+                switch ($('#DDL_M2_Area').val()) {
+                    case "台灣":
+                        ACC = 1;
+                        break;
+                    case "中國":
+                        ACC = 3;
+                        break;
+                    case "國外":
+                        ACC = 5;
+                        break;
+                    case "東亞":
+                        ACC = 6;
+                        break;
+                }
+                $('#DDL_M2_Account_Class').val(ACC);
             });
         });
     </script>
@@ -781,7 +817,7 @@
         </tr>
     </table>
 
-    <div id="Div_DT_View" style="margin: auto;width:98%;overflow:auto;display:none;">
+    <div id="Div_DT_View" style="margin: auto;width:98%;overflow:auto;display:none;height:45vh;">
         <table id="Table_Search_Customer" style="width:100%;" class="table table-striped table-bordered">
             <thead></thead>
             <tbody></tbody>
@@ -836,8 +872,9 @@
                     <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Area%></td>
                     <td style="text-align: left; width: 15%;">
                         <select id="DDL_M2_Area" disabled="disabled" style="width: 100%;" >
-                            <option>香港</option>
+                            <%--<option>香港</option>--%>
                             <option>台灣</option>
+                            <option>中國</option>
                             <option>國外</option>
                             <option>東亞</option>
                         </select>

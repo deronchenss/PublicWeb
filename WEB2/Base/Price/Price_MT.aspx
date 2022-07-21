@@ -12,6 +12,7 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
+            var Click_tr_IDX;
             var From_Mode;
             var PS_Control;
             DDL_Bind();
@@ -59,7 +60,7 @@
                         $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
                         $('#BT_ED_Edit, #BT_ED_Copy, #BT_Cancel, #Div_DT_View').css('display', '');
                         $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
-                        break;
+                        break;//TB_M2_Change_Log
                     case "Edit_D":
                         $('#BT_ED_Edit, #BT_ED_Copy, #BT_Cancel, #Div_DT_View').css('display', 'none');
                         $('#BT_ED_Save, #BT_ED_Cancel, .M2_For_NU').css('display', '');
@@ -127,15 +128,15 @@
                                 "S_No": $('#TB_M2_S_No').val(),
                                 "S_SName": $('#TB_M2_S_SName').val(),
                                 "PRI": $('#TB_M2_PRI').val(),
-                                "TWD_P": parseInt($('#TB_M2_TWD_1').val()) || 0,
-                                "USD_P": parseInt($('#TB_M2_USD_1').val()) || 0,
-                                "P_2": parseInt($('#TB_M2_P_2').val()) || 0,
-                                "P_3": parseInt($('#TB_M2_P_3').val()) || 0,
-                                "P_4": parseInt($('#TB_M2_P_4').val()) || 0,
-                                "MIN_1": parseInt($('#TB_M2_MIN_1').val()) || 0,
-                                "MIN_2": parseInt($('#TB_M2_MIN_2').val()) || 0,
-                                "MIN_3": parseInt($('#TB_M2_MIN_3').val()) || 0,
-                                "MIN_4": parseInt($('#TB_M2_MIN_4').val()) || 0,
+                                "TWD_P": parseFloat($('#TB_M2_TWD_1').val()) || 0,
+                                "USD_P": parseFloat($('#TB_M2_USD_1').val()) || 0,
+                                "P_2": parseFloat($('#TB_M2_P_2').val()) || 0,
+                                "P_3": parseFloat($('#TB_M2_P_3').val()) || 0,
+                                "P_4": parseFloat($('#TB_M2_P_4').val()) || 0,
+                                "MIN_1": parseFloat($('#TB_M2_MIN_1').val()) || 0,
+                                "MIN_2": parseFloat($('#TB_M2_MIN_2').val()) || 0,
+                                "MIN_3": parseFloat($('#TB_M2_MIN_3').val()) || 0,
+                                "MIN_4": parseFloat($('#TB_M2_MIN_4').val()) || 0,
                                 "Update_User": 'Ivan10',
                                 "Remark": $('#TB_M2_Remark').val(),
                                 "Call_Type": "Price_New"
@@ -174,6 +175,7 @@
             });
 
             function Search_Price(Search_Where) {
+                Click_tr_IDX = null;
                 $.ajax({
                     url: "/Base/Price/Price_Search.ashx",
                     data: {
@@ -224,16 +226,40 @@
             };
 
             $('#Table_Search_Price').on('click', 'tbody tr', function () {
-                $(this).parent().find('tr').css('background-color', '');
-                $(this).parent().find('tr').css('color', 'black');
-                $(this).css('background-color', '#5a1400');
-                $(this).css('color', 'white');
+                Click_tr_IDX = $(this).index();
+                FN_Tr_Click($(this));
+            });
+
+            $(window).keydown(function (e) {
+                if (Click_tr_IDX != null) {
+                    switch (e.keyCode) {
+                        case 38://^
+                            if (Click_tr_IDX > 0) {
+                                Click_tr_IDX -= 1;
+                            }
+                            FN_Tr_Click($('#Table_Search_Price tbody tr:nth(' + Click_tr_IDX + ')'));
+                            break;
+                        case 40://v
+                            if (Click_tr_IDX < ($('#Table_Search_Price tbody tr').length - 1)) {
+                                Click_tr_IDX += 1;
+                            }
+                            FN_Tr_Click($('#Table_Search_Price tbody tr:nth(' + Click_tr_IDX + ')'));
+                            break;
+                    }
+                }
+            });
+
+            function FN_Tr_Click(Click_tr) {
+                Click_tr.parent().find('tr').css('background-color', '');
+                Click_tr.parent().find('tr').css('color', 'black');
+                Click_tr.css('background-color', '#5a1400');
+                Click_tr.css('color', 'white');
                 Form_Mode_Change("Search_D");
 
                 $.ajax({
                     url: "/Base/Price/Price_Search.ashx",
                     data: {
-                        "SEQ": $(this).find('td:nth-child(1)').text(),
+                        "SEQ": Click_tr.find('td:nth-child(1)').text(),
                         "Call_Type": "Price_MT_Selected"
                     },
                     cache: false,
@@ -266,7 +292,8 @@
                         $('#TB_M2_Update_User').val(String(response[0].Update_User ?? ""));
                         $('#TB_M2_Update_Date').val(String(response[0].Update_Date ?? ""));
                         $('#TB_M2_Remark').val(String(response[0].Remark ?? ""));
-                        
+                        $('#TB_M2_Change_Log').val(String(response[0].CL ?? ""));
+
                         $('#TB_I_IM').val(String(response[0].IM ?? ""));
                         $('#TB_I_S_No').val(String(response[0].S_No ?? ""));
                         $('#TB_I_S_SName').val(String(response[0].S_SName ?? ""));
@@ -287,7 +314,7 @@
                         alert(ex);
                     }
                 });
-            });
+            };
 
             $('#BT_Cancel').on('click', function () {
                 var Confirm_Check = true;
@@ -323,15 +350,15 @@
                                 "S_No": $('#TB_M2_S_No').val(),
                                 "S_SName": $('#TB_M2_S_SName').val(),
                                 "PRI": $('#TB_M2_PRI').val(),
-                                "TWD_P": parseInt($('#TB_M2_TWD_1').val()) || 0,
-                                "USD_P": parseInt($('#TB_M2_USD_1').val()) || 0,
-                                "P_2": parseInt($('#TB_M2_P_2').val()) || 0,
-                                "P_3": parseInt($('#TB_M2_P_3').val()) || 0,
-                                "P_4": parseInt($('#TB_M2_P_4').val()) || 0,
-                                "MIN_1": parseInt($('#TB_M2_MIN_1').val()) || 0,
-                                "MIN_2": parseInt($('#TB_M2_MIN_2').val()) || 0,
-                                "MIN_3": parseInt($('#TB_M2_MIN_3').val()) || 0,
-                                "MIN_4": parseInt($('#TB_M2_MIN_4').val()) || 0,
+                                "TWD_P": parseFloat($('#TB_M2_TWD_1').val()) || 0,
+                                "USD_P": parseFloat($('#TB_M2_USD_1').val()) || 0,
+                                "P_2": parseFloat($('#TB_M2_P_2').val()) || 0,
+                                "P_3": parseFloat($('#TB_M2_P_3').val()) || 0,
+                                "P_4": parseFloat($('#TB_M2_P_4').val()) || 0,
+                                "MIN_1": parseFloat($('#TB_M2_MIN_1').val()) || 0,
+                                "MIN_2": parseFloat($('#TB_M2_MIN_2').val()) || 0,
+                                "MIN_3": parseFloat($('#TB_M2_MIN_3').val()) || 0,
+                                "MIN_4": parseFloat($('#TB_M2_MIN_4').val()) || 0,
                                 "Update_User": 'Ivan10',
                                 "Remark": $('#TB_M2_Remark').val(),
                                 "Call_Type": "Price_Update"
@@ -1058,7 +1085,13 @@
                 <tr>
                     <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Remark%></td>
                     <td style="text-align: left; width: 15%;" colspan="7">
-                        <textarea id="TB_M2_Remark" style="width: 100%; height: 250px;" maxlength="560" disabled="disabled"></textarea>
+                        <textarea id="TB_M2_Remark" style="width: 100%; height: 100px;" maxlength="560" disabled="disabled"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Change_Log%></td>
+                    <td style="text-align: left; width: 15%;" colspan="7">
+                        <textarea id="TB_M2_Change_Log" style="width: 100%; height: 100px;" maxlength="560" disabled="disabled"></textarea>
                     </td>
                 </tr>
                 <tr class="M2_For_V" style="display:none;">

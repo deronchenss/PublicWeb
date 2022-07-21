@@ -44,6 +44,8 @@
                             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                             success: function (response) {
                                 $('#Table_Product').DataTable({
+                                    "scrollX": true,
+                                    "scrollY": "60vh",
                                     "data": response,
                                     "destroy": true,
                                     "processing": true,
@@ -108,6 +110,8 @@
                             success: function (response) {
                                 $('#Table_Product').DataTable({
                                     "data": response,
+                                    "scrollX": true,
+                                    "scrollY": "60vh",
                                     "destroy": true,
                                     "processing": true,
                                     "order": [[1, "asc"]],
@@ -158,16 +162,14 @@
                 $('#Table_Product').css('white-space', 'nowrap');
                 $('#Table_Product thead th').css('text-align', 'center');
 
-                $('#Table_Product thead th').css('background-color', 'white');
-                $('#Table_Product thead th').css('position', 'sticky');
-                $('#Table_Product thead th').css('top', '0');
-                //    : ;
-                //    : 0; /* 列首永遠固定於上 */
+                //$('#Table_Product thead th').css('background-color', 'white');
+                //$('#Table_Product thead th').css('position', 'sticky');
+                //$('#Table_Product thead th').css('top', '0');
 
                 $('#Table_Product').on('click', 'tbody tr', function () {
                     Click_tr_IDX = $(this).index();
                     FN_Tr_Click($(this));
-                    console.warn($(this));
+                    //console.warn($(this));
                 });
             };
 
@@ -459,7 +461,7 @@
                 </tr>
             </table>
         </div>
-        <div id="Div_Basic" style="float:left;overflow:auto;width:100%;height:70vh;border-style:solid;border-width:1px;">
+        <div id="Div_Basic" style="float:left;width:100%;height:70vh;border-style:solid;border-width:1px;">
             <table id="Table_Product" style="width: 100%" class="table table-striped table-bordered">
                 <thead></thead>
                 <tbody></tbody>

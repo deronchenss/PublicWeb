@@ -8,11 +8,16 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using CrystalDecisions.CrystalReports.Engine;
-
+//using Seagull.BarTender.Print;
 public partial class Cost_Cost_MT : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
+        #region BarTender
+
+        #endregion BT
+
+        #region Crystal_Report_Demo
         //DataTable DT = new DataTable();
         //using (SqlConnection conn = new SqlConnection())
         //{
@@ -61,5 +66,6 @@ public partial class Cost_Cost_MT : System.Web.UI.Page
         //        Response.Close();
         //    }
         //}
+        #endregion//CSR
     }
 }

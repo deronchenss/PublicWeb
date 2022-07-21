@@ -31,7 +31,7 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
             switch (context.Request["Call_Type"])
             {
                 case "Cost_MT_Search":
-                    cmd.CommandText = @" SELECT TOP 500 [頤坊型號], [廠商型號], [廠商編號], [廠商簡稱], [暫時型號], [單位], 
+                    cmd.CommandText = @" SELECT TOP 500 [頤坊型號], [廠商型號], [銷售型號], [廠商編號], [廠商簡稱], [暫時型號], [單位], 
                                                                 [台幣單價], [美元單價], [外幣幣別], [外幣單價], [MIN_1], 
                                                                 CONVERT(VARCHAR(20),[最後單價日],23) [最後單價日],
                                                                 [產品說明], 
@@ -47,7 +47,7 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                     cmd.CommandText += " ORDER BY [Sort] DESC ";
                     break;
                 case "Cost_MT_Selected":
-                    cmd.CommandText = @" SELECT TOP 1 [序號], [頤坊型號], [廠商型號], [廠商編號], [廠商簡稱], [暫時型號], 
+                    cmd.CommandText = @" SELECT TOP 1 [序號], [頤坊型號], [廠商型號], [廠商編號], [廠商簡稱], [暫時型號], [銷售型號], 
                                                  			  [單位], [產品說明], [產品詳述], [台幣單價], [美元單價], [台幣單價_2], [台幣單價_3], 
                                                  			  [MIN_1], [MIN_2], [MIN_3], [外幣幣別], [外幣單價], [外幣單價_2], [外幣單價_3], 
                                                               [設計人員], [設計圖號], [備註給採購], [備註給開發],
@@ -113,6 +113,7 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                             SEQ = sdr["序號"],
                             IM = sdr["頤坊型號"].ToString().Trim(),
                             SM = sdr["廠商型號"].ToString().Trim(),
+                            SaleM = sdr["銷售型號"].ToString().Trim(),
                             S_No = sdr["廠商編號"].ToString().Trim(),
                             S_SName = sdr["廠商簡稱"].ToString().Trim(),
                             Sample_PN = sdr["暫時型號"].ToString().Trim(),
@@ -138,6 +139,7 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                         {
                             IM = sdr["頤坊型號"].ToString().Trim(),
                             SM = sdr["廠商型號"].ToString().Trim(),
+                            SaleM = sdr["銷售型號"].ToString().Trim(),
                             S_No = sdr["廠商編號"].ToString().Trim(),
                             S_SName = sdr["廠商簡稱"].ToString().Trim(),
                             Sample_PN = sdr["暫時型號"].ToString().Trim(),
