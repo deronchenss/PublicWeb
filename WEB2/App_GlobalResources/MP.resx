@@ -835,7 +835,7 @@
     <value>樣式</value>
   </data>
   <data name="Quote_MT" xml:space="preserve">
-    <value>報價作業查詢維護</value>
+    <value>報價作業維護</value>
   </data>
   <data name="Quote_Query" xml:space="preserve">
     <value>每日報價查詢</value>
@@ -851,5 +851,8 @@
   </data>
   <data name="Transfer_Type" xml:space="preserve">
     <value>運輸類型</value>
+  </data>
+  <data name="Set_Product_Class" xml:space="preserve">
+    <value>設定產品分類</value>
   </data>
 </root>

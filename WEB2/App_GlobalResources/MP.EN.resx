@@ -831,23 +831,25 @@
   <data name="Style" xml:space="preserve">
     <value>Style</value>
   </data>
-
-	<data name="Quote_MT" xml:space="preserve">
+  <data name="Quote_MT" xml:space="preserve">
     <value>Quote Maintain</value>
   </data>
-	<data name="Quote_Query" xml:space="preserve">
+  <data name="Quote_Query" xml:space="preserve">
     <value>Quote Search</value>
   </data>
-	<data name="Quote_Base" xml:space="preserve">
+  <data name="Quote_Base" xml:space="preserve">
     <value>Quotation Create</value>
   </data>
-	<data name="Transfer_no" xml:space="preserve">
+  <data name="Transfer_no" xml:space="preserve">
     <value>Transfer_no</value>
   </data>
-	<data name="Transfer_Short_Name" xml:space="preserve">
+  <data name="Transfer_Short_Name" xml:space="preserve">
     <value>Transfer_Short_Name</value>
   </data>
-	<data name="Transfer_Type" xml:space="preserve">
+  <data name="Transfer_Type" xml:space="preserve">
     <value>Transfer_Type</value>
+  </data>
+  <data name="Set_Product_Class" xml:space="preserve">
+    <value>Set Product Class</value>
   </data>
 </root>
