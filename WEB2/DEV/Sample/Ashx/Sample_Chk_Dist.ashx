@@ -36,22 +36,6 @@ public class Sample_Chk_Dist : IHttpHandler, IRequiresSessionState
                         context.Response.Write(result);
                         context.Response.End();
                         break;
-                    case "INSERT_STKIOH":
-                        result = dal.InsertStkioh(context);
-
-                        Log.InsertLog(context, context.Session["Account"], dal.sqlStr);
-                        context.Response.StatusCode = 200;
-                        context.Response.Write(result);
-                        context.Response.End();
-                        break;
-                    case "INSERT_STKIO":
-                        result = dal.InsertStkio(context);
-
-                        Log.InsertLog(context, context.Session["Account"], dal.sqlStr);
-                        context.Response.StatusCode = 200;
-                        context.Response.Write(result);
-                        context.Response.End();
-                        break;
                 }
 
                 Log.InsertLog(context, context.Session["Account"], dal.sqlStr);
@@ -62,7 +46,7 @@ public class Sample_Chk_Dist : IHttpHandler, IRequiresSessionState
             }
             catch (SqlException ex)
             {
-                Log.InsertLog(context, context.Session["Account"], dal.sqlStr, "", false);
+                Log.InsertLog(context, context.Session["Account"], dal.sqlStr, ex.ToString(), false);
                 context.Response.StatusCode = 404;
                 context.Response.Write(ex.Message);
             }

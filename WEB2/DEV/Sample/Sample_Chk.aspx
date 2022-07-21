@@ -591,7 +591,7 @@
                             return;
                         }
                         else {
-                            alert('已寫入點收檔，筆數:' + execCnt);
+                            alert('已寫入點收檔及庫存，筆數:' + execCnt);
                             $('#Table_EXEC_Data').DataTable().rows().remove().draw();
                             $('#Table_CHS_Data').DataTable().rows().remove().draw();
 

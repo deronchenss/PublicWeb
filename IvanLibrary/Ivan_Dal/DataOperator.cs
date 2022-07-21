@@ -20,9 +20,12 @@ namespace Ivan_Dal
 
         private void SetConnection()
         {
-            conn.ConnectionString = connStr;
-            cmd.Connection = conn;
-            conn.Open();
+            if(conn.State != ConnectionState.Open)
+            {
+                conn.ConnectionString = connStr;
+                cmd.Connection = conn;
+                conn.Open();
+            }
         }
 
         private void CloseConnection()
@@ -67,6 +70,7 @@ namespace Ivan_Dal
         /// <param name="tran"></param>
         public void SetTran()
         {
+            SetConnection();
             trans = conn.BeginTransaction();
             cmd.Transaction = trans;
             isTran = true;
@@ -76,9 +80,9 @@ namespace Ivan_Dal
         /// Transaction Commit
         /// </summary>
         /// <param name="tran"></param>
-        public void TranCommit(System.Data.SqlClient.SqlTransaction tran)
+        public void TranCommit()
         {
-            tran.Commit();
+            trans.Commit();
             isTran = false;
             CloseConnection();
         }

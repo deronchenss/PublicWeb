@@ -1,5 +1,4 @@
 ﻿<%@ Page Title="樣品點收維護" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Chk_MT.aspx.cs" Inherits="Sample_Chk_MT" %>
-<%@ Register TagPrefix="uc" TagName="uc1" Src="~/User_Control/Dia_Transfer_Selector.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
@@ -14,20 +13,6 @@
 
             //init CONTROLER
             Form_Mode_Change("Base");
-
-            //$('#Q_QUAH_DATE_S').val($.datepicker.formatDate('yy-mm-dd', new Date()));
-            //$('#Q_QUAH_DATE_E').val($.datepicker.formatDate('yy-mm-dd', new Date()));          
-
-            //Dialog
-            $('#BT_TRANS_WAY').on('click', function () {
-                $("#Search_Transfer_Dialog").dialog('open');
-            });
-
-            $('#SSD_Table_Transfer').on('click', '.SUP_SEL', function () {
-                $('#E_TRANS_NO').val($(this).parent().parent().find('td:nth(1)').text());
-                $('#E_TRANS_S_NAME').val($(this).parent().parent().find('td:nth(2)').text());
-                $("#Search_Transfer_Dialog").dialog('close');
-            });
 
             window.document.body.onbeforeunload = function () {
                 if (Edit_Mode === "Insert" || Edit_Mode === "Edit") {
@@ -80,7 +65,6 @@
                             $('#Table_Search_Recua').DataTable().draw();
 
                             $('#BT_DELETE').css('display', 'inline-block');
-                            $('#BT_EDIT_SAVE').css('display', 'inline-block');
                             $('#BT_E_CANCEL').css('display', 'inline-block');
 
                         }
@@ -241,47 +225,7 @@
                     }
                 });
             };             
-
-            //更新DB
-            function UPD_RECUA() {
-                if ($('#E_SEQ').val() === '') {
-                    alert('請選擇要修改的資料');
-                }
-                else{
-                    $.ajax({
-                        url: apiUrl,
-                        data: {
-                            "Call_Type": "UPD_RECUA",
-                            "SEQ": $('#E_SEQ').val(),
-                            "點收批號": $('#E_CHK_BATCH_NO').val(),
-                            "點收日期": $('#E_CHK_DATE').val(),
-                            "運輸編號": $('#E_TRANS_NO').val(),
-                            "運輸簡稱": $('#E_TRANS_S_NAME').val()
-                        },
-                        cache: false,
-                        type: "POST",
-                        datatype: "json",
-                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                        success: function (response, status) {
-                            console.log(status);
-                            if (status === 'success') {
-                                alert('序號:' + $('#E_SEQ').val() + '已修改完成');
-
-                                Search_Recua();
-                            }
-                            else {
-                                alert('修改資料有誤請通知資訊人員');
-                            }
-                        },
-                        error: function (ex) {
-                            console.log(ex.responseText);
-                            alert('修改資料有誤請通知資訊人員');
-                            return;
-                        }
-                    });
-                }
-            };           
-
+            
             //刪除單筆資料
             function DELETE_RECUA() {
                 if ($('#E_SEQ').val() === '') {
@@ -301,7 +245,7 @@
                         success: function (response, status) {
                             console.log(status);
                             if (status === 'success') {
-                                alert('序號:' + $('#E_SEQ').val() + '已刪除完成');
+                                alert('序號:' + $('#E_SEQ').val() + '已刪除，並復原庫存');
                                 Search_Recua();
                             }
                             else {
@@ -336,10 +280,6 @@
                     $('#Table_Search_Recua').DataTable().clear().draw();
                     Form_Mode_Change("Base");
                 }
-            });
-
-            $('#BT_EDIT_SAVE').on('click', function () {
-                UPD_RECUA();
             });
 
             $('#BT_DELETE').on('click', function () {
@@ -379,7 +319,6 @@
     </script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
-    <uc:uc1 ID="uc1" runat="server" /> 
     <div style="width:98%;margin:0 auto; ">
         <div class="search_section_all">
             <table class="search_section_control">
@@ -456,7 +395,7 @@
                     <tr class="trstyle" >
                         <td class="tdhstyle">點收批號</td>
                         <td class="tdbstyle">
-                            <input id="E_CHK_BATCH_NO"  class="textbox_char" />
+                            <input id="E_CHK_BATCH_NO"  class="textbox_char" disabled="disabled" />
                         </td>
                         <td class="tdhstyle">序號</td>
                         <td class="tdbstyle">
@@ -509,7 +448,7 @@
                     <tr class="trstyle ">
                         <td class="tdhstyle">點收日期</td>
                         <td class="tdbstyle">
-                            <input id="E_CHECK_DATE" type="date" class="date_S_style"  />
+                            <input id="E_CHECK_DATE" type="date" class="date_S_style" disabled="disabled"  />
                         </td>
                         <td class="tdhstyle">點收數量</td>
                         <td class="tdbstyle">
@@ -530,7 +469,6 @@
                         <td class="tdhstyle" >運輸編號</td>
                         <td class="tdbstyle">
                             <input id="E_TRANS_NO"  class="textbox_char" disabled="disabled"  />
-                            <input id="BT_TRANS_WAY"  type="button" value="..." />
                         </td>
                         <td class="tdhstyle">運輸簡稱</td>
                         <td class="tdbstyle" >
@@ -553,7 +491,6 @@
                      <tr class="trCenterstyle"> 
                          <td colspan="4" style="text-align:center" >
                             <input type="button" id="BT_DELETE" style="display:inline-block" class="BTN modeButton" value="刪除"  />
-                            <input type="button" id="BT_EDIT_SAVE" style="display:inline-block" class="BTN modeButton" value="修改儲存"  />
                             <input type="button" id="BT_E_CANCEL" style="display:inline-block" class="BTN modeButton" value="返回"  />
                          </td>
                     </tr>

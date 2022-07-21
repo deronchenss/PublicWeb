@@ -25,8 +25,9 @@ namespace Ivan_Log
             logModel.LOG_DATE = DateTime.Now;
             logModel.USER = user == null ? "IVAN10" : user.ToString();
             logModel.PROG_URL = System.IO.Path.GetFileName(context.Request.UrlReferrer.ToString());
+            logModel.CALL_TYPE = "";
 
-            if(string.IsNullOrEmpty(callType))
+            if (string.IsNullOrEmpty(callType))
             {
                 if (sqlStr.IndexOf("INSERT") != -1)
                 {
@@ -34,11 +35,11 @@ namespace Ivan_Log
                 }
                 if (sqlStr.IndexOf("UPDATE") != -1)
                 {
-                    logModel.CALL_TYPE = "U";
+                    logModel.CALL_TYPE += "U";
                 }
                 if (sqlStr.IndexOf("DELETE") != -1)
                 {
-                    logModel.CALL_TYPE = "D";
+                    logModel.CALL_TYPE += "D";
                 }
                 if (string.IsNullOrEmpty(logModel.CALL_TYPE))
                 {
