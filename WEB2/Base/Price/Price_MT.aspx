@@ -36,11 +36,11 @@
                         $('#V_BT_Master').attr('disabled', 'disabled');
                         $('.Div_D').not('#Div_M2').css('display', 'none');
                         $('#Div_M2').css('display', '');
-                        $('.M2_For_V, .M2_For_NU').css('display', 'none');
+                        $('.M2_For_V, .M2_For_N').css('display', 'none');
                         break;
                     case "New_M":
                         $('input[required], select[required]').css('background-color', 'yellow');
-                        $('.M2_For_NU').css('display', '');
+                        $('.M2_For_N').css('display', '');
                         $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').not('.disabled').attr('disabled', false);
                         $('#BT_New, #BT_Search, #BT_Detail_Search').css('display', 'none');
                         $('#BT_Cancel, #BT_New_Save').css('display', '');
@@ -62,8 +62,8 @@
                         $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
                         break;//TB_M2_Change_Log
                     case "Edit_D":
-                        $('#BT_ED_Edit, #BT_ED_Copy, #BT_Cancel, #Div_DT_View').css('display', 'none');
-                        $('#BT_ED_Save, #BT_ED_Cancel, .M2_For_NU').css('display', '');
+                        $('#BT_ED_Edit, #BT_ED_Copy, #BT_Cancel, #Div_DT_View, .M2_For_N').css('display', 'none');
+                        $('#BT_ED_Save, #BT_ED_Cancel').css('display', '');
                         $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').not('.disabled').attr('disabled', false);
                         break;
                 }
@@ -1003,7 +1003,7 @@
                         <div style="width: 90%; float: left; z-index: -10;">
                             <input id="TB_M2_C_No" class="disabled" required="required" disabled="disabled" style="width: 100%;" />
                         </div>
-                        <div class="M2_For_NU" style="width: 10%; float: right; z-index: 10;display: none;">
+                        <div class="M2_For_N" style="width: 10%; float: right; z-index: 10;display: none;">
                             <input id="BT_M2_Customer_Selector" type="button" value="…" disabled="disabled" style="float: right; z-index: 10;width:100%;" />
                         </div>
                     </td>
@@ -1019,7 +1019,7 @@
                             <input id="TB_M2_IM" class="disabled" required="required" disabled="disabled" style="width: 100%;" />
                             <input type="hidden" id="HDN_M2_SUPLU_SEQ" />
                         </div>
-                        <div class="M2_For_NU" style="width: 10%; float: right; z-index: 10;display: none;">
+                        <div class="M2_For_N" style="width: 10%; float: right; z-index: 10;display: none;">
                             <input id="BT_M2_Product_Selector" type="button" value="…" disabled="disabled" style="float: right; z-index: 10;width:100%;" />
                         </div>
                     </td>
