@@ -48,11 +48,18 @@ public class Sample_Inv_MT : IHttpHandler, IRequiresSessionState
                     case "PRINT_RPT":
                         string rptDir = "~/DEV/Sample/Rpt/Sample_Invoice.rpt";
 
-                        if (context.Request["RPT_TYPE"] == "0")
+                        switch(context.Request["RPT_TYPE"])
                         {
-                            dt = dal.SampleIVReport(context);
+                            case "0":
+                                rptDir = "~/DEV/Sample/Rpt/Sample_Invoice.rpt";
+                                dt = dal.SampleIVReport(context);
+                                break;
+                            case "1":
+                                rptDir = "~/DEV/Sample/Rpt/Sample_IV_Packing.rpt";
+                                dt = dal.SamplePackingReport(context);
+                                break;
                         }
-
+                            
                         if (dt != null && dt.Rows.Count > 0)
                         {
                             ReportDocument rptDoc = new ReportDocument();

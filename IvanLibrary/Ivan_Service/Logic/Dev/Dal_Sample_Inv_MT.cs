@@ -217,7 +217,7 @@ namespace Ivan_Service
 								,TOT.價格待通知
 								,TOT.ATTN
 								,byr.客戶名稱
-								,byr.連絡人樣品
+								,CASE WHEN ISNULL(byr.連絡人樣品,'') = '' THEN byr.連絡人大貨 ELSE byr.連絡人樣品 END 連絡人樣品
 								,byr.公司地址
 								,B.帳號內容
 								,I.應收運費+I.應收運費NT AS 應收運費
@@ -238,6 +238,80 @@ namespace Ivan_Service
 						LEFT JOIN BANK B ON I.銀行簡稱=B.銀行簡稱
 						LEFT JOIN TRF T ON I.運輸編號=T.運輸編號
 						ORDER BY TOT.頤坊型號 ";
+
+			this.SetParameters("INVOICE_NO", context.Request["INVOICE_NO"]);
+			dt = GetDataTable(sqlStr);
+			return dt;
+		}
+
+		/// <summary>
+		/// 樣品發票 PACKING 報表
+		/// </summary>
+		/// <param name="context"></param>
+		/// <returns></returns>
+		public DataTable SamplePackingReport(HttpContext context)
+		{
+			DataTable dt = new DataTable();
+			string sqlStr = "";
+
+			sqlStr = @" WITH TOT (INVOICE ,樣品號碼,頤坊型號,產品說明,單位,箱號,淨重,毛重,出貨數量,FREE,價格待通知, ATTN,幣別,計算單價)
+						AS
+						(
+							SELECT   MAX(I.INVOICE) INVOICE
+										,P.樣品號碼
+										,P.頤坊型號
+										,P.產品說明
+										,P.單位
+										,P.箱號
+										,P.淨重
+										,P.毛重
+										,SUM(P.出貨數量) AS 出貨數量
+										,ISNULL(P.FREE,0) FREE
+										,ISNULL(P.價格待通知,0) 價格待通知
+										,ISNULL(P.ATTN,0) ATTN
+										,CASE WHEN MAX(P.台幣單價) > 0 THEN 'PRICE/NTD' ELSE 'PRICE/USD' END 幣別
+										,IIF(ISNULL(MAX(台幣單價),0) > 0, MAX(ISNULL(台幣單價,0)), MAX(ISNULL(美元單價,0))) 計算單價
+								FROM [dbo].[INVU] I
+								LEFT JOIN paku P ON I.INVOICE = P.INVOICE
+								WHERE IsNull(P.已刪除,0) = 0 
+								AND IsNull(P.出貨數量,0) <> 0
+								AND I.INVOICE = @INVOICE_NO
+								GROUP BY P.樣品號碼,P.頤坊型號,P.產品說明,P.單位,ISNULL(P.FREE,0),ISNULL(P.價格待通知,0),ISNULL(P.ATTN,0) ,P.箱號,P.淨重,P.毛重
+						)
+
+							SELECT  I.INVOICE INVOICE
+								,I.出貨日期 AS 出貨日期
+								,TOT.樣品號碼
+								,TOT.頤坊型號
+								,TOT.產品說明
+								,TOT.單位
+								,TOT.出貨數量 AS 出貨數量
+								,TOT.FREE
+								,TOT.價格待通知
+								,TOT.ATTN
+								,byr.客戶名稱
+								,CASE WHEN ISNULL(byr.連絡人樣品,'') = '' THEN byr.連絡人大貨 ELSE byr.連絡人樣品 END 連絡人樣品
+								,byr.公司地址
+								,TOT.箱號
+								,TOT.淨重
+								,TOT.毛重
+								,B.帳號內容
+								,I.應收運費+I.應收運費NT AS 應收運費
+								,TOT.幣別 幣別
+								,CASE WHEN TOT.價格待通知 = 1 OR TOT.FREE = 1 THEN 0 ELSE (SELECT SUM(ROUND(計算單價 * TOT.出貨數量,2)) FROM TOT) + I.應收運費+I.應收運費NT END 總額
+								,'SAY TOTAL ONE CARTONS.' 列印大寫
+								,'W/B : ' + I.提單號碼 列印提單號碼
+								,T.英文名稱 運輸英文名稱
+								,STUFF((SELECT CHAR(10) + 單位 + RIGHT('           ' + CONVERT(VARCHAR,SUM(出貨數量)),11) FROM TOT
+									     GROUP BY 單位
+										 FOR XML PATH('')),1,1,'') 列印單位合計
+						FROM invu I
+						INNER JOIN TOT ON I.INVOICE = TOT.INVOICE
+						INNER JOIN byr ON I.客戶編號 = byr.客戶編號
+						LEFT JOIN BANK B ON I.銀行簡稱=B.銀行簡稱
+						LEFT JOIN TRF T ON I.運輸編號=T.運輸編號
+						Order By CASE When Substring(TOT.箱號,1,1)>='A' Then substring(TOT.箱號,1,1)+Right(Space(3)+Substring(Rtrim(TOT.箱號),2,3),3) Else Right(Space(4)+Rtrim(TOT.箱號),4) End,TOT.淨重 DESC,TOT.頤坊型號
+							";
 
 			this.SetParameters("INVOICE_NO", context.Request["INVOICE_NO"]);
 			dt = GetDataTable(sqlStr);

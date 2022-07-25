@@ -59,13 +59,13 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                                                   ,pudu.[外幣單價]
                                                                   ,pudu.[外幣單價_2]
                                                                   ,pudu.[外幣單價_3]
-                                                                  ,pudu.[採購數量]
+                                                                  ,IIF(pudu.[採購數量] = 0, NULL, pudu.[採購數量]) 採購數量
                                                                   ,CONVERT(VARCHAR,pudu.[採購交期],23) [採購交期]
                                                                   ,pudu.[交期狀況]
                                                                   ,RA.[點收批號]
-                                                                  ,SUM(RA.[點收數量]) 點收數量
+                                                                  ,IIF(SUM(ISNULL(RA.[點收數量],0)) = 0, NULL, SUM(ISNULL(RA.[點收數量],0))) 點收數量
                                                                   ,CONVERT(VARCHAR,RA.[點收日期],23) [點收日期]
-                                                                  ,SUM(R.[到貨數量]) 到貨數量
+                                                                  ,IIF(SUM(ISNULL(R.[到貨數量],0)) = 0 ,NULL,SUM(ISNULL(R.[到貨數量],0))) 到貨數量
                                                                   ,CONVERT(VARCHAR,R.[出貨日期],23) [出貨日期]
                                                                   ,CONVERT(VARCHAR,R.[到貨日期],23) [到貨日期]
                                                                   ,RA.[運輸編號]

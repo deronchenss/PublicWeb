@@ -23,7 +23,7 @@ namespace Ivan_Log
             datalog logModel = new datalog();
 
             logModel.LOG_DATE = DateTime.Now;
-            logModel.USER = user == null ? "IVAN10" : user.ToString();
+            logModel.USER =  user == null ? "IVAN10" : user.ToString();
             logModel.PROG_URL = System.IO.Path.GetFileName(context.Request.UrlReferrer.ToString());
             logModel.CALL_TYPE = "";
 
@@ -49,7 +49,7 @@ namespace Ivan_Log
             }
             else
             {
-                logModel.CALL_TYPE = callType.Length > 200 ? callType.Substring(0,200) : callType;
+                logModel.CALL_TYPE = callType;
             }
 
             logModel.CALL_CONTEXT = HttpUtility.UrlDecode(context.Request.Form.ToString(), Encoding.UTF8);
