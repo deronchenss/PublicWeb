@@ -3,8 +3,6 @@
 <%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_ALL.ascx" %>
 <%@ Register TagPrefix="uc3" TagName="uc3" Src="~/User_Control/Dia_Duo_Datetime_Picker.ascx" %>
 
-
-
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
@@ -488,12 +486,8 @@
                     <input id="TB_Date_S" class="TB_DS" type="date" style="width: 50%;" /><input id="TB_Date_E" type="date" class="TB_DE" style="width: 50%;" />
                 </div>
                 <div style="width: 10%; float: right; z-index: 10;">
-                    <%--<a id="Today_DSDE" href="#" onclick="$('#TB_Date_S, #TB_Date_E').val($.datepicker.formatDate('yy-mm-dd', new Date()));">Today</a>
-                    <br />
-                    <a id="Clear_DSDE" href="#" onclick="$('#TB_Date_S, #TB_Date_E').val('');">Clear</a>--%>
                     <input id="BT_Duo_Datetime_Picker" type="button" value="…" style="float: right; z-index: 10; width: 100%;" onclick="$('#Duo_Datetime_Picker_Dialog').dialog('open');" />
                 </div>
-
             </td>
             <td></td><td></td>
         </tr>
@@ -558,8 +552,6 @@
         <tr>
             <td class="tdtstyleRight" colspan="8">
                 <input type="button" id="BT_Search" class="M_BT" value="<%=Resources.MP.Search%>" />
-                <%--<input type="button" id="BT_Cancel" class="M_BT" value="<%=Resources.MP.Cancel%>" style="display: none;" />--%>
-                <%--<input type="button" id="BT_Re_Select" class="M_BT" value="<%=Resources.MP.Re_Selet%>" style="display:none;" />--%>
                 <input type="button" id="BT_Save" class="M_BT" value="<%=Resources.MP.Save%>" style="display:none;" />
             </td>
         </tr>
@@ -567,24 +559,24 @@
             <td></td>
             <td></td>
             <td></td>
-            <td style="width: 10%;"></td>
-            <td style="width: 10%;"></td>
-            <td style="width: 10%;"></td>
-            <td style="width: 10%;"></td>
-            <td style="width: 80%;"></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
         </tr>
     </table>
-    <br />
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;
+        <input id="RB_DV_DIMG" type="radio" name="DIMG" disabled="disabled" checked="checked" />
+        <label for="RB_DV_DIMG"><%=Resources.MP.Not_Show_Image%></label>
+        <input id="RB_V_DIMG" type="radio" name="DIMG" disabled="disabled" />
+        <label for="RB_V_DIMG"><%=Resources.MP.Show_Original_Image%></label>
+        <input id="RB_SM_DIMG" type="radio" name="DIMG" disabled="disabled" />
+        <label for="RB_SM_DIMG"><%=Resources.MP.Show_Small_Image%></label>
+    </div>
     <div style="width: 98%; margin: 0 auto;">
         <div id="Div_DT_View" style="width: 60%; height: 65vh; overflow: auto; display: none; float: left;border-style:solid;border-width:1px; ">
-            <div>
-                <input id="RB_DV_DIMG" type="radio" name="DIMG" disabled="disabled" checked="checked" />
-                <label for="RB_DV_DIMG"><%=Resources.MP.Not_Show_Image%></label>
-                <input id="RB_V_DIMG" type="radio" name="DIMG" disabled="disabled" />
-                <label for="RB_V_DIMG"><%=Resources.MP.Show_Original_Image%></label>
-                <input id="RB_SM_DIMG" type="radio" name="DIMG" disabled="disabled" />
-                <label for="RB_SM_DIMG"><%=Resources.MP.Show_Small_Image%></label>
-            </div>
             <span class="dataTables_info" id="Table_Search_Cost_info" role="status" aria-live="polite"></span>
             <table id="Table_Search_Cost" style="width: 99%;" class="table table-striped table-bordered">
                 <thead></thead>

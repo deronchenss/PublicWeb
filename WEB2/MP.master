@@ -136,6 +136,8 @@
                                                     </a></li>
                                                 <li><a href="/Base/Cost/Cost_Approve.aspx" IVM_PERMISSIONS="34"><%=Resources.MP.Product%><%=Resources.MP.Speace%><%=Resources.MP.Approve%>
                                                     </a></li>
+                                                <li><a href="/Base/Cost/Fist_CAA_Approve.aspx" IVM_PERMISSIONS="54"><%=Resources.MP.CAC_Approve%>
+                                                    </a></li>
                                             </ul>
                                         </li>
                                         <li class="has-children">
@@ -150,7 +152,7 @@
                                             <a href="#" IVM_PERMISSIONS="31">BOM
                                             </a>
                                             <ul class="dropdown">
-                                                <li><a href="/Base/BOM/BOM1.aspx" IVM_PERMISSIONS="32">BOM<%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
+                                                <li><a href="/Base/BOM/BOM_MT.aspx" IVM_PERMISSIONS="32">BOM<%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
                                                     </a></li>
                                             </ul>
                                         </li>

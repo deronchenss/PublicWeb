@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="Cost Apply" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Cost_Apply.aspx.cs" Inherits="Cost_Cost_Apply" %>
+<%@ Register TagPrefix="uc1" TagName="uc1" Src="~/User_Control/Dia_Duo_Datetime_Picker.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
 </asp:Content>
@@ -27,20 +28,20 @@
                 switch (Form_Mode) {
                     case "Base":
                         $('#BT_Search, .For_S').css('display', '');
-                        $('#BT_Cancel, #Div_DT_View, #Div_Data_Control, #Div_Exec_Data, #BT_Re_Select, #BT_Save, .For_U').css('display', 'none');
+                        $('#Div_DT_View, #Div_Data_Control, #Div_Exec_Data, #BT_Save, .For_U').css('display', 'none');
                         $('#RB_DV_DIMG').prop('checked', true);
                         $('input[type=radio][name=DIMG]').attr('disabled', 'disabled');
                         break;
                     case "Search":
-                        $('#BT_Cancel, #Div_DT_View, #Div_Data_Control, #Div_Exec_Data').css('display', '');
-                        $('#BT_Search, #BT_Re_Select, #BT_Save, .For_S, .For_U').css('display', 'none');
+                        $('#Div_DT_View, #Div_Data_Control, #Div_Exec_Data').css('display', '');
+                        $('#BT_Save, .For_U').css('display', 'none');
                         $('#Div_DT_View').css('width', '60%');
                         $('#Div_Exec_Data').css('width', '35%');
                         $('input[type=radio][name=DIMG]').attr('disabled', false);
                         break;
                     case "Review_Data":
-                        $('#BT_Cancel, #Div_DT_View, #Div_Data_Control').css('display', 'none');
-                        $('#BT_Re_Select, #BT_Save, .For_U').css('display', '');
+                        $('#Div_DT_View, #Div_Data_Control').css('display', 'none');
+                        $('#BT_Save, .For_U').css('display', '');
                         $('#Div_Exec_Data').css('width', '100%');
                         break;
                 }
@@ -55,11 +56,6 @@
             $('#BT_Cancel').on('click', function () {
                 Edit_Mode = "Base";
                 Form_Mode_Change("Base");
-            });
-
-            $('#BT_Re_Select').on('click', function () {
-                Edit_Mode = "Can_Move";
-                Form_Mode_Change("Search");
             });
 
             function Search_Cost(Search_Where) {
@@ -116,7 +112,7 @@
                                 //        url: "/Base/BOM/BOM_Search.ashx",
                                 //        data: {
                                 //            "Call_Type": "GET_IMG",
-                                //            "P_SEQ": response[i].SEQ
+                                //            "SUPLU_SEQ": response[i].SEQ
                                 //        },
                                 //        cache: false,
                                 //        async: false,
@@ -168,8 +164,8 @@
                             $('#Table_Search_Cost').css('white-space', 'nowrap');
                             $('#Table_Search_Cost thead th').css('text-align', 'center');
 
-                            //$('#Table_Exec_Data_info').text('');
-                            //$('#Table_Exec_Data').html('');
+                            $('#Table_Exec_Data_info').text('');
+                            $('#Table_Exec_Data').html('');
                         }
                     },
                     error: function (ex) {
@@ -197,11 +193,10 @@
                         Show_IMG = true;
                         $('.DIMG img').css('height', '100px');
 
-                        $('#Table_Exec_Data thead').toggle(false);
-                        $('#Table_Exec_Data tbody tr').attr('style', 'display: block;border: 1px solid #01977a;margin: 10px 0;border - radius: 5pt;background-color: #fff;');
-                        $('#Table_Exec_Data tbody td').attr('style', 'display: block;text-align: left;padding: 5px 1rem 5px 2rem;color: black;');
-                        //$('#Table_Exec_Data tbody td').attr('style', 'color: #01977a;text - indent: -1rem;content: attr(data - th);font - weight: bold;display: block;');
-                        $('[data-th=廠商型號], [data-th=銷售型號], [data-th=外幣幣別], [data-th=外幣單價]').toggle(false);
+                        //$('#Table_Exec_Data thead').toggle(false);
+                        //$('#Table_Exec_Data tbody tr').attr('style', 'display: block;border: 1px solid #01977a;margin: 10px 0;border - radius: 5pt;background-color: #fff;');
+                        //$('#Table_Exec_Data tbody td').attr('style', 'display: block;text-align: left;padding: 5px 1rem 5px 2rem;color: black;');
+                        //$('[data-th=廠商型號], [data-th=銷售型號], [data-th=外幣幣別], [data-th=外幣單價]').toggle(false);
                         
                         break;
                 }
@@ -248,34 +243,32 @@
             });
 
             $('#BT_Save').on('click', function () {
-                if (confirm("<%=Resources.MP.Save_Alert%>")) {
-                    $('#Table_Exec_Data tbody tr').each(function () {
-                        console.warn('SEQ: ' + $(this).find('.SEQ').text() + ', Reason: ' + $(this).find('.U_Element').val());
-                        $.ajax({
-                            url: "/Base/Cost/Cost_Save.ashx",
-                            data: {
-                                "SEQ":$(this).find('.SEQ').text(),
-                                "Reason": $(this).find('.U_Element').val(),
-                                "Call_Type": "Cost_Apply"
-                            },
-                            cache: false,
-                            type: "POST",
-                            async: false,
-                            datatype: "json",
-                            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                            success: function (response) {
-                                //console.warn(response);
-                                Edit_Mode = "Save";
-                                Form_Mode_Change("Base");
-                            },
-                            error: function (ex) {
-                                alert(ex);
-                                return false;
-                            }
-                        });
+                $('#Table_Exec_Data tbody tr').each(function () {
+                    console.warn('SEQ: ' + $(this).find('.SEQ').text() + ', Reason: ' + $(this).find('.U_Element').val());
+                    $.ajax({
+                        url: "/Base/Cost/Cost_Save.ashx",
+                        data: {
+                            "SEQ": $(this).find('.SEQ').text(),
+                            "Reason": $(this).find('.U_Element').val(),
+                            "Call_Type": "Cost_Apply"
+                        },
+                        cache: false,
+                        type: "POST",
+                        async: false,
+                        datatype: "json",
+                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                        success: function (response) {
+                            //console.warn(response);
+                            Edit_Mode = "Save";
+                            Form_Mode_Change("Base");
+                        },
+                        error: function (ex) {
+                            alert(ex);
+                            return false;
+                        }
                     });
-                    alert("<%=Resources.MP.Add_Success%>");
-                }
+                });
+                alert("<%=Resources.MP.Add_Success%>");
             });
 
             function Item_Move(click_tr, ToTable, FromTable, Full) {
@@ -330,22 +323,21 @@
         });
     </script>
     
-    <style type="text/css">
-        
-      #Table_Exec_Data tbody td::before {
-        color: #01977a;
-        text-indent: -1rem;
-        content: attr(data-th);
-        font-weight: bold;
-        display: block;
-      }
-      
+    <%--<style type="text/css">
+        #Table_Exec_Data tbody td::before {
+            color: #01977a;
+            text-indent: -1rem;
+            content: attr(data-th);
+            font-weight: bold;
+            display: block;
+        }
+
         table thead tr th {
-            background-color:white;
+            background-color: white;
             position: sticky;
             top: 0; /* 列首永遠固定於上 */
         }
-    </style>
+    </style>--%>
 
     <style type="text/css">
         .M_BT {
@@ -379,6 +371,7 @@
             opacity: 0.8;
         }
     </style>
+    <uc1:uc1 ID="uc1" runat="server" /> 
 
     <table class="table_th" style="text-align: left;">
         <tr>
@@ -391,7 +384,12 @@
             </td>
             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Update_Date%></td>
             <td style="text-align: left; width: 15%;">
-                <input id="TB_Date_S" type="date" style="width: 50%;" /><input id="TB_Date_E" type="date" style="width: 50%;" />
+                <div style="width: 90%; float: left; z-index: -10;">
+                    <input id="TB_Date_S" class="TB_DS" type="date" style="width: 50%;" /><input id="TB_Date_E" type="date" class="TB_DE" style="width: 50%;" />
+                </div>
+                <div style="width: 10%; float: right; z-index: 10;">
+                    <input id="BT_Duo_Datetime_Picker" type="button" value="…" style="float: right; z-index: 10; width: 100%;" onclick="$('#Duo_Datetime_Picker_Dialog').dialog('open');" />
+                </div>
             </td>
         </tr>
         <tr class="For_S">
@@ -412,40 +410,36 @@
             <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
         </tr>
         <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td style="width: 10%;">
+            <td class="tdtstyleRight" colspan="8">
                 <input type="button" id="BT_Search" class="M_BT" value="<%=Resources.MP.Search%>" />
-            </td>
-            <td style="width: 10%;">
-                <input type="button" id="BT_Cancel" class="M_BT" value="<%=Resources.MP.Cancel%>" style="display: none;" />
-            </td>
-            <td style="width: 10%;">
-                <input type="button" id="BT_Re_Select" class="M_BT" value="<%=Resources.MP.Re_Selet%>" style="display:none;" />
-            </td>
-            <td style="width: 10%;">
                 <input type="button" id="BT_Save" class="M_BT" value="<%=Resources.MP.Save%>" style="display:none;" />
             </td>
-            <td style="width: 80%;"></td>
         </tr>
         <tr>
             <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
         </tr>
         <tr>
-            <td colspan="8">
-                <input id="RB_DV_DIMG" type="radio" name="DIMG" disabled="disabled" checked="checked" />
-                <label for="RB_DV_DIMG"><%=Resources.MP.Not_Show_Image%></label>
-                <input id="RB_V_DIMG" type="radio" name="DIMG" disabled="disabled" />
-                <label for="RB_V_DIMG"><%=Resources.MP.Show_Original_Image%></label>
-                <input id="RB_SM_DIMG" type="radio" name="DIMG" disabled="disabled" />
-                <label for="RB_SM_DIMG"><%=Resources.MP.Show_Small_Image%></label>
-                <input id="RB_New" type="radio" name="DIMG" disabled="disabled" style="display:none;" />
-                <label for="RB_New">New_<%=Resources.MP.Show_Small_Image%></label>
-            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
         </tr>
     </table>
-    <br />
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;
+        <input id="RB_DV_DIMG" type="radio" name="DIMG" disabled="disabled" checked="checked" />
+        <label for="RB_DV_DIMG"><%=Resources.MP.Not_Show_Image%></label>
+        <input id="RB_V_DIMG" type="radio" name="DIMG" disabled="disabled" />
+        <label for="RB_V_DIMG"><%=Resources.MP.Show_Original_Image%></label>
+        <input id="RB_SM_DIMG" type="radio" name="DIMG" disabled="disabled" />
+        <label for="RB_SM_DIMG"><%=Resources.MP.Show_Small_Image%></label>
+        <input id="RB_New" type="radio" name="DIMG" disabled="disabled" style="display: none;" />
+        <label for="RB_New" style="display: none;">New_<%=Resources.MP.Show_Small_Image%></label>
+    </div>
     <div style="width: 98%; margin: 0 auto;">
         <div id="Div_DT_View" style="width: 60%; height: 75vh; overflow: auto; display: none; float: left;border-style:solid;border-width:1px; ">
             <span class="dataTables_info" id="Table_Search_Cost_info" role="status" aria-live="polite"></span>

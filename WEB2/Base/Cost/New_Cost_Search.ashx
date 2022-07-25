@@ -13,20 +13,23 @@ using System.IO;
 using System.Web.UI.WebControls;
 using CrystalDecisions.CrystalReports.Engine;
 using Newtonsoft.Json;
+using Ivan_Service;
+using Ivan_Log;
 
-public class New_Cost_Search : IHttpHandler
+public class New_Cost_Search : IHttpHandler, IRequiresSessionState
 {
-
     public void ProcessRequest(HttpContext context)
     {
         SqlConnection conn = new SqlConnection();
         DataTable dt = new DataTable();
         SqlCommand cmd = new SqlCommand();
         conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
-        switch (context.Request["Call_Type"])
+        try
         {
-            case "Cost_Class_Search":
-                cmd.CommandText = @" SELECT TOP 500 
+            switch (context.Request["Call_Type"])
+            {
+                case "Cost_Class_Search":
+                    cmd.CommandText = @" SELECT TOP 500 
                                          	[頤坊型號], [廠商型號], [銷售型號], [廠商簡稱], [單位], [產品一階], [產品二階], [產品三階], [一階V3], [二階V3], [MSRP], [產品說明], 
                                          	'ORD' [最後接單], 
                                          --(SELECT Max(接單日期) From ORD A WHERE A.頤坊型號=T1.頤坊型號 AND A.廠商編號=T1.廠商編號 AND A.訂單數量>0) AS 最後接單,
@@ -71,27 +74,48 @@ public class New_Cost_Search : IHttpHandler
                                                  OR (@NO_L = 'False')
                                                 )
                                          ORDER BY [Sort] desc ";
-                cmd.Parameters.AddWithValue("IM", context.Request["IM"]);
-                cmd.Parameters.AddWithValue("PC", context.Request["PC"]);
-                cmd.Parameters.AddWithValue("Date_S", context.Request["Date_S"]);
-                cmd.Parameters.AddWithValue("Date_E", context.Request["Date_E"]);
-                cmd.Parameters.AddWithValue("S_No", context.Request["S_No"]);
-                cmd.Parameters.AddWithValue("SaleM", context.Request["SaleM"]);
-                cmd.Parameters.AddWithValue("PI", context.Request["PI"]);
-                cmd.Parameters.AddWithValue("BigS", context.Request["BigS"]);
-                cmd.Parameters.AddWithValue("MSRP", context.Request["MSRP"]);
-                cmd.Parameters.AddWithValue("PC_NEX", context.Request["PC_NEX"]);
-                cmd.Parameters.AddWithValue("NO_L", context.Request["NO_L"]);
-                break;
+                    cmd.Parameters.AddWithValue("IM", context.Request["IM"]);
+                    cmd.Parameters.AddWithValue("PC", context.Request["PC"]);
+                    cmd.Parameters.AddWithValue("Date_S", context.Request["Date_S"]);
+                    cmd.Parameters.AddWithValue("Date_E", context.Request["Date_E"]);
+                    cmd.Parameters.AddWithValue("S_No", context.Request["S_No"]);
+                    cmd.Parameters.AddWithValue("SaleM", context.Request["SaleM"]);
+                    cmd.Parameters.AddWithValue("PI", context.Request["PI"]);
+                    cmd.Parameters.AddWithValue("BigS", context.Request["BigS"]);
+                    cmd.Parameters.AddWithValue("MSRP", context.Request["MSRP"]);
+                    cmd.Parameters.AddWithValue("PC_NEX", context.Request["PC_NEX"]);
+                    cmd.Parameters.AddWithValue("NO_L", context.Request["NO_L"]);
+                    break;
+                case "Fist_CAA_Approve_Search":
+                    cmd.CommandText = @" SELECT TOP 500 [廠商簡稱], [頤坊型號], [產品說明], [單位], 
+                                            '' [廠商確認], 
+                                            '' [採購交期], 
+                                            '' [採購單號], 
+                                            [點收核准], [暫時型號], [廠商編號],
+                                            CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = C.[序號]),0) AS BIT) [Has_IMG], 
+                                            [序號], [更新人員], LEFT(RTRIM(CONVERT(VARCHAR(20),[更新日期],20)),16) [更新日期]
+                                         FROM Dc2..suplu C
+                                         WHERE ([點收核准] = 0 OR [點收核准] IS NULL) ";
+                    //cmd.Parameters.AddWithValue("NO_L", context.Request["NO_L"]);
+                    break;
+            }
+            cmd.Connection = conn;
+            conn.Open();
+            SqlDataAdapter SDA = new SqlDataAdapter(cmd);
+            SDA.Fill(dt);
+            conn.Close();
+            var json = JsonConvert.SerializeObject(dt);
+            Log.InsertLog(context, context.Session["Account"], cmd.CommandText);
+            context.Response.ContentType = "text/json";
+            context.Response.Write(json);
         }
-        cmd.Connection = conn;
-        conn.Open();
-        SqlDataAdapter SDA = new SqlDataAdapter(cmd);
-        SDA.Fill(dt);
-        conn.Close();
-        var json = JsonConvert.SerializeObject(dt);
-        context.Response.ContentType = "text/json";
-        context.Response.Write(json);
+
+        catch (SqlException ex)
+        {
+            Log.InsertLog(context, context.Session["Account"], cmd.CommandText ?? "", ex.ToString(), false);
+            context.Response.StatusCode = 404;
+            context.Response.Write(ex.Message);
+        }
     }
 
     public bool IsReusable

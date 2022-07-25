@@ -471,6 +471,7 @@
                         $('#TB_M2_IM').val($(this).parent().parent().find('td:nth(3)').text());
                         $('#TB_M2_S_No').val($(this).parent().parent().find('td:nth(4)').text());
                         $('#TB_M2_S_SName').val($(this).parent().parent().find('td:nth(5)').text());
+                        $('#TB_M2_PRI').val($(this).parent().parent().find('td:nth(11)').text());
                         break;
                     case "C"://Copy
                         $('#HDN_CD_SUPLU_SEQ').val($(this).parent().parent().find('td:nth(1)').text());

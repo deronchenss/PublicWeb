@@ -1,4 +1,4 @@
-﻿<%@ Page Title="BOM Maintenance" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="BOM1.aspx.cs" Inherits="BOM_BOM1" %>
+﻿<%@ Page Title="BOM Maintenance" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="BOM_MT.aspx.cs" Inherits="BOM_BOM_MT" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
 </asp:Content>
@@ -164,7 +164,7 @@
                 $.ajax({
                     url: "/Base/BOM/BOM_Search.ashx",
                     data: {
-                        "Call_Type": "BOM1_Search",
+                        "Call_Type": "BOM_MT_Search",
                         "Search_Where": Search_Where ?? ""
                     },
                     cache: false,
@@ -449,7 +449,7 @@
                     url: "/Base/BOM/BOM_Search.ashx",
                     data: {
                         "SUPLU_SEQ": SUPLU_SEQ,
-                        "Call_Type": "BOM1_Selected"
+                        "Call_Type": "BOM_MT_Selected"
                     },
                     cache: false,
                     type: "POST",

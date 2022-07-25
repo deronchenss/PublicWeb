@@ -29,7 +29,7 @@ public class BOM_Search : IHttpHandler, IRequiresSessionState
             SqlCommand cmd = new SqlCommand();
             switch (context.Request["Call_Type"])
             {
-                case "BOM1_Search":
+                case "BOM_MT_Search":
                     cmd.CommandText = @" SELECT TOP 500 [SUPLU_SEQ], [序號], [頤坊型號], [開發中], [最後完成者], [完成者簡稱], [註記], [更新人員],
                                          	LEFT(RTRIM(CONVERT(VARCHAR(20),[更新日期],20)),16) [更新日期]
                                          FROM Dc2..bom
@@ -40,7 +40,7 @@ public class BOM_Search : IHttpHandler, IRequiresSessionState
                     }
                     cmd.CommandText += " ORDER BY [序號] DESC ";
                     break;
-                case "BOM1_Selected":
+                case "BOM_MT_Selected":
                     cmd.CommandText = @" SELECT A.[SUPLU_SEQ], A.[序號], ISNULL(A.[PARENT_SEQ],-1) [PARENT_SEQ], DP.[頤坊型號] [材料型號], A.[D_SUPLU_SEQ], A.[階層], A.[更新人員], 
                                          	   LEFT(RTRIM(CONVERT(VARCHAR(20),A.[更新日期],20)),16) [更新日期],
                                          	   CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = A.[D_SUPLU_SEQ]),0) AS BIT) [Has_IMG],
@@ -79,7 +79,7 @@ public class BOM_Search : IHttpHandler, IRequiresSessionState
             SqlDataReader sdr = cmd.ExecuteReader();
             switch (context.Request["Call_Type"])
             {
-                case "BOM1_Search":
+                case "BOM_MT_Search":
                     while (sdr.Read())
                     {
                         BOM.Add(new
@@ -96,7 +96,7 @@ public class BOM_Search : IHttpHandler, IRequiresSessionState
                         });
                     }
                     break;
-                case "BOM1_Selected":
+                case "BOM_MT_Selected":
                     while (sdr.Read())
                     {
                         BOM.Add(new

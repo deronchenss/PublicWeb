@@ -852,4 +852,10 @@
   <data name="Set_Product_Class" xml:space="preserve">
     <value>Set Product Class</value>
   </data>
+  <data name="CAC_Approve" xml:space="preserve">
+    <value>Fist Check and Accept - Approve</value>
+  </data>
+  <data name="Purchase_No" xml:space="preserve">
+    <value>Purchase No</value>
+  </data>
 </root>

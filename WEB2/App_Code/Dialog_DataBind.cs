@@ -72,7 +72,7 @@ public class Dialog_DataBind : System.Web.Services.WebService
     {
         conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
         SqlCommand cmd = new SqlCommand();
-        cmd.CommandText = @" SELECT TOP 100 [序號], [開發中], [頤坊型號], [廠商編號], [廠商簡稱], [單位], [產品說明], [暫時型號], [廠商型號], [銷售型號]
+        cmd.CommandText = @" SELECT TOP 100 [序號], [開發中], [頤坊型號], [廠商編號], [廠商簡稱], [單位], [產品說明], [暫時型號], [廠商型號], [銷售型號], [英文ISP]
                              FROM Dc2..suplu
                              WHERE [頤坊型號] LIKE @IM + '%' AND [廠商編號] LIKE '%' + @S_No + '%'
                              ORDER BY [更新日期] DESC ";

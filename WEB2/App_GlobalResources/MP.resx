@@ -855,4 +855,10 @@
   <data name="Set_Product_Class" xml:space="preserve">
     <value>設定產品分類</value>
   </data>
+  <data name="CAC_Approve" xml:space="preserve">
+    <value>首次點收核准</value>
+  </data>
+  <data name="Purchase_No" xml:space="preserve">
+    <value>採購單號</value>
+  </data>
 </root>

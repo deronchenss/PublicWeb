@@ -55,7 +55,8 @@
                             { data: "產品說明", title: "<%=Resources.MP.Product_Information%>" },
                             { data: "暫時型號", title: "<%=Resources.MP.Sample_Product_No%>" },
                             { data: "廠商型號", title: "<%=Resources.MP.Supplier_Model%>" },
-                            { data: "銷售型號", title: "<%=Resources.MP.Sale_Model%>" }
+                            { data: "銷售型號", title: "<%=Resources.MP.Sale_Model%>" },
+                            { data: "英文ISP", title: "英文ISP" }
                         ],
                         "columnDefs": [{
                             targets: [0],

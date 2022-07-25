@@ -24,20 +24,20 @@ public class BOM_Delete : IHttpHandler, IRequiresSessionState
             switch (context.Request["Call_Type"])
             {
                 case "BOM_D_Delete":
-                    cmd.CommandText = @" IF((SELECT PD_SEQ FROM Dc2..bomsub WHERE [序號] = @D_SEQ) = @P_SEQ)
+                    cmd.CommandText = @" IF((SELECT D_SUPLU_SEQ FROM Dc2..bomsub WHERE [序號] = @D_SEQ) = @SUPLU_SEQ)
                                          BEGIN
-                                         	DELETE Dc2..bom WHERE [P_SEQ] = @P_SEQ
+                                         	DELETE Dc2..bom WHERE [SUPLU_SEQ] = @SUPLU_SEQ
                                          END
                                          ELSE
                                          BEGIN
                                          	UPDATE Dc2..bom 
                                              SET [更新人員] = 'Ivan10', 
                                                  [更新日期] = GETDATE()
-                                             WHERE [P_SEQ] = @P_SEQ;
+                                             WHERE [SUPLU_SEQ] = @SUPLU_SEQ;
                                          END
                                          DELETE Dc2..bomsub WHERE [序號] = @D_SEQ; ";
                     cmd.Parameters.AddWithValue("D_SEQ", context.Request["D_SEQ"]);
-                    cmd.Parameters.AddWithValue("P_SEQ", context.Request["P_SEQ"]);
+                    cmd.Parameters.AddWithValue("SUPLU_SEQ", context.Request["SUPLU_SEQ"]);
                     break;
             }
             cmd.Connection = conn;
