@@ -157,4 +157,35 @@ public class DDL_DataBind : System.Web.Services.WebService
         var json = (new JavaScriptSerializer().Serialize(CT));
         return json;
     }
+
+    /// <summary>
+    /// 撈出銀行名稱 FROM Bank
+    /// </summary>
+    /// <returns></returns>
+    [WebMethod]
+    public string BankDDL()
+    {
+        List<object> CT = new List<object>();
+        SqlConnection conn = new SqlConnection();
+        conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
+        SqlCommand cmd = new SqlCommand();
+        cmd.CommandText = @" SELECT 銀行編號, 銀行簡稱
+                             FROM BANK 
+                             WHERE 使用區分 LIKE '%SI%' 
+                             ORDER BY 銀行編號";
+        cmd.Connection = conn;
+        conn.Open();
+        SqlDataReader sdr = cmd.ExecuteReader();
+        while (sdr.Read())
+        {
+            CT.Add(new
+            {
+                txt = sdr["銀行簡稱"],
+                val = sdr["銀行簡稱"]
+            });
+        }
+        conn.Close();
+        var json = (new JavaScriptSerializer().Serialize(CT));
+        return json;
+    }
 }

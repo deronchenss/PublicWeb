@@ -27,6 +27,7 @@ namespace Ivan_Log
             logModel.PROG_URL = System.IO.Path.GetFileName(context.Request.UrlReferrer.ToString());
             logModel.CALL_TYPE = "";
 
+            //ERROR 訊息不塞callType
             if (string.IsNullOrEmpty(callType))
             {
                 if (sqlStr.IndexOf("INSERT") != -1)
@@ -48,7 +49,7 @@ namespace Ivan_Log
             }
             else
             {
-                logModel.CALL_TYPE = callType;
+                logModel.CALL_TYPE = callType.Length > 200 ? callType.Substring(0,200) : callType;
             }
 
             logModel.CALL_CONTEXT = HttpUtility.UrlDecode(context.Request.Form.ToString(), Encoding.UTF8);

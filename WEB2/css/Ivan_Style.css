@@ -81,7 +81,7 @@ td.tdtstyleLeft /* ©³ */ {
 }
 
 .search_section_control {
-    width: 65%;
+    width: 100%;
     font-size: 15px;
     border-radius: 5px;
     text-align: center;
@@ -97,7 +97,7 @@ td.tdtstyleLeft /* ©³ */ {
 }
 
 .button_change_section {
-    width: 65%;
+    width: 100%;
     text-align: center;
     margin: auto;
     text-align: left;
