@@ -223,6 +223,7 @@
                     case "RB_SM_DIMG":
                         Show_IMG = true;
                         $('.DIMG img').css('height', '100px');
+                        $('.DIMG img').css('width', '100px');
                         break;
                 }
                 if (Show_IMG && !IMG_Has_Read) {//Need Show And Not Read Data
@@ -547,16 +548,12 @@
             </td>
         </tr>
         <tr>
-            <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
-        </tr>
-        <tr>
-            <td class="tdtstyleRight" colspan="8">
+            <td class="tdtstyleRight" colspan="7">
                 <input type="button" id="BT_Search" class="M_BT" value="<%=Resources.MP.Search%>" />
                 <input type="button" id="BT_Save" class="M_BT" value="<%=Resources.MP.Save%>" style="display:none;" />
             </td>
         </tr>
         <tr>
-            <td></td>
             <td></td>
             <td></td>
             <td></td>

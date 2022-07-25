@@ -44,20 +44,23 @@
                 switch (Form_Mode) {
                     case "Base":
                         $('#BT_Search, .For_S').css('display', '');
-                        $('#Div_DT_View, #Div_Data_Control, #Div_Exec_Data, .For_U').css('display', 'none');
+                        $('#Div_DT_View, #Div_Data_Control, #Div_Exec_Data, .For_U, #BT_CAA_Approve').css('display', 'none');
                         $('#RB_DV_DIMG').prop('checked', true);
-                        $('input[type=radio][name=DIMG]').attr('disabled', 'disabled');
+                        $('input[type=radio][name=DIMG], #V_BT_Master').attr('disabled', 'disabled');
                         break;
                     case "Search":
                         $('#Div_DT_View, #Div_Data_Control, #Div_Exec_Data').css('display', '');
-                        $('.For_U').css('display', 'none');
+                        $('.For_U, #BT_CAA_Approve').css('display', 'none');
                         $('#Div_DT_View').css('width', '60%');
                         $('#Div_Exec_Data').css('width', '35%');
-                        $('input[type=radio][name=DIMG]').attr('disabled', false);
+                        $('#V_BT_Master').attr('disabled', 'disabled');
+                        $('input[type=radio][name=DIMG], #V_BT_CAC').attr('disabled', false);
                         break;
                     case "Review_Data":
+                        $('#V_BT_Master').attr('disabled', false);
+                        $('#V_BT_CAC').attr('disabled', 'disabled');
                         $('#Div_DT_View, #Div_Data_Control').css('display', 'none');
-                        $('.For_U').css('display', '');
+                        $('.For_U, #BT_CAA_Approve').css('display', '');
                         $('#Div_Exec_Data').css('width', '100%');
                         break;
                 }
@@ -71,28 +74,31 @@
 
             $('#BT_CAA_Approve').on('click', function () {
                 $('#Table_Exec_Data tbody tr').each(function () {
-                    console.warn($(this).find('.SEQ').text());
-                    //$.ajax({
-                    //    url: "/Base/Cost/Cost_Save.ashx",
-                    //    data: {
-                    //        "SEQ": $(this).find('.SEQ').text(),
-                    //        "Call_Type": "Cost_Approve"
-                    //    },
-                    //    cache: false,
-                    //    type: "POST",
-                    //    async: false,
-                    //    datatype: "json",
-                    //    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                    //    success: function (response) {
-                    //        Edit_Mode = "Approve";
-                    //        Form_Mode_Change("Base");
-                    //        console.warn(response);
-                    //    },
-                    //    error: function (ex) {
-                    //        alert(ex);
-                    //        return false;
-                    //    }
-                    //});
+                    //console.warn($(this).find('.SEQ').text());
+                    $.ajax({
+                        url: "/Base/Cost/Cost_Save.ashx",
+                        data: {
+                            "SEQ": $(this).find('.SEQ').text(),
+                            "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Account"].ToString().Trim() %>",
+                            "Call_Type": "CAA_Approve"
+                        },
+                        cache: false,
+                        type: "POST",
+                        async: false,
+                        datatype: "json",
+                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                        success: function (response) {
+                            $('#Table_Exec_Data').html('');
+                            $('#Table_Exec_Data_info').text('Showing 0 entries');
+                            Edit_Mode = "Can_Move";
+                            Form_Mode_Change("Search");
+                            Search_Cost();
+                        },
+                        error: function (ex) {
+                            alert(ex);
+                            return false;
+                        }
+                    });
                 });
                 alert('核准完成');
             });
@@ -130,7 +136,7 @@
                                 + '</th><th>廠商確認'
                                 + '</th><th>採購交期'
                                 + '</th><th>採購單號'
-                                + '</th><th>點收核准'
+                                //+ '</th><th>點收核准'
                                 + '</th><th>' + '<%=Resources.MP.Sample_Product_No%>'
                                 + '</th><th>' + '<%=Resources.MP.Supplier_No%>'
                                 + '</th><th>' + '<%=Resources.MP.SEQ%>'
@@ -150,7 +156,7 @@
                                     '</td><td>' + String(R[i].廠商確認 ?? "") +
                                     '</td><td>' + String(R[i].採購交期 ?? "") +
                                     '</td><td>' + String(R[i].採購單號 ?? "") +
-                                    '</td><td style="text-align:center;">' + '<input type="Checkbox"' + ((R[i].點收核准) ? "Checked":"") + ' />' +
+                                    //'</td><td style="text-align:center;">' + '<input type="Checkbox"' + ((R[i].點收核准) ? "Checked":"") + ' />' +
                                     '</td><td>' + String(R[i].暫時型號 ?? "") +
                                     '</td><td>' + String(R[i].廠商編號 ?? "") +
                                     '</td><td class="SEQ">' + String(R[i].序號 ?? "") +
@@ -192,6 +198,7 @@
                     case "RB_SM_DIMG":
                         Show_IMG = true;
                         $('.DIMG img').css('height', '100px');
+                        $('.DIMG img').css('width', '100px');
                         break;
                 }
                 if (Show_IMG && !IMG_Has_Read) {//Need Show And Not Read Data
@@ -224,9 +231,14 @@
 
             });
 
-            $('#BT_Next').on('click', function () {
+            $('#BT_Next, #V_BT_CAC').on('click', function () {
                 Edit_Mode = "Edit";
                 Form_Mode_Change("Review_Data");
+            });
+
+            $('#V_BT_Master').on('click', function () {
+                Edit_Mode = "Can_Move";
+                Form_Mode_Change("Search");
             });
             
             $('#DDL_SET_PC').on('change', function () {
@@ -285,7 +297,7 @@
                     $('#Table_Exec_Data_info').text('Showing ' + $('#Table_Exec_Data > tbody tr').length + ' entries');
                     $('#Table_Search_Cost_info').text('Showing ' + $('#Table_Search_Cost > tbody tr').length + ' entries');
 
-                    $('#BT_Next').toggle(Boolean($('#Table_Exec_Data').find('tbody tr').length > 0));
+                    $('#BT_Next, #V_BT_CAC').toggle(Boolean($('#Table_Exec_Data').find('tbody tr').length > 0));
                     Re_Bind_Inner_JS();
                 }
             }
@@ -302,7 +314,6 @@
             $('#BT_ATL').on('click', function () {
                 Item_Move($(this), $('#Table_Search_Cost'), $('#Table_Exec_Data'), true);
             });
-
         });
     </script>
 
@@ -395,6 +406,8 @@
         <tr>
             <td class="tdtstyleRight" colspan="8">
                 <input type="button" id="BT_Search" class="M_BT" value="<%=Resources.MP.Search%>" />
+                <input type="button" id="BT_CAA_Approve" class="M_BT" style="display:none;" value="點收核准" />
+
                 <%--<input type="button" id="BT_Cancel" class="M_BT" value="<%=Resources.MP.Cancel%>" style="display: none;" />--%>
                 <%--<input type="button" id="BT_Re_Select" class="M_BT" value="<%=Resources.MP.Re_Selet%>" style="display:none;" />--%>
                 <%--<input type="button" id="BT_Save" class="M_BT" value="<%=Resources.MP.Save%>" style="display:none;" />--%>
@@ -411,6 +424,12 @@
             <td style="width: 80%;"></td>
         </tr>
     </table>
+    <div style="width: 99%; margin: 0 auto; background-color: white;">
+        &nbsp;
+        <input id="V_BT_Master" type="button" class="V_BT" value="<%=Resources.MP.Select%>" disabled="disabled" />
+        <input id="V_BT_CAC" type="button" class="V_BT" style="display:none;" value="點收核准" />
+        <input type="button" class="V_BT" value="<%=Resources.MP.Sample%>" onclick="$('.Div_D').css('display','none');$('#Div_More').css('display','');" />
+    </div>
     <div>&nbsp;&nbsp;&nbsp;&nbsp;
         <input id="RB_DV_DIMG" type="radio" name="DIMG" disabled="disabled" checked="checked" />
         <label for="RB_DV_DIMG"><%=Resources.MP.Not_Show_Image%></label>
@@ -446,11 +465,6 @@
 
         <div id="Div_Exec_Data" style="width: 35%; height: 65vh; overflow: auto; display: none; float: right;border-style:solid;border-width:1px; ">
             <span class="dataTables_info" id="Table_Exec_Data_info" role="status" aria-live="polite"></span>
-            <div class="For_U">
-                <div style="display: flex;align-items: center;">
-                    <input type="button" id="BT_CAA_Approve" value="點收核准" style="height: 54px; background-color: cadetblue; padding: 8px 10px; border-radius: 10px;" />
-                </div>
-            </div>
             <table id="Table_Exec_Data" style="width: 100%;" class="table table-striped table-bordered">
                 <thead></thead>
                 <tbody></tbody>

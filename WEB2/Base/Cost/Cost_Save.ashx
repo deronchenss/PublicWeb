@@ -212,6 +212,15 @@ public class Cost_Save : IHttpHandler, IRequiresSessionState
                     cmd.Parameters.AddWithValue("PC3", context.Request["PC3"]);
                     cmd.Parameters.AddWithValue("Update_User", context.Request["Update_User"]);
                     break;
+                case "CAA_Approve":
+                    cmd.CommandText = @" UPDATE Dc2..suplu
+                                         SET [點收核准] = '1',
+                                         	 [更新人員] = @Update_User,
+                                         	 [更新日期] = GETDATE()
+                                         WHERE [序號] = @SEQ; ";
+                    cmd.Parameters.AddWithValue("SEQ", context.Request["SEQ"]);
+                    cmd.Parameters.AddWithValue("Update_User", context.Request["Update_User"]);
+                    break;
             }
             cmd.Connection = conn;
             conn.Open();

@@ -174,6 +174,7 @@
                     case "RB_SM_DIMG":
                         Show_IMG = true;
                         $('.DIMG img').css('height', '100px');
+                        $('.DIMG img').css('width', '100px');
                         break;
                 }
                 if (Show_IMG && !IMG_Has_Read) {//Need Show And Not Read Data
@@ -224,9 +225,11 @@
                         datatype: "json",
                         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                         success: function (response) {
-                            Edit_Mode = "Approve";
-                            Form_Mode_Change("Base");
-                            console.warn(response);
+                            $('#Table_Exec_Data').html('');
+                            $('#Table_Exec_Data_info').text('Showing 0 entries');
+                            Edit_Mode = "Can_Move";
+                            Form_Mode_Change("Search");
+                            Search_Cost();
                         },
                         error: function (ex) {
                             alert(ex);
@@ -362,18 +365,13 @@
             </td>
         </tr>
         <tr>
-            <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
-        </tr>
-        <tr>
             <td class="tdtstyleRight" colspan="8">
                 <input type="button" id="BT_Search" class="M_BT" value="<%=Resources.MP.Search%>" />
                 <input type="button" id="BT_Approve" class="M_BT" value="<%=Resources.MP.Approve%>" style="display:none;" />
             </td>
         </tr>
         <tr>
-            <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
-        </tr>
-        <tr>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
