@@ -34,7 +34,7 @@ public class BOM_Save : IHttpHandler, IRequiresSessionState
                                          		[備註] = @Remark,
                                          		[部門] = 'IV',
                                          		[變更日期] = NULL,
-                                         		[更新人員] = 'Ivan10',
+                                         		[更新人員] = @Update_User,
                                          		[更新日期] = GETDATE(),
                                          		[註記] = 0
                                         IF( @@ROWCOUNT > 0)
@@ -61,7 +61,7 @@ public class BOM_Save : IHttpHandler, IRequiresSessionState
                                         		    [不展開] = 0,
                                         		    [不計成本] = 0,
                                         		    [變更日期] = NULL,
-                                        		    [更新人員] = 'Ivan10',
+                                        		    [更新人員] = @Update_User,
                                         		    [更新日期] = GETDATE();
                                         END ";
                     cmd.Parameters.AddWithValue("SUPLU_SEQ", context.Request["SUPLU_SEQ"]);
@@ -69,6 +69,7 @@ public class BOM_Save : IHttpHandler, IRequiresSessionState
                     cmd.Parameters.AddWithValue("DVN", context.Request["DVN"]);
                     cmd.Parameters.AddWithValue("S_No", context.Request["S_No"]);
                     cmd.Parameters.AddWithValue("S_SName", context.Request["S_SName"]);
+                    cmd.Parameters.AddWithValue("Update_User", context.Request["Update_User"]);
                     cmd.Parameters.AddWithValue("Remark", context.Request["Remark"]);
                     break;
                 case "BOM_D_New":
@@ -94,10 +95,10 @@ public class BOM_Save : IHttpHandler, IRequiresSessionState
                                         	    [不展開] = 0,
                                         	    [不計成本] = 0,
                                         	    [變更日期] = NULL,
-                                        	    [更新人員] = 'Ivan10',
+                                        	    [更新人員] = @Update_User,
                                         	    [更新日期] = GETDATE();
                                          UPDATE Dc2..bom 
-                                         SET [更新人員] = 'Ivan10', 
+                                         SET [更新人員] = @Update_User, 
                                              [更新日期] = GETDATE()
                                          WHERE [SUPLU_SEQ] = @SUPLU_SEQ; ";
                     cmd.Parameters.AddWithValue("Parent_SEQ", context.Request["Parent_SEQ"]);
@@ -110,15 +111,17 @@ public class BOM_Save : IHttpHandler, IRequiresSessionState
                     cmd.Parameters.AddWithValue("New_IM", context.Request["New_IM"]);
                     cmd.Parameters.AddWithValue("New_SUPLU_SEQ", context.Request["New_SUPLU_SEQ"]);
                     cmd.Parameters.AddWithValue("M_Amount", context.Request["M_Amount"]);
+                    cmd.Parameters.AddWithValue("Update_User", context.Request["Update_User"]);
                     cmd.Parameters.AddWithValue("New_Rank", context.Request["New_Rank"]);
                     break;
                 case "BOM_M_Save":
                     cmd.CommandText = @" UPDATE Dc2..bom 
                                          SET [備註] = @Remark,
-                                             [更新人員] = 'Ivan10', 
+                                             [更新人員] = @Update_User, 
                                              [更新日期] = GETDATE()
                                          WHERE [SUPLU_SEQ] = @SUPLU_SEQ; ";
                     cmd.Parameters.AddWithValue("SUPLU_SEQ", context.Request["SUPLU_SEQ"]);
+                    cmd.Parameters.AddWithValue("Update_User", context.Request["Update_User"]);
                     cmd.Parameters.AddWithValue("Remark", context.Request["Remark"]);
                     break;
                 case "BOM_D_Save":
@@ -128,7 +131,7 @@ public class BOM_Save : IHttpHandler, IRequiresSessionState
                                          	[不發單] = @NB,
                                          	[不展開] = @NE,
                                          	[不計成本] = @NCC,
-                                         	[更新人員] = 'Ivan10',
+                                         	[更新人員] = @Update_User, 
                                          	[更新日期] = GETDATE()
                                          WHERE [序號] = @D_SEQ ";
                     cmd.Parameters.AddWithValue("D_SEQ", context.Request["D_SEQ"]);
@@ -137,6 +140,7 @@ public class BOM_Save : IHttpHandler, IRequiresSessionState
                     cmd.Parameters.AddWithValue("NB", context.Request["NB"]);
                     cmd.Parameters.AddWithValue("NE", context.Request["NE"]);
                     cmd.Parameters.AddWithValue("NCC", context.Request["NCC"]);
+                    cmd.Parameters.AddWithValue("Update_User", context.Request["Update_User"]);
                     break;
                 case "BOM_Copy":
                     cmd.CommandText = @" INSERT INTO Dc2..bom
@@ -149,7 +153,7 @@ public class BOM_Save : IHttpHandler, IRequiresSessionState
                                          		[備註], 
                                          		[部門], 
                                          		[變更日期] = NULL, 
-                                         		[更新人員] = 'Ivan10', 
+                                         		[更新人員] = @Update_User, 
                                          		[更新日期] = GETDATE(), 
                                          		[註記]
                                          FROM Dc2..bom
@@ -181,7 +185,7 @@ public class BOM_Save : IHttpHandler, IRequiresSessionState
                                             	    [不展開],
                                             	    [不計成本],
                                             	    [變更日期] = NULL,
-                                            	    [更新人員] = 'Ivan10',
+                                            	    [更新人員] = @Update_User,
                                             	    [更新日期] = GETDATE()
                                             FROM Dc2..bomsub
                                             WHERE SUPLU_SEQ = @Old_SUPLU_SEQ
@@ -190,6 +194,7 @@ public class BOM_Save : IHttpHandler, IRequiresSessionState
                                          END ";
                     cmd.Parameters.AddWithValue("Old_SUPLU_SEQ", context.Request["Old_SUPLU_SEQ"]);
                     cmd.Parameters.AddWithValue("New_SUPLU_SEQ", context.Request["New_SUPLU_SEQ"]);
+                    cmd.Parameters.AddWithValue("Update_User", context.Request["Update_User"]);
                     break;
             }
             cmd.Connection = conn;

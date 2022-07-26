@@ -31,12 +31,13 @@ public class BOM_Delete : IHttpHandler, IRequiresSessionState
                                          ELSE
                                          BEGIN
                                          	UPDATE Dc2..bom 
-                                             SET [更新人員] = 'Ivan10', 
+                                             SET [更新人員] = @Update_User, 
                                                  [更新日期] = GETDATE()
                                              WHERE [SUPLU_SEQ] = @SUPLU_SEQ;
                                          END
                                          DELETE Dc2..bomsub WHERE [序號] = @D_SEQ; ";
                     cmd.Parameters.AddWithValue("D_SEQ", context.Request["D_SEQ"]);
+                    cmd.Parameters.AddWithValue("Update_User", context.Request["Update_User"]);
                     cmd.Parameters.AddWithValue("SUPLU_SEQ", context.Request["SUPLU_SEQ"]);
                     break;
             }

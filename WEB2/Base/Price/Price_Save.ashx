@@ -47,7 +47,7 @@ public class Price_Save : IHttpHandler, IRequiresSessionState
                                          	   [MIN_2] = @MIN_2,
                                          	   [MIN_3] = @MIN_3,
                                          	   [MIN_4] = @MIN_4,
-                                         	   [更新人員] = 'Ivan10',
+                                         	   [更新人員] = @Update_User,
                                          	   [更新日期] = GETDATE(),
                                          	   [備註] = @Remark ";
                     cmd.Parameters.AddWithValue("DVN", context.Request["DVN"]);
@@ -79,7 +79,7 @@ public class Price_Save : IHttpHandler, IRequiresSessionState
                                          	[商標] = @TM,
                                          	[客戶型號] = @CM,
                                          	[最後單價日] = @LSPD,
-                                         	[停用日期] = @SD,
+                                         	[停用日期] = IIF(@SD = '',NULL, @SD),
                                          	[客戶編號] = @C_No,
                                          	[客戶簡稱] = @C_SName,
                                          	[頤坊型號] = @IM,

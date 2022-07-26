@@ -580,7 +580,7 @@
     <value>外幣單價</value>
   </data>
   <data name="Price_Information" xml:space="preserve">
-    <value>價格資訊</value>
+    <value>Price_產品說明</value>
   </data>
   <data name="Price_T" xml:space="preserve">
     <value>單價</value>

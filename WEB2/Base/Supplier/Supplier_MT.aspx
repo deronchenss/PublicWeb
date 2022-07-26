@@ -11,8 +11,10 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var Click_tr_IDX;
+            var Edit_Mode;
             var From_Mode;
             $('#BT_New').on('click', function () {
+                Edit_Mode = "Edit";
                 From_Mode = "New";
                 $('input[required], select[required]').css('background-color', 'yellow');
                 $('#BT_Cancel, #BT_New_Save').css('display', '');
@@ -43,13 +45,13 @@
                                 "Web": $('#TB_M2_Web').val(),
                                 "Purchase_Mail": $('#TB_M2_Purchase_Mail').val(),
                                 "Develop_Mail": $('#TB_M2_Develop_Mail').val(),
-
                                 "Company_Address": $('#TB_M2_Company_Address').val(),
                                 "Factory_Address": $('#TB_M2_Factory_Address').val(),
                                 "Delivery_Address": $('#TB_M2_Delivery_Address').val(),
                                 "Principal": $('#TB_M2_Principal').val(),
                                 "Account_Class": $('#DDL_M2_Account_Class').val(),
                                 "Nation": $('#TB_M2_S_Nation').val(),
+                                "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Account"].ToString().Trim() %>",
                                 "Call_Type": "Supplier_MT_New"
                             },
                             cache: false,
@@ -185,6 +187,7 @@
                 }
 
                 if (Confirm_Check) {
+                    Click_tr_IDX = null;
                     $('#BT_New_Save, #BT_Cancel').css('display', 'none');
                     $('.M2_For_U').css('display', 'none');
                     $('.M_BT').not($('#BT_Cancel')).css('display', '');
@@ -205,6 +208,7 @@
             });
 
             $('#BT_ED_Edit').on('click', function () {
+                Edit_Mode = "Edit";
                 $('#BT_ED_Edit, #BT_Cancel, #Div_DT_View').css('display', 'none');
                 $('#BT_ED_Save, #BT_ED_Cancel').css('display', '');
                 $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').not('#TB_M2_Update_User, #TB_M2_Update_Date, #TB_M2_SEQ, #TB_E_Example').attr('disabled', false);
@@ -213,6 +217,7 @@
             $('#BT_ED_Save').on('click', function () {
                 if (confirm("<%=Resources.MP.Edit_Alert%>")) {
                     if (Save_Check()) {
+                        Edit_Mode = "Save";
                         //Save
                         $.ajax({
                             url: "/Base/Supplier/Supplier_Save.ashx",
@@ -239,7 +244,7 @@
                                 "Company_Address": $('#TB_M2_Company_Address').val(),
                                 "Factory_Address": $('#TB_M2_Factory_Address').val(),
                                 "Delivery_Address": $('#TB_M2_Delivery_Address').val(),
-                                "Update_User": $('#TB_M2_Update_User').val(),
+                                "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Account"].ToString().Trim() %>",
                                 "Purchase": $('#TB_RM_Purchase').val(),
                                 "Develop": $('#TB_RM_Develop').val(),
                                 "Payment_Mode": $('#TB_DP_Payment_Mode').val(),
@@ -283,14 +288,13 @@
                                     alert(ex);
                                 }
                             }
-
                         });
-
                     }
                 }
             });
 
             $('#BT_ED_Cancel').on('click', function () {
+                Edit_Mode = "Search";
                 $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
                 $('#BT_ED_Edit, #BT_Cancel, #Div_DT_View').css('display', '');
                 $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
@@ -416,8 +420,8 @@
                 });
             };
 
-             function Search_Supplier(Search_Where) {
-                 Click_tr_IDX = null;
+            function Search_Supplier(Search_Where) {
+                Click_tr_IDX = null;
                 $.ajax({
                     url: "/Base/Supplier/Sup_Search.ashx",
                     data: {
@@ -430,47 +434,17 @@
                     datatype: "json",
                     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                     success: function (response) {
-                        var Table_HTML =
-
-                            '<thead><tr><th>' + '<%=Resources.MP.Supplier_No%>'
-                            + '</th><th>' + '<%=Resources.MP.Supplier_Short_Name%>'
-                            + '</th><th>' + '<%=Resources.MP.Tel%>'
-                            + '</th><th>' + '<%=Resources.MP.Fax%>'
-                            + '</th><th>' + '<%=Resources.MP.Purchase_Person%>'
-                            + '</th><th>' + '<%=Resources.MP.Develop_Person%>'
-                            + '</th><th>' + '<%=Resources.MP.Principal%>'
-                            + '</th><th>' + '<%=Resources.MP.EIN%>'
-                            + '</th><th>' + '<%=Resources.MP.SEQ%>'
-                            + '</th><th>' + '<%=Resources.MP.Update_User%>'
-                            + '</th><th>' + '<%=Resources.MP.Update_Date%>'
-                            + '</th></tr></thead><tbody>';
-
-                        $(response).each(function (i) {
-                            Table_HTML +=
-                                '<tr><td>' + String(response[i].S_No) +
-                                '</td><td>' + String(response[i].S_SName ?? "") +
-                                '</td><td>' + String(response[i].S_Tel ?? "") +
-                                '</td><td>' + String(response[i].S_FAX ?? "") +
-                                '</td><td>' + String(response[i].S_P_Purchase ?? "") +
-                                '</td><td>' + String(response[i].S_P_Develop ?? "") +
-                                '</td><td>' + String(response[i].S_Principal ?? "") +
-                                '</td><td>' + String(response[i].S_EIN ?? "") +
-                                '</td><td>' + String(response[i].S_SEQ ?? "") +
-                                '</td><td>' + String(response[i].S_Update_User ?? "") +
-                                '</td><td>' + String(response[i].S_Update_Date ?? "") +
-                                '</td></tr>';
-                        });
-                        Table_HTML += '</tbody>';
-                        //$('#Table_Search_Customer').html(Table_HTML);
-                        $('#Table_Search_Customer').DataTable({
+                        $('#Table_Search_Supplier').DataTable({
                             "data": response,
+                            "scrollX": true,
+                            "scrollY": "30vh",
                             "destroy": true,
                             "order": [[10, "desc"]],
                             "lengthMenu": [
-                                [5, 10, 20, -1],
-                                [5, 10, 20, "All"],
+                                [-1, 5, 10, 20],
+                                ["All", 5, 10, 20],
                             ],
-                            
+
                             "columns": [
                                 { data: "S_No", title: "<%=Resources.MP.Supplier_No%>" },
                                 { data: "S_SName", title:"<%=Resources.MP.Supplier_Short_Name%>" },
@@ -486,14 +460,13 @@
                             ],
                         });
 
-
-                        $('#Table_Search_Customer').attr('style', 'white-space:nowrap;');
-                        $('#Table_Search_Customer thead th').attr('style', 'text-align:center;');
-                        $('#Table_Search_Customer').on('click', 'tbody tr', function () {
+                        $('#Table_Search_Supplier').attr('style', 'white-space:nowrap;');
+                        $('#Table_Search_Supplier thead th').attr('style', 'text-align:center;');
+                        $('#Table_Search_Supplier').on('click', 'tbody tr', function () {
                             Click_tr_IDX = $(this).index();
                             Table_Tr_Click($(this));
                         });
-
+                        $('#Table_Search_Supplier').DataTable().draw();
                     },
                     error: function (ex) {
                         alert(ex);
@@ -501,21 +474,20 @@
                 });
             };
 
-            
             $(window).keydown(function (e) {
-                if (Click_tr_IDX != null) {
+                if (Click_tr_IDX != null && Edit_Mode != "Edit") {
                     switch (e.keyCode) {
                         case 38://^
                             if (Click_tr_IDX > 0) {
                                 Click_tr_IDX -= 1;
                             }
-                            Table_Tr_Click($('#Table_Search_Customer tbody tr:nth(' + Click_tr_IDX + ')'));
+                            Table_Tr_Click($('#Table_Search_Supplier tbody tr:nth(' + Click_tr_IDX + ')'));
                             break;
                         case 40://v
-                            if (Click_tr_IDX < ($('#Table_Search_Customer tbody tr').length - 1)) {
+                            if (Click_tr_IDX < ($('#Table_Search_Supplier tbody tr').length - 1)) {
                                 Click_tr_IDX += 1;
                             }
-                            Table_Tr_Click($('#Table_Search_Customer tbody tr:nth(' + Click_tr_IDX + ')'));
+                            Table_Tr_Click($('#Table_Search_Supplier tbody tr:nth(' + Click_tr_IDX + ')'));
                             break;
                     }
                 }
@@ -527,7 +499,6 @@
                 }
             });
             
-
             $('#TB_M2_S_Nation').autocomplete({
                 autoFocus: true,
                 source: function (request, response) {
@@ -640,7 +611,7 @@
                 color: white;
             }
 
-        #Table_Search_Customer tbody tr:hover {
+        #Table_Search_Supplier tbody tr:hover {
             background-color: #f8981d;
             color: white;
         }
@@ -817,8 +788,8 @@
         </tr>
     </table>
 
-    <div id="Div_DT_View" style="margin: auto;width:98%;overflow:auto;display:none;height:45vh;">
-        <table id="Table_Search_Customer" style="width:100%;" class="table table-striped table-bordered">
+    <div id="Div_DT_View" style="margin: auto;width:98%;display:none;">
+        <table id="Table_Search_Supplier" style="width:100%;" class="table table-striped table-bordered">
             <thead></thead>
             <tbody></tbody>
         </table>

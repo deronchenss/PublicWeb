@@ -404,7 +404,7 @@
             <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
         </tr>
         <tr>
-            <td class="tdtstyleRight" colspan="8">
+            <td class="tdtstyleRight" colspan="7">
                 <input type="button" id="BT_Search" class="M_BT" value="<%=Resources.MP.Search%>" />
                 <input type="button" id="BT_CAA_Approve" class="M_BT" style="display:none;" value="點收核准" />
 

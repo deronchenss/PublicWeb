@@ -14,6 +14,7 @@
         $(document).ready(function () {
             var Click_tr_IDX;
             var From_Mode;
+            var Edit_Mode;
             var PS_Control;
             DDL_Bind();
             Dialog();
@@ -22,6 +23,7 @@
 
                 switch (Form_Mode) {
                     case "Base":
+                        Edit_Mode = "Base";
                         $('#Div_Detail_Form input, #Div_Detail_Form textarea').not('[type=button], #TB_Dia_Where, [type=number]').val('');
                         $('#Div_Detail_Form input[type=number]').val(0);
                         $('#DDL_M2_DVN').val('Y');
@@ -39,6 +41,7 @@
                         $('.M2_For_V, .M2_For_N').css('display', 'none');
                         break;
                     case "New_M":
+                        Edit_Mode = "New";
                         $('input[required], select[required]').css('background-color', 'yellow');
                         $('.M2_For_N').css('display', '');
                         $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').not('.disabled').attr('disabled', false);
@@ -46,24 +49,24 @@
                         $('#BT_Cancel, #BT_New_Save').css('display', '');
                         break;
                     case "Search_M":
-                        //$('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
+                        Edit_Mode = "Can_Move";
                         $('#BT_New, #BT_Search, #BT_Detail_Search, #BT_ED_Save, #BT_ED_Cancel, #BT_ED_Edit, #BT_ED_Copy').css('display', 'none');
                         $('#BT_Cancel, #Div_DT_View').css('display', '');
-                        //$('.ED_BT').css('display', 'none');
-                        //$('#BT_ED_Edit, #BT_Cancel, #Div_DT_View').css('display', '');
-                        //$('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
                         break;
                     case "Search_D":
+                        Edit_Mode = "Can_Move";
                         $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').css('background-color', '');
                         $('.V_BT').css('display', '');
                         $('.M2_For_V').css('display', '');
                         $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
                         $('#BT_ED_Edit, #BT_ED_Copy, #BT_Cancel, #Div_DT_View').css('display', '');
-                        $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
+                        $('#BT_ED_Save, #BT_ED_Cancel, #LB_IE_To_PRI').css('display', 'none');
                         break;//TB_M2_Change_Log
                     case "Edit_D":
+                        Edit_Mode = "Edit";
                         $('#BT_ED_Edit, #BT_ED_Copy, #BT_Cancel, #Div_DT_View, .M2_For_N').css('display', 'none');
                         $('#BT_ED_Save, #BT_ED_Cancel').css('display', '');
+                        $('#LB_IE_To_PRI').toggle(($('#TB_M2_ISP_ENG').val().length > 0));
                         $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').not('.disabled').attr('disabled', false);
                         break;
                 }
@@ -137,7 +140,7 @@
                                 "MIN_2": parseFloat($('#TB_M2_MIN_2').val()) || 0,
                                 "MIN_3": parseFloat($('#TB_M2_MIN_3').val()) || 0,
                                 "MIN_4": parseFloat($('#TB_M2_MIN_4').val()) || 0,
-                                "Update_User": 'Ivan10',
+                                "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Account"].ToString().Trim() %>",
                                 "Remark": $('#TB_M2_Remark').val(),
                                 "Call_Type": "Price_New"
                             },
@@ -188,12 +191,14 @@
                     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                     success: function (response) {
                         $('#Table_Search_Price').DataTable({
+                            "scrollX": true,
+                            "scrollY": "30vh",
                             "data": response,
                             "destroy": true,
                             "order": [[17, "desc"]],
                             "lengthMenu": [
-                                [5, 10, 20, -1],
-                                [5, 10, 20, "All"],
+                                [-1, 5, 10, 20],
+                                ["All", 5, 10, 20],
                             ],
                             "columns": [
                                 { data: "SEQ", title: "<%=Resources.MP.SEQ%>" },
@@ -218,6 +223,7 @@
                         });
                         $('#Table_Search_Price').css('white-space', 'nowrap');
                         $('#Table_Search_Price thead th').css('text-align', 'center');
+                        $('#Table_Search_Price').DataTable().draw();
                     },
                     error: function (ex) {
                         alert(ex);
@@ -231,7 +237,7 @@
             });
 
             $(window).keydown(function (e) {
-                if (Click_tr_IDX != null) {
+                if (Click_tr_IDX != null && Edit_Mode == "Can_Move") {
                     switch (e.keyCode) {
                         case 38://^
                             if (Click_tr_IDX > 0) {
@@ -280,6 +286,7 @@
                         $('#TB_M2_S_No').val(String(response[0].S_No ?? ""));
                         $('#TB_M2_S_SName').val(String(response[0].S_SName ?? ""));
                         $('#TB_M2_PRI').val(String(response[0].PRI ?? ""));
+                        $('#TB_M2_ISP_ENG').val(String(response[0].ISP_ENG ?? ""));
                         $('#TB_M2_TWD_1').val(String(response[0].TWD_P ?? ""));
                         $('#TB_M2_USD_1').val(String(response[0].USD_P ?? ""));
                         $('#TB_M2_P_2').val(String(response[0].P_2 ?? ""));
@@ -322,6 +329,7 @@
                     Confirm_Check = confirm("<%=Resources.MP.Cancel_Alert%>");
                 }
                 if (Confirm_Check) {
+                    Click_tr_IDX = null;
                     From_Mode = "Cancel";
                     Form_Mode_Change("Base");
                 }
@@ -359,7 +367,7 @@
                                 "MIN_2": parseFloat($('#TB_M2_MIN_2').val()) || 0,
                                 "MIN_3": parseFloat($('#TB_M2_MIN_3').val()) || 0,
                                 "MIN_4": parseFloat($('#TB_M2_MIN_4').val()) || 0,
-                                "Update_User": 'Ivan10',
+                                "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Account"].ToString().Trim() %>",
                                 "Remark": $('#TB_M2_Remark').val(),
                                 "Call_Type": "Price_Update"
                             },
@@ -471,7 +479,7 @@
                         $('#TB_M2_IM').val($(this).parent().parent().find('td:nth(3)').text());
                         $('#TB_M2_S_No').val($(this).parent().parent().find('td:nth(4)').text());
                         $('#TB_M2_S_SName').val($(this).parent().parent().find('td:nth(5)').text());
-                        $('#TB_M2_PRI').val($(this).parent().parent().find('td:nth(11)').text());
+                        $('#TB_M2_ISP_ENG').val($(this).parent().parent().find('td:nth(11)').text());
                         break;
                     case "C"://Copy
                         $('#HDN_CD_SUPLU_SEQ').val($(this).parent().parent().find('td:nth(1)').text());
@@ -563,7 +571,7 @@
                                         "IM": $('#TB_CD_IM').val(),
                                         "S_No": $('#TB_CD_S_No').val(),
                                         "S_SName": $('#TB_CD_S_SName').val(),
-                                        "Update_User" : "Ivan10",
+                                        "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Account"].ToString().Trim() %>",
                                         "Call_Type": "Price_Copy"
                                     },
                                     cache: false,
@@ -938,7 +946,7 @@
             <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
         </tr>
     </table>
-    <div id="Div_DT_View" style="margin: auto;width:98%;overflow:auto;display:none;height:45vh;">
+    <div id="Div_DT_View" style="margin: auto;width:98%;display:none;">
         <table id="Table_Search_Price" style="width:100%;" class="table table-striped table-bordered">
             <thead></thead>
             <tbody></tbody>
@@ -1081,6 +1089,12 @@
                     <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Price_Information%></td>
                     <td style="text-align: left; width: 15%;" colspan="7">
                         <input id="TB_M2_PRI" autocomplete="off" disabled="disabled" style="width: 100%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right; text-wrap: none; width: 10%;">ISP_English</td>
+                    <td style="text-align: left; width: 15%;" colspan="7">
+                        <input id="TB_M2_ISP_ENG" class="disabled" disabled="disabled" style="width: 90%;" /><a id="LB_IE_To_PRI" href="#" style="display:none;" onclick="$('#TB_M2_PRI').val($('#TB_M2_ISP_ENG').val());">Copy</a>
                     </td>
                 </tr>
                 <tr>

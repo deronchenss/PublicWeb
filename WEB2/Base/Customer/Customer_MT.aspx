@@ -105,6 +105,7 @@
                                 "IV_Address": $('#DDL_IVPK').val(),
                                 "Costomer_Source": $('#DDL_M2_C_Source').val(),
                                 "Reference_Number": $('#TB_M2_RF_No').val(),
+                                "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Account"].ToString().Trim() %>",
                                 "Call_Type": "Customer_MT_New"
                             },
                             cache: false,
@@ -112,7 +113,7 @@
                             datatype: "json",
                             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                             success: function (response) {
-                                console.warn(response);
+                                //console.warn(response);
                                 if (String(response).indexOf("UNIQUE KEY") > 0) {
                                     alert(response);
                                 }
@@ -216,6 +217,7 @@
                 }
 
                 if (Confirm_Check) {
+                    Click_tr_IDX = null;
                     From_Mode = "Cancel";
                     Form_Mode_Change("Base");
                 }
@@ -257,7 +259,7 @@
                                 "MailEDM": $('#TB_M2_EDMMail').val(),
                                 "IV_Address": $('#DDL_IVPK').val(),
                                 "Shipping_Notes": $('#TB_CC_Shipping_Notes').val(),
-
+                                "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Account"].ToString().Trim() %>",
                                 "Call_Type": "Customer_MT_Update"
                             },
                             cache: false,
@@ -265,7 +267,7 @@
                             datatype: "json",
                             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                             success: function (response) {
-                                console.warn(response);
+                                //console.warn(response);
                                 if (String(response).indexOf("UNIQUE KEY") > 0) {
                                     alert(response);
                                 }
@@ -354,7 +356,7 @@
                 $(Click_tr).css('color', 'white');
 
                 var C_No = $(Click_tr).find('td:nth-child(1)').text().toString().trim();
-                console.warn(C_No);
+                //console.warn(C_No);
                 Form_Mode_Change("Search_D");
                 $.ajax({
                     url: "/Base/Customer/Customer_Search.ashx",
@@ -457,12 +459,14 @@
                     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                     success: function (response) {
                         $('#Table_Search_Customer').DataTable({
+                            "scrollX": true,
+                            "scrollY": "30vh",
                             "data": response,
                             "destroy": true,
                             "order": [[23, "desc"]],
                             "lengthMenu": [
-                                [5, 10, 20, -1],
-                                [5, 10, 20, "All"],
+                                [-1, 5, 10, 20, -1],
+                                ["All", 5, 10, 20],
                             ],
                             "columns": [
                                 { data: "C_No", title: "<%=Resources.MP.Customer_No%>" },
@@ -494,6 +498,7 @@
                         });
                         $('#Table_Search_Customer').css('white-space','nowrap');
                         $('#Table_Search_Customer thead th').css('text-align','center');
+                        $('#Table_Search_Customer').DataTable().draw();
                     },
                     error: function (ex) {
                         alert(ex);
@@ -564,7 +569,6 @@
             text-align: center;
             text-decoration: none;
         }
-
             .V_BT:hover {
                 background-color: #f8981d;
                 color: white;
@@ -584,8 +588,6 @@
                 background-color: #f8981d;
                 color: white;
             }
-
-            
         .ED_BT {
             background-color:aqua;
             font-weight: bold;
@@ -800,7 +802,7 @@
         </tr>
     </table>
 
-    <div id="Div_DT_View" style="margin: auto;width:98%;overflow:auto;display:none;height:45vh;">
+    <div id="Div_DT_View" style="margin: auto;width:98%;display:none;">
         <table id="Table_Search_Customer" style="width:100%;" class="table table-striped table-bordered">
             <thead></thead>
             <tbody></tbody>

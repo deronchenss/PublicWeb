@@ -49,7 +49,7 @@ public class Supplier_Save : IHttpHandler, IRequiresSessionState
                                          	[負責人] = @Principal,
                                          	[帳務分類] = @Account_Class,
                                          	[國名] = @Nation,
-                                         	[更新人員] = 'Ivan10',
+                                         	[更新人員] = @Update_User,
                                             [更新日期] = GETDATE(); ";
                     cmd.Parameters.AddWithValue("S_No", context.Request["S_No"]);
                     cmd.Parameters.AddWithValue("S_SName", context.Request["S_SName"]);
@@ -72,6 +72,7 @@ public class Supplier_Save : IHttpHandler, IRequiresSessionState
                     cmd.Parameters.AddWithValue("Principal", context.Request["Principal"]);
                     cmd.Parameters.AddWithValue("Account_Class", context.Request["Account_Class"]);
                     cmd.Parameters.AddWithValue("Nation", context.Request["Nation"]);
+                    cmd.Parameters.AddWithValue("Update_User", context.Request["Update_User"]);
                     break;
 
                 case "Supplier_MT_Update":
@@ -97,7 +98,7 @@ public class Supplier_Save : IHttpHandler, IRequiresSessionState
                                              [公司地址] = @S_Company_Address, 
                                              [工廠地址] = @S_Factory_Address,
                                              [裝配品寄送地址] = @S_Send_Address,
-                                             [更新人員] = 'Ivan10',
+                                             [更新人員] = @Update_User,
                                              [更新日期] = GETDATE(),
                                              [備註開發] = @S_Remark_Develop, 
                                              [備註採購] = @S_Remark_Purchase, 
@@ -141,7 +142,7 @@ public class Supplier_Save : IHttpHandler, IRequiresSessionState
                     cmd.Parameters.AddWithValue("S_Company_Address", context.Request["Company_Address"]);
                     cmd.Parameters.AddWithValue("S_Factory_Address", context.Request["Factory_Address"]);
                     cmd.Parameters.AddWithValue("S_Send_Address", context.Request["Delivery_Address"]);
-                    cmd.Parameters.AddWithValue("S_Update_User", context.Request["Update_User"]);
+                    cmd.Parameters.AddWithValue("Update_User", context.Request["Update_User"]);
                     cmd.Parameters.AddWithValue("S_Remark_Purchase", context.Request["Purchase"]);
                     cmd.Parameters.AddWithValue("S_Remark_Develop", context.Request["Develop"]);
                     cmd.Parameters.AddWithValue("S_Payment_Mode", context.Request["Payment_Mode"]);
@@ -174,51 +175,7 @@ public class Supplier_Save : IHttpHandler, IRequiresSessionState
                 context.Response.Write(ex.Message);
             }
 
-            //using (SqlDataReader sdr = cmd.ExecuteReader())
-            //{
-            //    switch (context.Request["Call_Type"])
-            //    {
-            //        case "":
-            //            while (sdr.Read())
-            //            {
-            //                supplier.Add(new
-            //                {
-            //                    C_No = sdr["客戶編號"],
-            //                    C_Tel = sdr["電話"],
-            //                    C_SName = sdr["客戶簡稱"],
-            //                    C_Fax = sdr["傳真"],
-            //                    C_Name = sdr["客戶名稱"],
-            //                    C_Nation = sdr["國名"],
-            //                    C_Principal = sdr["負責人"],
-            //                    C_Payment_Terms = sdr["付款方式"],
-            //                    C_Person_Commodity = sdr["連絡人大貨"],
-            //                    C_Quote = sdr["報價等級"],
-            //                    C_Currency = sdr["幣別"],
-            //                    C_Person_Sample = sdr["連絡人樣品"],
-            //                    C_Price_Condition = sdr["價格條件"],
-            //                    C_Web = sdr["網站"],
-            //                    C_Mail = sdr["Email"],
-            //                    C_IV_Address = sdr["IV列印地址"],
-            //                    C_Costomer_Source = sdr["客戶來源"],
-            //                    C_Reference_Number = sdr["參考號碼"],
-            //                    C_Company_Address = sdr["公司地址"],
-            //                    C_Factory_Address = sdr["工廠地址"],
-            //                    C_Delivery_Address = sdr["送貨地址"],
-            //                    C_MailEDM = sdr["emailEDM"],
-            //                    C_Update_User = sdr["更新人員"],
-            //                    C_Update_Date = sdr["更新日期"],
-            //                    C_SEQ = sdr["序號"],
-            //                });
-            //            }
-            //            break;
-            //    }
-            //}
-            //SqlDataAdapter SQL_DA = new SqlDataAdapter(cmd);
-            //SQL_DA.Fill(DT);
             conn.Close();
-            //var json = (new JavaScriptSerializer().Serialize(supplier));
-            //context.Response.ContentType = "text/json";
-            //context.Response.Write(json);
         }
     }
 

@@ -57,7 +57,7 @@ public class Cost_Save : IHttpHandler, IRequiresSessionState
 	                                            [備註給開發] = @RD,
 	                                            [新增日期] = GETDATE(),
 	                                            [更新日期] = GETDATE(),
-	                                            [更新人員] = 'Ivan10'; ";
+	                                            [更新人員] = @Update_User; ";
                     cmd.Parameters.AddWithValue("IM", context.Request["IM"]);
                     cmd.Parameters.AddWithValue("SM", context.Request["SM"]);
                     cmd.Parameters.AddWithValue("SaleM", context.Request["SaleM"]);
@@ -81,6 +81,7 @@ public class Cost_Save : IHttpHandler, IRequiresSessionState
                     cmd.Parameters.AddWithValue("DS_IM", context.Request["DS_IM"]);
                     cmd.Parameters.AddWithValue("RP", context.Request["RP"]);
                     cmd.Parameters.AddWithValue("RD", context.Request["RD"]);
+                    cmd.Parameters.AddWithValue("Update_User", context.Request["Update_User"]);
                     break;
                 case "Cost_Update":
                     cmd.CommandText = @" UPDATE Dc2..suplu
@@ -111,7 +112,7 @@ public class Cost_Save : IHttpHandler, IRequiresSessionState
 	                                         [備註給採購] = @RP, 
 	                                         [備註給開發] = @RD,
 	                                         [更新日期] = GETDATE(),
-	                                         [更新人員] = 'Ivan10',
+	                                         [更新人員] = @Update_User,
 	                                        --變更記錄 > Tri
                                              [製造規格] = @MS,
                                              [工時] = @WH, 
@@ -160,6 +161,7 @@ public class Cost_Save : IHttpHandler, IRequiresSessionState
                     cmd.Parameters.AddWithValue("PS", context.Request["PS"]);
                     cmd.Parameters.AddWithValue("RP", context.Request["RP"]);
                     cmd.Parameters.AddWithValue("RD", context.Request["RD"]);
+                    cmd.Parameters.AddWithValue("Update_User", context.Request["Update_User"]);
                     cmd.Parameters.AddWithValue("MS", context.Request["MS"]);
                     cmd.Parameters.AddWithValue("WH", context.Request["WH"]);
                     cmd.Parameters.AddWithValue("IBC", context.Request["IBC"]);
@@ -184,19 +186,21 @@ public class Cost_Save : IHttpHandler, IRequiresSessionState
                     cmd.CommandText = @" UPDATE Dc2..suplu
                                              SET [開發中] = 'R',
                                              	[申請原因] = @Reason,
-                                             	[更新人員] = 'Ivan10',
+                                             	[更新人員] = @Update_User,
                                              	[更新日期] = GETDATE()
                                              WHERE [序號] = @SEQ; ";
                     cmd.Parameters.AddWithValue("SEQ", context.Request["SEQ"]);
                     cmd.Parameters.AddWithValue("Reason", context.Request["Reason"]);
+                    cmd.Parameters.AddWithValue("Update_User", context.Request["Update_User"]);
                     break;
                 case "Cost_Approve":
                     cmd.CommandText = @" UPDATE Dc2..suplu
                                              SET [開發中] = 'N',
-                                             	[更新人員] = 'Ivan10',
+                                             	[更新人員] = @Update_User,
                                              	[更新日期] = GETDATE()
                                              WHERE [序號] = @SEQ; ";
                     cmd.Parameters.AddWithValue("SEQ", context.Request["SEQ"]);
+                    cmd.Parameters.AddWithValue("Update_User", context.Request["Update_User"]);
                     break;
                 case "Cost_Class":
                     cmd.CommandText = @" UPDATE Dc2..suplu

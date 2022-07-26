@@ -11,6 +11,7 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
+            var Edit_Mode;
             var From_Mode;
             var Click_tr_IDX;
             ATC();
@@ -41,34 +42,29 @@
                         $('.M2_For_U, .M2_For_NU').css('display', 'none');
                         break;
                     case "New_M":
-                        //$('.M_BT').not($('#BT_Cancel')).css('display', 'none');
-                        //$('.ED_BT').css('display', 'none');
-                        //$('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', false);
-
                         $('input[required], select[required]').css('background-color', 'yellow');
                         $('.M2_For_NU').css('display', '');
                         $('.M2_For_U').css('display', 'none');
                         $('#BT_New, #BT_Search, #BT_Detail_Search').css('display', 'none');
                         $('#BT_Cancel, #BT_New_Save').css('display', '');
                         $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').not('.S_Name, .disabled').attr('disabled', false);
-
-                        //By Copy Save
-                                            //$('#BT_ED_Edit, #BT_Cancel, #Div_DT_View').css('display', '');
-                                            //$('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
                         break;
                     case "Search_M":
+                        Edit_Mode = "Can_Move";
                         $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
                         $('#BT_New, #BT_Search, #BT_Detail_Search, #BT_ED_Save, #BT_ED_Cancel, #BT_ED_Edit').css('display', 'none');
                         $('#BT_Cancel, #Div_DT_View').css('display', '');
                         $('.V_BT').css('display', '');
                         break;
                     case "Search_D":
+                        Edit_Mode = "Can_Move";
                         $('.M2_For_U').css('display', '');
                         $('#Div_Detail_Form input, #Div_Detail_Form textarea, #Div_Detail_Form select').attr('disabled', 'disabled');
                         $('#BT_ED_Edit, #BT_ED_Copy, #BT_Cancel, #Div_DT_View').css('display', '');
                         $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
                         break;
                     case "Edit_M":
+                        Edit_Mode = "Edit";
                         $('.M2_For_NU').css('display', '');
                         $('#BT_ED_Edit, #BT_ED_Copy, #BT_Cancel, #Div_DT_View').css('display', 'none');
                         $('#BT_ED_Save, #BT_ED_Cancel').css('display', '');
@@ -111,6 +107,7 @@
                                 "DS_IM": $('#TB_M2_DI').val(),
                                 "RP": $('#TB_M2_RP').val(),
                                 "RD": $('#TB_M2_RD').val(),
+                                "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Account"].ToString().Trim() %>",
                                 "Call_Type": "Cost_New"
                             },
                             cache: false,
@@ -227,6 +224,7 @@
                                 "PGL": parseFloat($('#TB_P_PGL').val()) || 0,
                                 "PGW": parseFloat($('#TB_P_PGW').val()) || 0,
                                 "PGH": parseFloat($('#TB_P_PGH').val()) || 0,
+                                "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Account"].ToString().Trim() %>",
                                 "Call_Type": "Cost_Update"
                             },
                             cache: false,
@@ -357,7 +355,7 @@
             });
 
             $(window).keydown(function (e) {
-                if (Click_tr_IDX != null) {
+                if (Click_tr_IDX != null && Edit_Mode == "Can_Move") {
                     switch (e.keyCode) {
                         case 38://^
                             if (Click_tr_IDX > 0) {
@@ -515,8 +513,8 @@
                             "destroy": true,
                             "order": [[1, "asc"]],
                             "lengthMenu": [
-                                [5, 10, 20, -1],
-                                [5, 10, 20, "All"],
+                                [-1, 5, 10, 20],
+                                ["All", 5, 10, 20],
                             ],
                             "columns": [
                                 { data: "SEQ", title: "<%=Resources.MP.SEQ%>" },
@@ -660,6 +658,7 @@
                                         "DS_IM": $('#TB_M2_DI').val(),
                                         "RP": $('#TB_M2_RP').val(),
                                         "RD": $('#TB_M2_RD').val(),
+                                        "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Account"].ToString().Trim() %>",
                                         "Call_Type": "Cost_New"
                                     },
                                     cache: false,
@@ -704,7 +703,7 @@
                             contentType: "application/json; charset=utf-8",
                             success: function (data) {
                                 //$('[style*="z-index: 2147483647"]').css('z-index')
-                                $('.ui-autocomplete').css('z-index', $('#Copy_Dialog').parent().css('z-index') + 1);
+                                //$('.ui-autocomplete').css('z-index', $('#Copy_Dialog').parent().css('z-index') + 1);
                                 var Json_Response = JSON.parse(data.d);
                                 response($.map(Json_Response, function (item) { return { label: item.S_No + " - " + item.S_Name, value: item.S_No, name: item.S_Name } }));
                             },
@@ -714,7 +713,7 @@
                         });
                     },
                     select: function (event, ui) {
-                        $('#HDN_CD_S_SName').val(ui.item.name)
+                        $('#HDN_CD_S_SName').val(ui.item.name);
                     },
                 });
 

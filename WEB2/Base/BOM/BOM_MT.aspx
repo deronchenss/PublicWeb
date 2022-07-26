@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="BOM Maintenance" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="BOM_MT.aspx.cs" Inherits="BOM_BOM_MT" %>
+<%@ Register TagPrefix="uc1" TagName="uc1" Src="~/User_Control/Dia_Product_Selector.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
 </asp:Content>
@@ -112,6 +113,7 @@
                                 "S_No": $('#TB_M2_FNS').val(),
                                 "S_SName": $('#TB_M2_FNS_SName').val(),
                                 "Remark": $('#TB_M2_Remark').val(),
+                                "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Account"].ToString().Trim() %>",
                                 "Call_Type": "BOM_New"
                             },
                             cache: false,
@@ -174,11 +176,13 @@
                     success: function (response) {
                         $('#Table_Search_BOM').DataTable({
                             "data": response,
+                            "scrollX": true,
+                            "scrollY": "30vh",
                             "destroy": true,
                             "order": [[8, "desc"]],
                             "lengthMenu": [
-                                [5, 10, 20, -1],
-                                [5, 10, 20, "All"],
+                                [-1, 5, 10, 20],
+                                ["All", 5, 10, 20],
                             ],
                             "columns": [
                                 { data: "SUPLU_SEQ", title: "<%=Resources.MP.SUPLU_SEQ%>" },
@@ -198,6 +202,7 @@
                             Click_tr_IDX = $(this).index();
                             Table_Tr_Click($(this));
                         });
+                        $('#Table_Search_BOM').DataTable().draw();
                     },
                     error: function (ex) {
                         alert(ex);
@@ -223,6 +228,7 @@
                         data: {
                             "SUPLU_SEQ": SUPLU_SEQ,
                             "Remark": $('#TB_M2_Remark').val(),
+                            "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Account"].ToString().Trim() %>",
                             "Call_Type": "BOM_M_Save"
                         },
                         cache: false,
@@ -251,6 +257,7 @@
                                                 "NB": NB,
                                                 "NE": NE,
                                                 "NCC": NCC,
+                                                "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Account"].ToString().Trim() %>",
                                                 "Call_Type": "BOM_D_Save"
                                             },
                                             cache: false,
@@ -311,6 +318,7 @@
                                     data: {
                                         "Old_SUPLU_SEQ": Old_SUPLU_SEQ,
                                         "New_SUPLU_SEQ": New_SUPLU_SEQ,
+                                        "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Account"].ToString().Trim() %>",
                                         "Call_Type": "BOM_Copy"
                                     },
                                     cache: false,
@@ -357,60 +365,8 @@
                 $('.V_BT').not($(this)).attr('disabled', false);
             });
 
-            function Search_Product() {
-                $.ajax({
-                    url: "/Base/BOM/BOM_Search.ashx",
-                    data: {
-                        "Call_Type": "Product_Search",
-                        "IM": $('#SPD_TB_IM').val(),
-                        "S_No": $('#SPD_TB_S_No').val(), 
-                        "Search_Where": ""
-                    },
-                    cache: false,
-                    type: "POST",
-                    datatype: "json",
-                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                    success: function (response) {
-                        $('#SPD_Table_Product').DataTable({
-                            "data": response,
-                            "destroy": true,
-                            "order": [[2, "desc"]],
-                            "lengthMenu": [
-                                [5, 10, 20, -1],
-                                [5, 10, 20, "All"],
-                            ],
-                            "columns": [
-                                {
-                                    data: null, title: "", orderable: false,
-                                    render: function (data, type, row) {
-                                        return '<input type="button" class="BTN_Green" value="' + '<%=Resources.MP.Select%>' + '" />'
-                                    }
-                                },
-                                { data: "SEQ", title: "<%=Resources.MP.SUPLU_SEQ%>" },
-                                { data: "DVN", title: "<%=Resources.MP.Developing%>" },
-                                { data: "IM", title: "<%=Resources.MP.Ivan_Model%>" },
-                                { data: "S_No", title: "<%=Resources.MP.Supplier_No%>" },
-                                { data: "S_SName", title: "<%=Resources.MP.Supplier_Short_Name%>" },
-                                { data: "Unit", title: "<%=Resources.MP.Unit%>" },
-                                { data: "PI", title: "<%=Resources.MP.Product_Information%>" }
-                            ],
-                            "columnDefs": [{
-                                targets: [0],
-                                className: "text-center"
-                            }],
-                        });
-
-                        $('#SPD_Table_Product').css('white-space','nowrap');
-                        $('#SPD_Table_Product thead th').css('text-align','center');
-                    },
-                    error: function (ex) {
-                        alert(ex);
-                    }
-                });
-            };
-
             $(window).keydown(function (e) {
-                if (Click_tr_IDX != null) {
+                if (Click_tr_IDX != null && Edit_Mode != "Edit") {
                     switch (e.keyCode) {
                         case 38://^
                             if (Click_tr_IDX > 0) {
@@ -518,8 +474,8 @@
                             var Can_Delete = !Boolean(response[i].HASC);//Only Not exists Child can Delete
                             var Delete_BT = "<span class='D_T_DEL' style='cursor:pointer;color:red;'><%=Resources.MP.Delete_Item%></span>";
 
-                            var Show_Item = " <span class='Expand' style='cursor:pointer;color:blue;' onclick=$('." + String(response[i].SEQ ?? "") +
-                                "_Child').toggle();$(this).text(($('." + String(response[i].SEQ ?? "") + "_Child').css('display')=='none')?'＋':'－'); >+</span >";
+                            var Show_Item = "<span class='Expand' style='cursor:pointer;color:blue;' onclick=$('." + String(response[i].SEQ ?? "") +
+                                "_Child').toggle();$(this).text(($('." + String(response[i].SEQ ?? "") + "_Child').css('display')=='none')?'＋':'－'); >-</span >";
 
                             D_Table_HTML +=
                                 '<tr class="' + String(response[i].Parent_SEQ ?? "") + '_Child">' +
@@ -562,7 +518,7 @@
                         $('#Table_Search_BOM_D').html(D_Table_HTML);
                         $('#Table_Search_BOM_D tr td').css('vertical-align', 'middle');
                         $('#Table_Search_BOM_D').css('white-space','nowrap');
-                        $('.Rank_td:not(:contains(1),:contains(9))').parent().css('display', 'none');//預設不展開
+                        //$('.Rank_td:not(:contains(1),:contains(9))').parent().css('display', 'none');//預設不展開
                         $('#TB_M2_D_Count').val($(response).length ?? 0);
                         $('#TB_M2_D_SUM_TWD').val(SUM_TWD.toFixed(2));
                         $('#TB_M2_D_SUM_USD').val(SUM_USD.toFixed(2));
@@ -575,9 +531,10 @@
                         $('.Rank_td:contains(3)').parent().find('td:lt(7)').not(':nth-child(1), :nth-child(6)').each(function () { $(this).text('\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + $(this).text()) });
                         $('.DIMG').toggle(!$('#RB_DV_DIMG').prop('checked'));
                         $('.DIMG img').css('height', ($('#RB_SM_DIMG').prop('checked')) ? '100px' : '');
+                        $('.DIMG img').css('width', ($('#RB_SM_DIMG').prop('checked')) ? '100px' : '');
 
-                        $('#Table_Search_BOM_D tr').toggle(true);
-                        $('#Table_Search_BOM_D .Expand').text('-');
+                        //$('#Table_Search_BOM_D tr').toggle(true);
+                        //$('#Table_Search_BOM_D .Expand').text('-');
 
                         if (Type == "Continue_Edit") {
                             $('#TB_M2_Remark').attr('disabled', false);
@@ -645,6 +602,7 @@
                                                     "New_SUPLU_SEQ": $('#NDDN_HDN_SUPLU_SEQ').val(),
                                                     "M_Amount": $('#NDDN_TB_M_Amount').val(),
                                                     "New_Rank": Number(Parent_Rank) + 1,
+                                                    "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Account"].ToString().Trim() %>",
                                                     "Call_Type": "BOM_D_New"
                                                 },
                                                 cache: false,
@@ -678,12 +636,7 @@
                 ATC();
             });
 
-            $('#SPD_BT_Search').on('click', function () {
-                Search_Product();
-                $('#STD_Div_DT').css('display', '');
-            });
-
-            $('#SPD_Table_Product').on('click', '.BTN_Green', function () {
+            $('#SPD_Table_Product').on('click', '.PROD_SEL', function () {
                 switch (Dialog_Control) {
                     case "M"://Master_Add
                         $('#HDN_M2_SUPLU_SEQ').val($(this).parent().parent().find('td:nth(1)').text());
@@ -740,6 +693,7 @@
                             data: {
                                 "D_SEQ": D_SEQ,
                                 "SUPLU_SEQ": SUPLU_SEQ,
+                                "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Account"].ToString().Trim() %>",
                                 "Call_Type": "BOM_D_Delete"
                             },
                             cache: false,
@@ -846,21 +800,6 @@
                         },
                         "Cancel": function () {
                             $("#dialog").dialog('close');
-                        }
-                    }
-                });
-
-                $("#Search_Product_Dialog").dialog({
-                    autoOpen: false,
-                    modal: true,
-                    title: "<%=Resources.MP.Search_Confition%>",
-                    width: screen.width * 0.8,
-                    overlay: 0.5,
-                    focus: true,
-                    buttons: {
-                        "Cancel": function () {
-                            $("#Search_Product_Dialog").dialog('close');
-                            $('#STD_Div_DT').css('display', 'none');
                         }
                     }
                 });
@@ -1005,6 +944,7 @@
             opacity: 0.8;
         }
     </style>
+    <uc1:uc1 ID="uc1" runat="server" /> 
 
     <div id="dialog" style="display: none;">
         <div style="width: 100%; text-align: center;">
@@ -1202,38 +1142,7 @@
             </table>
         </div>
     </div>
-
-    <div id="Search_Product_Dialog" style="display: none;">
-        <table border="0" style="margin: 0 auto;" id="SPD_Table">
-            <tr style="text-align: right;">
-                <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Ivan_Model%></td>
-                <td style="text-align: left; width: 15%;">
-                    <input style="width: 90%; height: 25px;" id="SPD_TB_IM" placeholder="<%=Resources.MP.Product_ATC_Hint%>" />
-                </td>
-
-                <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Master_Supplier_ALL%></td>
-                <td style="text-align: left; width: 15%;">
-                    <input style="width: 90%; height: 25px;" id="SPD_TB_S_No" placeholder="<%=Resources.MP.S_No_ATC_Hint%>" />
-                </td>
-            </tr>
-            <tr><td><br /></td></tr>
-            <tr>
-                <td style="text-align: center;" colspan="4">
-                    <div style="display: flex; justify-content: center; align-items: center;">
-                        <input id="SPD_BT_Search" class="BTN" type="button" value="<%=Resources.MP.Search%>" style="width:10%;" />
-                    </div>
-                </td>
-            </tr>
-        </table>
-        <div id="STD_Div_DT" style="margin: auto; width: 98%; overflow: auto; display: none;">
-            <br />
-            <table id="SPD_Table_Product" style="width: 100%;" class="table table-striped table-bordered dt-responsive">
-                <thead></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </div>
-
+    
     <div id="New_Detail_Dialog" style="display:none;">
         <div style="position: relative; border: 1px solid #111111; padding: 20px; box-sizing: border-box; margin: 30px auto; width: 100%;background-color:silver;">
             <span style="position: absolute; top: -1em; left: 10%; line-height: 2em; padding: 0 1em; background-color: #fff;border:1px #000 solid;">Parent_Item</span>
@@ -1326,7 +1235,7 @@
         </tr>
     </table>
 
-    <div id="Div_DT_View" style="margin: auto; width: 98%; overflow: auto; display: none;height:45vh;">
+    <div id="Div_DT_View" style="margin: auto; width: 98%; display: none;border-style:solid;border-width:1px;">
         <table id="Table_Search_BOM" style="width: 100%;" class="table table-striped table-bordered">
             <thead></thead>
             <tbody></tbody>
@@ -1425,7 +1334,7 @@
                 </tr>
             </table>
 
-            <div id="Div_DT_View2" style="margin: auto; width: 98%; overflow: auto; display: none;">
+            <div id="Div_DT_View2" style="margin: auto; width: 98%; overflow: auto; display: none;;border-style:solid;border-width:1px;">
                 <input id="RB_DV_DIMG" type="radio" name="DIMG" checked="checked" onclick="$('.DIMG').css('display', 'none');" />
                 <label for="RB_DV_DIMG"><%=Resources.MP.Not_Show_Image%></label>
                 <input id="RB_V_DIMG" type="radio" name="DIMG" onclick="$('.DIMG').css('display', '');$('.DIMG img').css('height', '');" />

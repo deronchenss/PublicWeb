@@ -251,6 +251,7 @@
                         data: {
                             "SEQ": $(this).find('.SEQ').text(),
                             "Reason": $(this).find('.U_Element').val(),
+                            "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Account"].ToString().Trim() %>",
                             "Call_Type": "Cost_Apply"
                         },
                         cache: false,

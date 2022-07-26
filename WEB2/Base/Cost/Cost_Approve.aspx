@@ -217,6 +217,7 @@
                         url: "/Base/Cost/Cost_Save.ashx",
                         data: {
                             "SEQ": $(this).find('.SEQ').text(),
+                            "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Account"].ToString().Trim() %>",
                             "Call_Type": "Cost_Approve"
                         },
                         cache: false,
