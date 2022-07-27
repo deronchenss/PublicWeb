@@ -33,7 +33,7 @@ public class Login_Call : System.Web.Services.WebService
         SqlConnection conn = new SqlConnection();
         conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
         SqlCommand cmd = new SqlCommand();
-        cmd.CommandText = @" SELECT TOP 1 UPPER(RTRIM([使用者名稱])) [Account], RTRIM([密碼]) [Password], IVM_PERMISSIONS, IVMD_PERMISSIONS
+        cmd.CommandText = @" SELECT TOP 1 UPPER(RTRIM([使用者名稱])) [Account], RTRIM([使用者中文]) [Name], RTRIM([密碼]) [Password], IVM_PERMISSIONS, IVMD_PERMISSIONS
                                      FROM Dc2..pass
                                      WHERE UPPER(RTRIM([使用者名稱])) = UPPER(@Account) ";
         cmd.Parameters.AddWithValue("Account", Login_Account);
@@ -54,15 +54,16 @@ public class Login_Call : System.Web.Services.WebService
         Account_Data.Add(new
         {
             Response_Account = sdr["Account"],
+            Response_Name = sdr["Name"],
             IVM_PERMISSIONS = sdr["IVM_PERMISSIONS"],
             IVMD_PERMISSIONS = sdr["IVMD_PERMISSIONS"]
         });
 
         Session["Account"] = sdr["Account"];
+        Session["Name"] = sdr["Name"];
         Session["IVM_PERMISSIONS"] = sdr["IVM_PERMISSIONS"];
         Session["IVMD_PERMISSIONS"] = sdr["IVMD_PERMISSIONS"];
         conn.Close();
-        //Session["Account"] = Account_Data;
 
         var json = (new JavaScriptSerializer().Serialize(Account_Data));
         return json;
