@@ -855,6 +855,7 @@
             
             //功能選單
             $('#BT_BASE').on('click', function () {
+                Edit_Mode = 'Base'
                 if ($('#Table_Search_Sample > tbody tr[role=row]').length > 0 || $('#Table_CHS_Data > tbody tr[role=row]').length > 0)
                 {
                     Form_Mode_Change('Search');

@@ -49,6 +49,7 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Logic\Dev\Dal_Sample_Pack.cs" />
     <Compile Include="Logic\Dev\Dal_Sample_Inv_MT.cs" />
     <Compile Include="Logic\Dev\Dal_Sample_Chk_MT.cs" />
     <Compile Include="Logic\Dev\Dal_Sample_Chk.cs" />

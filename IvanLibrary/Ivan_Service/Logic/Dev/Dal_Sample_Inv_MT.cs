@@ -35,8 +35,6 @@ namespace Ivan_Service
 						  ,ISNULL(已收金額NT,0) 已收金額NT
 						  ,CONVERT(VARCHAR,[已收日期],23) 已收日期
 						  ,ISNULL(應收樣品費,0) + ISNULL(應收樣品NT,0) + ISNULL(應收運費,0) + ISNULL(應收運費NT,0) - ISNULL(已收金額,0) - ISNULL(已收金額NT,0) 未收金額
-						  ,ISNULL(淨重,0) [淨重]
-						  ,ISNULL(毛重,0) [毛重]
 						  ,[備註業務]
 						  ,[備註會計]
 						  ,[備註_ivan]
