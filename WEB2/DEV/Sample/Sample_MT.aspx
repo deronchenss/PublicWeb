@@ -9,6 +9,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
+            var amtChange = 0;
             var apiUrl = "/DEV/Sample/Ashx/Sample_MT.ashx";
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
@@ -181,14 +182,13 @@
 
             function ClickToEdit(click_tr) {
                 $('#BT_Update').css('display', '');
+                amtChange = 0;
 
                 //點擊賦予顏色
                 $('#Table_Search_Sample > tbody tr').removeClass("tableClick");
                 click_tr.addClass("tableClick");
 
                 var clickData = $('#Table_Search_Sample').DataTable().row(click_tr).data();
-
-                console.log(click_tr);
 
                 //Edit page
                 $('#E_SAMPLE_NO').val(clickData['樣品號碼']);
@@ -397,6 +397,10 @@
                             $('#Table_Search_Sample').DataTable().draw();
                             $('#Table_Search_Sample_info').text('Showing ' + $('#Table_Search_Sample > tbody tr[role=row]').length + ' entries');
 
+                            if ($('#Table_Search_Sample > tbody tr.tableClick').length == 0 && Edit_Mode == 'Edit') {
+                                ClickToEdit($('#Table_Search_Sample > tbody > tr:nth(0)'));
+                            }
+
                             if (Edit_Mode == 'WriteOff') {
                                 Form_Mode_Change('WriteOff');
                             }
@@ -530,8 +534,17 @@
 
             //更新DB
             function UPD_SAMPLE() {
+                var foreAmt = $.trim($('#E_FORE_AMT').val()) == '' ? 0 : $.trim($('#E_FORE_AMT').val());
+                var usd = $.trim($('#E_USD').val()) == '' ? 0 : $.trim($('#E_USD').val());
+
                 if ($('#E_SEQ').val() === '') {
                     alert('請選擇要修改的資料');
+                }
+                else if (foreAmt != 0 && usd == 0) {
+                    alert('採用外幣時，主要貨幣美元未輸入!');
+                }
+                else if ($.trim($('#E_FORE_CODE').val()) != '' && foreAmt == 0) {
+                    alert('有外幣幣別,無外幣單價 !');
                 }
                 else{
                     $.ajax({
@@ -574,8 +587,7 @@
                             "PRICE_2": $('#E_PRICE_2').val(),
                             "MIN_3": $('#E_MIN_3').val(),
                             "PRICE_3": $('#E_PRICE_3').val(),
-                            "UPD_USER": $('#E_UPD_USER').val(),
-                            "UPD_DATE": $('#E_UPD_DATE').val()
+                            "AMT_CHANGE": amtChange
                         },
                         cache: false,
                         type: "POST",
@@ -803,6 +815,10 @@
             $('#BT_Update').on('click', function () {
                 Edit_Mode = "Edit";
                 Form_Mode_Change("Search");
+            });
+
+            $('.supluAmt').change(function () {
+                amtChange = 1;
             });
 
             $('#BT_INSERT_SAVE').on('click', function () {
@@ -1119,14 +1135,17 @@
                             <input id="E_ACC_SHIP_DATE" type="date" class="date_S_style editReset" disabled="disabled"  />
                         </td>
                     </tr>
+                    <tr>
+                        <td colspan="4" style="color:red">詢價、詢索、詢開如有更新單價欄位，會同步更新COST單價</td>
+                    </tr>
                     <tr class="trstyle onlyEdit">
                         <td class="tdEditstyle">基本量_1</td>
                         <td class="tdbstyle">
-                            <input id="E_MIN_1" class="textbox_char editReset" type="number" />
+                            <input id="E_MIN_1" class="textbox_char editReset supluAmt" type="number" />
                         </td>
                         <td class="tdEditstyle">美元單價</td>
                         <td class="tdbstyle">
-                            <input id="E_USD"  class="textbox_char editReset" type="number" />
+                            <input id="E_USD"  class="textbox_char editReset supluAmt" type="number" />
                         </td>
                     </tr>
                     <tr class="trstyle onlyEdit">
@@ -1136,37 +1155,37 @@
                         </td>
                         <td class="tdEditstyle">台幣單價</td>
                         <td class="tdbstyle">
-                            <input id="E_NTD"  class="textbox_char editReset" type="number" />
+                            <input id="E_NTD"  class="textbox_char editReset supluAmt" type="number" />
                         </td>
                     </tr>
                     <tr class="trstyle onlyEdit">
                         <td class="tdEditstyle">基本量_2</td>
                         <td class="tdbstyle">
-                            <input id="E_MIN_2"  class="textbox_char editReset" type="number" />
+                            <input id="E_MIN_2"  class="textbox_char editReset supluAmt" type="number" />
                         </td>
                         <td class="tdEditstyle">單價_2</td>
                         <td class="tdbstyle">
-                            <input id="E_PRICE_2"  class="textbox_char editReset" type="number" />
+                            <input id="E_PRICE_2"  class="textbox_char editReset supluAmt" type="number" />
                         </td>
                     </tr>
                     <tr class="trstyle onlyEdit">
                         <td class="tdEditstyle">外幣幣別</td>
                         <td class="tdbstyle">
-                            <input id="E_FORE_CODE"  class="textbox_char editReset"  />
+                            <input id="E_FORE_CODE"  class="textbox_char editReset supluAmt"  />
                         </td>
                         <td class="tdEditstyle">外幣單價</td>
                         <td class="tdbstyle">
-                            <input id="E_FORE_AMT"  class="textbox_char editReset" type="number" />
+                            <input id="E_FORE_AMT"  class="textbox_char editReset supluAmt" type="number" />
                         </td>
                     </tr>
                     <tr class="trstyle onlyEdit">
                          <td class="tdEditstyle">基本量_3</td>
                         <td class="tdbstyle">
-                            <input id="E_MIN_3"  class="textbox_char editReset" type="number" />
+                            <input id="E_MIN_3"  class="textbox_char editReset supluAmt" type="number" />
                         </td>
                         <td class="tdEditstyle">單價_3</td>
                         <td class="tdbstyle">
-                            <input id="E_PRICE_3"  class="textbox_char editReset" type="number" />
+                            <input id="E_PRICE_3"  class="textbox_char editReset supluAmt" type="number" />
                         </td>
                     </tr>
                     <tr class="trstyle onlyEdit">

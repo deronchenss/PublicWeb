@@ -184,8 +184,26 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                                             ,[外幣幣別] = @FORE_CODE
                                                             ,[外幣單價] = IIF(@FORE_AMT = '', 0,CONVERT(DECIMAL,@FORE_AMT))
                                                             ,[更新人員] = @UPD_USER
-                                                            ,[更新日期] = GETDATE()
-                                                         WHERE [序號] = @SEQ ";
+                                                            ,[變更日期] = GETDATE()
+                                                         WHERE [序號] = @SEQ 
+
+                                            --增加回報COST
+                                            IF(@WORK_TYPE like '%詢%' AND @AMT_CHANGE = 1)
+									        BEGIN
+										        UPDATE SUPLU
+                                                SET [美元單價] = IIF(@USD = '', 0,CONVERT(DECIMAL,@USD))
+                                                   ,[台幣單價] = IIF(@NTD = '', 0,CONVERT(DECIMAL,@NTD))
+                                                   ,[單價_2] = IIF(@PRICE_2 = '', 0,CONVERT(DECIMAL,@PRICE_2))
+                                                   ,[單價_3] = IIF(@PRICE_3 = '', 0,CONVERT(DECIMAL,@PRICE_3))
+                                                   ,[min_1] = IIF(@MIN_1 = '', 0,CONVERT(DECIMAL,@MIN_1))
+                                                   ,[min_2] = IIF(@MIN_2 = '', 0,CONVERT(DECIMAL,@MIN_2))
+                                                   ,[min_3] = IIF(@MIN_3 = '', 0,CONVERT(DECIMAL,@MIN_3))
+                                                   ,[外幣幣別] = @FORE_CODE
+                                                   ,[外幣單價] = IIF(@FORE_AMT = '', 0,CONVERT(DECIMAL,@FORE_AMT))
+                                                   ,更新人員 = @UPD_USER
+                                                WHERE [序號] = @SUPLU_SEQ 
+									        END
+                                    ";
 
                                     cmd.Parameters.AddWithValue("FORCE_CLOSE", context.Request["FORCE_CLOSE"]);
                                     cmd.Parameters.AddWithValue("GIVE_STATUS", context.Request["GIVE_STATUS"]);
@@ -204,6 +222,7 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                     cmd.Parameters.AddWithValue("MIN_1", context.Request["MIN_1"]);
                                     cmd.Parameters.AddWithValue("MIN_2", context.Request["MIN_2"]);
                                     cmd.Parameters.AddWithValue("MIN_3", context.Request["MIN_3"]);
+                                    cmd.Parameters.AddWithValue("AMT_CHANGE", context.Request["AMT_CHANGE"]);
                                 }
                                 else
                                 {
@@ -259,7 +278,7 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                 cmd.Parameters.AddWithValue("UPD_USER", "IVAN");
                                 
                                 res = cmd.ExecuteNonQuery();
-                                context.Response.StatusCode = res == 1 ? 200 : 404;
+                                context.Response.StatusCode = 200;
                                 context.Response.End();
                                 break;
                             case "SEQ_PURC_SEQ":

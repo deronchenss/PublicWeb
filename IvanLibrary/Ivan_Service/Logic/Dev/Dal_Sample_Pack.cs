@@ -234,7 +234,7 @@ namespace Ivan_Service
 		public int DeletePaku2(HttpContext context)
 		{
 			int res = 0;
-			string sqlStr = @"  DECLARE @ENTER_CNT INT
+			string sqlStr = @"  DECLARE @ENTER_CNT DECIMAL(18,2)
 								SELECT  @ENTER_CNT = ISNULL(備貨數量,0) - SUM(ISNULL(出貨數量,0))
 								FROM paku2 P2 
 								LEFT JOIN paku P ON P2.序號 = P.PAKU2_SEQ
