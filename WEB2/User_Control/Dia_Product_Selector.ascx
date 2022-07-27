@@ -24,6 +24,7 @@
                 url: "/Web_Service/Dialog_DataBind.asmx/Product_Search",
                 data: {
                     "IM": $('#SPD_TB_IM').val(),
+                    "SaleM": $('#SPD_TB_SaleM').val(),
                     "S_No": $('#SPD_TB_S_No').val()
                 },
                 cache: false,
@@ -94,6 +95,10 @@
             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Ivan_Model%></td>
             <td style="text-align: left; width: 15%;">
                 <input style="width: 90%; height: 25px;" id="SPD_TB_IM" />
+            </td>
+            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Sale_Model%></td>
+            <td style="text-align: left; width: 15%;">
+                <input style="width: 90%; height: 25px;" id="SPD_TB_SaleM" />
             </td>
             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Supplier_No%></td>
             <td style="text-align: left; width: 15%;">

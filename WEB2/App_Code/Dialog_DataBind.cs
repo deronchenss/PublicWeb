@@ -68,15 +68,16 @@ public class Dialog_DataBind : System.Web.Services.WebService
         Context.Response.Write(json);
     }
     [WebMethod]
-    public void Product_Search(string IM, string S_No)
+    public void Product_Search(string IM, string SaleM, string S_No)
     {
         conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
         SqlCommand cmd = new SqlCommand();
         cmd.CommandText = @" SELECT TOP 100 [序號], [開發中], [頤坊型號], [廠商編號], [廠商簡稱], [單位], [產品說明], [暫時型號], [廠商型號], [銷售型號], [英文ISP]
                              FROM Dc2..suplu
-                             WHERE [頤坊型號] LIKE @IM + '%' AND [廠商編號] LIKE '%' + @S_No + '%'
+                             WHERE [頤坊型號] LIKE @IM + '%' AND [銷售型號] LIKE @SaleM + '%' AND [廠商編號] LIKE '%' + @S_No + '%'
                              ORDER BY [更新日期] DESC ";
         cmd.Parameters.AddWithValue("IM", IM);
+        cmd.Parameters.AddWithValue("SaleM", SaleM);
         cmd.Parameters.AddWithValue("S_No", S_No);
         cmd.Connection = conn;
         conn.Open();
