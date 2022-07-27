@@ -180,7 +180,7 @@ namespace Ivan_Service
 											,'樣品點收入庫' [訂單號碼]
 											,@CHK_BATCH_NO [單據編號]
 											,GETDATE() [異動日期]
-											,'D' [帳項]
+											,'6' [帳項]
 											,NULL [帳項原因]
 											,S.[廠商編號]
 											,S.[廠商簡稱]

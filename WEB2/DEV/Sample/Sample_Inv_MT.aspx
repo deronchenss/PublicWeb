@@ -218,8 +218,8 @@
                                     { data: "備註業務", title: "備註業務", visible: false },
                                     { data: "應稅", title: "應稅", visible: false },
                                     { data: "併大貨收款", title: "併大貨收款", visible: false },
-                                    { data: "淨重", title: "淨重", visible: false },
-                                    { data: "毛重", title: "毛重", visible: false },
+                                    //{ data: "淨重", title: "淨重", visible: false },
+                                    //{ data: "毛重", title: "毛重", visible: false },
                                     { data: "發票匯率", title: "發票匯率", visible: false },
                                     { data: "應收樣品費", title: "應收樣品費", visible: false },
                                     { data: "應收樣品NT", title: "應收樣品NT", visible: false },
@@ -630,7 +630,7 @@
                             <input id="E_BIG_SHIP_COLL" type="checkbox" DT_Fill_Name="併大貨收款" class="textbox_char editReset updColumn"  />
                         </td>
                     </tr>
-                    <tr class="trstyle onlyEdit">
+<%--                    <tr class="trstyle onlyEdit">
                         <td class="tdEditstyle">淨重</td>
                         <td class="tdbstyle">
                             <input id="E_NET_WEIGHT" type="number" DT_Fill_Name="淨重" class="textbox_char editReset" disabled="disabled" />
@@ -639,7 +639,7 @@
                         <td class="tdbstyle">
                             <input id="E_WEIGHT" type="number" DT_Fill_Name="毛重" class="textbox_char editReset" disabled="disabled"  />
                         </td>
-                    </tr>
+                    </tr>--%>
                     <tr class="trstyle onlyEdit">
                         <td class="tdEditstyle">應收樣品費USD</td>
                         <td class="tdbstyle">

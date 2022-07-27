@@ -89,6 +89,8 @@ namespace Ivan_Service
                                     FROM SUPLU S
                                     INNER JOIN stkioh ST ON S.序號 = ST.SUPLU_SEQ
                                     WHERE ISNULL(ST.已刪除,0) = 0
+                                    AND ST.SOURCE_TABLE = 'recua'
+                                    AND ST.SOURCE_SEQ = @SEQ
 
                                     UPDATE stkioh
                                     SET 變更日期 = GETDATE()
