@@ -16,7 +16,7 @@ public class Sample_Chk_MT : IHttpHandler, IRequiresSessionState
     public void ProcessRequest(HttpContext context)
     {
         DataTable dt = new DataTable();
-        Dal_Sample_Chk_MT dal = new Dal_Sample_Chk_MT();
+        Dal_Recua dalRecua = new Dal_Recua(context);
         
         int result = 0;
         if (!string.IsNullOrEmpty(context.Request["Call_Type"]))
@@ -26,19 +26,17 @@ public class Sample_Chk_MT : IHttpHandler, IRequiresSessionState
                 switch (context.Request["Call_Type"])
                 {
                     case "Search_Recua":
-                        dt = dal.SearchTable(context);
+                        dt = dalRecua.SearchTable();
                         break;
                     case "DELETE_RECUA":
-                        result = dal.DeleteRecua(context);
+                        result = dalRecua.DeleteRecua();
 
-                        Log.InsertLog(context, context.Session["Account"], dal.sqlStr);
                         context.Response.StatusCode = 200;
                         context.Response.Write(result);
                         context.Response.End();
                         break;
                 }
 
-                Log.InsertLog(context, context.Session["Account"], dal.sqlStr);
                 var json = JsonConvert.SerializeObject(dt);
                 context.Response.StatusCode = 200;
                 context.Response.ContentType = "text/json";
@@ -46,7 +44,6 @@ public class Sample_Chk_MT : IHttpHandler, IRequiresSessionState
             }
             catch (SqlException ex)
             {
-                Log.InsertLog(context, context.Session["Account"], dal.sqlStr, ex.ToString(), false);
                 context.Response.StatusCode = 404;
                 context.Response.Write(ex.Message);
             }

@@ -16,7 +16,8 @@ public class Sample_Chk_Dist : IHttpHandler, IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
     {
-        Dal_Sample_Chk_Dist dal = new Dal_Sample_Chk_Dist();
+        Dal_Suplu dalSuplu = new Dal_Suplu(context);
+        Dal_Paku2 dalPaku2 = new Dal_Paku2(context);
         DataTable dt = new DataTable();
         int result = 0;
         if (!string.IsNullOrEmpty(context.Request["Call_Type"]))
@@ -26,19 +27,17 @@ public class Sample_Chk_Dist : IHttpHandler, IRequiresSessionState
                 switch (context.Request["Call_Type"])
                 {
                     case "SEARCH":
-                        dt = dal.SearchTable(context);
+                        dt = dalSuplu.SearchTableForSample();
                         break;
                     case "INSERT_PAKU2":
-                        result = dal.InsertPaku2(context);
+                        result = dalPaku2.InsertPaku2();
 
-                        Log.InsertLog(context, context.Session["Account"], dal.sqlStr);
                         context.Response.StatusCode = 200;
                         context.Response.Write(result);
                         context.Response.End();
                         break;
                 }
 
-                Log.InsertLog(context, context.Session["Account"], dal.sqlStr);
                 var json = JsonConvert.SerializeObject(dt);
                 context.Response.StatusCode = 200;
                 context.Response.ContentType = "text/json";
@@ -46,7 +45,6 @@ public class Sample_Chk_Dist : IHttpHandler, IRequiresSessionState
             }
             catch (SqlException ex)
             {
-                Log.InsertLog(context, context.Session["Account"], dal.sqlStr, ex.ToString(), false);
                 context.Response.StatusCode = 404;
                 context.Response.Write(ex.Message);
             }

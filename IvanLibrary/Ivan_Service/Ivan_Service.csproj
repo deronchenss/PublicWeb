@@ -49,17 +49,23 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Logic\Dev\Dal_Sample_Pack.cs" />
-    <Compile Include="Logic\Dev\Dal_Sample_Inv_MT.cs" />
-    <Compile Include="Logic\Dev\Dal_Sample_Chk_MT.cs" />
-    <Compile Include="Logic\Dev\Dal_Sample_Chk.cs" />
-    <Compile Include="Logic\Dev\Dal_Sample_Chk_Dist.cs" />
+    <Compile Include="Logic\Base\Dal_Suplu.cs" />
+    <Compile Include="Logic\Dev\Dal_Invu.cs" />
+    <Compile Include="Logic\Dev\Dal_Paku2.cs" />
+    <Compile Include="Logic\Dev\Dal_Paku.cs" />
+    <Compile Include="Logic\Dev\Dal_Recua.cs" />
+    <Compile Include="Logic\Dev\Dal_Pudu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceBase\LogicBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ivan_Dal\Ivan_Dal.csproj">
       <Project>{E5FF57ED-C8BE-4D9F-A7E6-9B8CEF09CC77}</Project>
       <Name>Ivan_Dal</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Ivan_Log\Ivan_Log.csproj">
+      <Project>{8FE623B9-B5C4-4C98-936A-E15A449A5A46}</Project>
+      <Name>Ivan_Log</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

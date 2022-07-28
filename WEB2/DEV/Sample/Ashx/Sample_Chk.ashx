@@ -10,14 +10,14 @@ using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using CrystalDecisions.CrystalReports.Engine;
 using Ivan_Service;
-using Ivan_Log;
 
 public class Sample_Chk : IHttpHandler, IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
     {
         DataTable dt = new DataTable();
-        Dal_Sample_Chk dal = new Dal_Sample_Chk();
+        Dal_Pudu dalPudu = new Dal_Pudu(context);
+        Dal_Recua dalRecua = new Dal_Recua(context);
         
         int result = 0;
         if (!string.IsNullOrEmpty(context.Request["Call_Type"]))
@@ -27,19 +27,17 @@ public class Sample_Chk : IHttpHandler, IRequiresSessionState
                 switch (context.Request["Call_Type"])
                 {
                     case "SEARCH_PUDU":
-                        dt = dal.SearchTable(context);
+                        dt = dalPudu.SearchTable();
                         break;
                     case "INSERT_RECUA":
-                        result = dal.InsertRecua(context);
+                        result = dalRecua.InsertRecua();
 
-                        Log.InsertLog(context, context.Session["Account"], dal.sqlStr);
                         context.Response.StatusCode = 200;
                         context.Response.Write(result);
                         context.Response.End();
                         break;
                 }
 
-                Log.InsertLog(context, context.Session["Account"], dal.sqlStr);
                 var json = JsonConvert.SerializeObject(dt);
                 context.Response.StatusCode = 200;
                 context.Response.ContentType = "text/json";
@@ -47,7 +45,6 @@ public class Sample_Chk : IHttpHandler, IRequiresSessionState
             }
             catch (SqlException ex)
             {
-                Log.InsertLog(context, context.Session["Account"], dal.sqlStr, ex.ToString(), false);
                 context.Response.StatusCode = 404;
                 context.Response.Write(ex.Message);
             }

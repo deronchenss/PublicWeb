@@ -4,17 +4,21 @@ using System.Web;
 
 namespace Ivan_Service
 {
-    public class Dal_Sample_Pack : DataOperator
-    {
-        /// <summary>
-        /// 樣品備貨 查詢 Return DataTable
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public DataTable SearchTable(HttpContext context)
-        {
+    public class Dal_Paku2 : LogicBase
+	{
+		public Dal_Paku2(HttpContext _context)
+		{
+			context = _context;
+		}
+		/// <summary>
+		/// 樣品備貨 查詢 Return DataTable
+		/// </summary>
+		/// <param name="context"></param>
+		/// <returns></returns>
+		public DataTable SearchTable()
+		{
 			DataTable dt = new DataTable();
-            string sqlStr = "";
+			string sqlStr = "";
 
 			sqlStr = @" WITH TOT (PAKU2_SEQ,出貨數量)
 						AS
@@ -88,139 +92,148 @@ namespace Ivan_Service
 					}
 				}
 			}
-			dt = GetDataTable(sqlStr);
-			return dt;
-        }
-
-		/// <summary>
-		/// 檢查 Sample IV 並 傳回客戶編號 簡稱
-		/// </summary>
-		/// <param name="context"></param>
-		/// <returns></returns>
-		public DataTable SearchIV(HttpContext context)
-		{
-			DataTable dt = new DataTable();
-			string sqlStr = "";
-
-			sqlStr = @" SELECT 客戶編號, 客戶簡稱
-						FROM invu 
-						WHERE INVOICE = @INVOICE ";
-
-			this.SetParameters("INVOICE", context.Request["INVOICE"]);
-			dt = GetDataTable(sqlStr);
+			dt = GetDataTableWithLog(sqlStr);
 			return dt;
 		}
 
 		/// <summary>
-		/// 寫入備貨 TABLE 
+		/// 寫入準備出貨 TABLE 
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public int InsertPaku(HttpContext context)
+		public int InsertPaku2()
 		{
 			int res = 0;
-            string sqlStr = @"   INSERT INTO [dbo].[paku]
-										   ([序號]
-										   ,[SUPLU_SEQ]
-										   ,[PAKU2_SEQ]
-										   ,[INVOICE]
-										   ,[客戶編號]
-										   ,[客戶簡稱]
-										   ,[樣品號碼]
-										   ,[頤坊型號]
-										   ,[暫時型號]
-										   ,[產品說明]
-										   ,[單位]
-										   ,[美元單價]
-										   ,[台幣單價]
-										   ,[外幣幣別]
-										   ,[外幣單價]
-										   ,[出貨數量]
-										   ,[廠商編號]
-										   ,[廠商簡稱]
-										   ,[FREE]
-										   ,[價格待通知]
-										   ,[ATTN]
-										   ,[箱號]
-										   ,[淨重]
-										   ,[毛重]
-										   ,[變更日期]
-										   ,[已刪除]
-										   ,[更新人員]
-										   ,[更新日期])
-									SELECT (SELECT IsNull(Max(序號),0)+1 FROM paku)[序號]
-										   ,P.[SUPLU_SEQ]
-										   ,P.序號 [PAKU2_SEQ]
-										   ,@INVOICE [INVOICE]
-										   ,P.[客戶編號]
-										   ,P.[客戶簡稱]
-										   ,@SAMPLE_NO [樣品號碼]
-										   ,P.[頤坊型號]
-										   ,P.[暫時型號]
-										   ,P.[產品說明]
-										   ,P.[單位]
-										   ,B.[美元單價]
-										   ,B.[台幣單價]
-										   ,B.[外幣幣別]
-										   ,B.[外幣單價]
-										   ,@PACK_CNT [出貨數量]
-										   ,P.[廠商編號]
-										   ,P.[廠商簡稱]
-										   ,@FREE [FREE]
-										   ,0 [價格待通知]
-										   ,@ATTN [ATTN]
-										   ,@PACK_NO [箱號]
-										   ,0 [淨重]
-										   ,0 [毛重]
-										   ,GETDATE() [變更日期]
-										   ,0 [已刪除]
-										   ,@UPD_USER [更新人員]
-										   ,GETDATE() [更新日期]
-									FROM   paku2 P
-									LEFT JOIN byrlu B ON P.SUPLU_SEQ = B.SUPLU_SEQ AND P.客戶編號 = B.客戶編號
-									WHERE P.序號 = @SEQ 
-									";
+			string sqlStr = @" DECLARE @MAX_SEQ int; 
+						       Select @MAX_SEQ = IsNull(Max(序號),0)+1 From [paku2]
+						       INSERT INTO [dbo].[paku2]
+						       			([序號]
+						       			,[SUPLU_SEQ]
+						       			,[備貨日期]
+						       			,[客戶編號]
+						       			,[客戶簡稱]
+						       			,[頤坊型號]
+						       			,[暫時型號]
+						       			,[產品說明]
+						       			,[單位]
+						       			,[備貨數量]
+						       			,[廠商編號]
+						       			,[廠商簡稱]
+						       			,[來源]
+						       			,[點收批號]
+						       			,[已刪除]
+						       			,[變更日期]
+						       			,[更新人員]
+						       			,[更新日期])
+						       	SELECT @MAX_SEQ [序號]
+						       			,序號 SUPLU_SEQ
+						       			,GETDATE() 備貨日期
+						       			,@CUST_NO 客戶編號
+						       			,@CUST_S_NAME 客戶簡稱
+						       			,A.[頤坊型號]
+						       			,A.[暫時型號]
+						       			,A.[產品說明]
+						       			,A.[單位]
+						       			,@APP_CNT 備貨數量
+						       			,A.[廠商編號]
+						       			,A.[廠商簡稱]
+						       			,'suplu' 來源
+						       			,'' 點收批號
+						       			,0 已刪除
+						       			,NULL 變更日期
+						       			,@USER 更新人員
+						       			,GETDATE() 更新日期
+						       FROM suplu A
+						       WHERE 序號 = @SEQ
+						       
+							   INSERT INTO [dbo].[stkioh]
+											([序號]
+											,[SUPLU_SEQ]
+											,SOURCE_SEQ
+											,SOURCE_TABLE
+											,[訂單號碼]
+											,[單據編號]
+											,[異動日期]
+											,[帳項]
+											,[帳項原因]
+											,[廠商編號]
+											,[廠商簡稱]
+											,[頤坊型號]
+											,[暫時型號]
+											,[單位]
+											,[庫區]
+											,[入庫數]
+											,[出庫數]
+											,[庫位]
+											,[核銷數]
+											,[異動前庫存]
+											,[實扣快取數]
+											,[客戶編號]
+											,[客戶簡稱]
+											,[完成品型號]
+											,[備註]
+											,[內銷入庫]
+											,[已刪除]
+											,[變更日期]
+											,[更新人員]
+											,[更新日期]
+											)
+										SELECT (Select IsNull(Max(序號),0)+1 From StkioH) [序號]
+											,A.序號 [SUPLU_SEQ]
+											,@MAX_SEQ SOURCE_SEQ
+											,'paku2' SOURCE_TABLE
+											,'樣品出庫(準備出貨)' [訂單號碼]
+											,@BATCH_NO [單據編號]
+											,GETDATE() [異動日期]
+											,'D' [帳項]
+											,NULL [帳項原因]
+											,A.[廠商編號]
+											,A.[廠商簡稱]
+											,A.[頤坊型號]
+											,A.[暫時型號]
+											,A.[單位]
+											,'內湖' [庫區]
+											,0 [入庫數]
+											,@APP_CNT [出庫數]
+											,A.內湖庫位 [庫位]
+											,0 [核銷數]
+											,0 [異動前庫存]
+											,0 [實扣快取數]
+											,@CUST_NO 客戶編號
+						       			    ,@CUST_S_NAME 客戶簡稱
+											,NULL [完成品型號]
+											,NULL [備註]
+											,NULL [內銷入庫]
+											,0 [已刪除]
+											,NULL [變更日期]
+											,@USER [更新人員]
+											,GETDATE() [更新日期]
+										FROM suplu A
+										WHERE A.序號 = @SEQ
 
-            string[] seqArray = context.Request["SEQ[]"].Split(',');
-			string[] freeArr = context.Request["FREE[]"].Split(',');
-			string[] packCntArr = context.Request["PACK_CNT[]"].Split(',');
-			
+						       UPDATE suplu
+						       SET 內湖庫存數 = ISNULL(內湖庫存數,0) - @APP_CNT
+								  ,變更日期 = GETDATE()
+								  ,更新人員 = @USER
+						       WHERE 序號 = @SEQ
+						       ";
+
+			string[] seqArray = context.Request["SEQ[]"].Split(',');
+			string[] appCntArray = context.Request["APP_CNT[]"].Split(',');
+			string[] batchNoArray = context.Request["BATCH_NO[]"].Split(',');
+
 			this.SetTran();
-            for (int cnt = 0; cnt < seqArray.Length; cnt++)
+			for (int cnt = 0; cnt < seqArray.Length; cnt++)
 			{
 				this.ClearParameter();
 				this.SetParameters("SEQ", seqArray[cnt]);
-				this.SetParameters("PACK_CNT", packCntArr[cnt]);
-				this.SetParameters("FREE", freeArr[cnt]);
-				this.SetParameters("INVOICE", context.Request["INVOICE"]);
-				this.SetParameters("ATTN", context.Request["ATTN"]);
-				this.SetParameters("PACK_NO", context.Request["PACK_NO"]);
-				this.SetParameters("SAMPLE_NO", context.Request["SAMPLE_NO"]);
-				this.SetParameters("UPD_USER", "IVAN10");
-				Execute(sqlStr);
+				this.SetParameters("APP_CNT", appCntArray[cnt]);
+				this.SetParameters("BATCH_NO", batchNoArray[cnt]);
+				this.SetParameters("CUST_NO", context.Request["CUST_NO"]);
+				this.SetParameters("CUST_S_NAME", context.Request["CUST_S_NAME"]);
+				this.SetParameters("USER", "IVAN10");
+				res = ExecuteWithLog(sqlStr);
 			}
-
-			//最後更新重量 只更新第一筆
-			sqlStr = @" UPDATE paku
-						SET 淨重 = 0
-						   ,毛重 = 0
-						WHERE INVOICE = @INVOICE
-						AND 箱號 = @PACK_NO 
-						
-						UPDATE paku 
-						SET 淨重 = @NET_WEIGHT
-						   ,毛重 = @WEIGHT
-						WHERE INVOICE = @INVOICE
-						AND 箱號 = @PACK_NO
-						AND 序號 = (SELECT TOP 1 序號 
-									FROM paku 
-									WHERE INVOICE = @INVOICE
-									AND 箱號 = @PACK_NO
-									Order By CASE When Substring(paku.箱號,1,1)>='A' Then substring(paku.箱號,1,1)+Right(Space(3)+Substring(Rtrim(paku.箱號),2,3),3) Else Right(Space(4)+Rtrim(paku.箱號),4) End,paku.淨重 DESC,paku.頤坊型號) ";
-			this.SetParameters("NET_WEIGHT", context.Request["NET_WEIGHT"]);
-			this.SetParameters("WEIGHT", context.Request["WEIGHT"]);
-			Execute(sqlStr);
-
 			this.TranCommit();
 
 			return res;
@@ -231,7 +244,7 @@ namespace Ivan_Service
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public int DeletePaku2(HttpContext context)
+		public int DeletePaku2()
 		{
 			int res = 0;
 			string sqlStr = @"  DECLARE @ENTER_CNT DECIMAL(18,2)
@@ -336,12 +349,11 @@ namespace Ivan_Service
 				this.ClearParameter();
 				this.SetParameters("SEQ", seqArray[cnt]);
 				this.SetParameters("UPD_USER", "IVAN10");
-				Execute(sqlStr);
+				ExecuteWithLog(sqlStr);
 			}
 			this.TranCommit();
 
 			return res;
 		}
-		
 	}
 }

@@ -1,5 +1,4 @@
-﻿using Ivan.DAL.Models;
-using Ivan_Dal;
+﻿using Ivan_Dal;
 using System;
 using System.Configuration;
 using System.Text;
@@ -9,6 +8,9 @@ namespace Ivan_Log
 {
     public class Log
     {
+        //Log連線字串不變
+        private static string connStr = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
+
         /// <summary>
         /// 寫入LOG
         /// </summary>
@@ -22,6 +24,8 @@ namespace Ivan_Log
             DataOperator dao = new DataOperator();
             datalog logModel = new datalog();
 
+            //log 連線字串獨立
+            dao.connStr = connStr;
             logModel.LOG_DATE = DateTime.Now;
             logModel.USER =  user == null ? "IVAN10" : user.ToString();
             logModel.PROG_URL = System.IO.Path.GetFileName(context.Request.UrlReferrer.ToString());

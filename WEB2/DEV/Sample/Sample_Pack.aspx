@@ -429,6 +429,13 @@
                         return;
                     }
 
+                    var packCntIndex = $('#Table_EXEC_Data thead th:contains(備貨數量)').index() + 1; //備貨數量INDEX
+                    var oriPackCnt = $tableRow.find('td:nth-child(' + packCntIndex + ')').text();
+                    if (packCnt > oriPackCnt) {
+                        alert('第' + tableCnt + '筆，本次備貨數 大於 備貨數量!');
+                        return;
+                    }
+
                     var custNoIndex = $('#Table_EXEC_Data thead th:contains(客戶編號)').index() + 1; //客戶編號INDEX
                     var rowCustNo = $tableRow.find('td:nth-child(' + custNoIndex + ')').text();
                     if (custNo != rowCustNo) {
@@ -436,9 +443,9 @@
                         return;
                     }
 
-                    var custNoIndex = $('#Table_EXEC_Data thead th:contains(狀態)').index() + 1; //狀態INDEX
-                    var rowCustNo = $tableRow.find('td:nth-child(' + custNoIndex + ')').text();
-                    if (custNo != rowCustNo) {
+                    var statusIndex = $('#Table_EXEC_Data thead th:contains(狀態)').index() + 1; //狀態INDEX
+                    var status = $tableRow.find('td:nth-child(' + statusIndex + ')').text();
+                    if (status != 'OK') {
                         alert('第' + tableCnt + '筆，狀態不為OK，請確認!');
                         return;
                     }

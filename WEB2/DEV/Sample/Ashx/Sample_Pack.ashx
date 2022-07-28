@@ -10,14 +10,15 @@ using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using CrystalDecisions.CrystalReports.Engine;
 using Ivan_Service;
-using Ivan_Log;
 
 public class Sample_Pack : IHttpHandler, IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
     {
         DataTable dt = new DataTable();
-        Dal_Sample_Pack dal = new Dal_Sample_Pack();
+        Dal_Paku2 dalPaku2 = new Dal_Paku2(context);
+        Dal_Paku dalPaku = new Dal_Paku(context);
+        Dal_Invu dalInvu = new Dal_Invu(context);
         
         int result = 0;
         if (!string.IsNullOrEmpty(context.Request["Call_Type"]))
@@ -27,30 +28,27 @@ public class Sample_Pack : IHttpHandler, IRequiresSessionState
                 switch (context.Request["Call_Type"])
                 {
                     case "SEARCH":
-                        dt = dal.SearchTable(context);
+                        dt = dalPaku2.SearchTable();
                         break;
                     case "INSERT":
-                        result = dal.InsertPaku(context);
+                        result = dalPaku.InsertPaku();
 
-                        Log.InsertLog(context, context.Session["Account"], dal.sqlStr);
                         context.Response.StatusCode = 200;
                         context.Response.Write(result);
                         context.Response.End();
                         break;
                     case "DELETE":
-                        result = dal.DeletePaku2(context);
+                        result = dalPaku2.DeletePaku2();
 
-                        Log.InsertLog(context, context.Session["Account"], dal.sqlStr);
                         context.Response.StatusCode = 200;
                         context.Response.Write(result);
                         context.Response.End();
                         break;
                     case "ChkIV":
-                        dt = dal.SearchIV(context);
+                        dt = dalInvu.SearchIV();
                         break;
                 }
 
-                Log.InsertLog(context, context.Session["Account"], dal.sqlStr);
                 var json = JsonConvert.SerializeObject(dt);
                 context.Response.StatusCode = 200;
                 context.Response.ContentType = "text/json";
@@ -58,7 +56,6 @@ public class Sample_Pack : IHttpHandler, IRequiresSessionState
             }
             catch (SqlException ex)
             {
-                Log.InsertLog(context, context.Session["Account"], dal.sqlStr, ex.ToString(), false);
                 context.Response.StatusCode = 404;
                 context.Response.Write(ex.Message);
             }

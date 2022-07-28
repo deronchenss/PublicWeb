@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ivan.DAL.Models
+namespace Ivan_Log
 {
     public class datalog
     {

@@ -1,20 +1,24 @@
-﻿using Ivan_Dal;
-using System.Data;
+﻿using System.Data;
 using System.Web;
 
 namespace Ivan_Service
 {
-    public class Dal_Sample_Inv_MT : DataOperator
-    {
-        /// <summary>
-        /// 樣品發票 維護 Return DataTable
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public DataTable SearchTable(HttpContext context)
-        {
+    public class Dal_Invu : LogicBase
+	{
+		public Dal_Invu(HttpContext _context)
+		{
+			context = _context;
+		}
+
+		/// <summary>
+		/// 樣品發票 維護 Return DataTable
+		/// </summary>
+		/// <param name="context"></param>
+		/// <returns></returns>
+		public DataTable SearchTable()
+		{
 			DataTable dt = new DataTable();
-            string sqlStr = "";
+			string sqlStr = "";
 
 			sqlStr = @" SELECT TOP 500 [序號]
 						  ,[INVOICE]
@@ -83,18 +87,37 @@ namespace Ivan_Service
 				}
 			}
 
-			dt = GetDataTable(sqlStr);
+			dt = GetDataTableWithLog(sqlStr);
 			return dt;
-        }
+		}
+
+		/// <summary>
+		/// 檢查 Sample IV 並 傳回客戶編號 簡稱
+		/// </summary>
+		/// <param name="context"></param>
+		/// <returns></returns>
+		public DataTable SearchIV()
+		{
+			DataTable dt = new DataTable();
+			string sqlStr = "";
+
+			sqlStr = @" SELECT 客戶編號, 客戶簡稱
+						FROM invu 
+						WHERE INVOICE = @INVOICE ";
+
+			this.SetParameters("INVOICE", context.Request["INVOICE"]);
+			dt = GetDataTableWithLog(sqlStr);
+			return dt;
+		}
 
 		/// <summary>
 		/// 寫入INVU 回傳 發票號碼
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public string InsertInvu(HttpContext context)
+		public string InsertInvu()
 		{
-            string sqlStr = @"      DECLARE @INVOICE_NO nvarchar(20); 
+			string sqlStr = @"      DECLARE @INVOICE_NO nvarchar(20); 
 									SELECT @INVOICE_NO = 字頭 + CONVERT(VARCHAR,年度) + RIGHT(REPLICATE('0', len(號碼長度)) + CONVERT(VARCHAR,號碼 + 1),len(號碼長度))  
 								    FROM nofile
 								    WHERE 單據 = '樣品INVOICE'
@@ -124,12 +147,12 @@ namespace Ivan_Service
 								   SELECT @INVOICE_NO INVOICE
                                     ";
 
-            this.SetTran();
+			this.SetTran();
 			this.ClearParameter();
 			this.SetParameters("CUST_NO", context.Request["CUST_NO"]);
 			this.SetParameters("CUST_S_NAME", context.Request["CUST_S_NAME"]);
 			this.SetParameters("UPD_USER", "IVAN10");
-			DataTable dt = GetDataTable(sqlStr);
+			DataTable dt = GetDataTableWithLog(sqlStr);
 			this.TranCommit();
 
 			return dt.Rows[0]["INVOICE"].ToString();
@@ -140,7 +163,7 @@ namespace Ivan_Service
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public int UpdateInvu(HttpContext context)
+		public int UpdateInvu()
 		{
 			string sqlStr = @"      UPDATE [dbo].[invu]
                                        SET 變更日期 = GETDATE()
@@ -166,7 +189,7 @@ namespace Ivan_Service
 			this.SetTran();
 			this.SetParameters("SEQ", context.Request["SEQ"]);
 			this.SetParameters("UPD_USER", "IVAN10");
-			int res = Execute(sqlStr);
+			int res = ExecuteWithLog(sqlStr);
 			this.TranCommit();
 
 			return res;
@@ -177,7 +200,7 @@ namespace Ivan_Service
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public DataTable SampleIVReport(HttpContext context)
+		public DataTable SampleIVReport()
 		{
 			DataTable dt = new DataTable();
 			string sqlStr = "";
@@ -238,7 +261,7 @@ namespace Ivan_Service
 						ORDER BY TOT.頤坊型號 ";
 
 			this.SetParameters("INVOICE_NO", context.Request["INVOICE_NO"]);
-			dt = GetDataTable(sqlStr);
+			dt = GetDataTableWithLog(sqlStr);
 			return dt;
 		}
 
@@ -247,7 +270,7 @@ namespace Ivan_Service
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public DataTable SamplePackingReport(HttpContext context)
+		public DataTable SamplePackingReport()
 		{
 			DataTable dt = new DataTable();
 			string sqlStr = "";
@@ -312,7 +335,7 @@ namespace Ivan_Service
 							";
 
 			this.SetParameters("INVOICE_NO", context.Request["INVOICE_NO"]);
-			dt = GetDataTable(sqlStr);
+			dt = GetDataTableWithLog(sqlStr);
 			return dt;
 		}
 	}
