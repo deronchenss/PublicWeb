@@ -250,7 +250,7 @@ namespace Ivan_Service
                                     UPDATE SUPLU
                                     SET 內湖庫存數 = ISNULL(內湖庫存數,0) - 入庫數
 									   ,更新人員 = @UPD_USER
-									   ,變更日期 = GETDATE()
+									   ,更新日期 = GETDATE()
                                     FROM SUPLU S
                                     INNER JOIN stkioh ST ON S.序號 = ST.SUPLU_SEQ
                                     WHERE ISNULL(ST.已刪除,0) = 0
@@ -258,7 +258,7 @@ namespace Ivan_Service
                                     AND ST.SOURCE_SEQ = @SEQ
 
                                     UPDATE stkioh
-                                    SET 變更日期 = GETDATE()
+                                    SET 更新日期 = GETDATE()
                                        ,更新人員 = @UPD_USER
                                        ,已刪除 = 1
                                     WHERE SOURCE_TABLE = 'recua'

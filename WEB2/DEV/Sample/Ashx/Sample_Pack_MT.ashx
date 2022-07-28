@@ -1,4 +1,4 @@
-﻿<%@ WebHandler Language = "C#" Class="Sample_Chk_Dist" %>
+﻿<%@ WebHandler Language="C#" Class="Sample_Pack_MT" %>
 
 using System.Collections.Generic;
 using System.Web;
@@ -8,15 +8,16 @@ using System.Data;
 using System.Configuration;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json;
+using CrystalDecisions.CrystalReports.Engine;
 using Ivan_Service;
 
-public class Sample_Chk_Dist : IHttpHandler, IRequiresSessionState
+public class Sample_Pack_MT : IHttpHandler, IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
     {
-        Dal_Suplu dalSuplu = new Dal_Suplu(context);
-        Dal_Paku2 dalPaku2 = new Dal_Paku2(context);
         DataTable dt = new DataTable();
+        Dal_Paku dal = new Dal_Paku(context);
+
         int result = 0;
         if (!string.IsNullOrEmpty(context.Request["Call_Type"]))
         {
@@ -24,11 +25,18 @@ public class Sample_Chk_Dist : IHttpHandler, IRequiresSessionState
             {
                 switch (context.Request["Call_Type"])
                 {
-                    case "SEARCH":
-                        dt = dalSuplu.SearchTableForSample();
+                    case "Search":
+                        dt = dal.SearchTable();
                         break;
-                    case "INSERT_PAKU2":
-                        result = dalPaku2.InsertPaku2();
+                    case "UPD":
+                        result = dal.UpdatePaku();
+
+                        context.Response.StatusCode = 200;
+                        context.Response.Write(result);
+                        context.Response.End();
+                        break;
+                    case "DELETE":
+                        result = dal.DeletePaku();
 
                         context.Response.StatusCode = 200;
                         context.Response.Write(result);

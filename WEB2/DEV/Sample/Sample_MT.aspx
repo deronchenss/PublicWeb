@@ -1136,7 +1136,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="4" style="color:red">詢價、詢索、詢開如有更新單價欄位，會同步更新COST單價</td>
+                        <td colspan="4" class="onlyEdit" style="color:red">詢價、詢索、詢開如有更新單價欄位，會同步更新COST單價</td>
                     </tr>
                     <tr class="trstyle onlyEdit">
                         <td class="tdEditstyle">基本量_1</td>

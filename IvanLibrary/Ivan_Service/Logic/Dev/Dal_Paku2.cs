@@ -259,7 +259,7 @@ namespace Ivan_Service
 
 								 UPDATE paku2
 								 SET 已刪除 = 1
-									,變更日期 = GETDATE()
+									,更新日期 = GETDATE()
 									,更新人員 = @UPD_USER
 								 WHERE 序號 = @SEQ 
 
@@ -334,7 +334,7 @@ namespace Ivan_Service
                                     UPDATE SUPLU
                                     SET 內湖庫存數 = ISNULL(內湖庫存數,0) + @ENTER_CNT
 									   ,更新人員 = @UPD_USER
-									   ,變更日期 = GETDATE()
+									   ,更新日期 = GETDATE()
 									FROM SUPLU S
 									JOIN paku2 P ON S.序號 = P.SUPLU_SEQ
 									JOIN stkioh ST ON P.序號 = ST.SOURCE_SEQ AND ST.SOURCE_TABLE = 'paku2'

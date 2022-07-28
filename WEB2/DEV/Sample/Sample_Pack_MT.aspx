@@ -1,6 +1,4 @@
-﻿<%@ Page Title="樣品備貨維護" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Pack_MT.aspx.cs" Inherits="Sample_Pack_MT" %>
-<%@ Register TagPrefix="uc" TagName="uc1" Src="~/User_Control/Dia_Customer_Selector.ascx" %>
-<%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Transfer_Selector.ascx" %>
+﻿<%@ Page Title="樣品備貨查詢維護" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Pack_MT.aspx.cs" Inherits="Sample_Pack_MT" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
@@ -15,50 +13,6 @@
 
             //init CONTROLER
             Form_Mode_Change("Base");
-
-            //Dialog
-            $('#BT_CUST_CHS').on('click', function () {
-                $("#Search_Customer_Dialog").dialog('open');
-            });
-
-            $('#SCD_Table_Customer').on('click', '.CUST_SEL', function () {
-                $('#E_CUST_NO').val($(this).parent().parent().find('td:nth(2)').text());
-                $('#E_CUST_S_NAME').val($(this).parent().parent().find('td:nth(3)').text());
-                $("#Search_Customer_Dialog").dialog('close');
-            });
-
-            $('#BT_TRANS_CHS').on('click', function () {
-                $("#Search_Transfer_Dialog").dialog('open');
-            });
-
-            $('#SSD_Table_Transfer').on('click', '.SUP_SEL', function () {
-                $('#E_TRANS_NO').val($(this).parent().parent().find('td:nth(1)').text());
-                $('#E_TRANS_S_NAME').val($(this).parent().parent().find('td:nth(2)').text());
-                $("#Search_Transfer_Dialog").dialog('close');
-            });
-
-            //DDL
-            DDL_Bind();
-            function DDL_Bind() {
-                $.ajax({
-                    url: "/Web_Service/DDL_DataBind.asmx/BankDDL",
-                    cache: false,
-                    dataType: "json",
-                    type: "POST",
-                    contentType: "application/json; charset=utf-8",
-                    success: function (data) {
-                        var Json_Response = JSON.parse(data.d);
-                        var DDL_Option = "<option></option>";
-                        $.each(Json_Response, function (i, value) {
-                            DDL_Option += '<option>' + value.txt + '</option>';
-                        });
-                        $('#E_IMPORT_BANK').html(DDL_Option);
-                    },
-                    error: function (response) {
-                        alert(response.responseText);
-                    },
-                });
-            };
 
             window.document.body.onbeforeunload = function () {
                 if (Edit_Mode === "Insert" || Edit_Mode === "Edit") {
@@ -108,21 +62,9 @@
                             $('#Div_EDIT_Data').css('display', '');
                             $('#Div_DT_View').css('width', '60%');
 
-                            $('#BT_CUST_CHS').toggle(false); //客戶編號只有INSERT 能選擇
                             $('.onlyEdit').css('display', '');
                             $('#BT_EDIT_SAVE').css('display', 'inline-block');
                             $('#BT_EDIT_CANCEL').css('display', 'inline-block');
-                        }
-                        else if (Edit_Mode == "Insert") {
-                            $('#Div_EDIT_Data').css('display', '');
-                            $('#Div_DT_View').css('width', '60%');
-
-                            $('#BT_CUST_CHS').toggle(true);
-                            $('#BT_INSERT_SAVE').css('display', 'inline-block');
-                            $('#BT_INSERT_CLEAR').css('display', 'inline-block');
-                            $('#BT_EDIT_CANCEL').css('display', 'inline-block');
-                            $('.onlyEdit').css('display', 'none');
-                            $('.editReset').val('');
                         }
 
                         V_BT_CHG($('#BT_BASE'));
@@ -149,16 +91,13 @@
                 for (var i = 0; i < $('#Table_Search_Data').DataTable().columns().header().length; i++) {
                     var titleName = $($('#Table_Search_Data').DataTable().column(i).header()).text();
 
-                    if (titleName == '應稅' || titleName == '併大貨收款') {
-                        $("[DT_Fill_Name='" + titleName + "']").prop('checked', clickData[titleName] == 1);
+                    if ($("[DT_Fill_Name='" + titleName + "']").attr('type') == 'checkbox') {
+                        $("[DT_Fill_Name='" + titleName + "']").prop('checked', clickData[titleName] == 1 || clickData[titleName] == '是');
                     }
                     else {
                         $("[DT_Fill_Name='" + titleName + "']").val(clickData[titleName]);
                     }
                 }
-
-                //RPT PAGE
-                $('#R_INVOICE').val(clickData['INVOICE']);
             }
 
             function V_BT_CHG(buttonChs) {
@@ -167,20 +106,23 @@
             }
 
             //ajax function
-            function Search_Invu(invoice = '') {
+            function Search() {
+                var dataReq = {};
+                dataReq['Call_Type'] = 'Search';
+
+                //組json data
+                $('.queryColumn').each(function () {
+                    if ($(this).attr('type') == 'checkbox') {
+                        dataReq[$(this).attr('DT_Query_Name')] = ($(this).is(':checked') ? '1' : '0');
+                    }
+                    else {
+                        dataReq[$(this).attr('DT_Query_Name')] = $(this).val();
+                    }
+                });
+
                 $.ajax({
                     url: apiUrl,
-                    data: {
-                        "Call_Type": "Search",
-                        "INVOICE": invoice == '' ? $('#Q_INVOICE').val() : invoice,
-                        "出貨日期_S": $('#Q_SHIP_GO_DATE_S').val(),
-                        "出貨日期_E": $('#Q_SHIP_GO_DATE_E').val(),
-                        "提單號碼": $('#Q_BILL_NO').val(),
-                        "客戶編號": $('#Q_CUST_NO').val(),
-                        "客戶簡稱": $('#Q_CUST_S_NAME').val(),
-                        "變更日期_S": $('#Q_UPD_DATE_S').val(),
-                        "變更日期_E": $('#Q_UPD_DATE_E').val()
-                    },
+                    data: dataReq,
                     cache: false,
                     type: "POST",
                     datatype: "json",
@@ -205,32 +147,31 @@
                                 "columns": [
                                     { data: "序號", title: "序號" },
                                     { data: "INVOICE", title: "INVOICE" },
-                                    { data: "出貨日期", title: "出貨日期" },
-                                    { data: "客戶編號", title: "客戶編號" },
+                                    { data: "樣品號碼", title: "樣品號碼" },
                                     { data: "客戶簡稱", title: "客戶簡稱" },
-                                    { data: "運輸簡稱", title: "運輸簡稱" },
-                                    { data: "提單號碼", title: "提單號碼" },
-                                    { data: "變更日期", title: "變更日期" },
+                                    { data: "頤坊型號", title: "頤坊型號" },
+                                    { data: "價格待通知", title: "價格待通知" },
+                                    { data: "單位", title: "單位" },
+                                    { data: "出貨數量", title: "出貨數量" },
+                                    { data: "FREE", title: "FREE" },
+                                    { data: "廠商簡稱", title: "廠商簡稱" },
                                     { data: "更新人員", title: "<%=Resources.MP.Update_User%>" },
                                     { data: "更新日期", title: "<%=Resources.MP.Update_Date%>" },
-                                    { data: "運輸編號", title: "運輸編號", visible: false },
-                                    { data: "銀行簡稱", title: "銀行簡稱", visible: false },
-                                    { data: "備註業務", title: "備註業務", visible: false },
-                                    { data: "應稅", title: "應稅", visible: false },
-                                    { data: "併大貨收款", title: "併大貨收款", visible: false },
-                                    //{ data: "淨重", title: "淨重", visible: false },
-                                    //{ data: "毛重", title: "毛重", visible: false },
-                                    { data: "發票匯率", title: "發票匯率", visible: false },
-                                    { data: "應收樣品費", title: "應收樣品費", visible: false },
-                                    { data: "應收樣品NT", title: "應收樣品NT", visible: false },
-                                    { data: "應收運費", title: "應收運費", visible: false },
-                                    { data: "應收運費NT", title: "應收運費NT", visible: false },
-                                    { data: "已收金額", title: "已收金額", visible: false },
-                                    { data: "已收金額NT", title: "已收金額NT", visible: false },
-                                    { data: "已收日期", title: "已收日期", visible: false },
-                                    { data: "未收金額", title: "未收金額", visible: false },
-                                    { data: "備註會計", title: "備註會計", visible: false },
-                                    { data: "備註_ivan", title: "備註_ivan", visible: false }
+                                    { data: "SUPLU_SEQ", title: "SUPLU_SEQ", visible: false },
+                                    { data: "客戶編號", title: "客戶編號", visible: false },
+                                    { data: "暫時型號", title: "暫時型號", visible: false },
+                                    { data: "產品說明", title: "產品說明", visible: false },
+                                    { data: "單位", title: "單位", visible: false },
+                                    { data: "廠商編號", title: "廠商編號", visible: false },
+                                    { data: "美元單價", title: "美元單價", visible: false },
+                                    { data: "台幣單價", title: "台幣單價", visible: false },
+                                    { data: "出貨數量", title: "出貨數量", visible: false },
+                                    { data: "ATTN", title: "ATTN", visible: false },
+                                    { data: "箱號", title: "箱號", visible: false },
+                                    { data: "淨重", title: "淨重", visible: false },
+                                    { data: "毛重", title: "毛重", visible: false },
+                                    { data: "備貨數量", title: "備貨數量", visible: false },
+                                    { data: "價格待通知", title: "價格待通知", visible: false }
                                 ],
                                 columnDefs: [{
                                     targets: [0],
@@ -248,11 +189,6 @@
 
                             $('#Table_Search_Data').DataTable().draw();
                             $('#Table_Search_Data_info').text('Showing ' + $('#Table_Search_Data > tbody tr[role=row]').length + ' entries');
-
-                            //新增發票完 轉至修改
-                            if (invoice != '') {
-                                ClickToEdit($('#Table_Search_Data > tbody > tr:nth(0)'));
-                            }
                         }
                     },
                     error: function (ex) {
@@ -260,44 +196,6 @@
                         alert('查詢有誤請通知資訊人員');
                     }
                 });
-            };
-
-            //新增資料
-            function INSERT_Invu() {
-                if ($('#E_CUST_NO').val() === '') {
-                    alert('請選擇客戶編號');
-                }
-                else {
-                    $.ajax({
-                        url: apiUrl,
-                        data: {
-                            "Call_Type": "INSERT",
-                            "CUST_NO": $('#E_CUST_NO').val(),
-                            "CUST_S_NAME": $('#E_CUST_S_NAME').val()
-                        },
-                        cache: false,
-                        type: "POST",
-                        datatype: "json",
-                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                        success: function (response, status) {
-                            if (status === 'success') {
-                                alert('已新增發票號碼:' + response);
-
-                                Edit_Mode = "Edit";
-                                Form_Mode_Change("Search");
-                                Search_Invu(response);
-                            }
-                            else {
-                                alert('新增資料有誤請通知資訊人員');
-                            }
-                        },
-                        error: function (ex) {
-                            console.log(ex.responseText);
-                            alert('新增資料有誤請通知資訊人員');
-                            return;
-                        }
-                    });
-                }
             };
 
             //更新DB
@@ -338,7 +236,7 @@
                             if (status === 'success') {
                                 alert('INVOICE:' + $('#E_INVOICE').val() + '已修改完成');
 
-                                Search_Invu();
+                                Search();
                             }
                             else {
                                 alert('修改資料有誤請通知資訊人員');
@@ -353,69 +251,6 @@
                 }
             };           
 
-            //產生報表
-            function PRINT_RPT() {
-                if ($('#R_INVOICE').val() === '') {
-                    alert('請填寫INVOICE');
-                }
-                else {
-                    $("body").loading(); // 遮罩開始
-                    $.ajax({
-                        url: apiUrl,
-                        data: {
-                            "Call_Type": "PRINT_RPT",
-                            "INVOICE_NO": $('#R_INVOICE').val(),
-                            "RPT_TYPE": $('#R_RPT_TYPE').val()
-                        },
-                        cache: false,
-                        type: "POST",
-                        datatype: "json",
-                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                        xhr: function () {// Seems like the only way to get access to the xhr object
-                            var xhr = new XMLHttpRequest();
-                            xhr.responseType = 'blob'
-                            return xhr;
-                        },
-                        success: function (response, status) {
-                            if (status === 'nocontent') {
-                                alert('INVOICE查無資料');
-                            }
-                            else if (status !== 'success')
-                            {
-                                alert(response);
-                            }
-                            else {
-                                var blob = new Blob([response], { type: "application/pdf" });
-                                var url = window.URL || window.webkitURL;
-                                link = url.createObjectURL(blob);
-                                var a = $("<a />");
-                                switch ($('#R_RPT_TYPE').val()) {
-                                    case "0":
-                                        a.attr("download", "INVOICE.pdf");
-                                        break;
-                                    case "1":
-                                        a.attr("download", "PACKING.pdf");
-                                        break;
-                                }
-                                
-                                a.attr("href", link);
-                                $("body").append(a);
-
-                                a[0].click();
-                                $("body").remove(a);
-                            }
-                            $("body").loading("stop") // 遮罩停止
-                        },
-                        error: function (ex) {
-                            console.log(ex.responseText);
-                            $("body").loading("stop") // 遮罩停止
-                            alert('下載報表有誤請通知資訊人員');
-                            return;
-                        }
-                    });
-                }
-            };    
-
             //TABLE 功能設定
             $('#Table_Search_Data').on('click', 'tbody tr', function () {
                 ClickToEdit($(this));
@@ -423,7 +258,7 @@
 
             //BUTTON CLICK EVENT BASE 頁
             $('#BT_Search').on('click', function () {
-                Search_Invu();
+                Search();
                 Form_Mode_Change("Search");
             });
 
@@ -441,12 +276,6 @@
                 UPD_Invu();
             });
 
-            $('#BT_Insert').on('click', function () {
-                $('#Table_Search_Data > tbody tr').removeClass("tableClick");
-                Edit_Mode = "Insert";
-                Form_Mode_Change("Search");
-            });
-
             $('#BT_Update').on('click', function () {
                 Edit_Mode = "Edit";
                 Form_Mode_Change("Search");
@@ -454,14 +283,6 @@
                 if ($('#Table_Search_Data > tbody tr.tableClick').length == 0) {
                     ClickToEdit($('#Table_Search_Data > tbody > tr:nth(0)'));
                 }
-            });
-
-            $('#BT_INSERT_SAVE').on('click', function () {
-                INSERT_Invu();
-            });
-
-            $('#BT_INSERT_CLEAR').on('click', function () {
-                $('.editReset').val('');
             });
 
             $('#BT_EDIT_CANCEL').on('click', function () {
@@ -492,8 +313,6 @@
     </script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
-    <uc:uc1 ID="uc1" runat="server" /> 
-    <uc2:uc2 ID="uc2" runat="server" /> 
     <div style="width:98%;margin:0 auto; ">
         <div class="search_section_all">
             <table class="search_section_control">
@@ -504,35 +323,44 @@
             <tr class="trstyle">
                 <td class="tdhstyle">INVOICE</td>
                 <td class="tdbstyle">
-                    <input id="Q_INVOICE"  class="textbox_char" />
+                    <input id="Q_INVOICE" DT_Query_Name="INVOICE"  class="textbox_char queryColumn" />
                 </td>
-                <td class="tdhstyle">出貨日期</td>
+                <td class="tdhstyle">樣品號碼</td>
                 <td class="tdbstyle">
-                    <input id="Q_SHIP_GO_DATE_S" type="date" class="date_S_style" />~<input id="Q_SHIP_GO_DATE_E" type="date" class="date_E_style" />
+                    <input id="Q_SAMPLE_NO" DT_Query_Name="樣品號碼" class="textbox_char queryColumn" />
                 </td>
-                <td class="tdhstyle">提單號碼</td>
+                <td class="tdhstyle">頤坊型號</td>
                 <td class="tdbstyle">
-                    <input id="Q_BILL_NO"  class="textbox_char" />
+                    <input id="Q_IVAN_TYPE" DT_Query_Name="頤坊型號"  class="textbox_char queryColumn" />
                 </td>
             </tr>
             <tr class="trstyle">
                 <td class="tdhstyle" >客戶編號</td>
                 <td class="tdbstyle">
-                    <input id="Q_CUST_NO"  class="textbox_char" />
+                    <input id="Q_CUST_NO" DT_Query_Name="客戶編號"  class="textbox_char queryColumn"  />
                 </td>
                 <td class="tdhstyle">客戶簡稱</td>
                 <td class="tdbstyle">
-                    <input id="Q_CUST_S_NAME"  class="textbox_char" />
+                    <input id="Q_CUST_S_NAME" DT_Query_Name="客戶簡稱"  class="textbox_char queryColumn" />
                 </td>
-                <td class="tdhstyle">變更日期</td>
+                <td class="tdhstyle">更新日期</td>
                 <td class="tdbstyle">
-                    <input id="Q_UPD_DATE_S" type="date" class="date_S_style" />~<input id="Q_UPD_DATE_E" type="date" class="date_E_style" />
+                    <input id="Q_UPD_DATE_S" type="date" class="date_S_style queryColumn" DT_Query_Name="更新日期_S"  />~<input id="Q_UPD_DATE_E" type="date" class="date_E_style queryColumn" DT_Query_Name="更新日期_E" />
+                </td>
+            </tr>
+            <tr class="trstyle">
+                <td class="tdhstyle" >廠商編號</td>
+                <td class="tdbstyle">
+                    <input id="Q_FACT_NO"  class="textbox_char queryColumn" DT_Query_Name="廠商編號" />
+                </td>
+                <td class="tdhstyle">廠商簡稱</td>
+                <td class="tdbstyle">
+                    <input id="Q_FACT_S_NAME"  class="textbox_char queryColumn" DT_Query_Name="廠商簡稱" />
                 </td>
             </tr>
             <tr class="trstyle">
                 <td class="tdtstyleRight" colspan="8">
                     <input type="button" id="BT_Search" class="buttonStyle" value="<%=Resources.MP.Search%>" />
-                    <input type="button" id="BT_Insert" class="buttonStyle" value="<%=Resources.MP.Insert%>" />
                     <input type="button" id="BT_Update" class="buttonStyle" value="修改" />
                     <input type="button" id="BT_Cancel" class="buttonStyle" value="<%=Resources.MP.Cancel%>" style="display: none;" />
                 </td>
@@ -562,144 +390,112 @@
                     <tr class="trstyle onlyEdit" >
                         <td class="tdEditstyle">序號</td>
                         <td class="tdbstyle">
-                            <input id="E_SEQ" DT_Fill_Name="序號" class="textbox_char editReset" disabled="disabled" />
-                            <input id="E_SUPLU_SEQ" type="hidden" class="textbox_char" />
+                            <input id="E_SEQ" DT_Fill_Name="序號" class="textbox_char" disabled="disabled" />
+                            <input id="E_SUPLU_SEQ" type="hidden" DT_Fill_Name="SUPLU_SEQ" class="textbox_char" />
+                            <input id="E_PACK_PRE_CNT" type="hidden" DT_Fill_Name="備貨數量" class="textbox_char" />
                         </td>
                         <td class="tdEditstyle">INVOICE</td>
                         <td class="tdbstyle">
-                            <input id="E_INVOICE" DT_Fill_Name="INVOICE" class="textbox_char editReset" disabled="disabled" />
+                            <input id="E_INVOICE" DT_Fill_Name="INVOICE" class="textbox_char" disabled="disabled" />
                         </td>
                     </tr>
                     <tr class="trstyle">
                         <td class="tdEditstyle">客戶編號</td>
                         <td class="tdbstyle">
-                            <input id="E_CUST_NO" DT_Fill_Name="客戶編號"  class="textbox_char editReset" disabled="disabled" />
-                            <input id="BT_CUST_CHS" style="font-size:15px" type="button" value="..." />
+                            <input id="E_CUST_NO" DT_Fill_Name="客戶編號"  class="textbox_char" disabled="disabled" />
                         </td>
                         <td class="tdEditstyle">客戶簡稱</td>
                         <td class="tdbstyle">
-                            <input id="E_CUST_S_NAME" DT_Fill_Name="客戶簡稱"  class="textbox_char editReset" disabled="disabled" />
+                            <input id="E_CUST_S_NAME" DT_Fill_Name="客戶簡稱"  class="textbox_char" disabled="disabled" />
+                        </td>
+                    </tr>
+                     <tr class="trstyle">
+                        <td class="tdEditstyle">頤坊型號</td>
+                        <td class="tdbstyle">
+                            <input id="E_IVAN_TYPE" DT_Fill_Name="頤坊型號"  class="textbox_char" disabled="disabled" />
+                        </td>
+                        <td class="tdEditstyle">暫時型號</td>
+                        <td class="tdbstyle">
+                            <input id="E_TMP_TYPE" DT_Fill_Name="暫時型號"  class="textbox_char" disabled="disabled" />
+                        </td>
+                    </tr>
+                     <tr class="trstyle">
+                        <td class="tdEditstyle">單位</td>
+                        <td class="tdbstyle">
+                            <input id="E_UNIT" DT_Fill_Name="單位"  class="textbox_char" disabled="disabled" />
+                        </td>
+                        <td class="tdEditstyle">產品說明</td>
+                        <td class="tdbstyle">
+                            <input id="E_TMP_TYPE" DT_Fill_Name="暫時型號"  class="textbox_char" disabled="disabled" />
+                        </td>
+                    </tr>
+                    <tr class="trstyle onlyEdit">
+                        <td class="tdEditstyle">廠商編號</td>
+                        <td class="tdbstyle">
+                            <input id="E_FACT_NO" DT_Fill_Name="廠商編號"  class="textbox_char" disabled="disabled" />
+                        </td>
+                        <td class="tdEditstyle">廠商簡稱</td>
+                        <td class="tdbstyle">
+                            <input id="E_FACT_S_NAME" DT_Fill_Name="廠商編號"  class="textbox_char" disabled="disabled" />
+                        </td>
+                    </tr>
+                    <tr class="trstyle onlyEdit">
+                        <td class="tdEditstyle">美元單價</td>
+                        <td class="tdbstyle">
+                            <input id="E_USD" type="number" DT_Fill_Name="美元單價" class="textbox_char " disabled="disabled" />
+                        </td>
+                        <td class="tdEditstyle">台幣單價</td>
+                        <td class="tdbstyle">
+                            <input id="E_NTD" type="number" DT_Fill_Name="台幣單價"  class="textbox_char " disabled="disabled" />
+                        </td>
+                    </tr>
+                    <tr class="trstyle onlyEdit">
+                        <td class="tdEditstyle">出貨數量</td>
+                        <td class="tdbstyle">
+                            <input id="E_PACK_CNT" type="number" DT_Fill_Name="出貨數量" class="textbox_char  updColumn"  />
+                        </td>
+                        <td class="tdEditstyle">ATTN</td>
+                        <td class="tdbstyle">
+                            <input id="E_ATTN" DT_Fill_Name="ATTN" class="textbox_char  updColumn"  />
                         </td>
                     </tr>
                      <tr class="trstyle onlyEdit">
-                        <td class="tdEditstyle">發票匯率</td>
+                        <td class="tdEditstyle">FREE</td>
                         <td class="tdbstyle">
-                            <input id="E_INVOICE_RATE" DT_Fill_Name="發票匯率" type="number"  class="textbox_char editReset" disabled="disabled" />
+                            <input id="E_FREE" type="checkbox" DT_Fill_Name="FREE" class="textbox_char updColumn"  />
                         </td>
-                        <td class="tdEditstyle">出貨日期</td>
+                        <td class="tdEditstyle">價格待通知</td>
                         <td class="tdbstyle">
-                            <input id="E_SHIP_GO_DATE" DT_Fill_Name="出貨日期" class="textbox_char editRestr updColumn" type="date" />
+                             <input id="E_WAIT_AMT" type="checkbox" DT_Fill_Name="價格待通知" class="textbox_char updColumn"  />
+                        </td>
+                    </tr>
+                     <tr class="onlyEdit">
+                        <td colspan="4" style="color:red">以下欄位以箱號為單位 修改</td>
+                    </tr>
+                     <tr class="trstyle onlyEdit">
+                        <td class="tdEditstyle">箱號</td>
+                        <td class="tdbstyle">
+                            <input id="E_PACK_NO" DT_Fill_Name="箱號" class="textbox_char updColumn"  />
                         </td>
                     </tr>
                     <tr class="trstyle onlyEdit">
-                        <td class="tdEditstyle">運輸編號</td>
-                        <td class="tdbstyle">
-                            <input id="E_TRANS_NO" DT_Fill_Name="運輸編號"  class="textbox_char editReset" disabled="disabled" />
-                            <input id="BT_TRANS_CHS" style="font-size:15px"  type="button" value="..." />
-                        </td>
-                        <td class="tdEditstyle">運輸簡稱</td>
-                        <td class="tdbstyle">
-                            <input id="E_TRANS_S_NAME" DT_Fill_Name="運輸簡稱" class="textbox_char editReset" disabled="disabled"  />
-                        </td>
-                    </tr>
-                    <tr class="trstyle onlyEdit">
-                        <td class="tdEditstyle">提單號碼</td>
-                        <td class="tdbstyle">
-                            <input id="E_BILL_NO" DT_Fill_Name="提單號碼"  class="textbox_char editReset updColumn" />
-                        </td>
-                        <td class="tdEditstyle">銀行簡稱</td>
-                        <td class="tdbstyle">
-                            <select id="E_IMPORT_BANK" DT_Fill_Name="銀行簡稱" class="updColumn">
-                                <option selected="selected" value=""></option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr class="trstyle onlyEdit">
-                        <td class="tdEditstyle">印表備註</td>
-                        <td class="tdbstyle" colspan ="4">
-                            <input id="E_PRINT_REMARK" DT_Fill_Name="備註業務"  class="textbox_char editReset updColumn" style="width:80%"  />
-                        </td>
-                    </tr>
-                    <tr class="trstyle onlyEdit">
-                        <td class="tdEditstyle">應稅</td>
-                        <td class="tdbstyle">
-                            <input id="E_FAX_FLAG" type="checkbox" DT_Fill_Name="應稅"  class="textbox_char editReset updColumn"/>
-                        </td>
-                        <td class="tdEditstyle">併大貨收款</td>
-                        <td class="tdbstyle">
-                            <input id="E_BIG_SHIP_COLL" type="checkbox" DT_Fill_Name="併大貨收款" class="textbox_char editReset updColumn"  />
-                        </td>
-                    </tr>
-<%--                    <tr class="trstyle onlyEdit">
                         <td class="tdEditstyle">淨重</td>
                         <td class="tdbstyle">
-                            <input id="E_NET_WEIGHT" type="number" DT_Fill_Name="淨重" class="textbox_char editReset" disabled="disabled" />
+                            <input id="E_NET_WEIGHT" type="number" DT_Fill_Name="淨重" class="textbox_char updColumn"  />
                         </td>
                         <td class="tdEditstyle">毛重</td>
                         <td class="tdbstyle">
-                            <input id="E_WEIGHT" type="number" DT_Fill_Name="毛重" class="textbox_char editReset" disabled="disabled"  />
-                        </td>
-                    </tr>--%>
-                    <tr class="trstyle onlyEdit">
-                        <td class="tdEditstyle">應收樣品費USD</td>
-                        <td class="tdbstyle">
-                            <input id="E_SAMPLE_AMT_USD" type="number" DT_Fill_Name="應收樣品費" class="textbox_char editReset" disabled="disabled" />
-                        </td>
-                        <td class="tdEditstyle">應收樣品費NTD</td>
-                        <td class="tdbstyle">
-                            <input id="E_SAMPLE_AMT_NTD" type="number" DT_Fill_Name="應收樣品NT"  class="textbox_char editReset" disabled="disabled" />
+                            <input id="E_WEIGHT" type="number" DT_Fill_Name="毛重"  class="textbox_char updColumn" />
                         </td>
                     </tr>
-                    <tr class="trstyle onlyEdit">
-                        <td class="tdEditstyle">應收運費USD</td>
-                        <td class="tdbstyle">
-                            <input id="E_TRANS_AMT_USD" type="number" DT_Fill_Name="應收運費" class="textbox_char editReset updColumn"  />
-                        </td>
-                        <td class="tdEditstyle">應收運費NTD</td>
-                        <td class="tdbstyle">
-                            <input id="E_TRANS_AMT_NTD" type="number" DT_Fill_Name="應收運費NT" class="textbox_char editReset updColumn"  />
-                        </td>
-                    </tr>
-                    <tr class="trstyle onlyEdit">
-                        <td class="tdEditstyle">已收金額USD</td>
-                        <td class="tdbstyle">
-                            <input id="E_REC_AMT_USD" type="number" DT_Fill_Name="已收金額" class="textbox_char editReset" disabled="disabled" />
-                        </td>
-                        <td class="tdEditstyle">已收金額NTD</td>
-                        <td class="tdbstyle">
-                            <input id="E_REC_AMT_NTD" type="number" DT_Fill_Name="已收金額NT"  class="textbox_char editReset" disabled="disabled" />
-                        </td>
-                    </tr>
-                    <tr class="trstyle onlyEdit">
-                        <td class="tdEditstyle">已收日期</td>
-                        <td class="tdbstyle">
-                            <input id="E_REC_DATE" DT_Fill_Name="已收日期" class="textbox_char editReset updColumn" type="date" />
-                        </td>
-                        <td class="tdEditstyle">未收金額</td>
-                        <td class="tdbstyle">
-                            <input id="E_NOT_REC_AMT" DT_Fill_Name="未收金額" class="textbox_char editReset" disabled="disabled" type="number" />
-                        </td>
-                    </tr>
-                    <tr class="trstyle onlyEdit">
-                        <td class="tdEditstyle">備註_statment</td>
-                        <td class="tdbstyle" colspan ="4">
-                            <input id="E_REMARK_STATMENT"  DT_Fill_Name="備註會計" class="textbox_char editReset updColumn" style="width:80%"  />
-                        </td>
-                    </tr>        
-                    <tr class="trstyle onlyEdit">
-                        <td class="tdEditstyle">備註_IVAN</td>
-                        <td class="tdbstyle" colspan ="4">
-                            <input id="E_REMARK_IVAN" DT_Fill_Name="備註_ivan" class="textbox_char editReset updColumn" style="width:80%" />
-                        </td>
-                    </tr>     
                     <tr class="trstyle onlyEdit">
                         <td class="tdEditstyle">更新人員</td>
                         <td class="tdbstyle">
-                            <input id="E_UPD_USER" DT_Fill_Name="更新人員" class="textbox_char editReset" disabled="disabled" />
+                            <input id="E_UPD_USER" DT_Fill_Name="更新人員" class="textbox_char " disabled="disabled" />
                         </td>
                         <td class="tdEditstyle">更新日期</td>
                         <td class="tdbstyle">
-                            <input id="E_UPD_DATE" type="date" DT_Fill_Name="更新日期" class="date_S_style editReset" disabled="disabled" />
+                            <input id="E_UPD_DATE" type="date" DT_Fill_Name="更新日期" class="date_S_style " disabled="disabled" />
                         </td>
                     </tr>
                     <tr class="trstyle"> 
@@ -707,9 +503,7 @@
                     </tr>
                      <tr class="trCenterstyle"> 
                          <td colspan="4" style="text-align:center" >
-                            <input type="button" id="BT_INSERT_SAVE" style="display:inline-block" class="BTN modeButton" value="新增儲存"  />
                             <input type="button" id="BT_EDIT_SAVE" style="display:inline-block" class="BTN modeButton" value="修改儲存"  />
-                            <input type="button" id="BT_INSERT_CLEAR" style="display:inline-block" class="BTN modeButton" value="清空"  />
                             <input type="button" id="BT_EDIT_CANCEL" style="display:inline-block" class="BTN modeButton" value="返回"  />
                          </td>
                     </tr>

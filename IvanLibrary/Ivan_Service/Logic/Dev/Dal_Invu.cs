@@ -166,7 +166,7 @@ namespace Ivan_Service
 		public int UpdateInvu()
 		{
 			string sqlStr = @"      UPDATE [dbo].[invu]
-                                       SET 變更日期 = GETDATE()
+                                       SET 更新日期 = GETDATE()
 										  ,更新人員 = @UPD_USER
                                     ";
 
