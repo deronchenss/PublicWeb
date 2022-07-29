@@ -208,7 +208,7 @@
                                         <li class="has-children">
                                             <a href="#">樣品開發</a>
                                             <ul class="dropdown">
-                                                <li><a href="/DEV/Sample/Sample_MT.aspx">樣品開發維護</a></li>
+                                                <li><a href="/DEV/Sample/Sample_MT.aspx">樣品開發查詢維護</a></li>
                                                 <li><a href="/DEV/Sample/Sample_Arr.aspx">樣品到貨作業</a></li>
                                                 <li><a href="/DEV/Sample/Sample_Arr_MT.aspx">樣品到貨查詢維護</a></li>
                                             </ul>
@@ -216,8 +216,9 @@
                                         <li class="has-children">
                                             <a href="#">樣品出貨</a>
                                             <ul class="dropdown">
-                                                <li><a href="/DEV/Sample/Sample_Pack.aspx">樣品備貨作業</a></li>
                                                 <li><a href="/DEV/Sample/Sample_Inv_MT.aspx">樣品INVOICE維護</a></li>
+                                                <li><a href="/DEV/Sample/Sample_Pack.aspx">樣品備貨作業</a></li>
+                                                <li><a href="/DEV/Sample/Sample_Pack_MT.aspx">樣品備貨查詢維護</a></li>
                                             </ul>
                                         </li>
                                         <li class="has-children">

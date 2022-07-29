@@ -48,7 +48,7 @@
                         $('#BT_Search').css('display', '');
                         $('#BT_Update').css('display', 'none');
 
-                        V_BT_CHG($('#BT_BASE'));
+                        V_BT_CHG($('#BT_S_BASE'));
                         break;
                     case "Search":
                         $('.Div_D').css('display', 'none');
@@ -56,26 +56,23 @@
                         $('#Div_DT_View').css('display', '');
                         $('#BT_Cancel').css('display', '');
 
-                        $('.onlyEdit').css('display', 'none');
-                        $('.modeButton').css('display', 'none')
                         if (Edit_Mode == "Edit") {
                             $('#Div_EDIT_Data').css('display', '');
                             $('#Div_DT_View').css('width', '60%');
-
-                            $('.onlyEdit').css('display', '');
-                            $('#BT_EDIT_SAVE').css('display', 'inline-block');
-                            $('#BT_EDIT_CANCEL').css('display', 'inline-block');
                         }
 
-                        V_BT_CHG($('#BT_BASE'));
+                        V_BT_CHG($('#BT_S_BASE'));
                         break;
-                    case "RPT":
+                    case "IMG":
                         $('.Div_D').css('display', 'none');
                         $('#Div_DT_View').css('width', '60%');
-                        $('#Div_RPT_DETAIL').css('display', '');
+                        $('#Div_IMG_DETAIL').css('display', '');
+                        if ($('#Table_Search_Recu > tbody tr[role=row]').length != 0) {
+                            $('#Table_Search_Recu').DataTable().draw();
+                        }
 
-                        V_BT_CHG($('#BT_RPT'));
-                        break;
+                        V_BT_CHG($('#BT_S_IMG'));
+                        break;       
                 }
             }
 
@@ -98,6 +95,14 @@
                         $("[DT_Fill_Name='" + titleName + "']").val(clickData[titleName]);
                     }
                 }
+
+                //IMG page
+                $('#I_IVAN_TYPE').val(clickData['頤坊型號']);
+                $('#I_FACT_NO').val(clickData['廠商編號']);
+                $('#I_FACT_S_NAME').val(clickData['廠商簡稱']);
+                $('#I_PROD_DESC').val(clickData['產品說明']);
+                $('#I_RPT_REMARK').val(clickData['大備註']);
+                Search_IMG($('#E_SUPLU_SEQ').val());
             }
 
             function V_BT_CHG(buttonChs) {
@@ -171,7 +176,8 @@
                                     { data: "淨重", title: "淨重", visible: false },
                                     { data: "毛重", title: "毛重", visible: false },
                                     { data: "備貨數量", title: "備貨數量", visible: false },
-                                    { data: "價格待通知", title: "價格待通知", visible: false }
+                                    { data: "價格待通知", title: "價格待通知", visible: false },
+                                    { data: "P2_已刪除", title: "P2_已刪除", visible: false }
                                 ],
                                 columnDefs: [{
                                     targets: [0],
@@ -199,15 +205,9 @@
             };
 
             //更新DB
-            function UPD_Invu() {
-                if ($('#E_IMPORT_BANK').val() == 'HK台' && ($('#E_CUST_NO').val() == '1914C' || $('#E_CUST_NO').val() == '14N9C') || $('#E_CUST_NO').val() == '1380C')
-                {
-                    alert('匯入銀行選擇錯誤 ! 此客戶禁用私人銀行帳戶 !');
-                    return;
-                }
-
+            function Update() {
                 var dataReq = {};
-                dataReq['Call_Type'] = 'UPD';
+                dataReq['Call_Type'] = 'UPDATE';
                 dataReq['SEQ'] = $('#E_SEQ').val();
 
                 //組json data
@@ -223,6 +223,9 @@
                 if ($('#E_SEQ').val() === '') {
                     alert('請選擇要修改的資料');
                 }
+                else if ($('#E_P2_DEL').val() == 1) {
+                    alert('樣品準備資料已刪除，請確認!');
+                }
                 else{
                     $.ajax({
                         url: apiUrl,
@@ -234,7 +237,7 @@
                         success: function (response, status) {
                             console.log(status);
                             if (status === 'success') {
-                                alert('INVOICE:' + $('#E_INVOICE').val() + '已修改完成');
+                                alert('序號:' + $('#E_SEQ').val() + '已修改完成');
 
                                 Search();
                             }
@@ -250,6 +253,72 @@
                     });
                 }
             };           
+
+            //刪除單筆資料
+            function Delete() {
+                if ($('#E_SEQ').val() === '') {
+                    alert('請選擇要刪除的資料');
+                }
+                else if ($('#E_P2_DEL').val() == 1) {
+                    alert('樣品準備資料已刪除，請確認!');
+                }
+                else {
+                    $.ajax({
+                        url: apiUrl,
+                        data: {
+                            "Call_Type": "DELETE",
+                            "SEQ": $('#E_SEQ').val()
+                        },
+                        cache: false,
+                        type: "POST",
+                        datatype: "json",
+                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                        success: function (response, status) {
+                            console.log(status);
+                            if (status === 'success') {
+                                alert('序號:' + $('#E_SEQ').val() + '已刪除完成');
+                                Search();
+                            }
+                            else {
+                                alert('刪除資料有誤請通知資訊人員');
+                            }
+                        },
+                        error: function (ex) {
+                            console.log(ex.responseText);
+                            alert('刪除資料有誤請通知資訊人員');
+                            return;
+                        }
+                    });
+                }
+            };           
+
+            function Search_IMG(supluSeq) {
+                $.ajax({
+                    url: "/CommonAshx/Common.ashx",
+                    data: {
+                        "Call_Type": "GET_IMG_BY_SUPLU_SEQ",
+                        "SEQ": supluSeq
+                    },
+                    cache: false,
+                    async: false,
+                    type: "POST",
+                    datatype: "json",
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    success: function (RR) {
+                        if (RR != null && RR.length > 0) {
+                            $('#I_NO_IMG').css('display', 'none');
+                            $('#I_IMG').css('display', '');
+
+                            var SRC = 'data:image/png;base64,' + RR[0].P_IMG;
+                            $('#I_IMG').attr('src', SRC);
+                        }
+                        else {
+                            $('#I_NO_IMG').css('display', '');
+                            $('#I_IMG').css('display', 'none');
+                        }
+                    }
+                });
+            };             
 
             //TABLE 功能設定
             $('#Table_Search_Data').on('click', 'tbody tr', function () {
@@ -273,7 +342,7 @@
             });
 
             $('#BT_EDIT_SAVE').on('click', function () {
-                UPD_Invu();
+                Update();
             });
 
             $('#BT_Update').on('click', function () {
@@ -290,13 +359,15 @@
                 Form_Mode_Change("Search");
             });
 
-            //報表頁
-            $('#BT_PRINT').on('click', function () {
-                PRINT_RPT();
+            $('#BT_DELETE').on('click', function () {
+                var Confirm_Check = confirm("確認刪除嗎? 序號:" + $('#E_SEQ').val());
+                if (Confirm_Check) {
+                    Delete();
+                }
             });
-            
+
             //功能選單
-            $('#BT_BASE').on('click', function () {
+            $('#BT_S_BASE').on('click', function () {
                 if ($('#Table_Search_Data > tbody tr[role=row]').length > 0 || $('#Table_CHS_Data > tbody tr[role=row]').length > 0)
                 {
                     Form_Mode_Change('Search');
@@ -306,9 +377,9 @@
                 }
             });    
 
-            $('#BT_RPT').on('click', function () {
-                Form_Mode_Change("RPT");
-            });  
+            $('#BT_S_IMG').on('click', function () {
+                Form_Mode_Change("IMG");
+            });   
         });
     </script>
 </asp:Content>
@@ -369,8 +440,8 @@
         </div>
         <div class="button_change_section">
             &nbsp;
-            <input type="button" id="BT_BASE" class="V_BT" value="主檔"  disabled="disabled" />
-            <input type="button" id="BT_RPT" class="V_BT" value="報表" />
+            <input type="button" id="BT_S_BASE" class="V_BT" value="主檔"  disabled="disabled" />
+            <input type="button" id="BT_S_IMG" class="V_BT" value="圖型" />
         </div>
 
         <div id="Div_DT">
@@ -393,10 +464,11 @@
                             <input id="E_SEQ" DT_Fill_Name="序號" class="textbox_char" disabled="disabled" />
                             <input id="E_SUPLU_SEQ" type="hidden" DT_Fill_Name="SUPLU_SEQ" class="textbox_char" />
                             <input id="E_PACK_PRE_CNT" type="hidden" DT_Fill_Name="備貨數量" class="textbox_char" />
+                            <input id="E_P2_DEL" type="hidden" DT_Fill_Name="P2_已刪除" class="textbox_char" />
                         </td>
                         <td class="tdEditstyle">INVOICE</td>
                         <td class="tdbstyle">
-                            <input id="E_INVOICE" DT_Fill_Name="INVOICE" class="textbox_char" disabled="disabled" />
+                            <input id="E_INVOICE" DT_Fill_Name="INVOICE" class="textbox_char updColumn" disabled="disabled" />
                         </td>
                     </tr>
                     <tr class="trstyle">
@@ -442,21 +514,21 @@
                     <tr class="trstyle onlyEdit">
                         <td class="tdEditstyle">美元單價</td>
                         <td class="tdbstyle">
-                            <input id="E_USD" type="number" DT_Fill_Name="美元單價" class="textbox_char " disabled="disabled" />
+                            <input id="E_USD" type="number" DT_Fill_Name="美元單價" class="textbox_char" disabled="disabled" />
                         </td>
                         <td class="tdEditstyle">台幣單價</td>
                         <td class="tdbstyle">
-                            <input id="E_NTD" type="number" DT_Fill_Name="台幣單價"  class="textbox_char " disabled="disabled" />
+                            <input id="E_NTD" type="number" DT_Fill_Name="台幣單價"  class="textbox_char" disabled="disabled" />
                         </td>
                     </tr>
                     <tr class="trstyle onlyEdit">
                         <td class="tdEditstyle">出貨數量</td>
                         <td class="tdbstyle">
-                            <input id="E_PACK_CNT" type="number" DT_Fill_Name="出貨數量" class="textbox_char  updColumn"  />
+                            <input id="E_PACK_CNT" type="number" DT_Fill_Name="出貨數量" class="textbox_char updColumn"  />
                         </td>
                         <td class="tdEditstyle">ATTN</td>
                         <td class="tdbstyle">
-                            <input id="E_ATTN" DT_Fill_Name="ATTN" class="textbox_char  updColumn"  />
+                            <input id="E_ATTN" DT_Fill_Name="ATTN" class="textbox_char updColumn"  />
                         </td>
                     </tr>
                      <tr class="trstyle onlyEdit">
@@ -503,39 +575,48 @@
                     </tr>
                      <tr class="trCenterstyle"> 
                          <td colspan="4" style="text-align:center" >
+                            <input type="button" id="BT_DELETE" style="display:inline-block" class="BTN modeButton" value="刪除"  />
                             <input type="button" id="BT_EDIT_SAVE" style="display:inline-block" class="BTN modeButton" value="修改儲存"  />
                             <input type="button" id="BT_EDIT_CANCEL" style="display:inline-block" class="BTN modeButton" value="返回"  />
                          </td>
                     </tr>
                 </table>
             </div>
-            <div id="Div_RPT_DETAIL" class=" Div_D" style="width:35%;height:71vh; border-style:solid;border-width:1px; float:right; overflow:auto ">
-                <table class="search_section_control"style="width:80%">
-                    <tr class="trstyle"> 
-                        <td class="tdbstyle" style="height: 10vh; font-size: smaller;" >&nbsp</td>
+            <div id="Div_IMG_DETAIL" class=" Div_D" style="width:35%;height:71vh; border-style:solid;border-width:1px; float:right; overflow:auto ">
+                <table class="edit_section_control">
+                     <tr class="trstyle"> 
+                        <td class="tdbstyle" style="height: 5vh; font-size: smaller;" >&nbsp</td>
                     </tr>
-                    <tr class="trCenterstyle">
-                        <td class="tdhstyle" style="font-size:20px;">報表類型</td>
-                        <td class="tdbstyle" style="font-size:20px;">
-                            <select id="R_RPT_TYPE" >
-                                <option selected="selected" value="0">INVOICE</option>
-                                <option value="1">PACKING</option>
-                            </select>
-                         </td>
-                    </tr>
-                    <tr class="trCenterstyle" >
-                        <td class="tdhstyle" style="font-size:20px;" >INVOICE</td>
-                        <td class="tdbstyle" style="font-size:20px;">
-                            <input id="R_INVOICE" style="font-size:20px;" class="textbox_char" />
+                    <tr class="trstyle">
+                        <td class="tdEditstyle">頤坊型號</td>
+                        <td class="tdbstyle">
+                            <input id="I_IVAN_TYPE" class="textbox_char" disabled="disabled" style="width:100%"  />
+                        </td>
+                        <td class="tdEditstyle">廠商編號</td>
+                        <td class="tdbstyle">
+                            <input id="I_FACT_NO"  class="textbox_char" disabled="disabled"  style="width:100%" />
                         </td>
                     </tr>
-                     <tr class="trstyle"> 
-                        <td class="tdbstyle" style="height: 10vh; font-size: smaller;" >&nbsp</td>
+                    <tr class="trstyle">
+                        <td class="tdEditstyle"></td>
+                        <td class="tdbstyle"></td>
+                        <td class="tdEditstyle">廠商簡稱</td>
+                        <td class="tdbstyle" >
+                            <input id="I_FACT_S_NAME" class="textbox_char" disabled="disabled" style="width:100%"  />
+                        </td>
                     </tr>
-                     <tr class="trCenterstyle"> 
-                         <td colspan="2" style="text-align:center" >
-                            <input type="button" id="BT_PRINT" style="display:inline-block" class="BTN" value="列印"  />
-                         </td>
+                    <tr class="trstyle">
+                        <td class="tdEditstyle">產品說明</td>
+                        <td class="tdbstyle" colspan="4">
+                            <input id="I_PROD_DESC" class="textbox_char" style="width:80%" disabled="disabled"  />
+                        </td>
+                    </tr>
+
+                    <tr class="trstyle">
+                        <td style="text-align:center" colspan="4">
+                            <img id="I_IMG" src="#" style="max-width:100%; max-height:100%;display:none" />
+                            <span id="I_NO_IMG" >查無圖檔</span>
+                        </td>
                     </tr>
 
                 </table>

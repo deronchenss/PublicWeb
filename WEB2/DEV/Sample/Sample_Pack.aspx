@@ -840,7 +840,7 @@
                     <tr class="trCenterstyle">
                         <td class="tdhstyle">ATTN</td>
                         <td class="tdbstyle" >
-                           <input id="E_ATTN"  class="textbox_char" />
+                           <input id="E_ATTN"  class="textbox_char" maxlength="2" />
                         </td>
                     </tr>
                     <tr class="trCenterstyle">

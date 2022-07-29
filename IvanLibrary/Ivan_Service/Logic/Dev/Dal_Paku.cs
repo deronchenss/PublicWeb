@@ -20,7 +20,20 @@ namespace Ivan_Service
 			DataTable dt = new DataTable();
 			string sqlStr = "";
 
-			sqlStr = @" SELECT TOP 500 P.[序號]
+			sqlStr = @" 
+						WITH TOT (INVOICE ,箱號, 淨重,毛重)
+						AS
+						(
+							SELECT   INVOICE INVOICE
+								    ,箱號
+								    ,MAX(ISNULL(淨重,0)) 淨重
+									,MAX(ISNULL(毛重,0)) 毛重
+							FROM [dbo].[paku] P
+							WHERE IsNull(P.已刪除,0) = 0 
+							GROUP BY INVOICE,箱號
+						)
+
+						SELECT TOP 500 P.[序號]
 							  ,P.[INVOICE]
 							  ,P.[SUPLU_SEQ]
 							  ,P.[PAKU2_SEQ]
@@ -39,19 +52,21 @@ namespace Ivan_Service
 							  ,P.[廠商編號]
 							  ,P.[廠商簡稱]
 							  ,IIF(P.[FREE] = 1, '是', '') FREE
-							  ,P.[價格待通知]
+							  ,IIF(P.[價格待通知] = 1, '是', '') [價格待通知]
 							  ,P.[ATTN]
 							  ,P.[箱號]
-							  ,P.[淨重]
-							  ,P.[毛重]
+							  ,TOT.[淨重]
+							  ,TOT.[毛重]
 							  ,P.[變更日期]
 							  ,P.[已刪除]
 							  ,P2.備貨數量 備貨數量 --舊資料不管
+							  ,P2.已刪除 P2_已刪除 --舊資料不管
 							  ,P.[建立人員]
 							  ,CONVERT(VARCHAR,P.[建立日期],23) 建立日期
 							  ,P.[更新人員]
 							  ,CONVERT(VARCHAR,P.[更新日期],23) 更新日期 
 						  FROM [dbo].[paku] P
+						  JOIN TOT ON P.INVOICE = TOT.INVOICE AND P.箱號 = TOT.箱號
 						  LEFT JOIN paku2 P2 ON P.paku2_SEQ = P2.序號
 						  WHERE ISNULL(P.已刪除,0) = 0 ";
 
@@ -124,6 +139,8 @@ namespace Ivan_Service
 										   ,[毛重]
 										   ,[變更日期]
 										   ,[已刪除]
+										   ,[建立人員]
+										   ,[建立日期]
 										   ,[更新人員]
 										   ,[更新日期])
 									SELECT (SELECT IsNull(Max(序號),0)+1 FROM paku)[序號]
@@ -201,6 +218,14 @@ namespace Ivan_Service
 			this.SetParameters("WEIGHT", context.Request["WEIGHT"]);
 			ExecuteWithLog(sqlStr);
 
+			//更新發票
+			sqlStr = @" UPDATE invu
+						SET 發票匯率 = (SELECT 美元匯率 FROM rate WHERE 日期 = 出貨日期)
+						WHERE INVOICE = @INVOICE
+				     ";
+
+			ExecuteWithLog(sqlStr);
+
 			this.TranCommit();
 
 			return res;
@@ -220,13 +245,13 @@ namespace Ivan_Service
 
 			foreach (string form in context.Request.Form)
 			{
+				this.SetParameters(form, context.Request[form]); //因後續還有UPDATE重量語法，故所有變數皆須設定
 				if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type" && form != "SEQ")
 				{
 					switch (form)
 					{
 						default:
 							sqlStr += " ," + form + " = @" + form;
-							this.SetParameters(form, context.Request[form]);
 							break;
 					}
 				}
@@ -235,9 +260,28 @@ namespace Ivan_Service
 			sqlStr += " WHERE 序號 = @SEQ ";
 
 			this.SetTran();
-			this.SetParameters("SEQ", context.Request["SEQ"]);
 			this.SetParameters("UPD_USER", "IVAN10");
 			int res = ExecuteWithLog(sqlStr);
+
+			//最後更新重量 只更新第一筆
+			sqlStr = @" UPDATE paku
+						SET 淨重 = 0
+						   ,毛重 = 0
+						WHERE INVOICE = @INVOICE
+						AND 箱號 = @箱號 
+						
+						UPDATE paku 
+						SET 淨重 = @淨重
+						   ,毛重 = @毛重
+						WHERE INVOICE = @INVOICE
+						AND 箱號 = @箱號
+						AND 序號 = (SELECT TOP 1 序號 
+									FROM paku 
+									WHERE INVOICE = @INVOICE
+									AND 箱號 = @箱號
+									Order By CASE When Substring(paku.箱號,1,1)>='A' Then substring(paku.箱號,1,1)+Right(Space(3)+Substring(Rtrim(paku.箱號),2,3),3) Else Right(Space(4)+Rtrim(paku.箱號),4) End,paku.淨重 DESC,paku.頤坊型號) ";
+			ExecuteWithLog(sqlStr);
+
 			this.TranCommit();
 
 			return res;
@@ -258,16 +302,11 @@ namespace Ivan_Service
 								 WHERE 序號 = @SEQ 
 							";
 
-			string[] seqArray = context.Request["SEQ[]"].Split(',');
+			this.SetParameters("SEQ", context.Request["SEQ"]);
+			this.SetParameters("UPD_USER", "IVAN10");
 
 			this.SetTran();
-			for (int cnt = 0; cnt < seqArray.Length; cnt++)
-			{
-				this.ClearParameter();
-				this.SetParameters("SEQ", seqArray[cnt]);
-				this.SetParameters("UPD_USER", "IVAN10");
-				ExecuteWithLog(sqlStr);
-			}
+			ExecuteWithLog(sqlStr);
 			this.TranCommit();
 
 			return res;

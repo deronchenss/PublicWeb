@@ -1,4 +1,4 @@
-﻿<%@ Page Title="樣品開發維護" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_MT.aspx.cs" Inherits="Sample_MT" %>
+﻿<%@ Page Title="樣品開發查詢維護" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_MT.aspx.cs" Inherits="Sample_MT" %>
 <%@ Register TagPrefix="uc" TagName="uc1" Src="~/User_Control/Dia_Customer_Selector.ascx" %>
 <%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_Selector.ascx" %>
 

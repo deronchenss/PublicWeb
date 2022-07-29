@@ -28,7 +28,7 @@ public class Sample_Pack_MT : IHttpHandler, IRequiresSessionState
                     case "Search":
                         dt = dal.SearchTable();
                         break;
-                    case "UPD":
+                    case "UPDATE":
                         result = dal.UpdatePaku();
 
                         context.Response.StatusCode = 200;

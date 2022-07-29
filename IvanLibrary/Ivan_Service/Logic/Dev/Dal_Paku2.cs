@@ -213,7 +213,7 @@ namespace Ivan_Service
 
 						       UPDATE suplu
 						       SET 內湖庫存數 = ISNULL(內湖庫存數,0) - @APP_CNT
-								  ,變更日期 = GETDATE()
+								  ,更新日期 = GETDATE()
 								  ,更新人員 = @USER
 						       WHERE 序號 = @SEQ
 						       ";

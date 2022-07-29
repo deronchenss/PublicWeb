@@ -124,6 +124,8 @@ namespace Ivan_Service
 								    
 								    UPDATE nofile
 								    SET 號碼 = 號碼+1
+									   ,更新人員 = @UPD_USER
+									   ,更新日期 = GETDATE() 
 								    WHERE 單據 = '樣品INVOICE'
 
 									INSERT INTO [dbo].[invu]
@@ -133,6 +135,8 @@ namespace Ivan_Service
 												,[客戶簡稱]
 												,[出貨日期]
                                                 ,[變更日期]
+												,[建立人員]
+                                                ,[建立日期]
                                                 ,[更新人員]
                                                 ,[更新日期])
                                     VALUES		((SELECT IsNull(Max(序號),0)+1 FROM invu) 
@@ -141,6 +145,8 @@ namespace Ivan_Service
 												,@CUST_S_NAME 
 												,GETDATE()
 												,GETDATE()
+                                                ,@UPD_USER 
+                                                ,GETDATE()
                                                 ,@UPD_USER 
                                                 ,GETDATE())
 

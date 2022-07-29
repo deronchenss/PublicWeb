@@ -1,4 +1,4 @@
-﻿<%@ Page Title="樣品點收維護" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Chk_MT.aspx.cs" Inherits="Sample_Chk_MT" %>
+﻿<%@ Page Title="樣品點收查詢維護" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Chk_MT.aspx.cs" Inherits="Sample_Chk_MT" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
