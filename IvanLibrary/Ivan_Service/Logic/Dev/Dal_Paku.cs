@@ -176,6 +176,14 @@ namespace Ivan_Service
 									FROM   paku2 P
 									LEFT JOIN byrlu B ON P.SUPLU_SEQ = B.SUPLU_SEQ AND P.客戶編號 = B.客戶編號
 									WHERE P.序號 = @SEQ 
+
+									--更新PAKU2 結案狀態
+									UPDATE paku2
+									SET 已結案 = CASE WHEN 備貨數量 = (SELECT SUM(出貨數量) FROM paku WHERE PAKU2_SEQ = @SEQ AND ISNULL(已刪除,0) = 0) THEN 1
+													  ELSE 0 
+													  END
+									WHERE 序號 = @SEQ
+
 									";
 
 			string[] seqArray = context.Request["SEQ[]"].Split(',');
@@ -257,8 +265,17 @@ namespace Ivan_Service
 				}
 			}
 
-			sqlStr += " WHERE 序號 = @SEQ ";
+			sqlStr += @" WHERE 序號 = @SEQ
 
+						 --更新PAKU2 結案狀態
+						DECLARE @PAKU2_SEQ VARCHAR(20)
+						SELECT @PAKU2_SEQ = PAKU2_SEQ FROM paku WHERE 序號 = @SEQ
+						UPDATE paku2
+						SET 已結案 = CASE WHEN 備貨數量 = (SELECT SUM(出貨數量) FROM paku WHERE PAKU2_SEQ = @PAKU2_SEQ AND ISNULL(已刪除,0) = 0) THEN 1
+											ELSE 0
+											END
+						WHERE 序號 = @PAKU2_SEQ";
+			
 			this.SetTran();
 			this.SetParameters("UPD_USER", "IVAN10");
 			int res = ExecuteWithLog(sqlStr);
@@ -300,6 +317,16 @@ namespace Ivan_Service
 									,更新日期 = GETDATE()
 									,更新人員 = @UPD_USER
 								 WHERE 序號 = @SEQ 
+								
+								 --更新PAKU2 結案狀態
+								DECLARE @PAKU2_SEQ VARCHAR(20)
+								SELECT @PAKU2_SEQ = PAKU2_SEQ FROM paku WHERE 序號 = @SEQ 
+								UPDATE paku2
+								SET 已結案 = CASE WHEN 備貨數量 = (SELECT SUM(出貨數量) FROM paku WHERE PAKU2_SEQ = @PAKU2_SEQ AND ISNULL(已刪除,0) = 0) THEN 1
+													ELSE 0 
+													END
+								WHERE 序號 = @PAKU2_SEQ
+
 							";
 
 			this.SetParameters("SEQ", context.Request["SEQ"]);

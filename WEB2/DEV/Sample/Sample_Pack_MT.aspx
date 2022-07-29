@@ -223,8 +223,14 @@
                 if ($('#E_SEQ').val() === '') {
                     alert('請選擇要修改的資料');
                 }
+                else if ($('#E_PACK_CNT').val() == '' || $('#E_PACK_CNT').val() == 0) {
+                    alert('出貨數量不可為 0!');
+                }
                 else if ($('#E_P2_DEL').val() == 1) {
                     alert('樣品準備資料已刪除，請確認!');
+                }
+                else if ($('#E_PACK_PRE_CNT').val() < $('#E_PACK_CNT').val()) {
+                    alert('出貨數量大於準備數量，請確認!');
                 }
                 else{
                     $.ajax({
