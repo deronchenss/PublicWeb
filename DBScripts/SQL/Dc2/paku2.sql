@@ -20,6 +20,7 @@ CREATE TABLE [dbo].[paku2](
 	[廠商簡稱] [varchar](10) NULL,
 	[來源] [varchar](6) NULL,
 	[點收批號] [varchar](9) NULL,
+	[已結案] [bit] NULL,
 	[已刪除] [bit] NULL,
 	[變更日期] [datetime] NULL,
 	[更新人員] [varchar](6) NULL,
@@ -39,6 +40,7 @@ SELECT [序號], (SELECT [序號] FROM Bc2..suplu2 C WHERE C.廠商編號 = P.廠商編號 A
 	RTRIM([暫時型號]), RTRIM([產品說明]), RTRIM([單位]),
 	[備貨數量], [核銷數量], RTRIM([廠商編號]),
 	RTRIM([廠商簡稱]), RTRIM([來源]), RTRIM([點收批號]),
+	[已刪除] [已結案],
 	[已刪除], [變更日期], RTRIM([更新人員]), [更新日期]
 FROM Bc2..[paku2] P
 
