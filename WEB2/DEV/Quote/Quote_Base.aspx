@@ -623,26 +623,26 @@
                     <tr class="trCenterstyle">
                         <td class="tdhstyle" style="font-size:20px">報價單號</td>
                         <td class="tdbstyle">
-                            <input id="E_QUAH_SEQ"  class="textbox_char" style="width:80%" />
-                            <input id="BT_QUAH_SEQ" style="font-size:20px;width:20%" type="button" value="..." />
+                            <input id="E_QUAH_SEQ"  class="textbox_char"  />
+                            <input id="BT_QUAH_SEQ" style="font-size:20px;" type="button" value="..." />
                         </td>
                     </tr>
                     <tr class="trCenterstyle">
                         <td class="tdhstyle" style="font-size:20px">客戶編號</td>
                         <td class="tdbstyle">
-                            <input id="E_CUST_NO"  class="textbox_char" disabled="disabled" style="width:100%" />
+                            <input id="E_CUST_NO"  class="textbox_char" disabled="disabled"  />
                         </td>
                     </tr>
                     <tr class="trCenterstyle">
                         <td class="tdhstyle" style="font-size:20px">客戶簡稱</td>
                         <td class="tdbstyle">
-                            <input id="E_CUST_S_NAME"  class="textbox_char" disabled="disabled" style="width:100%" />
+                            <input id="E_CUST_S_NAME"  class="textbox_char" disabled="disabled" />
                         </td>
                     </tr>
                      <tr class="trCenterstyle">
                         <td class="tdhstyle" style="font-size:20px">客戶全名</td>
                         <td class="tdbstyle" >
-                            <input id="E_CUST_NAME"  style="width:100%" disabled="disabled" />
+                            <input id="E_CUST_NAME"  disabled="disabled" />
                         </td>
                     </tr>
                     <tr class="trCenterstyle">
