@@ -218,12 +218,11 @@
                         break;
                     case "RB_V_DIMG":
                         Show_IMG = true;
-                        $('.DIMG img').css('height', '');
+                        $('.DIMG img').css({ 'height': '', 'width': '' });
                         break;
                     case "RB_SM_DIMG":
                         Show_IMG = true;
-                        $('.DIMG img').css('height', '100px');
-                        $('.DIMG img').css('width', '100px');
+                        $('.DIMG img').css({ 'height': '100px', 'width': '100px' });
                         break;
                 }
                 if (Show_IMG && !IMG_Has_Read) {//Need Show And Not Read Data
@@ -353,7 +352,7 @@
                     if (Full) {
                         FromTable.find('.SEQ').each(function () {
                             var OT = $(this).text();
-                            if (ToTable.find('.SEQ').filter(function () { return $(this).text() == OT; })) {
+                            if (ToTable.find('.SEQ').filter(function () { return $(this).text() == OT; }).length === 0) {
                                 ToTable.append($(this).parent().clone());
                             }
                             else {
@@ -364,7 +363,7 @@
                         });
                     }
                     else {
-                        if (ToTable.find('.SEQ:contains(' + click_tr.find('.SEQ').text() + ')').length === 0) {
+                        if (ToTable.find('.SEQ').filter(function () { return $(this).text() == click_tr.find('.SEQ').text(); }).length === 0) {
                             ToTable.append(click_tr.clone());
                         }
                         click_tr.remove();

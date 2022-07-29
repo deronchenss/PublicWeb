@@ -93,10 +93,78 @@ public class New_Cost_Search : IHttpHandler, IRequiresSessionState
                                             '' [採購單號], 
                                             [點收核准], [暫時型號], [廠商編號],
                                             CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = C.[序號]),0) AS BIT) [Has_IMG], 
-                                            [序號], [更新人員], LEFT(RTRIM(CONVERT(VARCHAR(20),[更新日期],20)),16) [更新日期]
+                                            [序號], [更新人員], LEFT(RTRIM(CONVERT(VARCHAR(20),[更新日期],20)),16) [更新日期], [更新日期] [Sort]
                                          FROM Dc2..suplu C
-                                         WHERE ([點收核准] = 0 OR [點收核准] IS NULL) ";
-                    //cmd.Parameters.AddWithValue("NO_L", context.Request["NO_L"]);
+                                         WHERE ([點收核准] = 0 OR [點收核准] IS NULL)
+                                               AND [頤坊型號] LIKE @IM + '%'
+                                               AND [暫時型號] LIKE @SampleM + '%'
+                                               --AND [採購單號] LIKE @Purchase_No + '%'
+                                               AND [廠商編號] LIKE @S_No + '%'
+                                               AND [廠商簡稱] LIKE @S_SName + '%' 
+                                         ORDER BY [Sort] desc ";
+                    cmd.Parameters.AddWithValue("IM", context.Request["IM"]);
+                    cmd.Parameters.AddWithValue("SampleM", context.Request["SampleM"]);
+                    //Will_Add
+                    //cmd.Parameters.AddWithValue("Purchase_No", context.Request["Purchase_No"]);
+                    cmd.Parameters.AddWithValue("S_No", context.Request["S_No"]);
+                    cmd.Parameters.AddWithValue("S_SName", context.Request["S_SName"]);
+                    break;
+                case "Cost_Report_C_Search":
+                    cmd.CommandText = @" SELECT TOP 500 [開發中], [廠商簡稱], [頤坊型號], [銷售型號], [暫時型號], [產品說明], [單位], [大貨庫存數],
+                                         	CONVERT(VARCHAR(20),[新增日期],23) [新增日期],
+	                                        CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = C.[序號]),0) AS BIT) [Has_IMG], 
+                                         	CONVERT(VARCHAR(20),[最後點收日],23) [最後點收日],
+                                         	CONVERT(VARCHAR(20),[最後單價日],23) [最後單價日],
+                                         	[廠商編號], 'Cost' [來源], [序號], [更新人員],
+                                         	LEFT(RTRIM(CONVERT(VARCHAR(20),[更新日期],20)),16) [更新日期], [更新日期] [sort]
+                                         FROM Dc2..suplu C
+                                         WHERE [頤坊型號] LIKE @IM + '%'
+                                         ORDER BY [sort] DESC ";
+                    cmd.Parameters.AddWithValue("IM", context.Request["IM"]);
+                    break;
+                case "Cost_Report_P_Search":
+                    cmd.CommandText = @" SELECT TOP 500 [開發中], [客戶簡稱], [頤坊型號], [客戶型號], 
+                                         	CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = P.[SUPLU_SEQ]),0) AS BIT) [Has_IMG], 
+                                         	(SELECT C.[銷售型號] FROM Dc2..suplu C WHERE C.[序號] = P.SUPLU_SEQ) [銷售型號], 
+                                         	[產品說明], [單位], [廠商編號], [廠商簡稱], [客戶編號], 'Price' [來源], [序號], [更新人員], 
+                                         	LEFT(RTRIM(CONVERT(VARCHAR(20),[更新日期],20)),16) [更新日期], [更新日期] [sort]
+                                         FROM Dc2..byrlu P
+                                         WHERE [頤坊型號] LIKE @IM + '%'
+                                         ORDER BY [sort] DESC ";
+                    cmd.Parameters.AddWithValue("IM", context.Request["IM"]);
+                    break;
+                case "Cost_Report_Print":
+                    string RPT_File = "~/Base/Cost/Rpt/Cost_Report_R1.rpt";
+                    cmd.CommandText = @" SELECT TOP 500 [開發中], [客戶簡稱], [頤坊型號], [客戶型號], ";
+                    cmd.Parameters.AddWithValue("IM", context.Request["IM"]);
+
+                    SqlDataAdapter sqlDatai = new SqlDataAdapter(cmd);
+                    sqlDatai.Fill(dt);
+
+                    if (dt != null && dt.Rows.Count > 0)
+                    {
+                        ReportDocument rptDoc = new ReportDocument();
+                        rptDoc.Load(context.Server.MapPath(RPT_File));
+                        rptDoc.SetDataSource(dt);
+                        System.IO.Stream stream = rptDoc.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+                        byte[] bytes = new byte[stream.Length];
+                        stream.Read(bytes, 0, bytes.Length);
+                        stream.Seek(0, System.IO.SeekOrigin.Begin);
+
+                        string filename = "T.pdf";
+                        context.Response.ClearContent();
+                        context.Response.ClearHeaders();
+                        context.Response.AddHeader("content-disposition", "attachment;filename=" + filename);
+                        context.Response.ContentType = "application/pdf";
+                        context.Response.OutputStream.Write(bytes, 0, bytes.Length);
+                        context.Response.Flush();
+                        context.Response.End();
+                    }
+                    else
+                    {
+                        context.Response.StatusCode = 204;
+                        context.Response.End();
+                    }
                     break;
             }
             cmd.Connection = conn;

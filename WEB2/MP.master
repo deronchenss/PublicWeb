@@ -138,6 +138,8 @@
                                                     </a></li>
                                                 <li><a href="/Base/Cost/Fist_CAA_Approve.aspx" IVM_PERMISSIONS="54"><%=Resources.MP.CAC_Approve%>
                                                     </a></li>
+                                                <li><a href="/Base/Cost/Cost_Report.aspx" IVM_PERMISSIONS="55">Cost<%=Resources.MP.Speace%><%=Resources.MP.Report%>
+                                                    </a></li>
                                             </ul>
                                         </li>
                                         <li class="has-children">

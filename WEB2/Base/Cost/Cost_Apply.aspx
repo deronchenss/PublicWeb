@@ -81,7 +81,6 @@
                             Form_Mode_Change("Base");
                         }
                         else {
-
                             var Table_HTML =
                                 '<thead><tr>'
                                 + '</th><th>' + '<%=Resources.MP.Developing%>'
@@ -163,9 +162,6 @@
 
                             $('#Table_Search_Cost').css('white-space', 'nowrap');
                             $('#Table_Search_Cost thead th').css('text-align', 'center');
-
-                            $('#Table_Exec_Data_info').text('');
-                            $('#Table_Exec_Data').html('');
                         }
                     },
                     error: function (ex) {
@@ -183,12 +179,11 @@
                         break;
                     case "RB_V_DIMG":
                         Show_IMG = true;
-                        $('.DIMG img').css('height', '');
+                        $('.DIMG img').css({ 'height': '', 'width': '' });
                         break;
                     case "RB_SM_DIMG":
                         Show_IMG = true;
-                        $('.DIMG img').css('height', '100px');
-                        $('.DIMG img').css('width', '100px');
+                        $('.DIMG img').css({ 'height': '100px', 'width': '100px' });
                         break;
                     case "RB_New":
                         Show_IMG = true;

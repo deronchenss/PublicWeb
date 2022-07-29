@@ -858,4 +858,7 @@
   <data name="Purchase_No" xml:space="preserve">
     <value>Purchase No</value>
   </data>
+  <data name="Last_Check_And_Accept_Day" xml:space="preserve">
+    <value>Last Check and Accept Day</value>
+  </data>
 </root>

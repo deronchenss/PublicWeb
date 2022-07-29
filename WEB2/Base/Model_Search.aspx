@@ -295,11 +295,11 @@
             $('#DDL_Data_Souce').on('change', function () {
                 switch ($(this).val()) {
                     case "Cost":
-                        $('.MP.').css('display', '');
+                        $('.Cost').css('display', '');
                         $('.Price').css('display', 'none');
                         break;
                     case "Price":
-                        $('.MP.').css('display', 'none');
+                        $('.Cost').css('display', 'none');
                         $('.Price').css('display', '');
                         break;
                 }
