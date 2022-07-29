@@ -135,10 +135,50 @@ public class New_Cost_Search : IHttpHandler, IRequiresSessionState
                     break;
                 case "Cost_Report_Print":
                     string RPT_File = "~/Base/Cost/Rpt/Cost_Report_R1.rpt";
-                    cmd.CommandText = @" SELECT TOP 500 [開發中], [客戶簡稱], [頤坊型號], [客戶型號], ";
-                    cmd.Parameters.AddWithValue("IM", context.Request["IM"]);
+                    cmd.CommandText = @" 
+
+SELECT TOP 5 [廠商編號], [廠商簡稱], [頤坊型號], [廠商型號], [產品說明], [單位], [最後單價日], 
+	CASE WHEN [台幣單價] > 0 THEN 'NTD'
+		 WHEN [美元單價] > 0 THEN 'USD'
+		 ELSE NULL END [幣別],
+	[台幣單價] [台幣金額], --bom 
+	[美元單價] [美元金額],
+	NULL [最後完成者], 
+	NULL [材料型號],
+	NULL [材料用量],
+	CASE WHEN (SELECT COUNT(1) FROM Dc2..bom BM WHERE BM.SUPLU_SEQ = C.[序號]) > 1 THEN '組合品'
+		 WHEN (SELECT COUNT(1) FROM Dc2..bomsub BD WHERE BD.D_SUPLU_SEQ = C.[序號]) > 1 THEN '材料'
+		 ELSE '單一產品' END [型態],
+	'USDTWD: ' + (SELECT [內容] FROM Dc2..REFDATA WHERE [代碼] = 'PUR_Rate') [抬頭一], 
+	NULL [群組一],--最後完成者
+	NULL [群組二],--最後完成者+頤坊型號
+	'KEJYUU' [印表人員],
+	(SELECT [付款條件] FROM Dc2..sup S WHERE S.[廠商編號] = C.[廠商編號]) [付款條件],
+	NULL [組合品],--Exists bom 轉入單位 <> '*' > 組, Else ''
+	'NTD ' + CONVERT(VARCHAR,CAST([台幣單價] AS money),1) + REPLICATE(' ',8) + IIF([min_1]=0,'',CAST([min_1] AS VARCHAR)) + REPLICATE(' ',7) + ISNULL(CONVERT(VARCHAR(20),CAST([最後單價日] AS DATE),111),'') [COST], 
+	'門市-USD : ' + CAST( CAST([台幣單價] AS FLOAT) / CAST((SELECT [內容] FROM Dc2..REFDATA WHERE [代碼] = 'PUR_Rate') AS FLOAT) AS VARCHAR ) + REPLICATE(' ',10) + 'NTD : ' + IIF([台幣單價]=0,'',CAST([台幣單價] AS VARCHAR)) + CHAR(10) + CHAR(13) +
+	'MSRP-REP : ' + CONVERT(VARCHAR,CAST([MSRP] AS money),1) + REPLICATE(' ',7) + CHAR(10) + CHAR(13)
+	--'' + C.折扣
+		 [PRICE], --~~~~
+	NULL [MIDAS_UPRICE],--Bom
+	NULL [MIDAS_AMT],--BOM
+	'Y' [印價格填寫欄],--CB_Check, Y/''
+	ROW_NUMBER() OVER (ORDER BY [序號])[序],
+	ISNULL((SELECT TOP 1 [圖檔] FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = C.[序號]),'') [圖檔], 
+	ISNULL((SELECT TOP 1 'Y' FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = C.[序號]),'N') [列印圖檔],
+	[台幣單價] [換算美元]--台幣單價>同上台幣金額, by Bom
+	--** 轉入單位=S時為原料銷售 > 金額相關、Cost =0
+FROM Dc2..suplu C
+WHERE 頤坊型號 LIKE '1339-%' AND 廠商編號 = '16602'
+
+
+ ";
+                    //cmd.Parameters.AddWithValue("IM", context.Request["IM"]);
 
                     SqlDataAdapter sqlDatai = new SqlDataAdapter(cmd);
+                        
+                    cmd.Connection = conn;
+                    //SqlDataAdapter SDA = new SqlDataAdapter(cmd);
                     sqlDatai.Fill(dt);
 
                     if (dt != null && dt.Rows.Count > 0)

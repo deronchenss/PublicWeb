@@ -40,15 +40,15 @@
                 $.ajax({
                     url: "/Base/Cost/New_Cost_Search.ashx",
                     data: {
-                        "Call_Type": "Cost_Report_Print",
-                        "PUDU_NO_S": $('#R_PUDU_NO_S').val(),
-                        "PUDU_NO_E": $('#R_PUDU_NO_E').val(),
-                        "WORK_TYPE": $('#R_RPT_TYPE').val(),
-                        "PUDU_NO_1": $('#R_PUDU_NO_1').val(),
-                        "PUDU_NO_2": $('#R_PUDU_NO_2').val(),
-                        "PUDU_NO_3": $('#R_PUDU_NO_3').val(),
-                        "PUDU_NO_4": $('#R_PUDU_NO_4').val(),
-                        "PUDU_NO_5": $('#R_PUDU_NO_5').val()
+                        "Call_Type": "Cost_Report_Print"//,
+                        //"PUDU_NO_S": $('#R_PUDU_NO_S').val(),
+                        //"PUDU_NO_E": $('#R_PUDU_NO_E').val(),
+                        //"WORK_TYPE": $('#R_RPT_TYPE').val(),
+                        //"PUDU_NO_1": $('#R_PUDU_NO_1').val(),
+                        //"PUDU_NO_2": $('#R_PUDU_NO_2').val(),
+                        //"PUDU_NO_3": $('#R_PUDU_NO_3').val(),
+                        //"PUDU_NO_4": $('#R_PUDU_NO_4').val(),
+                        //"PUDU_NO_5": $('#R_PUDU_NO_5').val()
                     },
                     cache: false,
                     type: "POST",
@@ -60,44 +60,45 @@
                         return xhr;
                     },
                     success: function (response, status) {
-                        if (status === 'nocontent') {
-                            alert('採購單號查無資料');
-                        }
-                        else if (status !== 'success') {
-                            alert(response);
-                        }
-                        else {
+                        //if (status === 'nocontent') {
+                        //    alert('採購單號查無資料');
+                        //}
+                        //else if (status !== 'success') {
+                        //    alert(response);
+                        //}
+                        //else {
                             var blob = new Blob([response], { type: "application/pdf" });
                             var url = window.URL || window.webkitURL;
                             link = url.createObjectURL(blob);
                             var a = $("<a />");
-                            switch ($('#R_RPT_TYPE').val()) {
-                                case "0":
-                                    a.attr("download", "開發單.pdf");
-                                    break;
-                                case "1":
-                                    a.attr("download", "詢價單.pdf");
-                                    break;
-                                case "2":
-                                    a.attr("download", "索樣單.pdf");
-                                    break;
-                                case "3":
-                                    a.attr("download", "樣品到貨核對表.pdf");
-                                    break;
-                            }
+                            //switch ($('#R_RPT_TYPE').val()) {
+                            //    case "0":
+                            //        a.attr("download", "開發單.pdf");
+                            //        break;
+                            //    case "1":
+                            //        a.attr("download", "詢價單.pdf");
+                            //        break;
+                            //    case "2":
+                            //        a.attr("download", "索樣單.pdf");
+                            //        break;
+                            //    case "3":
+                            //        a.attr("download", "樣品到貨核對表.pdf");
+                            //        break;
+                            //}
+                            a.attr("download", "成本分析.pdf");
 
                             a.attr("href", link);
                             $("body").append(a);
 
                             a[0].click();
                             $("body").remove(a);
-                        }
+                        //}
                         $("body").loading("stop") // 遮罩停止
                     },
                     error: function (ex) {
                         console.log(ex.responseText);
                         $("body").loading("stop") // 遮罩停止
-                        alert('下載報表有誤請通知資訊人員');
+                        alert('下載報表有誤，請通知資訊人員');
                         return;
                     }
                 });
