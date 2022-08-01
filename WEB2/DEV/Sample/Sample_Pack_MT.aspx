@@ -229,7 +229,7 @@
                 else if ($('#E_P2_DEL').val() == 1) {
                     alert('樣品準備資料已刪除，請確認!');
                 }
-                else if ($('#E_PACK_PRE_CNT').val() < $('#E_PACK_CNT').val()) {
+                else if ($('#E_PACK_PRE_CNT').val() != '' && $('#E_PACK_PRE_CNT').val() < $('#E_PACK_CNT').val()) {
                     alert('出貨數量大於準備數量，請確認!');
                 }
                 else{

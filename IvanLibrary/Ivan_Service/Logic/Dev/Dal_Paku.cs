@@ -78,11 +78,11 @@ namespace Ivan_Service
 					switch (form)
 					{
 						case "更新日期_S":
-							sqlStr += " AND CONVERT(DATE,P.[更新日期]) >= @備貨日期_S";
+							sqlStr += " AND CONVERT(DATE,P.[更新日期]) >= @更新日期_S";
 							this.SetParameters(form, context.Request[form]);
 							break;
 						case "更新日期_E":
-							sqlStr += " AND CONVERT(DATE,P.[更新日期]) <= @備貨日期_E";
+							sqlStr += " AND CONVERT(DATE,P.[更新日期]) <= @更新日期_E";
 							this.SetParameters(form, context.Request[form]);
 							break;
 						case "廠商簡稱":
