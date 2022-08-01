@@ -64,6 +64,7 @@ public class Sample_Arr_MT : IHttpHandler, IRequiresSessionState
                                                                    ,IIF(R.[調整額02] = 0, NULL, R.[調整額02]) 調整額02
                                                                    ,R.[更新人員]
                                                                    ,CONVERT(VARCHAR,R.[更新日期],23) [更新日期]
+                                                                   ,CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = P.[SUPLU_SEQ]),0) AS BIT) [Has_IMG]
                                                      FROM Dc2..pudu P
                                                      INNER JOIN RECU R ON P.序號 = R.PUDU_SEQ
                                                      WHERE 1=1

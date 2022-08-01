@@ -37,6 +37,7 @@ namespace Ivan_Service
                             ,RA.[運輸簡稱]
                             ,RA.[更新人員]
                             ,CONVERT(VARCHAR,RA.[更新日期],23) [更新日期]
+                            ,CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = P.[SUPLU_SEQ]),0) AS BIT) [Has_IMG]
                 FROM Dc2..pudu P
                 INNER JOIN RECUA RA ON P.序號 = RA.PUDU_SEQ
                 WHERE 1=1 ";

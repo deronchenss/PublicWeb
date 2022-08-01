@@ -1,5 +1,7 @@
 ﻿<%@ Page Title="樣品準備作業" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Chk_Dist.aspx.cs" Inherits="Sample_Chk_Dist" %>
 <%@ Register TagPrefix="uc" TagName="uc1" Src="~/User_Control/Dia_Customer_Selector.ascx" %>
+<%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_ALL.ascx" %>
+
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
     <script src="/js/jquery.dataTables.min.js"></script>
@@ -26,6 +28,9 @@
 
             $('#Table_EXEC_Data').DataTable({
                 "destroy": true,
+                "drawCallback": function (settings) {
+                    Re_Bind_Inner_JS();
+                },
                 "columns": [
                     { title: "批號" },
                     { title: "頤坊型號" },
@@ -163,6 +168,15 @@
                 }
             }
 
+            function Re_Bind_Inner_JS() {
+                $('.Call_Product_Tool').off('click');
+                $('.Call_Product_Tool').on('click', function (e) {
+                    e.stopPropagation();
+                    $('#PAD_HDN_SUPLU_SEQ').val($(this).attr('SUPLU_SEQ'));
+                    $("#Product_ALL_Dialog").dialog('open');
+                });
+            };
+
             function Search_IMG(supluSeq) {
                 $.ajax({
                     url: "/CommonAshx/Common.ashx",
@@ -261,7 +275,15 @@
                                 "destroy": true,
                                 "columns": [
                                     { data: "點收批號", title: "批號" },
-                                    { data: "頤坊型號", title: "頤坊型號" },
+                                    {
+                                        data: "頤坊型號", title: "頤坊型號",
+                                        render: function (data, type, row) {
+                                            return '<input class="Call_Product_Tool" SUPLU_SEQ = "' + (row.序號 ?? "")
+                                                + '" type="button" value="' + (data ?? "")
+                                                + '" style="text-align:left;width:100%;z-index:1000;' + ((row.Has_IMG) ? 'background: #90ee90;' : '') + '" />'
+                                        },
+                                        orderable: false
+                                    },
                                     { data: "產品說明", title: "產品說明" },
                                     { data: "單位", title: "單位" },
                                     { data: "內湖庫存數", title: "內湖庫存數" },
@@ -300,6 +322,7 @@
                                 },
                                 "drawCallback": function (settings) {
                                     $('#Table_Search_Data_wrapper div.dataTables_scrollBody').scrollTop(searchPageScroll);
+                                    Re_Bind_Inner_JS();
                                 },
                                 "columns": [
                                     { title: "批號" },
@@ -333,6 +356,7 @@
                                },
                                "drawCallback": function (settings) {
                                    $('Table_CHS_Data_wrapper div.dataTables_scrollBody').scrollTop(chsPageScroll);
+                                   Re_Bind_Inner_JS();
                                },
                                 "columns": [
                                     { title: "批號" },
@@ -549,6 +573,7 @@
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
     <uc:uc1 ID="uc1" runat="server" /> 
+    <uc2:uc2 ID="uc2" runat="server" /> 
     <div style="width:98%;margin:0 auto; ">
         <div class="search_section_all">
             <table class="search_section_control">

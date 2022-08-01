@@ -55,6 +55,7 @@ namespace Ivan_Service
 				        	  ,P.[更新人員]
 				        	  ,CONVERT(VARCHAR,P.[更新日期],23) 更新日期
 							  ,B.序號 BYRLU_SEQ
+							  ,CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = P.[SUPLU_SEQ]),0) AS BIT) [Has_IMG]
 				        FROM [dbo].[paku2] P
 						LEFT JOIN TOT ON P.序號 = TOT.PAKU2_SEQ
 						LEFT JOIN SUPLU S ON P.SUPLU_SEQ = S.序號

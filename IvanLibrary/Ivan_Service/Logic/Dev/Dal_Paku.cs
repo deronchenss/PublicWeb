@@ -65,6 +65,7 @@ namespace Ivan_Service
 							  ,CONVERT(VARCHAR,P.[建立日期],23) 建立日期
 							  ,P.[更新人員]
 							  ,CONVERT(VARCHAR,P.[更新日期],23) 更新日期 
+						      ,CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = P.[SUPLU_SEQ]),0) AS BIT) [Has_IMG]
 						  FROM [dbo].[paku] P
 						  JOIN TOT ON P.INVOICE = TOT.INVOICE AND P.箱號 = TOT.箱號
 						  LEFT JOIN paku2 P2 ON P.paku2_SEQ = P2.序號

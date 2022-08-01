@@ -1,6 +1,7 @@
 ﻿<%@ Page Title="樣品開發查詢維護" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_MT.aspx.cs" Inherits="Sample_MT" %>
 <%@ Register TagPrefix="uc" TagName="uc1" Src="~/User_Control/Dia_Customer_Selector.ascx" %>
 <%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_Selector.ascx" %>
+<%@ Register TagPrefix="uc3" TagName="uc3" Src="~/User_Control/Dia_Product_ALL.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
@@ -180,6 +181,15 @@
                 }
             }
 
+            function Re_Bind_Inner_JS() {
+                $('.Call_Product_Tool').off('click');
+                $('.Call_Product_Tool').on('click', function (e) {
+                    e.stopPropagation();
+                    $('#PAD_HDN_SUPLU_SEQ').val($(this).attr('SUPLU_SEQ'));
+                    $("#Product_ALL_Dialog").dialog('open');
+                });
+            };
+
             function ClickToEdit(click_tr) {
                 $('#BT_Update').css('display', '');
                 amtChange = 0;
@@ -321,6 +331,7 @@
                                 },
                                 "drawCallback": function (settings) {
                                     $('div.dataTables_scrollBody').scrollTop(pageScrollPos);
+                                    Re_Bind_Inner_JS();
                                 },
                                 "columns": [
                                     {
@@ -338,7 +349,15 @@
                                     { data: "採購單號", title: "採購單號" },
                                     { data: "採購日期", title: "採購日期" },
                                     { data: "廠商簡稱", title: "廠商簡稱" },
-                                    { data: "頤坊型號", title: "頤坊型號" },
+                                    {
+                                        data: "頤坊型號", title: "頤坊型號",
+                                        render: function (data, type, row) {
+                                            return '<input class="Call_Product_Tool" SUPLU_SEQ = "' + (row.SUPLU_SEQ ?? "")
+                                                + '" type="button" value="' + (data ?? "")
+                                                + '" style="text-align:left;width:100%;z-index:1000;' + ((row.Has_IMG) ? 'background: #90ee90;' : '') + '" />'
+                                        },
+                                        orderable: false
+                                    },
                                     { data: "單位", title: "單位" },
                                     { data: "採購數量", title: "採購數量" },
                                     { data: "點收數量", title: "點收數量" },
@@ -907,6 +926,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
     <uc:uc1 ID="uc1" runat="server" /> 
     <uc2:uc2 ID="uc2" runat="server" /> 
+    <uc3:uc3 ID="uc3" runat="server" /> 
     <div style="width:98%;margin:0 auto; ">
         <div class="search_section_all">
             <table class="search_section_control">

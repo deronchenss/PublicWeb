@@ -861,4 +861,40 @@
   <data name="Last_Check_And_Accept_Day" xml:space="preserve">
     <value>Last Check and Accept Day</value>
   </data>
+  <data name="Sample_Arr" xml:space="preserve">
+    <value>Sample Received</value>
+  </data>
+  <data name="Sample_Arr_MT" xml:space="preserve">
+    <value>Sample Received Maintenance</value>
+  </data>
+  <data name="Sample_Chk" xml:space="preserve">
+    <value>Sample Check</value>
+  </data>
+  <data name="Sample_Chk_Dist" xml:space="preserve">
+    <value>Sample Prepare</value>
+  </data>
+  <data name="Sample_Chk_MT" xml:space="preserve">
+    <value>Sample Check Maintenance</value>
+  </data>
+  <data name="Sample_Deal" xml:space="preserve">
+    <value>Sample Deal</value>
+  </data>
+  <data name="Sample_Dev" xml:space="preserve">
+    <value>Sample Develop</value>
+  </data>
+  <data name="Sample_Inv_MT" xml:space="preserve">
+    <value>Sample Invoice Maintenance</value>
+  </data>
+  <data name="Sample_MT" xml:space="preserve">
+    <value>Sample Maintenance</value>
+  </data>
+  <data name="Sample_Pack" xml:space="preserve">
+    <value>Sample Packing</value>
+  </data>
+  <data name="Sample_Pack_MT" xml:space="preserve">
+    <value>Sample Packing Maintenance</value>
+  </data>
+  <data name="Sample_Ship" xml:space="preserve">
+    <value>Sample Shipping</value>
+  </data>
 </root>

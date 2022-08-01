@@ -206,19 +206,19 @@
                                     <a href="#about-section" class="nav-link" style="vertical-align: sub;" ivm_permissions="4"><%--開發--%><%=Resources.MP.Develop%></a>
                                     <ul class="dropdown">
                                         <li class="has-children">
-                                            <a href="#">樣品開發</a>
+                                            <a href="#"><%--樣品開發--%><%=Resources.MP.Sample_Dev%></a>
                                             <ul class="dropdown">
-                                                <li><a href="/DEV/Sample/Sample_MT.aspx">樣品開發查詢維護</a></li>
-                                                <li><a href="/DEV/Sample/Sample_Arr.aspx">樣品到貨作業</a></li>
-                                                <li><a href="/DEV/Sample/Sample_Arr_MT.aspx">樣品到貨查詢維護</a></li>
+                                                <li><a href="/DEV/Sample/Sample_MT.aspx"><%--樣品開發查詢維護--%><%=Resources.MP.Sample_MT%></a></li>
+                                                <li><a href="/DEV/Sample/Sample_Arr.aspx"><%--樣品到貨作業--%><%=Resources.MP.Sample_Arr%></a></li>
+                                                <li><a href="/DEV/Sample/Sample_Arr_MT.aspx"><%--樣品到貨查詢維護--%><%=Resources.MP.Sample_Arr_MT%></a></li>
                                             </ul>
                                         </li>
                                         <li class="has-children">
-                                            <a href="#">樣品出貨</a>
+                                            <a href="#"><%--樣品出貨--%><%=Resources.MP.Sample_Ship%></a>
                                             <ul class="dropdown">
-                                                <li><a href="/DEV/Sample/Sample_Inv_MT.aspx">樣品INVOICE維護</a></li>
-                                                <li><a href="/DEV/Sample/Sample_Pack.aspx">樣品備貨作業</a></li>
-                                                <li><a href="/DEV/Sample/Sample_Pack_MT.aspx">樣品備貨查詢維護</a></li>
+                                                <li><a href="/DEV/Sample/Sample_Inv_MT.aspx"><%--樣品INVOICE查詢維護--%><%=Resources.MP.Sample_Inv_MT%></a></li>
+                                                <li><a href="/DEV/Sample/Sample_Pack.aspx"><%--樣品備貨作業--%><%=Resources.MP.Sample_Pack%></a></li>
+                                                <li><a href="/DEV/Sample/Sample_Pack_MT.aspx"><%--樣品備貨查詢維護--%><%=Resources.MP.Sample_Pack_MT%></a></li>
                                             </ul>
                                         </li>
                                         <li class="has-children">
@@ -231,12 +231,12 @@
                                     </ul>
                                 </li>
                                 <li class="has-children">
-                                    <a href="#about-section" class="nav-link" style="vertical-align: sub;" ivm_permissions="4">理樣</a>
+                                    <a href="#about-section" class="nav-link" style="vertical-align: sub;" ivm_permissions="4"><%--理樣--%><%=Resources.MP.Sample_Deal%></a>
                                     <ul class="dropdown">
                                         <li >
-                                            <a href="/DEV/Sample/Sample_Chk.aspx">樣品點收</a>
-                                            <a href="/DEV/Sample/Sample_Chk_MT.aspx">樣品點收查詢維護</a>
-                                            <a href="/DEV/Sample/Sample_Chk_Dist.aspx">樣品準備作業</a>
+                                            <a href="/DEV/Sample/Sample_Chk.aspx"><%--樣品點收--%><%=Resources.MP.Sample_Chk%></a>
+                                            <a href="/DEV/Sample/Sample_Chk_MT.aspx"><%--樣品點收查詢維護--%><%=Resources.MP.Sample_Chk_MT%></a>
+                                            <a href="/DEV/Sample/Sample_Chk_Dist.aspx"><%--樣品準備作業--%><%=Resources.MP.Sample_Chk_Dist%></a>
                                         </li>
                                     </ul>
                                 </li>

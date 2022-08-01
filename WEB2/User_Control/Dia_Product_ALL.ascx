@@ -104,6 +104,16 @@
             background-color: #f8981d;
             color: white;
         }
+
+    .Call_Product_Tool{
+            border-radius: 4px;
+            border:5px blue none;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+            background: Gainsboro;
+        }
+        .Call_Product_Tool:hover {
+            opacity: 0.8;
+        }
 </style>
     
 <input id="PAD_HDN_SUPLU_SEQ" type="hidden" />

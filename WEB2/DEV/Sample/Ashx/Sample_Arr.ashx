@@ -59,6 +59,7 @@ public class Sample_Arr : IHttpHandler, IRequiresSessionState
                                                                    ,P.SUPLU_SEQ
                                                                    ,P.更新人員
                                                                    ,CONVERT(VARCHAR,P.更新日期, 111) 更新日期
+                                                                   ,CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = P.[SUPLU_SEQ]),0) AS BIT) [Has_IMG]
                                                      FROM pudu P
                                                      INNER JOIN SUPLU S ON P.頤坊型號=S.頤坊型號 AND P.廠商編號=S.廠商編號 
                                                      LEFT JOIN RECUA RA ON P.序號 = RA.PUDU_SEQ

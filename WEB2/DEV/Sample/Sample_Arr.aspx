@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="樣品到貨作業" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Arr.aspx.cs" Inherits="Sample_Arr" %>
+<%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_ALL.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
@@ -24,6 +25,7 @@
                 },
                 "drawCallback": function (settings) {
                     $('div.dataTables_scrollBody').scrollTop(pageScrollPos);
+                    Re_Bind_Inner_JS();
                 },
                 "columns": [
                     { title: "點收批號" },
@@ -90,6 +92,14 @@
                 }
             });
 
+            function Re_Bind_Inner_JS() {
+                $('.Call_Product_Tool').off('click');
+                $('.Call_Product_Tool').on('click', function (e) {
+                    e.stopPropagation();
+                    $('#PAD_HDN_SUPLU_SEQ').val($(this).attr('SUPLU_SEQ'));
+                    $("#Product_ALL_Dialog").dialog('open');
+                });
+            };
 
             function ClickAddClass($click) {
                 //點擊賦予顏色
@@ -325,7 +335,15 @@
                                     { data: "點收批號", title: "點收批號" },
                                     { data: "廠商簡稱", title: "廠商簡稱" },
                                     { data: "採購單號", title: "採購單號" },
-                                    { data: "頤坊型號", title: "頤坊型號" },
+                                    {
+                                        data: "頤坊型號", title: "頤坊型號",
+                                        render: function (data, type, row) {
+                                            return '<input class="Call_Product_Tool" SUPLU_SEQ = "' + (row.SUPLU_SEQ ?? "")
+                                                + '" type="button" value="' + (data ?? "")
+                                                + '" style="text-align:left;width:100%;z-index:1000;' + ((row.Has_IMG) ? 'background: #90ee90;' : '') + '" />'
+                                        },
+                                        orderable: false
+                                    },
                                     { data: "採購數量", title: "採購數量" },
                                     { data: "累計點收", title: "累計點收" },
                                     {
@@ -387,6 +405,7 @@
                                 },
                                 "drawCallback": function (settings) {
                                     $('#Table_Search_Pudu_wrapper div.dataTables_scrollBody').scrollTop(pageScrollPudu);
+                                    Re_Bind_Inner_JS();
                                 },
                                 "columns": [
                                     { title: "點收批號" },
@@ -437,6 +456,7 @@
                                },
                                "drawCallback": function (settings) {
                                    $('div.dataTables_scrollBody').scrollTop(pageScrollPos);
+                                   Re_Bind_Inner_JS();
                                },
                                 "columns": [
                                     { title: "點收批號" },
@@ -662,6 +682,7 @@
     </script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
+    <uc2:uc2 ID="uc2" runat="server" /> 
     <div style="width:98%;margin:0 auto; ">
         <div class="search_section_all">
             <table class="search_section_control">

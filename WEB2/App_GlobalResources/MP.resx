@@ -864,4 +864,40 @@
   <data name="Last_Check_And_Accept_Day" xml:space="preserve">
     <value>最後點收日</value>
   </data>
+  <data name="Sample_Arr" xml:space="preserve">
+    <value>樣品到貨作業</value>
+  </data>
+  <data name="Sample_Arr_MT" xml:space="preserve">
+    <value>樣品到貨查詢維護</value>
+  </data>
+  <data name="Sample_Chk" xml:space="preserve">
+    <value>樣品點收</value>
+  </data>
+  <data name="Sample_Chk_Dist" xml:space="preserve">
+    <value>樣品準備作業</value>
+  </data>
+  <data name="Sample_Chk_MT" xml:space="preserve">
+    <value>樣品點收查詢維護</value>
+  </data>
+  <data name="Sample_Deal" xml:space="preserve">
+    <value>理樣</value>
+  </data>
+  <data name="Sample_Dev" xml:space="preserve">
+    <value>樣品開發</value>
+  </data>
+  <data name="Sample_Inv_MT" xml:space="preserve">
+    <value>樣品INVOICE查詢維護</value>
+  </data>
+  <data name="Sample_MT" xml:space="preserve">
+    <value>樣品開發查詢維護</value>
+  </data>
+  <data name="Sample_Pack" xml:space="preserve">
+    <value>樣品備貨作業</value>
+  </data>
+  <data name="Sample_Pack_MT" xml:space="preserve">
+    <value>樣品備貨查詢維護</value>
+  </data>
+  <data name="Sample_Ship" xml:space="preserve">
+    <value>樣品出貨</value>
+  </data>
 </root>

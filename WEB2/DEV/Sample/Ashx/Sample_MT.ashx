@@ -92,6 +92,7 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                                                   ,pudum.大備註二
                                                                   ,pudum.大備註三
                                                                   ,pudum.特別事項
+                                                                  ,CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = pudu.[SUPLU_SEQ]),0) AS BIT) [Has_IMG]
                                                      FROM Dc2..pudu 
                                                      LEFT JOIN pudum on pudu.採購單號 = pudum.採購單號
                                                      LEFT JOIN RECUA RA ON pudu.序號 = RA.PUDU_SEQ

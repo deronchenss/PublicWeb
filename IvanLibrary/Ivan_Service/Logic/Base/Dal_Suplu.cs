@@ -36,6 +36,7 @@ namespace Ivan_Service
 					   			      ,A.序號
 					   			      ,A.更新人員
 					   			      ,CONVERT(VARCHAR,A.更新日期,23) 更新日期
+                                      ,CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = A.序號),0) AS BIT) [Has_IMG]
 					   FROM SUPLU A ";
 
             foreach (string form in context.Request.Form)
