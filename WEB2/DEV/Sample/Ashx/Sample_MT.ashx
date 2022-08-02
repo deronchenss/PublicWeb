@@ -406,7 +406,7 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                             break;
                                     }
 
-                                    cmd.CommandText = @" SELECT P.採購單號,P.採購日期,P.樣品號碼,P.工作類別,P.廠商編號,P.廠商簡稱,P.頤坊型號,P.頤坊型號 抬頭,P.廠商型號,P.產品說明,P.單位,
+                                    cmd.CommandText = @" SELECT P.採購單號,P.採購日期,P.樣品號碼,P.工作類別,P.廠商編號,P.廠商簡稱,P.頤坊型號,CASE WHEN P.頤坊型號 = P.暫時型號 THEN '暫時型號' ELSE '頤坊型號' END  抬頭,P.廠商型號,P.產品說明,P.單位,
                                                             P.台幣單價,P.美元單價,P.單價_2,P.單價_3,P.MIN_1,P.MIN_2,P.MIN_3,P.外幣幣別,P.外幣單價,P.採購數量,P.採購交期,P.列表小備註,
                                                             S.廠商名稱,S.連絡人採購,S.公司地址,S.電話,S.傳真,S.幣別,
                                                             S.所在地,PU.大備註一,PU.大備註二,PU.大備註三
@@ -422,7 +422,8 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                                      LEFT JOIN PUDUM PU ON P.採購單號=PU.採購單號 
                                                      WHERE P.採購單號 >= @PUDU_NO_S 
                                                      AND P.採購單號 <= @PUDU_NO_E
-                                                     AND P.工作類別 LIKE '%' + @WORK_TYPE + '%'   ";
+                                                     AND P.工作類別 LIKE '%' + @WORK_TYPE + '%' 
+                                                     ORDER BY P.頤坊型號 ";
 
                                     cmd.Parameters.AddWithValue("USER", "IVAN");
                                     cmd.Parameters.AddWithValue("PUDU_NO_S", context.Request["PUDU_NO_S"]);
@@ -433,7 +434,7 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                                 {
                                     rptDir = "~/DEV/Sample/Rpt/Sample_Chk.rpt";
 
-                                    cmd.CommandText = @" SELECT P.採購單號,P.採購日期,P.樣品號碼,P.工作類別,P.廠商編號,P.廠商簡稱,P.頤坊型號,P.頤坊型號 抬頭,P.廠商型號,P.產品說明,P.單位,
+                                    cmd.CommandText = @" SELECT P.採購單號,P.採購日期,P.樣品號碼,P.工作類別,P.廠商編號,P.廠商簡稱,P.頤坊型號,CASE WHEN P.頤坊型號 = P.暫時型號 THEN '暫時型號' ELSE '頤坊型號' END 抬頭,P.廠商型號,P.產品說明,P.單位,
                                                                 P.台幣單價,P.美元單價,P.單價_2,P.單價_3,P.MIN_1,P.MIN_2,P.MIN_3,P.外幣幣別,P.外幣單價,P.採購數量,P.採購交期,P.列表小備註,
                                                                 S.廠商名稱,S.連絡人採購,S.公司地址,S.電話,S.傳真,S.幣別,
                                                                 S.所在地,PU.大備註一,PU.大備註二,PU.大備註三,
