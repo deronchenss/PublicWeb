@@ -958,8 +958,8 @@
                 <td style="width: 30%;">
                     <select style="width: 90%; height: 25px;" id="Dia_TB1_Operator1">
                         <option>=</option>
-                        <option selected="selected">%LIKE%</option>
-                        <option>LIKE%</option>
+                        <option>%LIKE%</option>
+                        <option selected="selected">LIKE%</option>
                         <option>%LIKE</option>
                     </select>
                 </td>
@@ -972,8 +972,8 @@
                 <td style="width: 30%;">
                     <select style="width: 90%; height: 25px;" id="Dia_TB1_Operator2">
                         <option>=</option>
-                        <option selected="selected">%LIKE%</option>
-                        <option>LIKE%</option>
+                        <option>%LIKE%</option>
+                        <option selected="selected">LIKE%</option>
                         <option>%LIKE</option>
                     </select>
                 </td>
@@ -1004,8 +1004,8 @@
                         <option>></option>
                         <option><</option>
                         <option><></option>
-                        <option selected="selected">%LIKE%</option>
-                        <option>LIKE%</option>
+                        <option>%LIKE%</option>
+                        <option selected="selected">LIKE%</option>
                         <option>%LIKE</option>
                     </select>
                 </td>

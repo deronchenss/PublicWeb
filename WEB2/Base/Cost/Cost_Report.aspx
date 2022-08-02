@@ -40,7 +40,9 @@
                 $.ajax({
                     url: "/Base/Cost/New_Cost_Search.ashx",
                     data: {
-                        "Call_Type": "Cost_Report_Print"//,
+                        "Call_Type": "Cost_Report_Print",
+                        "CB_MSRP": $('#R1_CB_MSRP').prop('checked'),
+                        "CB_Print_PW": $('#R1_CB_Print_PW').prop('checked')
                         //"PUDU_NO_S": $('#R_PUDU_NO_S').val(),
                         //"PUDU_NO_E": $('#R_PUDU_NO_E').val(),
                         //"WORK_TYPE": $('#R_RPT_TYPE').val(),
@@ -187,6 +189,8 @@
                     if (confirm('切換來源將會清空資料，確定執行？')) {
                         $('#Table_Search_CP_info, #Table_Exec_Data_info').text('');
                         $('#Table_Search_CP, #Table_Exec_Data').html('');
+                        $('.Exist_Select, .For_Cost, .For_Price').toggle(false);
+                        Form_Mode_Change("Search");
                     }
                     else {
                         $(this).val(O_Data_Source);
@@ -341,7 +345,7 @@
                                     '</td><td>' + String(R[i].客戶型號 ?? "") +
                                     '</td><td>' + String(R[i].銷售型號 ?? "") +
                                     '</td><td class="DIMG" style="text-align:center;">' +
-                                    ((R[i].Has_IMG) ? ('<img type="Product" SEQ="' + String(R[i].序號 ?? "") + '" />') : ('<%=Resources.MP.Image_NotExists%>')) +
+                                    ((R[i].Has_IMG) ? ('<img type="Product" SEQ="' + String(R[i].SUPLU_SEQ ?? "") + '" />') : ('<%=Resources.MP.Image_NotExists%>')) +
                                     '</td><td>' + String(R[i].產品說明 ?? "") +
                                     '</td><td>' + String(R[i].單位 ?? "") +
                                     '</td><td>' + String(R[i].廠商編號 ?? "") +
@@ -459,6 +463,9 @@
                     $('#Table_Search_CP_info').text('Showing ' + $('#Table_Search_CP > tbody tr').length + ' entries');
 
                     $('.Exist_Select').toggle(Boolean($('#Table_Exec_Data').find('tbody tr').length > 0));
+                    $('.For_Cost').toggle(Boolean($('#DDL_Data_Souce').val() == 'Cost'));
+                    $('.For_Price').toggle(Boolean($('#DDL_Data_Souce').val() == 'Price'));
+
                     Re_Bind_Inner_JS();
                 }
             }
@@ -592,9 +599,9 @@
         &nbsp;
         <input id="V_BT_Master" type="button" class="V_BT" value="<%=Resources.MP.Select%>" disabled="disabled" />
         <input id="V_BT_Review" type="button" class="V_BT Exist_Select" style="display:none;" value="預覽資料" />
-        <input id="V_BT_Report_1" type="button" class="V_BT Exist_Select V_Report" style="display:none;" value="成本分析" />
-        <input id="V_BT_Report_2" type="button" class="V_BT Exist_Select V_Report" style="display:none;" value="簡易型錄" />
-        <input id="V_BT_Report_3" type="button" class="V_BT Exist_Select V_Report" style="display:none;" value="簡易型錄2" />
+        <input id="V_BT_Report_1" type="button" class="V_BT Exist_Select V_Report For_Cost" style="display:none;" value="成本分析" />
+        <input id="V_BT_Report_2" type="button" class="V_BT Exist_Select V_Report For_Cost" style="display:none;" value="簡易型錄" />
+        <input id="V_BT_Report_3" type="button" class="V_BT Exist_Select V_Report For_Price" style="display:none;" value="簡易型錄2" />
         <%--<input type="button" class="V_BT" value="<%=Resources.MP.Sample%>" onclick="$('.Div_D').css('display','none');$('#Div_More').css('display','');" />--%>
     </div>
     <div>&nbsp;&nbsp;&nbsp;&nbsp;
