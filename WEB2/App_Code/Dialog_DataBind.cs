@@ -95,7 +95,7 @@ public class Dialog_DataBind : System.Web.Services.WebService
         conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
         cmd.CommandText = @" SELECT *, (SELECT 圖檔 FROM [192.168.1.135].pic.dbo.xpic I WHERE I.SUPLU_SEQ = C.[序號]) [IMG]
                              FROM Dc2..suplu C
-                                INNER JOIN Dc2..sup S ON C.廠商編號 = S.廠商編號
+                                LEFT JOIN Dc2..sup S ON C.廠商編號 = S.廠商編號
                              WHERE C.[序號] = @SUPLU_SEQ ";
         cmd.Parameters.AddWithValue("SUPLU_SEQ", SUPLU_SEQ);
         cmd.Connection = conn;

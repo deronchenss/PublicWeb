@@ -136,125 +136,126 @@ public class New_Cost_Search : IHttpHandler, IRequiresSessionState
                     break;
                 case "Cost_Report_Print":
                     string RPT_File = "~/Base/Cost/Rpt/Cost_Report_R1.rpt";
-                    string SQL_Str = @"
-                           DECLARE @SUPLU_SEQ INT = '2990';
-                           DECLARE @PUR_RATE DECIMAL(9,2) = (SELECT [內容] FROM Dc2..REFDATA WHERE [代碼] = 'PUR_Rate');
-                           DECLARE @Session_Name NVARCHAR(20) = '柯君翰'; --WD'
-                           
-                           SELECT C.[序號], C.[廠商編號], C.[廠商簡稱], C.[頤坊型號], C.[廠商型號], C.[產品說明], C.[單位], C.[最後單價日], 
-                           	CASE WHEN C.[台幣單價] > 0 THEN 'NTD'
-                           		 WHEN C.[美元單價] > 0 THEN 'USD'
-                           		 ELSE NULL END [幣別],
-                           	0 [台幣金額],
-                           	0 [美元金額],
-                           	C.[廠商編號] [最後完成者], 
-                           	NULL [材料型號],
-                           	NULL [材料用量],
-                           	(SELECT CASE WHEN (SELECT COUNT(1) FROM Dc2..bom BM WHERE BM.SUPLU_SEQ = C.[序號]) >= 1 THEN '組合品' ELSE '單一產品' END) [型態],
-                           	'USDTWD: ' + (SELECT [內容] FROM Dc2..REFDATA WHERE [代碼] = 'PUR_Rate') [抬頭一], 
-                           	C.[序號] [群組一],--SUPLU_SEQ
-                           	C.[序號] [群組二],--PARENT?
-                           	@Session_Name [印表人員],
-                           	(SELECT [付款條件] FROM Dc2..sup S WHERE S.[廠商編號] = C.[廠商編號]) [付款條件],
-                           	NULL [組合品],--原說明會+組，新bom結構不顯示
-                           	'' [COST], 
-                           	IIF(@CB_MSRP = 'True',
-                           		'門市-USD : ' + REPLICATE(' ',3) + ISNULL(CAST(CAST(CAST(C.[台幣單價_1] AS DECIMAL(9,2)) / @PUR_RATE AS DECIMAL(9,2)) AS VARCHAR ) + '   NTD : ' + IIF(C.[台幣單價_1]=0,'',CAST(C.[台幣單價_1] AS VARCHAR)),'') + CHAR(10) + CHAR(13) +
-                           		'MSRP-REP : ' + REPLICATE(' ',3) + ISNULL(CONVERT(VARCHAR,CAST(C.[MSRP] AS MONEY),1),'') + CHAR(10) + CHAR(13) +
-                           		'MSRP-WHS : ' + REPLICATE(' ',3) + ISNULL(IIF(DE.[折扣率C3] <> 0,CONVERT(VARCHAR,CAST( ( CAST((100 - DE.[折扣率C3]) AS DECIMAL(9,2)) / 100 * C.[MSRP] + 0.01) AS MONEY),1) ,''),'') + CHAR(10) + CHAR(13) +
-                           		'MSRP-BUS : ' + REPLICATE(' ',3) + ISNULL(IIF(DE.[折扣率C5] <> 0,CONVERT(VARCHAR,CAST( ( CAST((100 - DE.[折扣率C5]) AS DECIMAL(9,2)) / 100 * C.[MSRP] + 0.01) AS MONEY),1) ,''),'') + CHAR(10) + CHAR(13) +
-                           		'MSRP-DIS : ' + REPLICATE(' ',3) + ISNULL(IIF(DE.[折扣率C6] <> 0,CONVERT(VARCHAR,CAST( ( CAST((100 - DE.[折扣率C6]) AS DECIMAL(9,2)) / 100 * C.[MSRP] + 0.01) AS MONEY),1) ,''),'') + CHAR(10) + CHAR(13) +
-                           		'MSRP-M.D.: ' + REPLICATE(' ',3) + ISNULL(IIF(DE.[折扣率C7] <> 0,CONVERT(VARCHAR,CAST( ( CAST((100 - DE.[折扣率C7]) AS DECIMAL(9,2)) / 100 * C.[MSRP] + 0.01) AS MONEY),1) ,''),'') + CHAR(10) + CHAR(13) +
-                           		REPLACE(
-                           				(
-                           					SELECT CONVERT(VARCHAR(7),CAST(T1.[最後單價日] AS DATE),120) + ' ' +
-                           							T1.[客戶簡稱] +-- REPLICATE(' ',8 - LEN(T1.[客戶簡稱])) +
-                           							REPLICATE(' ',8 - LEN(CONVERT(VARCHAR,CAST(T1.[美元單價] AS MONEY),1))) + CONVERT(VARCHAR,CAST(T1.[美元單價] AS MONEY),1) + 
-                           							REPLICATE(' ',7 - LEN(IIF(T1.[min_1]=0,'',CAST(T1.[min_1] AS VARCHAR)))) + IIF(T1.[min_1]=0,'',CAST(T1.[min_1] AS VARCHAR)) + 
-                           							+ '++BR++'
-                           					FROM (
-                           						SELECT TOP 6 A.[客戶簡稱], A.[美元單價], A.[min_1], A.[最後單價日]
-                           						FROM Dc2..BYRLU A 
-                           							INNER JOIN Dc2..BYR B ON A.[客戶編號] = B.[客戶編號] 
-                           						WHERE A.[SUPLU_SEQ] = C.[序號]
-                           							AND A.[美元單價] > 0 
-                           							AND B.[停用日期] IS NULL 
-                           							AND B.[最後交易日] IS NOT NULL
-                           							AND A.[客戶編號] NOT LIKE '110%' 
-                           							AND A.[客戶編號] LIKE '1%' 
-                           							--AND (A.[客戶簡稱] <> 'TLF-TEJA' OR @P_TYPE = '單一產品')
-                           						ORDER BY A.[最後單價日] DESC, A.[美元單價] DESC, A.[客戶簡稱]
-                           					) T1
-                           					ORDER BY T1.[美元單價] DESC, T1.[客戶簡稱]
-                           					FOR XML PATH('')
-                           				),'++BR++',CHAR(10) + CHAR(13))
-                           			,'') [PRICE],
-                           	NULL [MIDAS_UPRICE],--Bom
-                           	NULL [MIDAS_AMT],--BOM
-                           	IIF(@CB_Print_PW = 'True','Y','') [印價格填寫欄],
-                           	ROW_NUMBER() OVER (PARTITION BY C.[序號] ORDER BY C.[序號]) [序],
-                           	ISNULL(X.[圖檔],'') [圖檔], 
-                           	IIF(X.SUPLU_SEQ IS NOT NULL,'Y','') [列印圖檔],
-                           	0 [換算美元]--Only Bom
-                           	--** 轉入單位=S時為原料銷售 > 金額相關、Cost =0
-                           FROM Dc2..suplu C
-                           	LEFT JOIN Dc2..DisCount_EAN DE ON DE.[價格等級] IS NOT NULL AND DE.[價格等級] = C.[價格等級]
-                           	LEFT JOIN [192.168.1.135].pic.dbo.xpic X ON X.[SUPLU_SEQ] = C.[序號]
-                           WHERE C.[序號] = @SUPLU_SEQ 
-                           UNION ALL
-                           SELECT BDC.序號,
-                           BDC.[廠商編號],
-                           BDC.[廠商簡稱], BDC.[頤坊型號], C.[廠商型號], 
-                           IIF(BD.[階層] > 2,' ','') + BDC.[產品說明] [產品說明], 
-                           BDC.[單位], BDC.[最後單價日], 
-                           	CASE WHEN BDC.[台幣單價] > 0 THEN 'NTD'
-                           		 WHEN BDC.[美元單價] > 0 THEN 'USD'
-                           		 ELSE NULL END [幣別],
-                           	BDC.[台幣單價] * BD.[材料用量] [台幣金額],
-                           	BDC.[美元單價] * BD.[材料用量] [美元金額],
-                           --BD.序號,
-                           --BD.[PARENT_SEQ],
-                           --BD.[階層],
-                           BD.[最後完成者], 
-                           IIF(BD.[階層] > 2,' ','') + BD.[材料型號] [材料型號],
-                           BD.[材料用量],
-                           '材料' [型態],
-                           	'USDTWD: ' + (SELECT [內容] FROM Dc2..REFDATA WHERE [代碼] = 'PUR_Rate') [抬頭一], 
-                           	C.[序號] [群組一],--BomM
-                           	C.[序號] [群組二],--最後完成者+頤坊型號
-                           	@Session_Name [印表人員],
-                           	(SELECT [付款條件] FROM Dc2..sup S WHERE S.[廠商編號] = BDC.[廠商編號]) [付款條件],
-                           	NULL [組合品],--Exists bom 轉入單位 <> '*' > 組, Else ''
-                           	CASE WHEN BDC.[台幣單價] > 0
-                           		 THEN 'NTD' + 
-                           		 REPLICATE(' ',9 - LEN(CONVERT(VARCHAR,CAST(BDC.[台幣單價] AS MONEY),1))) + CONVERT(VARCHAR,CAST(BDC.[台幣單價] AS MONEY),1) + 
-                           		 REPLICATE(' ',9 - LEN(CONVERT(VARCHAR,CAST(CAST(BDC.[台幣單價] * BD.[材料用量] AS DECIMAL(9,2)) AS MONEY),1))) + CONVERT(VARCHAR,CAST(CAST(BDC.[台幣單價] * BD.[材料用量] AS DECIMAL(9,2)) AS MONEY),1)
-                           	WHEN BDC.[美元單價] > 0
-                           		 THEN 'USD' + 
-                           		 REPLICATE(' ',9 - LEN(CONVERT(VARCHAR,CAST(BDC.[美元單價] AS MONEY),1))) + CONVERT(VARCHAR,CAST(BDC.[美元單價] AS MONEY),1) + 
-                           		 REPLICATE(' ',9 - LEN(CONVERT(VARCHAR,CAST(CAST(BDC.[美元單價] * BD.[材料用量] AS DECIMAL(9,2)) AS MONEY),1))) + CONVERT(VARCHAR,CAST(CAST(BDC.[美元單價] * BD.[材料用量] AS DECIMAL(9,2)) AS MONEY),1)
-                           	END [COST], 
-                           	'' [PRICE],
-                           	NULL [MIDAS_UPRICE],--Bom
-                           	NULL [MIDAS_AMT],--BOM
-                           	IIF(@CB_Print_PW = 'True','Y','') [印價格填寫欄],
-                           	ROW_NUMBER() OVER (ORDER BY BD.[PARENT_SEQ], BD.[階層], BD.[材料型號]) [序],
-                           	NULL [圖檔], 
-                           	'' [列印圖檔],
-                           	BDC.[台幣單價] * BD.[材料用量] / @PUR_RATE + BDC.[美元單價] * BD.[材料用量] [換算美元]
-                           	--** 轉入單位=S時為原料銷售 > 金額相關、Cost =0
-                           FROM Dc2..suplu C
-                           	LEFT JOIN Dc2..DisCount_EAN DE ON DE.[價格等級] IS NOT NULL AND DE.[價格等級] = C.[價格等級]
-                           	--LEFT JOIN Dc2..bom BM ON BM.[SUPLU_SEQ] = C.[序號]
-                           	LEFT JOIN Dc2..bomsub BD ON BD.[SUPLU_SEQ] = C.[序號] AND BD.[不計成本] = 0 AND BD.[不展開] = 0 AND BD.[不發單] = 0 AND BD.[原料銷售] = 0
-                           	LEFT JOIN Dc2..suplu BDC ON BDC.[序號] = BD.[D_SUPLU_SEQ]
-                           WHERE C.[序號] = @SUPLU_SEQ 
-";
+                    string SQL_Str = @" 
+                        DECLARE @PUR_RATE DECIMAL(9,2) = (SELECT [內容] FROM Dc2..REFDATA WHERE [代碼] = 'PUR_Rate');
+                        DECLARE @SUPLU_SEQ INT = '2990';--WD
+                        --DECLARE @CB_MSRP bit = 1; --WD
+                        --DECLARE @CB_Print_PW bit = 0; --WD'
+                        --DECLARE @Session_Name NVARCHAR(20) = '柯君翰'; --WD'
+                        
+                        SELECT C.[序號], C.[廠商編號], C.[廠商簡稱], C.[頤坊型號], C.[廠商型號], C.[產品說明], C.[單位], C.[最後單價日], 
+                        	CASE WHEN C.[台幣單價] > 0 THEN 'NTD'
+                        		 WHEN C.[美元單價] > 0 THEN 'USD'
+                        		 ELSE NULL END [幣別],
+                        	0 [台幣金額],
+                        	0 [美元金額],
+                        	C.[廠商編號] [最後完成者], 
+                        	NULL [材料型號],
+                        	NULL [材料用量],
+                        	(SELECT CASE WHEN (SELECT COUNT(1) FROM Dc2..bom BM WHERE BM.SUPLU_SEQ = C.[序號]) >= 1 THEN '組合品' ELSE '單一產品' END) [型態],
+                        	'USDTWD: ' + (SELECT [內容] FROM Dc2..REFDATA WHERE [代碼] = 'PUR_Rate') [抬頭一], 
+                        	C.[序號] [群組一],--SUPLU_SEQ
+                        	C.[序號] [群組二],--PARENT?
+                        	@Session_Name [印表人員],
+                        	(SELECT [付款條件] FROM Dc2..sup S WHERE S.[廠商編號] = C.[廠商編號]) [付款條件],
+                        	NULL [組合品],--原說明會+組，新bom結構不顯示
+                        	'' [COST], 
+                        	IIF(@CB_MSRP = 'True',
+                        		'門市-USD : ' + REPLICATE(' ',3) + ISNULL(CAST(CAST(CAST(C.[台幣單價_1] AS DECIMAL(9,2)) / @PUR_RATE AS DECIMAL(9,2)) AS VARCHAR ) + '   NTD : ' + IIF(C.[台幣單價_1]=0,'',CAST(C.[台幣單價_1] AS VARCHAR)),'') + CHAR(10) + CHAR(13) +
+                        		'MSRP-REP : ' + REPLICATE(' ',3) + ISNULL(CONVERT(VARCHAR,CAST(C.[MSRP] AS MONEY),1),'') + CHAR(10) + CHAR(13) +
+                        		'MSRP-WHS : ' + REPLICATE(' ',3) + ISNULL(IIF(DE.[折扣率C3] <> 0,CONVERT(VARCHAR,CAST( ( CAST((100 - DE.[折扣率C3]) AS DECIMAL(9,2)) / 100 * C.[MSRP] + 0.01) AS MONEY),1) ,''),'') + CHAR(10) + CHAR(13) +
+                        		'MSRP-BUS : ' + REPLICATE(' ',3) + ISNULL(IIF(DE.[折扣率C5] <> 0,CONVERT(VARCHAR,CAST( ( CAST((100 - DE.[折扣率C5]) AS DECIMAL(9,2)) / 100 * C.[MSRP] + 0.01) AS MONEY),1) ,''),'') + CHAR(10) + CHAR(13) +
+                        		'MSRP-DIS : ' + REPLICATE(' ',3) + ISNULL(IIF(DE.[折扣率C6] <> 0,CONVERT(VARCHAR,CAST( ( CAST((100 - DE.[折扣率C6]) AS DECIMAL(9,2)) / 100 * C.[MSRP] + 0.01) AS MONEY),1) ,''),'') + CHAR(10) + CHAR(13) +
+                        		'MSRP-M.D.: ' + REPLICATE(' ',3) + ISNULL(IIF(DE.[折扣率C7] <> 0,CONVERT(VARCHAR,CAST( ( CAST((100 - DE.[折扣率C7]) AS DECIMAL(9,2)) / 100 * C.[MSRP] + 0.01) AS MONEY),1) ,''),'') + CHAR(10) + CHAR(13) +
+                        		REPLACE(
+                        				(
+                        					SELECT CONVERT(VARCHAR(7),CAST(T1.[最後單價日] AS DATE),120) + ' ' +
+                        							T1.[客戶簡稱] +-- REPLICATE(' ',8 - LEN(T1.[客戶簡稱])) +
+                        							REPLICATE(' ',8 - LEN(CONVERT(VARCHAR,CAST(T1.[美元單價] AS MONEY),1))) + CONVERT(VARCHAR,CAST(T1.[美元單價] AS MONEY),1) + 
+                        							REPLICATE(' ',7 - LEN(IIF(T1.[min_1]=0,'',CAST(T1.[min_1] AS VARCHAR)))) + IIF(T1.[min_1]=0,'',CAST(T1.[min_1] AS VARCHAR)) + 
+                        							+ '++BR++'
+                        					FROM (
+                        						SELECT TOP 5 A.[客戶簡稱], A.[美元單價], A.[min_1], A.[最後單價日]
+                        						FROM Dc2..BYRLU A 
+                        							INNER JOIN Dc2..BYR B ON A.[客戶編號] = B.[客戶編號] 
+                        						WHERE A.[SUPLU_SEQ] = C.[序號]
+                        							AND A.[美元單價] > 0 
+                        							AND B.[停用日期] IS NULL 
+                        							AND B.[最後交易日] IS NOT NULL
+                        							AND A.[客戶編號] NOT LIKE '110%' 
+                        							AND A.[客戶編號] LIKE '1%' 
+                        						ORDER BY A.[最後單價日] DESC, A.[美元單價] DESC, A.[客戶簡稱]
+                        					) T1
+                        					ORDER BY T1.[美元單價] DESC, T1.[客戶簡稱]
+                        					FOR XML PATH('')
+                        				),'++BR++',CHAR(10) + CHAR(13))
+                        			,'') [PRICE],
+                        	NULL [MIDAS_UPRICE],--BOM
+                        	NULL [MIDAS_AMT],--BOM
+                        	IIF(@CB_Print_PW = 'True','Y','') [印價格填寫欄],
+                        	ROW_NUMBER() OVER (PARTITION BY C.[序號] ORDER BY C.[序號]) [序],
+                        	ISNULL(X.[圖檔],'') [圖檔], 
+                        	IIF(X.SUPLU_SEQ IS NOT NULL,'Y','') [列印圖檔],
+                        	0 [換算美元]--BOM
+                        FROM Dc2..suplu C
+                        	LEFT JOIN Dc2..DisCount_EAN DE ON DE.[價格等級] IS NOT NULL AND DE.[價格等級] = C.[價格等級]
+                        	LEFT JOIN [192.168.1.135].pic.dbo.xpic X ON X.[SUPLU_SEQ] = C.[序號]
+                        WHERE C.[序號] = {0}
+                        UNION ALL
+                        SELECT BDC.序號,
+                        BDC.[廠商編號],
+                        BDC.[廠商簡稱], BDC.[頤坊型號], C.[廠商型號], 
+                        IIF(BD.[階層] > 2,' ','') + BDC.[產品說明] [產品說明], 
+                        BDC.[單位], BDC.[最後單價日], 
+                        	CASE WHEN BDC.[台幣單價] > 0 THEN 'NTD'
+                        		 WHEN BDC.[美元單價] > 0 THEN 'USD'
+                        		 ELSE NULL END [幣別],
+                        	BDC.[台幣單價] * BD.[材料用量] [台幣金額],
+                        	BDC.[美元單價] * BD.[材料用量] [美元金額],
+                        --BD.序號,
+                        --BD.[PARENT_SEQ],
+                        --BD.[階層],
+                        BD.[最後完成者], 
+                        IIF(BD.[階層] > 2,' ','') + BD.[材料型號] [材料型號],
+                        BD.[材料用量],
+                        '材料' [型態],
+                        	'USDTWD: ' + (SELECT [內容] FROM Dc2..REFDATA WHERE [代碼] = 'PUR_Rate') [抬頭一], 
+                        	C.[序號] [群組一],--BomM
+                        	C.[序號] [群組二],--最後完成者+頤坊型號
+                        	@Session_Name [印表人員],
+                        	(SELECT [付款條件] FROM Dc2..sup S WHERE S.[廠商編號] = BDC.[廠商編號]) [付款條件],
+                        	NULL [組合品],--Exists bom 轉入單位 <> '*' > 組, Else ''
+                        	CASE WHEN BDC.[台幣單價] > 0
+                        		 THEN 'NTD' + 
+                        		 REPLICATE(' ',9 - LEN(CONVERT(VARCHAR,CAST(BDC.[台幣單價] AS MONEY),1))) + CONVERT(VARCHAR,CAST(BDC.[台幣單價] AS MONEY),1) + 
+                        		 REPLICATE(' ',9 - LEN(CONVERT(VARCHAR,CAST(CAST(BDC.[台幣單價] * BD.[材料用量] AS DECIMAL(9,2)) AS MONEY),1))) + CONVERT(VARCHAR,CAST(CAST(BDC.[台幣單價] * BD.[材料用量] AS DECIMAL(9,2)) AS MONEY),1)
+                        	WHEN BDC.[美元單價] > 0
+                        		 THEN 'USD' + 
+                        		 REPLICATE(' ',9 - LEN(CONVERT(VARCHAR,CAST(BDC.[美元單價] AS MONEY),1))) + CONVERT(VARCHAR,CAST(BDC.[美元單價] AS MONEY),1) + 
+                        		 REPLICATE(' ',9 - LEN(CONVERT(VARCHAR,CAST(CAST(BDC.[美元單價] * BD.[材料用量] AS DECIMAL(9,2)) AS MONEY),1))) + CONVERT(VARCHAR,CAST(CAST(BDC.[美元單價] * BD.[材料用量] AS DECIMAL(9,2)) AS MONEY),1)
+                        	END [COST], 
+                        	'' [PRICE],
+                        	NULL [MIDAS_UPRICE],--Bom
+                        	NULL [MIDAS_AMT],--BOM
+                        	IIF(@CB_Print_PW = 'True','Y','') [印價格填寫欄],
+                        	ROW_NUMBER() OVER (ORDER BY BD.[PARENT_SEQ], BD.[階層], BD.[材料型號]) [序],
+                        	NULL [圖檔], 
+                        	'' [列印圖檔],
+                        	BDC.[台幣單價] * BD.[材料用量] / @PUR_RATE + BDC.[美元單價] * BD.[材料用量] [換算美元]
+                        	--** 轉入單位=S時為原料銷售 > 金額相關、Cost =0
+                        FROM Dc2..suplu C
+                        	LEFT JOIN Dc2..DisCount_EAN DE ON DE.[價格等級] IS NOT NULL AND DE.[價格等級] = C.[價格等級]
+                        	--LEFT JOIN Dc2..bom BM ON BM.[SUPLU_SEQ] = C.[序號]
+                        	LEFT JOIN Dc2..bomsub BD ON BD.[SUPLU_SEQ] = C.[序號] AND BD.[不計成本] = 0 AND BD.[不展開] = 0 AND BD.[不發單] = 0 AND BD.[原料銷售] = 0
+                        	LEFT JOIN Dc2..suplu BDC ON BDC.[序號] = BD.[D_SUPLU_SEQ]
+                        WHERE C.[序號] = {0} ";
 
-                    cmd.CommandText = SQL_Str;
+                    SQL_Str = string.Format(SQL_Str, "@SUPLU_SEQ");
                     cmd.Parameters.AddWithValue("CB_MSRP", context.Request["CB_MSRP"]);
                     cmd.Parameters.AddWithValue("CB_Print_PW", context.Request["CB_Print_PW"]);
-                        
+                    cmd.Parameters.AddWithValue("Session_Name", context.Request["Session_Name"]);
+
+                    cmd.CommandText = SQL_Str;
 
                     SqlDataAdapter sqlDatai = new SqlDataAdapter(cmd);
 

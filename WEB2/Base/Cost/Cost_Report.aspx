@@ -42,15 +42,8 @@
                     data: {
                         "Call_Type": "Cost_Report_Print",
                         "CB_MSRP": $('#R1_CB_MSRP').prop('checked'),
-                        "CB_Print_PW": $('#R1_CB_Print_PW').prop('checked')
-                        //"PUDU_NO_S": $('#R_PUDU_NO_S').val(),
-                        //"PUDU_NO_E": $('#R_PUDU_NO_E').val(),
-                        //"WORK_TYPE": $('#R_RPT_TYPE').val(),
-                        //"PUDU_NO_1": $('#R_PUDU_NO_1').val(),
-                        //"PUDU_NO_2": $('#R_PUDU_NO_2').val(),
-                        //"PUDU_NO_3": $('#R_PUDU_NO_3').val(),
-                        //"PUDU_NO_4": $('#R_PUDU_NO_4').val(),
-                        //"PUDU_NO_5": $('#R_PUDU_NO_5').val()
+                        "CB_Print_PW": $('#R1_CB_Print_PW').prop('checked'),
+                        "Session_Name": "<%=(Session["Name"] == null) ? "Ivan10" : Session["Name"].ToString().Trim() %>",
                     },
                     cache: false,
                     type: "POST",
