@@ -117,7 +117,7 @@ namespace Ivan_Service
                     {
                         case "產品說明":
                         case "廠商簡稱":
-                            sqlStr += " AND ISNULL(S.[廠商簡稱],'') LIKE '%' + @廠商簡稱 + '%' ";
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE '%' + @" + form + " + '%' ";
                             this.SetParameters(form, context.Request[form]);
                             break;
                         case "倉位":
@@ -131,16 +131,28 @@ namespace Ivan_Service
                             }
                             break;
                         case "限門市":
-                            sqlStr += " AND ISNULL(S.台北安全數,0) + ISNULL(S.台中安全數,0) + ISNULL(S.高雄安全數,0) <> 0 ";
+                            if(context.Request[form] == "1")
+                            {
+                                sqlStr += " AND ISNULL(S.台北安全數,0) + ISNULL(S.台中安全數,0) + ISNULL(S.高雄安全數,0) <> 0 ";
+                            }
                             break;
                         case "售完":
-                            sqlStr += " AND ISNULL(S.ISP安全數,0)=1 AND ISNULL(S.ISP庫存數,0)=0 ";
+                            if (context.Request[form] == "1")
+                            {
+                                sqlStr += " AND ISNULL(S.ISP安全數,0)=1 AND ISNULL(S.ISP庫存數,0)=0 ";
+                            }
                             break;
                         case "草稿":
-                            sqlStr += " AND ISNULL(S.ISP安全數,0)=2 ";
+                            if (context.Request[form] == "1")
+                            {
+                                sqlStr += " AND ISNULL(S.ISP安全數,0)=2 ";
+                            }
                             break;
                         case "封存":
-                            sqlStr += " AND ISNULL(S.ISP安全數,0)=3 ";
+                            if (context.Request[form] == "1")
+                            {
+                                sqlStr += " AND ISNULL(S.ISP安全數,0)=3 ";
+                            }
                             break;
                         case "庫位":
                             sqlStr += " AND ISNULL(S.[" + context.Request["倉位"] + "庫位],'') LIKE '%' + @" + form + " + '%' ";

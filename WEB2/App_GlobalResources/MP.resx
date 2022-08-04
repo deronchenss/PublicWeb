@@ -900,4 +900,7 @@
   <data name="Sample_Ship" xml:space="preserve">
     <value>樣品出貨</value>
   </data>
+  <data name="IO" xml:space="preserve">
+    <value>入出</value>
+  </data>
 </root>

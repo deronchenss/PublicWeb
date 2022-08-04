@@ -31,6 +31,8 @@ CREATE TABLE [dbo].[stkio](
 	[內銷入庫] [bit] NULL,
 	[已刪除] [bit] NULL,
 	[變更日期] [datetime] NULL,
+	[建立人員] [varchar](6) NULL,
+	[建立日期] [datetime] NULL,
 	[更新人員] [varchar](6) NULL,
 	[更新日期] [datetime] NULL,
  CONSTRAINT [PK_stkio] PRIMARY KEY CLUSTERED 
@@ -59,12 +61,14 @@ ALTER TABLE [dbo].[stkio] ADD  CONSTRAINT [DF_stkio_異動前庫存]  DEFAULT ((0)) F
 GO
 ALTER TABLE [dbo].[stkio] ADD  CONSTRAINT [DF_stkio_更新日期]  DEFAULT (getdate()) FOR [更新日期]
 GO
+ALTER TABLE [dbo].[stkio] ADD  CONSTRAINT [DF_stkio_建立日期]  DEFAULT (getdate()) FOR [建立日期]
+GO
 
 INSERT INTO Dc2..stkio with(tablock)
-SELECT [序號], (SELECT [序號] FROM Bc2..suplu2 C WHERE C.廠商編號 = S.廠商編號 AND C.頤坊型號 = S.頤坊型號) [SUPLU_SEQ], 0 [SOURCE_SEQ], '' [SOURCE_TABLE], RTRIM([訂單號碼]), RTRIM([單據編號]),
+SELECT [序號], 0 [SOURCE_SEQ], '' [SOURCE_TABLE], (SELECT [序號] FROM Bc2..suplu2 C WHERE C.廠商編號 = S.廠商編號 AND C.頤坊型號 = S.頤坊型號) [SUPLU_SEQ], RTRIM([訂單號碼]), RTRIM([單據編號]),
 	[異動日期], RTRIM([帳項]), RTRIM([帳項原因]), RTRIM([廠商編號]), RTRIM([廠商簡稱]), RTRIM([頤坊型號]),
 	RTRIM([暫時型號]), RTRIM([單位]), RTRIM([庫區]), [入庫數], [出庫數], RTRIM([庫位]), [核銷數], [異動前庫存],
-	RTRIM([客戶編號]), RTRIM([客戶簡稱]), RTRIM([完成品型號]), RTRIM([備註]), [內銷入庫], [已刪除], [變更日期], RTRIM([更新人員]), [更新日期]
+	RTRIM([客戶編號]), RTRIM([客戶簡稱]), RTRIM([完成品型號]), RTRIM([備註]), [內銷入庫], [已刪除], [變更日期], RTRIM([更新人員]), [更新日期], RTRIM([更新人員]), [更新日期]
 FROM Bc2..stkio S
 
 
@@ -102,6 +106,8 @@ CREATE TABLE [dbo].[stkioh](
 	[內銷入庫] [bit] NULL,
 	[已刪除] [bit] NULL,
 	[變更日期] [datetime] NULL,
+	[建立人員] [varchar](6) NULL,
+	[建立日期] [datetime] NULL,
 	[更新人員] [varchar](6) NULL,
 	[更新日期] [datetime] NULL,
  CONSTRAINT [PK_stkioh] PRIMARY KEY CLUSTERED 
@@ -130,12 +136,14 @@ ALTER TABLE [dbo].[stkioh] ADD  CONSTRAINT [DF_stkioh_異動前庫存]  DEFAULT ((0))
 GO
 ALTER TABLE [dbo].[stkioh] ADD  CONSTRAINT [DF_stkioh_更新日期]  DEFAULT (getdate()) FOR [更新日期]
 GO
+ALTER TABLE [dbo].[stkioh] ADD  CONSTRAINT [DF_stkioh_建立日期]  DEFAULT (getdate()) FOR [建立日期]
+GO
 
 INSERT INTO Dc2..stkioh with(tablock)
 SELECT [序號], 0 [SOURCE_SEQ], '' [SOURCE_TABLE],
 	(SELECT [序號] FROM Bc2..suplu2 C WHERE C.廠商編號 = S.廠商編號 AND C.頤坊型號 = S.頤坊型號) [SUPLU_SEQ], RTRIM([訂單號碼]), RTRIM([單據編號]),
 	[異動日期], RTRIM([帳項]), RTRIM([帳項原因]), RTRIM([廠商編號]), RTRIM([廠商簡稱]), RTRIM([頤坊型號]),
 	RTRIM([暫時型號]), RTRIM([單位]), RTRIM([庫區]), [入庫數], [出庫數], RTRIM([庫位]), [核銷數], [異動前庫存],	[實扣快取數],
-	RTRIM([客戶編號]), RTRIM([客戶簡稱]), RTRIM([完成品型號]), RTRIM([備註]), [內銷入庫], [已刪除], [變更日期], RTRIM([更新人員]), [更新日期]
+	RTRIM([客戶編號]), RTRIM([客戶簡稱]), RTRIM([完成品型號]), RTRIM([備註]), [內銷入庫], [已刪除], [變更日期], RTRIM([更新人員]), [更新日期], RTRIM([更新人員]), [更新日期]
 FROM Bc2..stkioh S
 

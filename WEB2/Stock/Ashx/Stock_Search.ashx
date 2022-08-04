@@ -1,4 +1,4 @@
-﻿<%@ WebHandler Language="C#" Class="Stock_Query" %>
+﻿<%@ WebHandler Language="C#" Class="Stock_Search" %>
 
 using System.Collections.Generic;
 using System.Web;
@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 using CrystalDecisions.CrystalReports.Engine;
 using Ivan_Service;
 
-public class Stock_Query : IHttpHandler, IRequiresSessionState
+public class Stock_Search : IHttpHandler, IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
     {

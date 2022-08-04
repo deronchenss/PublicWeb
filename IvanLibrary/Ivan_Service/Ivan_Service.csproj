@@ -49,6 +49,7 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Logic\Base\Dal_Stkio.cs" />
     <Compile Include="Logic\Base\Dal_Suplu.cs" />
     <Compile Include="Logic\Dev\Dal_Invu.cs" />
     <Compile Include="Logic\Dev\Dal_Paku2.cs" />
