@@ -1,5 +1,6 @@
 ﻿<%@ Page Title="樣品點收查詢維護" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Chk_MT.aspx.cs" Inherits="Sample_Chk_MT" %>
 <%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_ALL.ascx" %>
+<%@ Register TagPrefix="uc3" TagName="uc3" Src="~/User_Control/Dia_Duo_Datetime_Picker.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
@@ -339,6 +340,7 @@
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
     <uc2:uc2 ID="uc2" runat="server" /> 
+    <uc3:uc3 ID="uc3" runat="server" /> 
     <div style="width:98%;margin:0 auto; ">
         <div class="search_section_all">
             <table class="search_section_control">
@@ -357,7 +359,8 @@
                 </td>
                 <td class="tdhstyle">點收日期</td>
                 <td class="tdbstyle">
-                    <input id="Q_CHK_DATE_S" type="date" class="date_S_style" />~<input id="Q_CHK_DATE_E" type="date" class="date_E_style" />
+                    <input id="Q_CHK_DATE_S" type="date" class="date_S_style TB_DS" /><input id="Q_CHK_DATE_E" type="date" class="date_E_style TB_DE" />
+                    <input id="BT_Duo_Datetime_Picker" type="button" value="…" onclick="$('#Duo_Datetime_Picker_Dialog').dialog('open');" />
                 </td>
             </tr>
             <tr class="trstyle">

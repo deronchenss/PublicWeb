@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="樣品到貨作業" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Arr.aspx.cs" Inherits="Sample_Arr" %>
+<%@ Register TagPrefix="uc1" TagName="uc1" Src="~/User_Control/Dia_Duo_Datetime_Picker.ascx" %>
 <%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_ALL.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
@@ -682,6 +683,7 @@
     </script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
+    <uc1:uc1 ID="uc1" runat="server" /> 
     <uc2:uc2 ID="uc2" runat="server" /> 
     <div style="width:98%;margin:0 auto; ">
         <div class="search_section_all">
@@ -700,7 +702,8 @@
                 </td>
                 <td class="tdhstyle">點收日期</td>
                 <td class="tdbstyle">
-                    <input id="Q_CHK_DATE_S" type="date" class="date_S_style" />~<input id="Q_CHK_DATE_E" type="date" class="date_E_style" />
+                    <input id="Q_CHK_DATE_S" type="date" class="date_S_style TB_DS" /><input id="Q_CHK_DATE_E" type="date" class="date_E_style TB_DE" />
+                    <input id="BT_Duo_Datetime_Picker" type="button" value="…" onclick="$('#Duo_Datetime_Picker_Dialog').dialog('open');" />
                 </td>
             </tr>
             <tr class="trstyle">

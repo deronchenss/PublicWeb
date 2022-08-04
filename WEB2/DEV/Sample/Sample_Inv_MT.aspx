@@ -1,6 +1,7 @@
 ﻿<%@ Page Title="樣品Invoice維護" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Inv_MT.aspx.cs" Inherits="Sample_Inv_MT" %>
 <%@ Register TagPrefix="uc" TagName="uc1" Src="~/User_Control/Dia_Customer_Selector.ascx" %>
 <%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Transfer_Selector.ascx" %>
+<%@ Register TagPrefix="uc3" TagName="uc3" Src="~/User_Control/Dia_Duo_Datetime_Picker.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
@@ -178,8 +179,8 @@
                         "提單號碼": $('#Q_BILL_NO').val(),
                         "客戶編號": $('#Q_CUST_NO').val(),
                         "客戶簡稱": $('#Q_CUST_S_NAME').val(),
-                        "變更日期_S": $('#Q_UPD_DATE_S').val(),
-                        "變更日期_E": $('#Q_UPD_DATE_E').val()
+                        "更新日期_S": $('#Q_UPD_DATE_S').val(),
+                        "更新日期_E": $('#Q_UPD_DATE_E').val()
                     },
                     cache: false,
                     type: "POST",
@@ -494,6 +495,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
     <uc:uc1 ID="uc1" runat="server" /> 
     <uc2:uc2 ID="uc2" runat="server" /> 
+    <uc3:uc3 ID="uc3" runat="server" /> 
     <div style="width:98%;margin:0 auto; ">
         <div class="search_section_all">
             <table class="search_section_control">
@@ -508,7 +510,8 @@
                 </td>
                 <td class="tdhstyle">出貨日期</td>
                 <td class="tdbstyle">
-                    <input id="Q_SHIP_GO_DATE_S" type="date" class="date_S_style" />~<input id="Q_SHIP_GO_DATE_E" type="date" class="date_E_style" />
+                    <input id="Q_SHIP_GO_DATE_S" type="date" class="date_S_style TB_DS" /><input id="Q_SHIP_GO_DATE_E" type="date" class="date_E_style TB_DE" />
+                    <input id="BT_Duo_Datetime_Picker" type="button" value="…" onclick="$('#Duo_Datetime_Picker_Dialog').dialog('open');" />
                 </td>
                 <td class="tdhstyle">提單號碼</td>
                 <td class="tdbstyle">
@@ -524,9 +527,9 @@
                 <td class="tdbstyle">
                     <input id="Q_CUST_S_NAME"  class="textbox_char" />
                 </td>
-                <td class="tdhstyle">變更日期</td>
+                <td class="tdhstyle">更新日期</td>
                 <td class="tdbstyle">
-                    <input id="Q_UPD_DATE_S" type="date" class="date_S_style" />~<input id="Q_UPD_DATE_E" type="date" class="date_E_style" />
+                    <input id="Q_UPD_DATE_S" type="date" class="date_S_style" /><input id="Q_UPD_DATE_E" type="date" class="date_E_style" />
                 </td>
             </tr>
             <tr class="trstyle">

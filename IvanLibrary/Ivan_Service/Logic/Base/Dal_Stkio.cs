@@ -21,7 +21,7 @@ namespace Ivan_Service
             DataTable dt = new DataTable();
             string sqlStr = "";
 
-            sqlStr = @"SELECT Top 500 S.更新日期
+            sqlStr = @"SELECT Top 500 CONVERT(VARCHAR,S.更新日期,23) 更新日期
 		                              ,S.廠商簡稱
 			                          ,S.頤坊型號
 			                          ,S.單位

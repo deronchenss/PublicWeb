@@ -2,6 +2,7 @@
 <%@ Register TagPrefix="uc" TagName="uc1" Src="~/User_Control/Dia_Customer_Selector.ascx" %>
 <%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_Selector.ascx" %>
 <%@ Register TagPrefix="uc3" TagName="uc3" Src="~/User_Control/Dia_Product_ALL.ascx" %>
+<%@ Register TagPrefix="uc4" TagName="uc4" Src="~/User_Control/Dia_Duo_Datetime_Picker.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
@@ -927,6 +928,7 @@
     <uc:uc1 ID="uc1" runat="server" /> 
     <uc2:uc2 ID="uc2" runat="server" /> 
     <uc3:uc3 ID="uc3" runat="server" /> 
+    <uc4:uc4 ID="uc4" runat="server" />
     <div style="width:98%;margin:0 auto; ">
         <div class="search_section_all">
             <table class="search_section_control">
@@ -945,7 +947,8 @@
                 </td>
                 <td class="tdhstyle">採購日期</td>
                 <td class="tdbstyle">
-                    <input id="Q_PUDU_DATE_S" type="date" class="date_S_style" />~<input id="Q_PUDU_DATE_E" type="date" class="date_E_style" />
+                    <input id="Q_PUDU_DATE_S" type="date" class="date_S_style TB_DS" /><input id="Q_PUDU_DATE_E" type="date" class="date_E_style TB_DE" />
+                    <input id="BT_Duo_Datetime_Picker" type="button" value="…" onclick="$('#Duo_Datetime_Picker_Dialog').dialog('open');" />
                 </td>
                 <td class="tdEditstyle">結案狀態</td>
                 <td class="tdbstyle">
