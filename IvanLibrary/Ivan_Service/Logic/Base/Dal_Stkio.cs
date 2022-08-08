@@ -110,6 +110,85 @@ namespace Ivan_Service
         }
 
         /// <summary>
+        /// 庫存入出維護 查詢 Return DataTable
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public DataTable SearchTableForMT()
+        {
+            DataTable dt = new DataTable();
+            string sqlStr = "";
+
+            sqlStr = @"SELECT Top 500 S.訂單號碼
+			                          ,S.頤坊型號
+                                      ,CONVERT(VARCHAR,S.更新日期,23) 更新日期
+		                              ,S.廠商簡稱
+			                          ,S.單位
+			                          ,S.庫區
+			                          ,S.庫位
+			                          ,S.單據編號
+			                          ,IIF(S.入庫數 = 0, NULL, S.入庫數) 入庫數
+			                          ,IIF(S.出庫數 = 0, NULL, S.出庫數) 出庫數
+			                          ,(SELECT SH.入庫數 + SH.出庫數 FROM stkioh SH WHERE SH.SOURCE_TABLE = 'stkio' AND S.序號 = SH.SOURCE_SEQ) 核銷數
+			                          ,S.備註
+			                          ,S.廠商編號
+			                          ,S.客戶編號
+			                          ,S.客戶簡稱
+			                          ,S.更新人員
+			                          ,S.序號
+			                          ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = S.SUPLU_SEQ) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
+			                          ,S.SUPLU_SEQ
+                        FROM stkio S
+                        WHERE ISNULL(S.已刪除,0) != 1
+                        AND (ISNULL(S.入庫數,0) + ISNUll(S.出庫數,0)) != 0
+                         ";
+
+            //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
+            foreach (string form in context.Request.Form)
+            {
+                if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type")
+                {
+                    string debug = context.Request[form];
+                    switch (form)
+                    {
+                        case "產品說明":
+                        case "廠商簡稱":
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE '%' + @" + form + " + '%' ";
+                            this.SetParameters(form, context.Request[form]);
+                            break;
+                        case "更新日期_S":
+                            sqlStr += " AND CONVERT(DATE,S.[更新日期]) >= @更新日期_S";
+                            this.SetParameters(form, context.Request[form]);
+                            break;
+                        case "更新日期_E":
+                            sqlStr += " AND CONVERT(DATE,S.[更新日期]) <= @更新日期_E";
+                            this.SetParameters(form, context.Request[form]);
+                            break;
+                        case "查詢出入庫":
+                            if ("入庫".Equals(context.Request[form]))
+                            {
+                                sqlStr += " AND ISNULL(S.入庫數,0) <> 0";
+                            }
+                            else if ("出庫".Equals(context.Request[form]))
+                            {
+                                sqlStr += " AND ISNULL(S.出庫數,0) <> 0";
+                            }
+                            break;
+                        default:
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE @" + form + " + '%'";
+                            this.SetParameters(form, context.Request[form]);
+                            break;
+                    }
+                }
+            }
+
+            sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
+
+            dt = GetDataTableWithLog(sqlStr);
+            return dt;
+        }
+
+        /// <summary>
         /// 樣品準備作業 查詢 Return DataTable
         /// </summary>
         /// <param name="context"></param>
@@ -206,5 +285,45 @@ namespace Ivan_Service
             dt = GetDataTableWithLog(sqlStr);
             return dt;
         }
+
+        #region 更新區域
+        /// <summary>
+        /// UPDATE Paku 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public int UpdateStkio()
+        {
+            string sqlStr = @"      UPDATE [dbo].[stkio]
+                                       SET 更新日期 = GETDATE()
+										  ,更新人員 = @UPD_USER
+                                    ";
+
+            foreach (string form in context.Request.Form)
+            {
+                if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type" && form != "SEQ")
+                {
+                    switch (form)
+                    {
+                        default:
+                            this.SetParameters(form, context.Request[form]); 
+                            sqlStr += " ," + form + " = @" + form;
+                            break;
+                    }
+                }
+            }
+
+            this.SetParameters("SEQ", context.Request["SEQ"]);
+            sqlStr += " WHERE [序號] = @SEQ ";
+
+            this.SetTran();
+            this.SetParameters("UPD_USER", "IVAN10");
+            int res = ExecuteWithLog(sqlStr);
+            this.TranCommit();
+
+            return res;
+        }
+        #endregion
+
     }
 }
