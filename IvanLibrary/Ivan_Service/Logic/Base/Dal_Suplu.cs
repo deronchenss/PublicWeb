@@ -24,15 +24,20 @@ namespace Ivan_Service
             sqlStr = @";WITH PUD_CNT 
                         AS
                         (
-	                        SELECT SUPLU_SEQ
-		                          ,SUM(R.點收數量) 在途數
-		                          ,SUM(CASE WHEN P.訂單號碼 LIKE 'X%' OR P.訂單號碼 LIKE 'WR%' THEN R.點收數量 ELSE 0 END) 庫存在途數
-	                        FROM pud P 
-	                        JOIN reca R ON P.序號 = R.PUD_SEQ
-	                        WHERE ISNULL(P.採購單號,'') != ''
-	                        AND ISNULL(P.已刪除,0)=0
-	                        GROUP BY SUPLU_SEQ
-	                        HAVING SUM(R.點收數量) > 0
+                            SELECT SUPLU_SEQ
+	                              ,SUM(在途數) 在途數
+	                              ,SUM(庫存在途數) 庫存在途數
+                            FROM(
+                            SELECT SUPLU_SEQ
+	                              ,P.採購數量 - ISNULL((SELECT SUM(R.點收數量) FROM reca R WHERE P.序號 = R.PUD_SEQ),0) 在途數
+	                              ,CASE WHEN P.訂單號碼 LIKE 'X%' OR P.訂單號碼 LIKE 'WR%' THEN P.採購數量 - ISNULL((SELECT SUM(R.點收數量) FROM reca R WHERE P.序號 = R.PUD_SEQ),0)
+	                                    ELSE 0 END 庫存在途數
+                            FROM pud P 
+                            WHERE ISNULL(P.採購單號,'') != ''
+                            AND ISNULL(P.已刪除,0)=0
+                            AND P.採購數量 - ISNULL((SELECT SUM(R.點收數量) FROM reca R WHERE P.序號 = R.PUD_SEQ),0) > 0
+                            ) P
+                            GROUP BY SUPLU_SEQ
                         ),
                         S1 
                         AS

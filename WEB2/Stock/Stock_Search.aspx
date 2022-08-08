@@ -202,8 +202,8 @@
                             });
 
                             //不顯示拿來判斷的欄位
-                            $('#Table_Search_Data').DataTable().column(-1).visible(false);
-                            $('#Table_Search_Data').DataTable().column(-2).visible(false);
+                            //$('#Table_Search_Data').DataTable().column(-1).visible(false);
+                            //$('#Table_Search_Data').DataTable().column(-2).visible(false);
 
                             //顏色設定
                             var seqIndex = $('#Table_Search_Data').find('thead th:contains(序號)').index() + 1;

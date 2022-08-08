@@ -177,11 +177,11 @@
                             });
 
                             //不顯示拿來判斷的欄位
-                            $('#Table_Search_Data').DataTable().column(-1).visible(false);
-                            $('#Table_Search_Data').DataTable().column(-2).visible(false);
-                            $('#Table_Search_Data').DataTable().column(-3).visible(false);
-                            $('#Table_Search_Data').DataTable().column(-4).visible(false);
-                            $('#Table_Search_Data').DataTable().column(-5).visible(false);
+                            //$('#Table_Search_Data').DataTable().column(-1).visible(false);
+                            //$('#Table_Search_Data').DataTable().column(-2).visible(false);
+                            //$('#Table_Search_Data').DataTable().column(-3).visible(false);
+                            //$('#Table_Search_Data').DataTable().column(-4).visible(false);
+                            //$('#Table_Search_Data').DataTable().column(-5).visible(false);
 
                             //顏色設定
                             var supluSeqIndex = $('#Table_Search_Data').find('thead th:contains(SUPLU_SEQ)').index() + 1;
