@@ -15,6 +15,29 @@
             //init CONTROLER
             Form_Mode_Change("Base");
 
+            //DDL
+            DDL_Bind();
+            function DDL_Bind() {
+                $.ajax({
+                    url: "/Web_Service/DDL_DataBind.asmx/ProdStatusDDL",
+                    cache: false,
+                    dataType: "json",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        var Json_Response = JSON.parse(data.d);
+                        var DDL_Option = "<option></option>";
+                        $.each(Json_Response, function (i, value) {
+                            DDL_Option += '<option value="' + value.val + '">' + value.txt + '</option>';
+                        });
+                        $('#Q_PROD_STATUS').html(DDL_Option);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    },
+                });
+            };
+
             window.document.body.onbeforeunload = function () {
                 if (Edit_Mode === "Insert" || Edit_Mode === "Edit") {
                     return '您尚未將編輯過的表單資料送出，請問您確定要離開網頁嗎？';
@@ -444,6 +467,14 @@
                     草稿
                     <input id="Q_STOCK_SAVE" type="checkbox" DT_Query_Name="封存" class="textbox_char" />
                     封存
+                </td>
+            </tr>
+            <tr class="trstyle">
+                <td class="tdhstyle">產品狀態</td>
+                <td class="tdbstyle">
+                    <select id="Q_PROD_STATUS" DT_Query_Name="產品狀態" >
+                        <option selected="selected" value=""></option>
+                    </select>
                 </td>
             </tr>
             <tr class="trstyle">

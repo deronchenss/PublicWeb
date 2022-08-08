@@ -444,7 +444,7 @@
                 </td>
                 <td class="tdhstyle">更新日期</td>
                 <td class="tdbstyle">
-                    <input id="Q_UPD_DATE_S" type="date" class="date_S_style queryColumn TB_DS" DT_Query_Name="更新日期_S"  /><input id="Q_UPD_DATE_E" type="date" class="date_E_style queryColumn" DT_Query_Name="更新日期_E TB_DE" />
+                    <input id="Q_UPD_DATE_S" type="date" class="date_S_style queryColumn TB_DS" DT_Query_Name="更新日期_S"  /><input id="Q_UPD_DATE_E" type="date" class="date_E_style queryColumn TB_DE" DT_Query_Name="更新日期_E" />
                     <input id="BT_Duo_Datetime_Picker" type="button" value="…" onclick="$('#Duo_Datetime_Picker_Dialog').dialog('open');" />
                 </td>
             </tr>
