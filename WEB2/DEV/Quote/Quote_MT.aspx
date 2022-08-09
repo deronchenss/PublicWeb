@@ -215,6 +215,11 @@
                                     { data: "大備註", title: "大備註", visible: false },
                                     { data: "BYRLU_SEQ", title: "BYRLU_SEQ", visible: false }
                                 ],
+                                "columnDefs": [
+                                    {
+                                        className: 'text-right', targets: [6,7,9,13,14,15,16,17,18] //數字靠右
+                                    },
+                                ],
                                 "order": [[1, "asc"]], //根據 報價單號 排序
                                 "scrollX": true,
                                 "scrollY": "62vh",

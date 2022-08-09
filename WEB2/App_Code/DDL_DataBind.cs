@@ -188,32 +188,4 @@ public class DDL_DataBind : System.Web.Services.WebService
         var json = (new JavaScriptSerializer().Serialize(CT));
         return json;
     }
-
-    /// <summary>
-    /// 撈出產品狀態 FROM Refdata
-    /// </summary>
-    /// <returns></returns>
-    [WebMethod]
-    public string ProdStatusDDL()
-    {
-        List<object> CT = new List<object>();
-        SqlConnection conn = new SqlConnection();
-        conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
-        SqlCommand cmd = new SqlCommand();
-        cmd.CommandText = @" SELECT * FROM Refdata WHERE 代碼='產品狀態' ORDER BY 內容";
-        cmd.Connection = conn;
-        conn.Open();
-        SqlDataReader sdr = cmd.ExecuteReader();
-        while (sdr.Read())
-        {
-            CT.Add(new
-            {
-                txt = sdr["內容"],
-                val = sdr["內容"].ToString().Substring(0,1)
-            });
-        }
-        conn.Close();
-        var json = (new JavaScriptSerializer().Serialize(CT));
-        return json;
-    }
 }

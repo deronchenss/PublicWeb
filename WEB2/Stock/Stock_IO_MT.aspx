@@ -24,6 +24,32 @@
                 }
             }
 
+            //DDL
+            DDL_Bind();
+            function DDL_Bind() {
+                $.ajax({
+                    url: "/CommonAshx/Common.ashx",
+                    data: {
+                        "Call_Type": "GET_DATA_FROM_REFDATA",
+                        "CODE": '出入庫帳項'
+                    },
+                    cache: false,
+                    contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                    type: "POST",
+                    dataType: "json",
+                    success: function (data) {
+                        var DDL_Option = "<option></option>";
+                        $.each(data, function (i, value) {
+                            DDL_Option += '<option value="' + value.內容.substring(0, 1) + '">' + value.內容 + '</option>';
+                        });
+                        $('#E_BILL_TYPE').html(DDL_Option);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    },
+                });
+            };
+
             //Dialog
             $('#BT_CUST_CHS').on('click', function () {
                 $("#Search_Customer_Dialog").dialog('open');
@@ -85,11 +111,31 @@
                         $('.Div_D').css('display', 'none');
                         $('#Div_DT_View').css('width', '100%');
                         $('#Div_DT_View').css('display', '');
-                        $('#BT_Cancel').css('display', '');
 
+                        $('#BT_Cancel').css('display', '');
+                        $('.modeButton').css('display', 'none')
                         if (Edit_Mode == "Edit") {
                             $('#Div_EDIT_Data').css('display', '');
                             $('#Div_DT_View').css('width', '60%');
+
+                            $('#BT_DELETE').css('display', 'inline-block');
+                            $('#BT_EDIT_SAVE').css('display', 'inline-block');
+                            $('#BT_INSERT_CANCEL').css('display', 'inline-block');
+                        }
+                        else if (Edit_Mode == "Insert") {
+                            $('#Div_EDIT_Data').css('display', '');
+                            $('#Div_DT_View').css('width', '60%');
+
+                            $('#BT_INSERT_SAVE').css('display', 'inline-block');
+                            $('#BT_INSERT_CLEAR').css('display', 'inline-block');
+                            $('#BT_INSERT_CANCEL').css('display', 'inline-block');
+                            $('#E_SEQ').val('');
+                            $('#E_UPD_USER').val('');
+                            $('#E_UPD_DATE').val('');
+                            $("[DT_Fill_Name]").val('');
+                        }
+                        else {
+                            $("[DT_Fill_Name]").val('');
                         }
 
                         V_BT_CHG($('#BT_S_BASE'));
@@ -98,8 +144,10 @@
                         $('.Div_D').css('display', 'none');
                         $('#Div_DT_View').css('width', '60%');
                         $('#Div_IMG_DETAIL').css('display', '');
-                        if ($('#Table_Search_Recu > tbody tr[role=row]').length != 0) {
-                            $('#Table_Search_Recu').DataTable().draw();
+
+                        //設定DEFAULT Click
+                        if ($('#Table_Search_Data > tbody tr[role=row]').length != 0 && $('#Table_Search_Data > tbody tr.tableClick').length == 0) {
+                            ClickToEdit($('#Table_Search_Data > tbody > tr:nth(0)'));
                         }
 
                         V_BT_CHG($('#BT_S_IMG'));
@@ -128,11 +176,13 @@
                 for (var i = 0; i < $('#Table_Search_Data').DataTable().columns().header().length; i++) {
                     var titleName = $($('#Table_Search_Data').DataTable().column(i).header()).text();
 
-                    if ($("[DT_Fill_Name='" + titleName + "']").attr('type') == 'checkbox') {
-                        $("[DT_Fill_Name='" + titleName + "']").prop('checked', clickData[titleName] == 1 || clickData[titleName] == '是');
-                    }
-                    else {
-                        $("[DT_Fill_Name='" + titleName + "']").val(clickData[titleName]);
+                    if (!(Edit_Mode == "Insert" && (titleName == "序號" || titleName == "更新人員" || titleName == "更新日期"))) {
+                        if ($("[DT_Fill_Name='" + titleName + "']").attr('type') == 'checkbox') {
+                            $("[DT_Fill_Name='" + titleName + "']").prop('checked', clickData[titleName] == 1 || clickData[titleName] == '是');
+                        }
+                        else {
+                            $("[DT_Fill_Name='" + titleName + "']").val(clickData[titleName]);
+                        }
                     }
                 }
 
@@ -177,6 +227,7 @@
                             alert('<%=Resources.MP.Data_Not_Exists_Alert%>');
                             Edit_Mode = "Base";
                             Form_Mode_Change("Base");
+                            $('#Table_Search_Data').DataTable().clear().draw();
                         }
                         else {
                             var columns = [];
@@ -199,6 +250,11 @@
                                     Re_Bind_Inner_JS();
                                 },
                                 "columns": columns,
+                                "columnDefs": [
+                                    {
+                                        className: 'text-right', targets: [8, 9, 10] //數字靠右
+                                    },
+                                ],
                                 "order": [1, "asc"], //根據 頤坊型號 排序
                                 "scrollX": true,
                                 "scrollY": "62vh",
@@ -208,15 +264,15 @@
                                 "autoWidth": false //欄位小於VIEW 長度，自動擴展
                             });
 
+                            //不顯示拿來判斷的欄位
+                            $('#Table_Search_Data').DataTable().column(-1).visible(false);
+                            $('#Table_Search_Data').DataTable().column(-2).visible(false);
+
                             //顏色設定
-                            var seqIndex = $('#Table_Search_Data').find('thead th:contains(序號)').index() + 1;
                             var ivanIndex = $('#Table_Search_Data').find('thead th:contains(頤坊型號)').index() + 1;
-                            var imgIndex = $('#Table_Search_Data').find('thead th:contains(Has_IMG)').index() + 1;
                             $('#Table_Search_Data').find('tbody tr[role=row]').each(function () {
                                 var rowData = $('#Table_Search_Data').DataTable().row($(this)).data();
-                                var $columnSeq = $(this).find('td:nth-child(' + seqIndex + ')');
                                 var $columnIvan = $(this).find('td:nth-child(' + ivanIndex + ')');
-                                var $columnImg = $(this).find('td:nth-child(' + imgIndex + ')');
 
                                 //button
                                 var ivanStyle = '<input class="Call_Product_Tool" SUPLU_SEQ = "' + (rowData.SUPLU_SEQ ?? "")
@@ -236,6 +292,82 @@
                 });
             };
 
+            //寫入DB
+            function Insert() {
+                var dataReq = {};
+                dataReq['Call_Type'] = 'INSERT';
+                dataReq['已刪除'] = 0;
+                dataReq['SOURCE_TABLE'] = 'stkio';
+                dataReq['SOURCE_SEQ'] = 0;
+
+                //組json data
+                $('.updColumn').each(function () {
+                    if ($(this).attr('type') == 'checkbox') {
+                        dataReq[$(this).attr('DT_Fill_Name')] = ($(this).is(':checked') ? '1' : '0');
+                    }
+                    else {
+                        dataReq[$(this).attr('DT_Fill_Name')] = $(this).val();
+                    }
+                });
+
+                //先將數字空白調整為0
+                if ($.trim($('#E_STOCK_I_CNT').val()) == '') {
+                    $('#E_STOCK_I_CNT').val(0);
+                }
+                if ($.trim($('#E_STOCK_O_CNT').val()) == '') {
+                    $('#E_STOCK_O_CNT').val(0);
+                }
+
+                //檢核開始
+                if ($.trim($('#E_ORDER_NO').val()) == '') {
+                    alert('訂單號碼不可空白!');
+                }
+                else if ($.trim($('#E_IVAN_TYPE').val()) == '') {
+                    alert('頤坊型號不可空白!');
+                }
+                else if ($.trim($('#E_PROD_DESC').val()) == '') {
+                    alert('產品說明不可空白!');
+                }
+                else if ($.trim($('#E_STOCK_I_CNT').val()) == 0 && $.trim($('#E_STOCK_O_CNT').val()) == 0) {
+                    alert('入庫數與出庫數不可同時為0!');
+                }
+                else if ($.trim($('#E_STOCK_I_CNT').val()) != 0 && $.trim($('#E_STOCK_O_CNT').val()) != 0) {
+                    alert('入庫數與出庫數不可同時建檔!');
+                }
+                else if ($.trim($('#E_STOCK_POS').val()) == '') {
+                    alert('庫區不可為空白!');
+                }
+                else if ($.trim($('#E_BILL_TYPE').val()) == '') {
+                    alert('帳項不可為空白!');
+                }
+                else {
+                    $.ajax({
+                        url: apiUrl,
+                        data: dataReq,
+                        cache: false,
+                        type: "POST",
+                        datatype: "json",
+                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                        success: function (response, status) {
+                            console.log(status);
+                            if (status === 'success') {
+                                alert('訂單號碼:' + $('#E_ORDER_NO').val() + '已新增完成');
+
+                                Search();
+                            }
+                            else {
+                                alert('新增資料有誤請通知資訊人員');
+                            }
+                        },
+                        error: function (ex) {
+                            console.log(ex.responseText);
+                            alert('新增資料有誤請通知資訊人員');
+                            return;
+                        }
+                    });
+                }
+            };           
+
             //更新DB
             function Update() {
                 var dataReq = {};
@@ -252,8 +384,38 @@
                     }
                 });
 
+                //先將數字空白調整為0
+                if ($.trim($('#E_STOCK_I_CNT').val()) == '') {
+                    $('#E_STOCK_I_CNT').val(0);
+                }
+                if ($.trim($('#E_STOCK_O_CNT').val()) == '') {
+                    $('#E_STOCK_O_CNT').val(0);
+                }
+
+                //檢核開始
                 if ($('#E_SEQ').val() === '') {
                     alert('請選擇要修改的資料');
+                }
+                else if ($.trim($('#E_ORDER_NO').val()) == '') {
+                    alert('訂單號碼不可空白!');
+                }
+                else if ($.trim($('#E_IVAN_TYPE').val()) == '') {
+                    alert('頤坊型號不可空白!');
+                }
+                else if ($.trim($('#E_PROD_DESC').val()) == '') {
+                    alert('產品說明不可空白!');
+                }
+                else if ($.trim($('#E_STOCK_I_CNT').val()) == 0 && $.trim($('#E_STOCK_O_CNT').val()) == 0) {
+                    alert('入庫數與出庫數不可同時為0!');
+                }
+                else if ($.trim($('#E_STOCK_I_CNT').val()) != 0 && $.trim($('#E_STOCK_O_CNT').val()) != 0) {
+                    alert('入庫數與出庫數不可同時建檔!');
+                }
+                else if ($.trim($('#E_STOCK_POS').val()) == '') {
+                    alert('庫區不可為空白!');
+                }
+                else if ($.trim($('#E_BILL_TYPE').val()) == '') {
+                    alert('帳項不可為空白!');
                 }
                 else{
                     $.ajax({
@@ -287,9 +449,6 @@
             function Delete() {
                 if ($('#E_SEQ').val() === '') {
                     alert('請選擇要刪除的資料');
-                }
-                else if ($('#E_P2_DEL').val() == 1) {
-                    alert('樣品準備資料已刪除，請確認!');
                 }
                 else {
                     $.ajax({
@@ -374,6 +533,24 @@
                 Update();
             });
 
+            $('#BT_Insert').on('click', function () {
+                Edit_Mode = "Insert";
+                Form_Mode_Change("Search");
+            });
+
+            $('#BT_INSERT_SAVE').on('click', function () {
+                Insert();
+            });
+
+            $('#BT_INSERT_CLEAR').on('click', function () {
+                $('[DT_Fill_Name]').val('');
+            });
+
+            $('#BT_INSERT_CANCEL').on('click', function () {
+                Edit_Mode = "Search";
+                Form_Mode_Change("Search");
+            });
+
             $('#BT_Update').on('click', function () {
                 Edit_Mode = "Edit";
                 Form_Mode_Change("Search");
@@ -452,8 +629,8 @@
             <tr class="trstyle">
                 <td class="tdhstyle">庫區</td>
                         <td class="tdbstyle">
-                             <select id="Q_STOCK_POS" DT_Query_Name="庫區" class="updColumn" >
-                                <option selected="selected"value="">不限</option>
+                             <select id="Q_STOCK_POS" DT_Query_Name="庫區" >
+                                <option selected="selected"value=""></option>
                                 <option value="大貨">大貨</option>
                                 <option value="分配">分配</option>
                                 <option value="內湖">內湖</option>
@@ -478,6 +655,7 @@
             <tr class="trstyle">
                 <td class="tdtstyleRight" colspan="8">
                     <input type="button" id="BT_Search" class="buttonStyle" value="<%=Resources.MP.Search%>" />
+                    <input type="button" id="BT_Insert" class="buttonStyle" value="<%=Resources.MP.Insert%>" />
                     <input type="button" id="BT_Update" class="buttonStyle" value="修改" />
                     <input type="button" id="BT_Cancel" class="buttonStyle" value="<%=Resources.MP.Cancel%>" style="display: none;" />
                 </td>
@@ -505,9 +683,9 @@
                         <td class="tdbstyle" style="height: 2vh; font-size: smaller;" >&nbsp</td>
                     </tr>
                     <tr class="trstyle" >
-                         <td class="tdEditstyle">INVOICE</td>
+                         <td class="tdEditstyle">訂單號碼</td>
                         <td class="tdbstyle">
-                            <input id="E_ORDER_NO" DT_Fill_Name="訂單號碼" class="textbox_char updColumn" disabled="disabled" />
+                            <input id="E_ORDER_NO" DT_Fill_Name="訂單號碼" class="textbox_char updColumn" />
                         </td>
                         <td class="tdEditstyle">序號</td>
                         <td class="tdbstyle">
@@ -610,9 +788,15 @@
                         </td>
                     </tr>
                      <tr class="trstyle">
+                         <td class="tdEditstyle">帳項</td>
+                        <td class="tdbstyle">
+                            <select id="E_BILL_TYPE" DT_Fill_Name="帳項" class="textbox_char updColumn" >
+                                <option selected="selected" value=""></option>
+                            </select>
+                        </td>
                         <td class="tdEditstyle">備註</td>
-                        <td class="tdbstyle" colspan="4">
-                            <input id="E_REMARK" DT_Fill_Name="備註" class="textbox_char updColumn"  />
+                        <td class="tdbstyle" >
+                            <input id="E_REMARK" DT_Fill_Name="備註" class="textbox_char updColumn" maxlength="30"  />
                         </td>
                     </tr>
                     <tr class="trstyle">
@@ -631,8 +815,10 @@
                      <tr class="trCenterstyle"> 
                          <td colspan="4" style="text-align:center" >
                             <input type="button" id="BT_DELETE" style="display:inline-block" class="BTN modeButton" value="刪除"  />
+                            <input type="button" id="BT_INSERT_SAVE" style="display:inline-block" class="BTN modeButton" value="新增儲存"  />
                             <input type="button" id="BT_EDIT_SAVE" style="display:inline-block" class="BTN modeButton" value="修改儲存"  />
-                            <input type="button" id="BT_EDIT_CANCEL" style="display:inline-block" class="BTN modeButton" value="返回"  />
+                            <input type="button" id="BT_INSERT_CLEAR" style="display:inline-block" class="BTN modeButton" value="清空"  />
+                            <input type="button" id="BT_INSERT_CANCEL" style="display:inline-block" class="BTN modeButton" value="返回"  />
                          </td>
                     </tr>
                 </table>

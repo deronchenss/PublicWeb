@@ -223,13 +223,17 @@
                                     { data: "調整額02", title: "調整額02", visible: false },
                                     { data: "SUPLU_SEQ", title: "SUPLU_SEQ", visible: false }
                                 ],
+                                "columnDefs": [
+                                    {
+                                        className: 'text-right', targets: [6] //數字靠右
+                                    },
+                                ],
                                 "order": [[2, "asc"]], //根據 採購單號 排序
                                 "scrollX": true,
                                 "scrollY": "62vh",
                                 "searching": false,
                                 "paging": false,
                                 "bInfo": false, //顯示幾筆隱藏
-                                "autoWidth": false //欄位小於VIEW 長度，自動擴展
                             });
 
                             $('#Table_Search_Recu').DataTable().draw();

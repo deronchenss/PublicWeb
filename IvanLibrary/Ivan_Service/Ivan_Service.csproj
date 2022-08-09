@@ -51,12 +51,14 @@
   <ItemGroup>
     <Compile Include="Logic\Base\Dal_Stkio.cs" />
     <Compile Include="Logic\Base\Dal_Suplu.cs" />
+    <Compile Include="Logic\Code\Dal_Refdata.cs" />
     <Compile Include="Logic\Dev\Dal_Invu.cs" />
     <Compile Include="Logic\Dev\Dal_Paku2.cs" />
     <Compile Include="Logic\Dev\Dal_Paku.cs" />
     <Compile Include="Logic\Dev\Dal_Recua.cs" />
     <Compile Include="Logic\Dev\Dal_Pudu.cs" />
     <Compile Include="Logic\Dev\Dal_Recu.cs" />
+    <Compile Include="Model\Code\Stkio.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceBase\LogicBase.cs" />
   </ItemGroup>
@@ -70,6 +72,7 @@
       <Name>Ivan_Log</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -49,6 +49,11 @@
                     { title: "<%=Resources.MP.Update_Date%>" },
                     { title: "序號" }
                 ],
+                "columnDefs": [
+                    {
+                        className: 'text-right', targets: [4] //數字靠右
+                    },
+                ],
                 "order": [[0, "asc"]], //根據 採購單號 排序
                 "scrollX": true,
                 "scrollY": "62vh",
@@ -342,6 +347,11 @@
                                     { title: "<%=Resources.MP.Update_Date%>" },
                                     { title: "序號" }
                                 ],
+                                "columnDefs": [
+                                    {
+                                        className: 'text-right', targets: [4] //數字靠右
+                                    },
+                                ],
                                "order": [[0, "asc"]], //根據 採購單號 排序
                                "scrollX": true,
                                "scrollY": "62vh",
@@ -375,6 +385,11 @@
                                     { title: "<%=Resources.MP.Update_User%>" },
                                     { title: "<%=Resources.MP.Update_Date%>" },
                                     { title: "序號" }
+                               ],
+                               "columnDefs": [
+                                   {
+                                       className: 'text-right', targets: [4] //數字靠右
+                                   },
                                ],
                                "order": [[0, "asc"]], //根據 點收批號 排序
                                "scrollX": true,

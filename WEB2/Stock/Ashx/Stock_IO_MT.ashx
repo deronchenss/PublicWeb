@@ -28,8 +28,20 @@ public class Stock_IO_MT : IHttpHandler, IRequiresSessionState
                     case "SEARCH":
                         dt = dal.SearchTableForMT();
                         break;
+                    case "INSERT":
+                        result = dal.InsertStkio();
+                        context.Response.StatusCode = 200;
+                        context.Response.Write(result);
+                        context.Response.End();
+                        break;
                     case "UPDATE":
                         result = dal.UpdateStkio();
+                        context.Response.StatusCode = 200;
+                        context.Response.Write(result);
+                        context.Response.End();
+                        break;
+                    case "DELETE":
+                        result = dal.DeleteStkio();
                         context.Response.StatusCode = 200;
                         context.Response.Write(result);
                         context.Response.End();

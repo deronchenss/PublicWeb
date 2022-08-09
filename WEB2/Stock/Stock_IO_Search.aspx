@@ -145,6 +145,7 @@
                             alert('<%=Resources.MP.Data_Not_Exists_Alert%>');
                             Edit_Mode = "Base";
                             Form_Mode_Change("Base");
+                            $('#Table_Search_Data').DataTable().clear().draw();
                         }
                         else {
                             var columns = [];
@@ -167,6 +168,11 @@
                                     Re_Bind_Inner_JS();
                                 },
                                "columns": columns,
+                               "columnDefs": [
+                                   {
+                                       className: 'text-right', targets: [4, 5, 6, 9, 10, 11] //數字靠右
+                                   },
+                               ],
                                 "order": [1, "asc"], //根據 頤坊型號 排序
                                 "scrollX": true,
                                 "scrollY": "62vh",
@@ -177,11 +183,11 @@
                             });
 
                             //不顯示拿來判斷的欄位
-                            //$('#Table_Search_Data').DataTable().column(-1).visible(false);
-                            //$('#Table_Search_Data').DataTable().column(-2).visible(false);
-                            //$('#Table_Search_Data').DataTable().column(-3).visible(false);
-                            //$('#Table_Search_Data').DataTable().column(-4).visible(false);
-                            //$('#Table_Search_Data').DataTable().column(-5).visible(false);
+                            $('#Table_Search_Data').DataTable().column(-1).visible(false);
+                            $('#Table_Search_Data').DataTable().column(-2).visible(false);
+                            $('#Table_Search_Data').DataTable().column(-3).visible(false);
+                            $('#Table_Search_Data').DataTable().column(-4).visible(false);
+                            $('#Table_Search_Data').DataTable().column(-5).visible(false);
 
                             //顏色設定
                             var supluSeqIndex = $('#Table_Search_Data').find('thead th:contains(SUPLU_SEQ)').index() + 1;
@@ -193,9 +199,7 @@
                             $('#Table_Search_Data').find('tbody tr[role=row]').each(function () {
                                 var rowData = $('#Table_Search_Data').DataTable().row($(this)).data();
 
-                                var $columnSupluSeq = $(this).find('td:nth-child(' + supluSeqIndex + ')');
                                 var $columnIvan = $(this).find('td:nth-child(' + ivanIndex + ')');
-                                var $columnImg = $(this).find('td:nth-child(' + imgIndex + ')');
                                 var $stockColumn = $(this).find('td:nth-child(' + stockIndex + ')');
                                 var $disColumn = $(this).find('td:nth-child(' + disIndex + ')');
                                 var $quickTakeColumn = $(this).find('td:nth-child(' + quickTakeIndex + ')');
@@ -215,9 +219,9 @@
                                 }
 
                                 //button
-                                var ivanStyle = '<input class="Call_Product_Tool" SUPLU_SEQ = "' + ($columnSupluSeq.text() ?? "")
-                                    + '" type="button" value="' + ($columnIvan.text() ?? "")
-                                    + '" style="text-align:left;width:100%;z-index:1000;' + (($columnImg.text() == 'Y') ? 'background: #90ee90;' : '') + '" />';
+                                var ivanStyle = '<input class="Call_Product_Tool" SUPLU_SEQ = "' + (rowData.SUPLU_SEQ ?? "")
+                                    + '" type="button" value="' + (rowData.頤坊型號 ?? "")
+                                    + '" style="text-align:left;width:100%;z-index:1000;' + ((rowData.Has_IMG == 'Y') ? 'background: #90ee90;' : '') + '" />';
                                 $columnIvan.html(ivanStyle);
                             });
 

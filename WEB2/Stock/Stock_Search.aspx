@@ -19,16 +19,19 @@
             DDL_Bind();
             function DDL_Bind() {
                 $.ajax({
-                    url: "/Web_Service/DDL_DataBind.asmx/ProdStatusDDL",
+                    url: "/CommonAshx/Common.ashx",
+                    data: {
+                        "Call_Type": "GET_DATA_FROM_REFDATA",
+                        "CODE": '產品狀態'
+                    },
                     cache: false,
-                    dataType: "json",
+                    contentType: "application/x-www-form-urlencoded; charset=UTF-8",
                     type: "POST",
-                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
                     success: function (data) {
-                        var Json_Response = JSON.parse(data.d);
                         var DDL_Option = "<option></option>";
-                        $.each(Json_Response, function (i, value) {
-                            DDL_Option += '<option value="' + value.val + '">' + value.txt + '</option>';
+                        $.each(data, function (i, value) {
+                            DDL_Option += '<option value="' + value.內容.substring(0, 1) + '">' + value.內容 + '</option>';
                         });
                         $('#Q_PROD_STATUS').html(DDL_Option);
                     },
@@ -192,18 +195,24 @@
                                     Re_Bind_Inner_JS();
                                 },
                                "columns": columns,
-                                "order": [1, "asc"], //根據 頤坊型號 排序
-                                "scrollX": true,
-                                "scrollY": "62vh",
-                                "searching": false,
-                                "paging": false,
-                                "bInfo": false, //顯示幾筆隱藏
-                                "autoWidth": false //欄位小於VIEW 長度，自動擴展
+                               "columnDefs": [
+                                   {
+                                       className: 'text-right', targets: [5, 6, 8, 10, 11, 12, 14, 15
+                                           , 16, 18, 20, 22, 24, 26, 28, 30, 32, 34] //數字靠右
+                                   }, 
+                               ],
+                               "order": [1, "asc"], //根據 頤坊型號 排序
+                               "scrollX": true,
+                               "scrollY": "62vh",
+                               "searching": false,
+                               "paging": false,
+                               "bInfo": false, //顯示幾筆隱藏
+                               "autoWidth": false //欄位小於VIEW 長度，自動擴展
                             });
 
                             //不顯示拿來判斷的欄位
-                            //$('#Table_Search_Data').DataTable().column(-1).visible(false);
-                            //$('#Table_Search_Data').DataTable().column(-2).visible(false);
+                            $('#Table_Search_Data').DataTable().column(-1).visible(false);
+                            $('#Table_Search_Data').DataTable().column(-2).visible(false);
 
                             //顏色設定
                             var seqIndex = $('#Table_Search_Data').find('thead th:contains(序號)').index() + 1;
@@ -223,9 +232,7 @@
 
                                 var rowData = $('#Table_Search_Data').DataTable().row($(this)).data();
 
-                                var $columnSeq = $(this).find('td:nth-child(' + seqIndex + ')');
                                 var $columnIvan = $(this).find('td:nth-child(' + ivanIndex + ')');
-                                var $columnImg = $(this).find('td:nth-child(' + imgIndex + ')');
                                 var $custTypeColumn = $(this).find('td:nth-child(' + custTypeIndex + ')');
                                 var $devColumn = $(this).find('td:nth-child(' + devIndex + ')');
                                 var $unitColumn = $(this).find('td:nth-child(' + unitIndex + ')');
@@ -294,9 +301,9 @@
                                 }
 
                                 //button
-                                var ivanStyle = '<input class="Call_Product_Tool" SUPLU_SEQ = "' + ($columnSeq.text() ?? "")
-                                    + '" type="button" value="' + ($columnIvan.text() ?? "")
-                                    + '" style="text-align:left;width:100%;z-index:1000;' + (($columnImg.text() == 'Y') ? 'background: #90ee90;' : '') + '" />';
+                                var ivanStyle = '<input class="Call_Product_Tool" SUPLU_SEQ = "' + (rowData.序號 ?? "")
+                                    + '" type="button" value="' + (rowData.頤坊型號 ?? "")
+                                    + '" style="text-align:left;width:100%;z-index:1000;' + ((rowData.Has_IMG == 'Y') ? 'background: #90ee90;' : '') + '" />';
                                 $columnIvan.html(ivanStyle);
                             });
 
@@ -440,10 +447,11 @@
                 <td class="tdbstyle">
                     <input id="Q_FACT_TYPE" DT_Query_Name="廠商型號" class="textbox_char" />
                 </td>
-                  <td class="tdhstyle"></td>
+                  <td class="tdhstyle">
+                       <input id="Q_ONLY_STORE" type="checkbox" DT_Query_Name="限門市" class="textbox_char" />
+                        限門市
+                  </td>
                 <td class="tdbstyle">
-                    <input id="Q_ONLY_STORE" type="checkbox" DT_Query_Name="限門市" class="textbox_char" />
-                    限門市
                     <input id="Q_ZERO_STOCK" type="checkbox" DT_Query_Name="售完" class="textbox_char" />
                     售完
                 </td>
@@ -461,7 +469,10 @@
                 <td class="tdbstyle">
                     <input id="Q_STOCK_LOC" DT_Query_Name="庫位" class="textbox_char" />
                 </td>
-                <td class="tdhstyle"></td>
+                <td class="tdhstyle">
+                    <input id="Q_REPLACE_STOCK" type="checkbox" DT_Query_Name="替代庫存" class="textbox_char" />
+                    替代庫存
+                </td>
                 <td class="tdbstyle">
                     <input id="Q_DRAFT" type="checkbox" DT_Query_Name="草稿" class="textbox_char" />
                     草稿

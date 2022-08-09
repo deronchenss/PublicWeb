@@ -199,12 +199,11 @@
                                     { data: "價格待通知", title: "價格待通知", visible: false },
                                     { data: "P2_已刪除", title: "P2_已刪除", visible: false }
                                 ],
-                                columnDefs: [{
-                                    targets: [0],
-                                    createdCell: function (td, cellData, rowData, row, col) { //操作dom元素
+                                "columnDefs": [
+                                    {
+                                        className: 'text-right', targets: [7] //數字靠右
                                     },
-                                    className: "text-center",// 新增class
-                                }],
+                                ],
                                 "order": [[1, "asc"]], //根據 INVOICE 排序
                                 "scrollX": true,
                                 "scrollY": "62vh",

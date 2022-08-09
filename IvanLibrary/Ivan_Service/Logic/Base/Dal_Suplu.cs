@@ -160,6 +160,12 @@ namespace Ivan_Service
                                 sqlStr += " AND ISNULL(S.ISP安全數,0)=3 ";
                             }
                             break;
+                        case "替代庫存":
+                            if (context.Request[form] == "1")
+                            {
+                                sqlStr += " AND IIF(ISNULL(總庫存,0) - 大貨庫存數 = 0, NULL, ISNULL(總庫存,0) - 大貨庫存數) > 0 ";
+                            }
+                            break;
                         case "庫位":
                             sqlStr += " AND ISNULL(S.[" + context.Request["倉位"] + "庫位],'') LIKE '%' + @" + form + " + '%' ";
                             this.SetParameters(form, context.Request[form]);

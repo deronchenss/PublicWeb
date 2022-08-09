@@ -1,5 +1,8 @@
-﻿using Ivan_Dal;
+﻿using Ivan.DAL.Models;
+using Ivan_Dal;
+using System;
 using System.Data;
+using System.Text;
 using System.Web;
 
 namespace Ivan_Service
@@ -10,6 +13,8 @@ namespace Ivan_Service
         {
             context = _context;
         }
+
+        #region 查詢區域
 
         /// <summary>
         /// 庫存入出查詢 查詢 Return DataTable
@@ -32,7 +37,7 @@ namespace Ivan_Service
 			                          ,S.單據編號
 			                          ,IIF(S.異動前庫存 = 0, NULL, S.異動前庫存) 異動前庫存
 			                          ,IIF(SU.大貨庫存數 = 0, NULL, SU.大貨庫存數) AS 大貨庫存數
-			                          ,IIF(SU.分配庫存數 = 0, NULL, SU.分配庫存數) AS 分配庫存數
+			                          ,IIF((SELECT SUM(ISNULL(出庫數,0)) FROM stkio INS WHERE ISNULL(INS.已刪除,0) != 1 AND INS.SUPLU_SEQ = S.SUPLU_SEQ) = 0,NULL, (SELECT SUM(ISNULL(出庫數,0)) FROM stkio INS WHERE ISNULL(INS.已刪除,0) != 1 AND INS.SUPLU_SEQ = S.SUPLU_SEQ)) AS 分配庫存數
 			                          ,S.備註
 			                          ,S.庫位
 			                          ,S.庫區
@@ -45,8 +50,10 @@ namespace Ivan_Service
 			                          ,S.序號
 			                          ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = S.SUPLU_SEQ) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
 			                          ,S.SUPLU_SEQ
-                                      ,CASE WHEN ISNULL(SU.大貨庫存數,0) >= ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) AND ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) > 0 AND ISNULL(SU.大貨庫存數,0) >= ISNULL(SU.分配庫存數,0) THEN 'Y' ELSE 'N' END 庫存足夠
-                                      ,CASE WHEN ISNULL(SU.大貨庫存數,0) >= ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) AND ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) > 0 AND ISNULL(SU.大貨庫存數,0) < ISNULL(SU.分配庫存數,0) THEN 'Y' ELSE 'N' END 分配數不足
+                                      ,CASE WHEN ISNULL(SU.大貨庫存數,0) >= ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) AND ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) > 0 AND ISNULL(SU.大貨庫存數,0) >= ISNULL((SELECT SUM(ISNULL(出庫數,0)) FROM stkio INS WHERE ISNULL(INS.已刪除,0) != 1 AND INS.SUPLU_SEQ = S.SUPLU_SEQ),0) THEN 'Y' 
+                                            ELSE 'N' END 庫存足夠
+                                      ,CASE WHEN ISNULL(SU.大貨庫存數,0) >= ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) AND ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) > 0 AND ISNULL(SU.大貨庫存數,0) < ISNULL((SELECT SUM(ISNULL(出庫數,0)) FROM stkio INS WHERE ISNULL(INS.已刪除,0) != 1 AND INS.SUPLU_SEQ = S.SUPLU_SEQ),0) THEN 'Y' 
+                                            ELSE 'N' END 分配數不足
                         FROM {1} S
                         JOIN suplu SU ON S.SUPLU_SEQ = SU.序號
                         WHERE ISNULL(S.已刪除,0) != 1
@@ -130,7 +137,8 @@ namespace Ivan_Service
 			                          ,IIF(S.入庫數 = 0, NULL, S.入庫數) 入庫數
 			                          ,IIF(S.出庫數 = 0, NULL, S.出庫數) 出庫數
 			                          ,(SELECT SH.入庫數 + SH.出庫數 FROM stkioh SH WHERE SH.SOURCE_TABLE = 'stkio' AND S.序號 = SH.SOURCE_SEQ) 核銷數
-			                          ,S.備註
+			                          ,S.帳項
+                                      ,S.備註
 			                          ,S.廠商編號
 			                          ,S.客戶編號
 			                          ,S.客戶簡稱
@@ -286,9 +294,63 @@ namespace Ivan_Service
             return dt;
         }
 
+        #endregion
+
+        #region 新增區域
+        /// <summary>
+        /// Insert Stkio 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public int InsertStkio()
+        {
+            Stkio stkioModel = new Stkio();
+            var column = new StringBuilder();
+            var columnVar = new StringBuilder();
+
+            foreach (var property in stkioModel.GetType().GetProperties())
+            {
+                //序號特殊邏輯， 如DB 訂為 identity可以移除
+                if ("序號".Equals(property.Name))
+                {
+                    column.Append($" [{property.Name}],");
+                    columnVar.Append($" (SELECT MAX(序號) + 1 FROM stkio),");
+                }
+                else if ("建立人員".Equals(property.Name) || "更新人員".Equals(property.Name))
+                {
+                    column.Append($" [{property.Name}],");
+                    columnVar.Append($" 'IVAN10',");
+                }
+                else if ("建立日期".Equals(property.Name) || "更新日期".Equals(property.Name))
+                {
+                    column.Append($" [{property.Name}],");
+                    columnVar.Append($" GETDATE(),");
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(context.Request[property.Name]))
+                        continue;
+
+                    column.Append($" [{property.Name}],");
+                    columnVar.Append($" @{property.Name},");
+                    SetParameters($"@{property.Name}", context.Request[property.Name]);
+                }
+            }
+
+            string sqlStr = string.Format($"INSERT INTO stkio ({column.ToString().TrimEnd(',')}) VALUES ({columnVar.ToString().TrimEnd(',')})");
+
+            this.SetTran();
+            int res = ExecuteWithLog(sqlStr);
+            this.TranCommit();
+
+            return res;
+        }
+
+        #endregion
+
         #region 更新區域
         /// <summary>
-        /// UPDATE Paku 
+        /// UPDATE Stkio 
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
@@ -325,5 +387,29 @@ namespace Ivan_Service
         }
         #endregion
 
+        #region 刪除區域
+        /// <summary>
+        /// 刪除RECU 單筆
+        /// </summary>
+        /// <returns></returns>
+        public int DeleteStkio()
+        {
+            int res = 0;
+            string sqlStr = @"      UPDATE stkio
+                                    SET 已刪除 = 1
+                                       ,更新日期 = GETDATE()
+									   ,更新人員 = @UPD_USER
+                                    WHERE [序號] = @SEQ
+                                     ";
+
+            this.SetParameters("SEQ", context.Request["SEQ"]);
+            this.SetParameters("UPD_USER", "IVAN10");
+
+            this.SetTran();
+            res = ExecuteWithLog(sqlStr);
+            this.TranCommit();
+            return res;
+        }
+        #endregion
     }
 }

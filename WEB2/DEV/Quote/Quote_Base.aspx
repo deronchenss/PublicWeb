@@ -81,6 +81,11 @@
                                     { title: "<%=Resources.MP.Update_User%>" },
                                     { title: "<%=Resources.MP.Update_Date%>" }
                                 ],
+                                "columnDefs": [
+                                    {
+                                        className: 'text-right', targets: [2,3,5,6] //數字靠右
+                                    },
+                                ],
                                 "order": [[1, "asc"]], //根據 頤坊型號 排序
                                 "scrollX": true,
                                 "scrollY": "62vh",
@@ -198,6 +203,11 @@
                                     { data: "更新人員", title: "<%=Resources.MP.Update_User%>" },
                                     { data: "更新日期", title: "<%=Resources.MP.Update_Date%>" }
                                 ],
+                                "columnDefs": [
+                                    {
+                                        className: 'text-right', targets: [2, 3, 5, 6] //數字靠右
+                                    },
+                                ],
                                 "order": [[1, "asc"]], //根據 頤坊型號 排序
                                 "scrollX": true,
                                 "scrollY": "62vh",
@@ -230,7 +240,12 @@
                                     { title: "序號" },
                                     { title: "<%=Resources.MP.Update_User%>" },
                                     { title: "<%=Resources.MP.Update_Date%>" }
-                                ],
+                               ],
+                               "columnDefs": [
+                                   {
+                                       className: 'text-right', targets: [2, 3, 5, 6] //數字靠右
+                                   },
+                               ],
                                 "order": [[1, "asc"]], //根據 頤坊型號 排序
                                 "scrollX": true,
                                 "scrollY": "62vh",

@@ -246,6 +246,7 @@
                                         <li >
                                             <a href="/Stock/Stock_Search.aspx"><%--庫存查詢--%><%=Resources.MP.Stock%><%=Resources.MP.Speace%><%=Resources.MP.Search%></a>
                                             <a href="/Stock/Stock_IO_Search.aspx"><%--庫存入出查詢--%><%=Resources.MP.Stock%><%=Resources.MP.IO%><%=Resources.MP.Search%></a>
+                                            <a href="/Stock/Stock_IO_MT.aspx"><%--庫存入出查詢--%><%=Resources.MP.Stock%><%=Resources.MP.IO%><%=Resources.MP.Maintenance%></a>
                                         </li>
                                     </ul>
                                 </li>

@@ -400,12 +400,11 @@
                                     { data: "大備註三", title: "大備註三", visible: false },
                                     { data: "特別事項", title: "特別事項", visible: false }
                                 ],
-                                columnDefs: [{
-                                    targets: [0],
-                                    createdCell: function (td, cellData, rowData, row, col) { //操作dom元素
+                                "columnDefs": [
+                                    {
+                                        className: 'text-right', targets: [10, 11, 12, 17, 18] //數字靠右
                                     },
-                                    className: "text-center",// 新增class
-                                }],
+                                ],
                                 "order": [[2, "asc"]], //根據 樣品號碼 排序
                                 "scrollX": true,
                                 "scrollY": "62vh",

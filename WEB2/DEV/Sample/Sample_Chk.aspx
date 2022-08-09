@@ -118,9 +118,11 @@
                     { title: "原產品寬度" },
                     { title: "原產品高度" }
                 ],
-                columnDefs: [{
-                    className: "text-center",// 新增class
-                }],
+                "columnDefs": [
+                    {
+                        className: 'text-right', targets: [3,5,18] //數字靠右
+                    },
+                ],
                 "order": [[0, "asc"]], //根據 採購單號 排序
                 "scrollX": true,
                 "scrollY": "62vh",
@@ -330,7 +332,7 @@
                                     {
                                         data: null, title: "本次點收",
                                         render: function (data, type, row) {
-                                            return '<input type="number" id="E_CHK_CNT" class="tableInput" disabled="disabled" style="width:80px;text-align: right;" value = "0"  />'
+                                            return '<input type="number" id="E_CHK_CNT" class="tableInput" disabled="disabled" style="width:80px;text-align: right;" value = "' + row.採購數量 + '"  />'
                                         },
                                     },
                                     { data: "點收數量", title: "已點收數量" },
@@ -389,9 +391,11 @@
                                     { data: "產品寬度", title: "原產品寬度" },
                                     { data: "產品高度", title: "原產品高度" }
                                 ],
-                                columnDefs: [{
-                                    className: "text-center",// 新增class
-                                }],
+                                "columnDefs": [
+                                    {
+                                        className: 'text-right', targets: [3, 5, 18] //數字靠右
+                                    },
+                                ],
                                 "order": [[0, "asc"]], //根據 採購單號 排序
                                 "scrollX": true,
                                 "scrollY": "62vh",
@@ -446,9 +450,11 @@
                                     { title: "原產品寬度" },
                                     { title: "原產品高度" }
                                 ],
-                                columnDefs: [{
-                                    className: "text-center",// 新增class
-                                }],
+                                "columnDefs": [
+                                    {
+                                        className: 'text-right', targets: [3, 5, 18] //數字靠右
+                                    },
+                                ],
                                "order": [[0, "asc"]], //根據 採購單號 排序
                                "scrollX": true,
                                "scrollY": "62vh",
@@ -502,7 +508,12 @@
                                     { title: "原產品長度" },
                                     { title: "原產品寬度" },
                                     { title: "原產品高度" }
-                               ],
+                                ],
+                                "columnDefs": [
+                                    {
+                                        className: 'text-right', targets: [3, 5, 18] //數字靠右
+                                    },
+                                ],
                                "order": [[0, "asc"]], //根據 採購單號 排序
                                "scrollX": true,
                                "scrollY": "62vh",

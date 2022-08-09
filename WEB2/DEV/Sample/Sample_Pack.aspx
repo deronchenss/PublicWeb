@@ -100,9 +100,11 @@
                     { title: "SUPLU_SEQ" },
                     { title: "BYRLU_SEQ" }
                 ],
-                columnDefs: [{
-                    className: "text-center",// 新增class
-                }],
+                "columnDefs": [
+                    {
+                        className: 'text-right', targets: [4] //數字靠右
+                    },
+                ],
                 "order": [[0, "asc"]], //根據 採購單號 排序
                 "scrollX": true,
                 "scrollY": "62vh",
@@ -327,9 +329,6 @@
                                     { data: "SUPLU_SEQ", title: "SUPLU_SEQ" },
                                     { data: "BYRLU_SEQ", title: "BYRLU_SEQ" }
                                 ],
-                                columnDefs: [{
-                                    className: "text-center",// 新增class
-                                }],
                                 "order": [[0, "asc"]], //根據 採購單號 排序
                                 "scrollX": true,
                                 "scrollY": "62vh",
@@ -367,9 +366,11 @@
                                     { title: "SUPLU_SEQ" },
                                     { title: "BYRLU_SEQ" }
                                 ],
-                                columnDefs: [{
-                                    className: "text-center",// 新增class
-                                }],
+                               "columnDefs": [
+                                    {
+                                        className: 'text-right', targets: [4] //數字靠右
+                                    },
+                                ],
                                "order": [[0, "asc"]], //根據 採購單號 排序
                                "scrollX": true,
                                "scrollY": "62vh",
@@ -406,7 +407,12 @@
                                     { title: "<%=Resources.MP.Update_Date%>" },
                                     { title: "SUPLU_SEQ" },
                                     { title: "BYRLU_SEQ" }
-                               ],
+                                ],
+                                "columnDefs": [
+                                    {
+                                        className: 'text-right', targets: [4] //數字靠右
+                                    },
+                                ],
                                "order": [[0, "asc"]], //根據 採購單號 排序
                                "scrollX": true,
                                "scrollY": "62vh",

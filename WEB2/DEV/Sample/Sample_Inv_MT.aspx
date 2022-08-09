@@ -233,12 +233,6 @@
                                     { data: "備註會計", title: "備註會計", visible: false },
                                     { data: "備註_ivan", title: "備註_ivan", visible: false }
                                 ],
-                                columnDefs: [{
-                                    targets: [0],
-                                    createdCell: function (td, cellData, rowData, row, col) { //操作dom元素
-                                    },
-                                    className: "text-center",// 新增class
-                                }],
                                 "order": [[1, "asc"]], //根據 INVOICE 排序
                                 "scrollX": true,
                                 "scrollY": "62vh",
