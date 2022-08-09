@@ -43,8 +43,9 @@ public class Quote_MT : IHttpHandler, IRequiresSessionState
                                                             ,IIF(Quah.單價_2 = 0, NULL, Quah.單價_2) 單價_2
                                                             ,IIF(Quah.單價_3 = 0, NULL, Quah.單價_3) 單價_3
                                                             ,IIF(Quah.單價_4 = 0, NULL, Quah.單價_4) 單價_4
-                                                            ,Quah.S_FROM 出貨地
-                                                            , Quah.序號, Quah.更新人員, CONVERT(VARCHAR, Quah.更新日期, 120) 更新日期
+                                                            ,CASE Quah.S_FROM WHEN 1 THEN '台灣'
+                                                                              ELSE '中國' END 出貨地
+                                                            , Quah.序號, Quah.更新人員, CONVERT(VARCHAR, Quah.更新日期, 23) 更新日期
                                                             ,ISNULL(quahm.大備註,'') 大備註
                                                             ,BYRLU_SEQ
                                                      FROM Dc2..Quah 
