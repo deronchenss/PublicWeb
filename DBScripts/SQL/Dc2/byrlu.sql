@@ -15,7 +15,7 @@ CREATE TABLE [dbo].[byrlu](
 	[客戶簡稱] [varchar](10) NULL,
 	[頤坊型號] [varchar](15) NULL,
 	[客戶型號] [varchar](15) NULL,
-	[產品說明] [varchar](80) NULL,
+	[產品說明] [varchar](360) NULL,
 	[單位] [varchar](6) NULL,
 	[最後單價日] [datetime] NULL,
 	[美元單價] [decimal](9, 3) NULL,
@@ -68,6 +68,7 @@ ALTER TABLE [dbo].[byrlu] ADD  CONSTRAINT [DF_byrlu_min_3]  DEFAULT ((0)) FOR [m
 ALTER TABLE [dbo].[byrlu] ADD  CONSTRAINT [DF_byrlu_min_4]  DEFAULT ((0)) FOR [min_4]
 ALTER TABLE [dbo].[byrlu] ADD  CONSTRAINT [DF_byrlu_外幣單價]  DEFAULT ((0)) FOR [外幣單價]
 ALTER TABLE [dbo].[byrlu] ADD  CONSTRAINT [DF_byrlu_更新人員]  DEFAULT (getdate()) FOR [更新日期]
+CREATE INDEX BURLU_IDX_SUPLU_SEQ ON Dc2..BYRLU([SUPLU_SEQ])
 --產品說明>價格說明or資訊?
 ALTER TABLE Dc2..byrlu ADD CONSTRAINT CNo_With_CM UNIQUE ([客戶編號], [客戶型號]);
 INSERT INTO Dc2..byrlu with(tablock)

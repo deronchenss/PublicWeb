@@ -15,7 +15,7 @@ CREATE TABLE [dbo].[paku](
 	[樣品號碼] [varchar](18) NULL,
 	[頤坊型號] [varchar](15) NULL,
 	[暫時型號] [varchar](15) NULL,
-	[產品說明] [varchar](80) NULL,
+	[產品說明] [varchar](360) NULL,
 	[單位] [varchar](6) NULL,
 	[美元單價] [decimal](9, 3) NULL,
 	[台幣單價] [decimal](9, 2) NULL,

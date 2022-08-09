@@ -12,7 +12,7 @@ CREATE TABLE [dbo].[paku2](
 	[客戶簡稱] [varchar](10) NULL,
 	[頤坊型號] [varchar](15) NULL,
 	[暫時型號] [varchar](15) NULL,
-	[產品說明] [varchar](80) NULL,
+	[產品說明] [varchar](360) NULL,
 	[單位] [varchar](6) NULL,
 	[備貨數量] [decimal](9, 3) NULL,
 	[核銷數量] [decimal](9, 3) NULL,
