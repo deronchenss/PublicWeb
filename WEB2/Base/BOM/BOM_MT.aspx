@@ -1334,7 +1334,7 @@
                 </tr>
             </table>
 
-            <div id="Div_DT_View2" style="margin: auto; width: 98%; overflow: auto; display: none;;border-style:solid;border-width:1px;">
+            <div id="Div_DT_View2" style="margin: auto; width: 98%; overflow: auto; display: none;border-style:solid;border-width:1px;">
                 <input id="RB_DV_DIMG" type="radio" name="DIMG" checked="checked" onclick="$('.DIMG').css('display', 'none');" />
                 <label for="RB_DV_DIMG"><%=Resources.MP.Not_Show_Image%></label>
                 <input id="RB_V_DIMG" type="radio" name="DIMG" onclick="$('.DIMG').css('display', '');$('.DIMG img').css('height', '');" />

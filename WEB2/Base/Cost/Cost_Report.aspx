@@ -1,6 +1,7 @@
 ﻿<%@ Page Title="Cost Report" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Cost_Report.aspx.cs" Inherits="Cost_Cost_Report" %>
 <%@ Register TagPrefix="uc1" TagName="uc1" Src="~/User_Control/Dia_Supplier_Selector.ascx" %>
 <%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_ALL.ascx" %>
+<%@ Register TagPrefix="uc3" TagName="uc3" Src="~/User_Control/Dia_Customer_Selector.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
 </asp:Content>
@@ -22,6 +23,22 @@
                 $("#Search_Supplier_Dialog").dialog('open');
             });
 
+            $('#SSD_Table_Supplier').on('click', '.SUP_SEL', function () {
+                $('#TB_S_No').val($(this).parent().parent().find('td:nth(2)').text());
+                $('#TB_S_SName').val($(this).parent().parent().find('td:nth(3)').text());
+                $("#Search_Supplier_Dialog").dialog('close');
+            });
+
+            $('#BT_Customer_Selector').on('click', function () {
+                $("#Search_Customer_Dialog").dialog('open');
+            });
+
+            $('#SCD_Table_Customer').on('click', '.CUST_SEL', function () {
+                $('#TB_C_No').val($(this).parent().parent().find('td:nth(2)').text());
+                $('#TB_C_SName').val($(this).parent().parent().find('td:nth(3)').text());
+                $("#Search_Customer_Dialog").dialog('close');
+            });
+
             $('#DDL_Data_Souce').on('change', function () {
                 switch ($(this).val()) {
                     case "Cost":
@@ -36,58 +53,89 @@
             });
 
             $('#BT_RP_Print').on('click', function () {
+                var Exec_SEQ = '';
                 $("body").loading(); // 遮罩開始
+                $('#Table_Exec_Data tbody tr .SEQ').each(function (i) {
+                    if (i > 0) {
+                        Exec_SEQ += ',';
+                    }
+                    Exec_SEQ += $(this).text();
+                });
+                console.warn(Exec_SEQ);
                 $.ajax({
                     url: "/Base/Cost/New_Cost_Search.ashx",
                     data: {
                         "Call_Type": "Cost_Report_Print",
+                        "Report_Type": $('.V_Report[disabled]').prop('id'),
+                        "SEQ_Array": Exec_SEQ,
+                        //R1
                         "CB_MSRP": $('#R1_CB_MSRP').prop('checked'),
                         "CB_Print_PW": $('#R1_CB_Print_PW').prop('checked'),
-                        "Session_Name": "<%=(Session["Name"] == null) ? "Ivan10" : Session["Name"].ToString().Trim() %>",
+                        //R2
+                        "R2_Type": $('[name=R2_Report_Type]:checked').prop('id'),
+                        "R2_V_PI": $('#R2_RSC_CB_S_PI').prop('checked'),
+                        "R2_V_S_No": $('#R2_RSC_CB_S_No').prop('checked'),
+                        "R2_V_SaleM": $('#R2_RSC_CB_SaleM').prop('checked'),
+                        "R2_V_SupM": $('#R2_RSC_CB_SupM').prop('checked'),
+                        "R2_V_SampleM": $('#R2_RSC_CB_SampleM').prop('checked'),
+                        "R2_V_UP": $('#R2_RSC_CB_UP').prop('checked'),
+                        "R2_V_Unit": $('#R2_RSC_CB_Unit').prop('checked'),
+                        "R2_V_UW": $('#R2_RSC_CB_UW').prop('checked'),
+                        "R2_V_BS": $('#R2_RSC_CB_BS').prop('checked'),
+                        //R3
+                        "R3_Type": $('[name=R3_Report_Type]:checked').prop('id'),
+                        "R3_RSC_CB_S_PI": $('#R3_RSC_CB_S_PI').prop('checked'),
+                        "R3_RSC_CB_S_No": $('#R3_RSC_CB_S_No').prop('checked'),
+                        "R3_RSC_CB_CustM": $('#R3_RSC_CB_CustM').prop('checked'),
+                        "R3_RSC_CB_SaleM": $('#R3_RSC_CB_SaleM').prop('checked'),
+                        "R3_RSC_CB_BS": $('#R3_RSC_CB_BS').prop('checked'),
+                        "R3_RSC_CB_UP": $('#R3_RSC_CB_UP').prop('checked'),
+
+                        "Session_Name": "<%=(Session["Name"] == null) ? "Ivan10" : Session["Name"].ToString().Trim() %>"
                     },
                     cache: false,
                     type: "POST",
                     datatype: "json",
                     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                    xhr: function () {// Seems like the only way to get access to the xhr object
+                    xhr: function () {
                         var xhr = new XMLHttpRequest();
                         xhr.responseType = 'blob'
                         return xhr;
                     },
                     success: function (response, status) {
-                        //if (status === 'nocontent') {
-                        //    alert('採購單號查無資料');
-                        //}
-                        //else if (status !== 'success') {
-                        //    alert(response);
-                        //}
-                        //else {
-                            var blob = new Blob([response], { type: "application/pdf" });
-                            var url = window.URL || window.webkitURL;
-                            link = url.createObjectURL(blob);
-                            var a = $("<a />");
-                            //switch ($('#R_RPT_TYPE').val()) {
-                            //    case "0":
-                            //        a.attr("download", "開發單.pdf");
-                            //        break;
-                            //    case "1":
-                            //        a.attr("download", "詢價單.pdf");
-                            //        break;
-                            //    case "2":
-                            //        a.attr("download", "索樣單.pdf");
-                            //        break;
-                            //    case "3":
-                            //        a.attr("download", "樣品到貨核對表.pdf");
-                            //        break;
-                            //}
-                            a.attr("download", "成本分析.pdf");
-
-                            a.attr("href", link);
-                            $("body").append(a);
-
-                            a[0].click();
-                            $("body").remove(a);
-                        //}
+                        var blob = new Blob([response], { type: "application/pdf" });
+                        var url = window.URL || window.webkitURL;
+                        link = url.createObjectURL(blob);
+                        var a = $('<a />');
+                        switch ($('.V_Report[disabled]').prop('id')) {
+                            case "V_BT_Report_1":
+                                a.attr('download', '成本分析.pdf');
+                                break;
+                            case "V_BT_Report_2":
+                                switch ($('[name=R2_Report_Type]:checked').prop('id')) {
+                                    case "R2_RB_Report_TypeC":
+                                        a.attr('download', '簡易型錄C.pdf');
+                                        break;
+                                    case "R2_RB_Report_TypeD":
+                                        a.attr('download', '簡易型錄D.pdf');
+                                        break;
+                                }
+                                break;
+                            case "V_BT_Report_3":
+                                switch ($('[name=R3_Report_Type]:checked').prop('id')) {
+                                    case "R3_RB_Report_TypeC":
+                                        a.attr('download', '簡易型錄2C.pdf');
+                                        break;
+                                    case "R3_RB_Report_TypeD":
+                                        a.attr('download', '簡易型錄2D.pdf');
+                                        break;
+                                }
+                                break;
+                        }
+                        a.attr('href', link);
+                        $('body').append(a);
+                        a[0].click()
+                        $('body').remove(a);
                         $("body").loading("stop") // 遮罩停止
                     },
                     error: function (ex) {
@@ -108,17 +156,6 @@
                 });
             };
 
-            $('#SSD_Table_Supplier').on('click', '.SUP_SEL', function () {
-                $('#TB_S_No').val($(this).parent().parent().find('td:nth(2)').text());
-                $('#TB_S_SName').val($(this).parent().parent().find('td:nth(3)').text());
-                $("#Search_Supplier_Dialog").dialog('close');
-            });
-
-            //window.document.body.onbeforeunload = function () {
-            //    if (Edit_Mode === "Edit") {
-            //        return '您尚未將編輯過的表單資料送出，請問您確定要離開網頁嗎？';
-            //    }
-            //}
             function Form_Mode_Change(Form_Mode) {
                 switch (Form_Mode) {
                     case "Base":
@@ -208,11 +245,12 @@
                     url: "/Base/Cost/New_Cost_Search.ashx",
                     data: {
                         "Call_Type": "Cost_Report_C_Search",
-                        "IM": $('#TB_IM').val()
-                        //"SampleM": $('#TB_SampleM').val(),
-                        //"Purchase_No": $('#TB_Purchase_No').val(),
-                        //"S_No": $('#TB_S_No').val(),
-                        //"S_SName": $('#TB_S_SName').val()
+                        "IM": $('#TB_IM').val(),
+                        "SaleM": $('#TB_SaleM').val(),
+                        "SampleM": $('#TB_SampleM').val(),
+                        "S_No": $('#TB_S_No').val(),
+                        "S_SName": $('#TB_S_SName').val(),
+                        "PI": $('#TB_PI').val()
                     },
                     cache: false,
                     async: false,
@@ -293,11 +331,11 @@
                     url: "/Base/Cost/New_Cost_Search.ashx",
                     data: {
                         "Call_Type": "Cost_Report_P_Search",
-                        "IM": $('#TB_IM').val()
-                        //"SampleM": $('#TB_SampleM').val(),
-                        //"Purchase_No": $('#TB_Purchase_No').val(),
-                        //"S_No": $('#TB_S_No').val(),
-                        //"S_SName": $('#TB_S_SName').val()
+                        "IM": $('#TB_IM').val(),
+                        "SaleM": $('#TB_SaleM').val(),
+                        "C_No": $('#TB_C_No').val(),
+                        "C_SName": $('#TB_C_SName').val(),
+                        "PI": $('#TB_PI').val()
                     },
                     cache: false,
                     async: false,
@@ -318,7 +356,7 @@
                                 + '</th><th>' + '<%=Resources.MP.Customer_Model%>'
                                 + '</th><th>' + '<%=Resources.MP.Sale_Model%>'
                                 + '</th><th class="DIMG">' + '<%=Resources.MP.Image%>'
-                                + '</th><th>' + '<%=Resources.MP.Parent_Product_Information%>'
+                                + '</th><th>' + '<%=Resources.MP.Price_Information%>'
                                 + '</th><th>' + '<%=Resources.MP.Unit%>'
                                 + '</th><th>' + '<%=Resources.MP.Supplier_No%>'
                                 + '</th><th>' + '<%=Resources.MP.Supplier_Short_Name%>'
@@ -331,7 +369,7 @@
                             $(R).each(function (i) {
                                 Table_HTML +=
                                     '<tr><td>' + String(R[i].開發中 ?? "") +
-                                    '</td><td><input class="Call_Product_Tool" SUPLU_SEQ = "' + String(R[i].序號 ?? "")
+                                    '</td><td><input class="Call_Product_Tool" SUPLU_SEQ = "' + String(R[i].SUPLU_SEQ ?? "")
                                     + '" type="button" value="' + String(R[i].頤坊型號 ?? "")
                                     + '" style="text-align:left;width:100%;z-index:1000;' + ((R[i].Has_IMG) ? 'background: #90ee90;' : '') + '" />' +
                                     '</td><td>' + String(R[i].客戶簡稱 ?? "") +
@@ -526,6 +564,7 @@
     </style>
     <uc1:uc1 ID="uc1" runat="server" /> 
     <uc2:uc2 ID="uc2" runat="server" /> 
+    <uc3:uc3 ID="uc3" runat="server" /> 
 
     <table class="table_th" style="text-align: left;">
         <tr>
@@ -544,19 +583,22 @@
             <td style="text-align: left; width: 15%;">
                 <input id="TB_IM" autocomplete="off" style="width: 100%;" />
             </td>
-            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Sample_Product_No%></td>
+            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Sale_Model%></td>
             <td style="text-align: left; width: 15%;">
+                <input id="TB_SaleM" autocomplete="off" style="width: 100%;" />
+            </td>
+            <td style="text-align: right; text-wrap: none; width: 10%;" class="Cost"><%=Resources.MP.Sample_Product_No%></td>
+            <td style="text-align: left; width: 15%;" class="Cost">
                 <input id="TB_SampleM" autocomplete="off" style="width: 100%;" />
             </td>
-            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Purchase_No%></td>
-            <td style="text-align: left; width: 15%;">
-                <input id="TB_Purchase_No" autocomplete="off" style="width: 100%;" />
-            </td>
+            <td style="text-align: right; text-wrap: none; width: 10%;display:none;" class="Price"></td>
+            <td style="text-align: left; width: 15%;display:none;" class="Price"></td>
+
             <td></td><td></td>
         </tr>
         <tr>
-            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Supplier_No%></td>
-            <td style="text-align: left; width: 15%;">
+            <td style="text-align: right; text-wrap: none; width: 10%;" class="Cost"><%=Resources.MP.Supplier_No%></td>
+            <td style="text-align: left; width: 15%;" class="Cost">
                 <div style="width: 90%; float: left; z-index: -10;">
                     <input id="TB_S_No" style="width: 100%; z-index: -10;" />
                 </div>
@@ -564,9 +606,30 @@
                     <input id="BT_Product_Selector" type="button" value="…" style="float: right; z-index: 10; width: 100%;" />
                 </div>
             </td>
-            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Supplier_Short_Name%></td>
-            <td style="text-align: left; width: 15%;">
+            <td style="text-align: right; text-wrap: none; width: 10%;" class="Cost"><%=Resources.MP.Supplier_Short_Name%></td>
+            <td style="text-align: left; width: 15%;" class="Cost">
                 <input id="TB_S_SName" style="width: 100%;" />
+            </td>
+
+            <td style="text-align: right; text-wrap: none; width: 10%;display:none;" class="Price"><%=Resources.MP.Customer_No%></td>
+            <td style="text-align: left; width: 15%;display:none;" class="Price">
+                <div style="width: 90%; float: left; z-index: -10;">
+                    <input id="TB_C_No" style="width: 100%; z-index: -10;" />
+                </div>
+                <div style="width: 10%; float: right; z-index: 10;">
+                    <input id="BT_Customer_Selector" type="button" value="…" style="float: right; z-index: 10; width: 100%;" />
+                </div>
+            </td>
+            <td style="text-align: right; text-wrap: none; width: 10%;display:none;" class="Price"><%=Resources.MP.Customer_Short_Name%></td>
+            <td style="text-align: left; width: 15%;display:none;" class="Price">
+                <input id="TB_C_SName" style="width: 100%;" />
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; text-wrap: none; width: 10%;" class="Cost"><%=Resources.MP.Product_Information%></td>
+            <td style="text-align: right; text-wrap: none; width: 10%;display:none;" class="Price"><%=Resources.MP.Price_Information%></td>
+            <td style="text-align: left; width: 40%;" colspan="3">
+                <input id="TB_PI" style="width: 100%;" />
             </td>
         </tr>
         <tr>
@@ -670,18 +733,18 @@
                         <input type="radio" value="IM_SN" name="R2_Report_Sort" id="R2_RS_1" checked />
                         <label for="R2_RS_1">頤坊型號,廠商編號</label>
                         <br />
-                        <input type="radio" value="SN_IM" name="R2_Report_Sort" id="R2_RS_2" />
-                        <label for="R2_RS_2">廠商編號,頤坊型號</label>
+                        <input type="radio" value="SN_IM" name="R2_Report_Sort" id="R2_RS_2" style="display:none;" />
+                        <label for="R2_RS_2" style="display:none;">廠商編號,頤坊型號</label>
                         <br />
-                        <input type="radio" value="SampleM_SN" name="R2_Report_Sort" id="R2_RS_3" />
-                        <label for="R2_RS_3">暫時編號,頤坊型號</label>
+                        <input type="radio" value="SampleM_SN" name="R2_Report_Sort" id="R2_RS_3" style="display:none;" />
+                        <label for="R2_RS_3" style="display:none;">暫時編號,頤坊型號</label>
                     </div>
                     <div style="position: relative; border: 1px solid #111111; padding: 20px; box-sizing: border-box; margin: 30px auto; width: 59%;float:right;">
                         <span style="position: absolute; top: -1em; left: 10%; line-height: 2em; padding: 0 1em; background-color: #fff;">報表內容</span>
                         <div style="text-align:left;float:left;width:50%;">
-                            <input type="checkbox" name="R2_Report_Select_Column" id="R2_RSC_CB_IM" checked />
-                            <label for="R2_RSC_CB_IM">頤坊型號</label>
-                            <br />
+                            <input type="checkbox" name="R2_Report_Select_Column" id="R2_RSC_CB_IM" style="display:none;" checked />
+                            <label for="R2_RSC_CB_IM" style="display:none;">頤坊型號(無作用?)</label>
+                            <%--<br />--%>
                             <input type="checkbox" name="R2_Report_Select_Column" id="R2_RSC_CB_S_No" />
                             <label for="R2_RSC_CB_S_No">廠商編號</label>
                             <br />
@@ -693,6 +756,10 @@
                             <br />
                             <input type="checkbox" name="R2_Report_Select_Column" id="R2_RSC_CB_Unit" />
                             <label for="R2_RSC_CB_Unit">單位</label>
+                            
+                            <br />
+                            <input type="checkbox" name="R2_Report_Select_Column" id="R2_RSC_CB_UP" />
+                            <label for="R2_RSC_CB_UP">單價</label>
                         </div>
                         <div style="text-align:left;float:right;width:50%;">
                             <input type="checkbox" name="R2_Report_Select_Column" id="R2_RSC_CB_SaleM" />
@@ -702,13 +769,10 @@
                             <label for="R2_RSC_CB_S_PI">產品說明</label>
                             <br />
                             <input type="checkbox" name="R2_Report_Select_Column" id="R2_RSC_CB_UW" />
-                            <label for="R2_RSC_CB_UW">單位重量</label>
+                            <label for="R2_RSC_CB_UW">單位淨重</label>
                             <br />
                             <input type="checkbox" name="R2_Report_Select_Column" id="R2_RSC_CB_BS" />
                             <label for="R2_RSC_CB_BS">大貨庫存</label>
-                            <br />
-                            <input type="checkbox" name="R2_Report_Select_Column" id="R2_RSC_CB_UP" />
-                            <label for="R2_RSC_CB_UP">單價</label>
                         </div>
                     </div>
                 </div>
@@ -716,14 +780,15 @@
             <div class="search_section_control" control_by="V_BT_Report_3" style="display: none;">
                 <div style="position: relative; border: 1px solid #111111; padding: 20px; box-sizing: border-box; margin: 30px auto; width: 80%;">
                     <span style="position: absolute; top: -1em; left: 10%; line-height: 2em; padding: 0 1em; background-color: #fff;">報表類型</span>
-                    <input type="radio" value="簡易型錄2C" name="R3_Report_Type" id="R3_RB_Report_Type2C" checked />
+                    <input type="radio" value="簡易型錄2C" name="R3_Report_Type" id="R3_RB_Report_TypeC" checked />
                     <label for="R3_RB_Report_TypeC">簡易型錄2C(皮帶單排)</label>
                     <br />
-                    <input type="radio" value="簡易型錄2D" name="R3_Report_Type" id="R3_RB_Report_Type2D" />
+                    <input type="radio" value="簡易型錄2D" name="R3_Report_Type" id="R3_RB_Report_TypeD" />
                     <label for="R3_RB_Report_TypeD">簡易型錄2D(帶扣單排)</label>
                 </div>
                 <div style="display: flex; justify-content: flex-start; align-items: flex-start;width:80%;margin:0 auto;">
-                    <div style="position: relative; border: 1px solid #111111; padding: 20px; box-sizing: border-box; margin: 30px auto; width: 40%;float:left;">
+                    <div style="position: relative; border: 1px solid #111111; padding: 20px; box-sizing: border-box; margin: 30px auto; width: 40%;float:left;display:none;">
+                        <%--暫不使用--%>
                         <span style="position: absolute; top: -1em; left: 10%; line-height: 2em; padding: 0 1em; background-color: #fff;">排列</span>
                         <input type="radio" value="IM_SN" name="R3_Report_Sort" id="R3_RS_1" checked />
                         <label for="R3_RS_1">頤坊型號</label>
@@ -742,6 +807,9 @@
                             <br />
                             <input type="checkbox" name="R3_Report_Select_Column" id="R3_RSC_CB_S_No" />
                             <label for="R3_RSC_CB_S_No">廠商編號</label>
+                            <br />
+                            <input type="checkbox" name="R3_Report_Select_Column" id="R3_RSC_CB_SaleM" />
+                            <label for="R3_RSC_CB_SaleM">銷售型號</label>
                         </div>
                         <div style="text-align:left;float:right;width:50%;">
                             <input type="checkbox" name="R3_Report_Select_Column" id="R3_RSC_CB_S_PI" checked />
@@ -749,6 +817,9 @@
                             <br />
                             <input type="checkbox" name="R3_Report_Select_Column" id="R3_RSC_CB_BS" />
                             <label for="R3_RSC_CB_BS">大貨庫存</label>
+                            <br />
+                            <input type="checkbox" name="R3_Report_Select_Column" id="R3_RSC_CB_UP" />
+                            <label for="R3_RSC_CB_UP">單價</label>
                         </div>
                     </div>
                 </div>
