@@ -5,7 +5,7 @@
         $("#Search_Product_Dialog").dialog({
             autoOpen: false,
             modal: true,
-            title: "<%=Resources.MP.Search_Confition%>",
+            title: "<%=Resources.MP.Ivan_Model%><%=Resources.MP.Speace%><%=Resources.MP.Select%>",
             width: screen.width * 0.8,
             overlay: 0.5,
             position: { my: "center", at: "top" },
@@ -34,11 +34,13 @@
                 success: function (R) {
                     $('#SPD_Table_Product').DataTable({
                         "data": R,
+                        "scrollX": true,
+                        "scrollY": "30vh",
                         "destroy": true,
-                        "order": [[2, "desc"]],
+                        "order": [[3, "asc"]],
                         "lengthMenu": [
-                            [5, 10, 20, -1],
-                            [5, 10, 20, "All"],
+                            [-1, 5, 10, 20],
+                            ["All", 5, 10, 20],
                         ],
                         "columns": [
                             {
@@ -67,6 +69,7 @@
 
                     $('#SPD_Table_Product').css('white-space', 'nowrap');
                     $('#SPD_Table_Product thead th').css('text-align', 'center');
+                    $('#SPD_Table_Product').DataTable().draw();
                 },
                 error: function (ex) {
                     alert(ex);
@@ -104,21 +107,14 @@
             <td style="text-align: left; width: 15%;">
                 <input style="width: 90%; height: 25px;" id="SPD_TB_S_No" />
             </td>
-        </tr>
-        <tr>
-            <td>
-                <br />
-            </td>
-        </tr>
-        <tr>
-            <td style="text-align: center;" colspan="4">
+            <td style="text-align: center;">
                 <div style="display: flex; justify-content: center; align-items: center;">
-                    <input id="SPD_BT_Search" class="BTN" type="button" value="<%=Resources.MP.Search%>" style="width: 10%;" />
+                    <input id="SPD_BT_Search" class="BTN" type="button" value="<%=Resources.MP.Search%>" />
                 </div>
             </td>
         </tr>
     </table>
-    <div id="SPD_Div_DT" style="margin: auto; width: 98%; overflow: auto; display: none;height:50vh;">
+    <div id="SPD_Div_DT" style="margin: auto; width: 98%; display: none;height:50vh;">
         <br />
         <table id="SPD_Table_Product" style="width: 100%;" class="table table-striped table-bordered dt-responsive">
             <thead></thead>

@@ -897,4 +897,16 @@
   <data name="Sample_Ship" xml:space="preserve">
     <value>Sample Shipping</value>
   </data>
+  <data name="Multiple" xml:space="preserve">
+    <value>Multiple</value>
+  </data>
+  <data name="End_Product" xml:space="preserve">
+    <value>End Product</value>
+  </data>
+  <data name="End_Product_Model" xml:space="preserve">
+    <value>End Product Model</value>
+  </data>
+  <data name="Material" xml:space="preserve">
+    <value>Material</value>
+  </data>
 </root>

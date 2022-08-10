@@ -112,7 +112,8 @@ public class New_Cost_Search : IHttpHandler, IRequiresSessionState
                     cmd.Parameters.AddWithValue("S_SName", context.Request["S_SName"]);
                     break;
                 case "Cost_Report_C_Search":
-                    cmd.CommandText = @" SELECT TOP 500 C.[開發中], C.[廠商簡稱], C.[頤坊型號], C.[銷售型號], C.[暫時型號], C.[產品說明], C.[單位], C.[大貨庫存數],
+                    cmd.CommandText = @" SELECT TOP 500 C.[開發中], C.[廠商簡稱], C.[頤坊型號], C.[銷售型號], C.[暫時型號], C.[產品說明], C.[單位], 
+                                            IIF(C.[大貨庫存數] = 0, '', CONVERT(VARCHAR,CAST(C.[大貨庫存數] AS MONEY),1)) [大貨庫存數],
                                          	CONVERT(VARCHAR(20),C.[新增日期],23) [新增日期],
 	                                        CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = C.[序號]),0) AS BIT) [Has_IMG], 
                                          	CONVERT(VARCHAR(20),C.[最後點收日],23) [最後點收日],
@@ -308,8 +309,8 @@ public class New_Cost_Search : IHttpHandler, IRequiresSessionState
 	                                IIF(@R2_V_BS = 'True' AND C.[大貨庫存數] > 0, '大貨庫存 : ' + ISNULL(CAST(C.[大貨庫存數] AS VARCHAR),'') + '  庫位: ' + C.[大貨庫位] + CHAR(10) + CHAR(13),'') +
 	                                IIF(@R2_V_BS = 'True' AND C.[分配庫存數] > 0, '分配 : ' + ISNULL(CAST(C.[分配庫存數] AS VARCHAR),'') + CHAR(10) + CHAR(13),'') [列印匯總],
 	                                '' [群組一],
-	                                X.[圖檔] [圖檔],
-	                                IIF(X.SUPLU_SEQ IS NOT NULL,'Y','') [列印圖檔],
+	                                ISNULL((SELECT X.[圖檔] FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = C.[序號]),'') [圖檔],
+	                                'Y' [列印圖檔],
 	                                NULL [圖檔路徑]
                                 FROM Dc2..suplu C
 	                                LEFT JOIN [192.168.1.135].pic.dbo.xpic X ON X.[SUPLU_SEQ] = C.[序號]

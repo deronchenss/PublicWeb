@@ -5,7 +5,7 @@
         $("#Search_Supplier_Dialog").dialog({
             autoOpen: false,
             modal: true,
-            title: "<%=Resources.MP.Search_Confition%>",
+            title: "<%=Resources.MP.Supplier%><%=Resources.MP.Speace%><%=Resources.MP.Select%>",
             width: screen.width * 0.8,
             overlay: 0.5,
             position: { my: "center", at: "top" },
@@ -33,11 +33,13 @@
                 success: function (R) {
                     $('#SSD_Table_Supplier').DataTable({
                         "data": R,
+                        "scrollX": true,
+                        "scrollY": "30vh",
                         "destroy": true,
                         "order": [[2, "asc"]],
                         "lengthMenu": [
-                            [5, 10, 20, -1],
-                            [5, 10, 20, "All"],
+                            [-1, 5, 10, 20],
+                            ["All", 5, 10, 20],
                         ],
                         "columns": [
                             {
@@ -61,6 +63,7 @@
 
                     $('#SSD_Table_Supplier').css('white-space', 'nowrap');
                     $('#SSD_Table_Supplier thead th').css('text-align', 'center');
+                    $('#SSD_Table_Supplier').DataTable().draw();
                 },
                 error: function (ex) {
                     alert(ex);
@@ -93,21 +96,14 @@
             <td style="text-align: left; width: 15%;">
                 <input style="width: 90%; height: 25px;" id="SSD_TB_S_SName" />
             </td>
-        </tr>
-        <tr>
-            <td>
-                <br />
-            </td>
-        </tr>
-        <tr>
-            <td style="text-align: center;" colspan="4">
+            <td style="text-align: center;">
                 <div style="display: flex; justify-content: center; align-items: center;">
-                    <input id="SSD_BT_Search" class="BTN" type="button" value="<%=Resources.MP.Search%>" style="width: 10%;" />
+                    <input id="SSD_BT_Search" class="BTN" type="button" value="<%=Resources.MP.Search%>" />
                 </div>
             </td>
         </tr>
     </table>
-    <div id="SSD_Div_DT" style="margin: auto; width: 98%; overflow: auto; display: none;height:50vh;">
+    <div id="SSD_Div_DT" style="margin: auto; width: 98%; display: none;height:50vh;">
         <br />
         <table id="SSD_Table_Supplier" style="width: 100%;" class="table table-striped table-bordered dt-responsive">
             <thead></thead>

@@ -903,4 +903,16 @@
   <data name="IO" xml:space="preserve">
     <value>入出</value>
   </data>
+  <data name="Multiple" xml:space="preserve">
+    <value>多筆</value>
+  </data>
+  <data name="End_Product" xml:space="preserve">
+    <value>成品</value>
+  </data>
+  <data name="End_Product_Model" xml:space="preserve">
+    <value>成品型號</value>
+  </data>
+  <data name="Material" xml:space="preserve">
+    <value>材料</value>
+  </data>
 </root>

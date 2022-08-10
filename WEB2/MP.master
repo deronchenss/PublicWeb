@@ -156,6 +156,8 @@
                                             <ul class="dropdown">
                                                 <li><a href="/Base/BOM/BOM_MT.aspx" IVM_PERMISSIONS="32">BOM<%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
                                                     </a></li>
+                                                <li><a href="/Base/BOM/BOM_Multiple_MT.aspx" IVM_PERMISSIONS="0">BOM<%=Resources.MP.Speace%><%=Resources.MP.Multiple%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
+                                                    </a></li>
                                             </ul>
                                         </li>
                                     </ul>

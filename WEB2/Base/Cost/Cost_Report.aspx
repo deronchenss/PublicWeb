@@ -296,7 +296,7 @@
                                     ((R[i].Has_IMG) ? ('<img type="Product" SEQ="' + String(R[i].序號 ?? "") + '" />') : ('<%=Resources.MP.Image_NotExists%>')) +
                                     '</td><td>' + String(R[i].產品說明 ?? "") +
                                     '</td><td>' + String(R[i].單位 ?? "") +
-                                    '</td><td>' + String(R[i].大貨庫存數 ?? "") +
+                                    '</td><td style="text-align:right;">' + String(R[i].大貨庫存數 ?? "") +
                                     '</td><td>' + String(R[i].新增日期 ?? "") +
                                     '</td><td>' + String(R[i].最後點收日 ?? "") +
                                     '</td><td>' + String(R[i].最後單價日 ?? "") +
@@ -663,8 +663,8 @@
     <div>&nbsp;&nbsp;&nbsp;&nbsp;
         <input id="RB_DV_DIMG" type="radio" name="DIMG" disabled="disabled" checked="checked" />
         <label for="RB_DV_DIMG"><%=Resources.MP.Not_Show_Image%></label>
-        <input id="RB_V_DIMG" type="radio" name="DIMG" disabled="disabled" />
-        <label for="RB_V_DIMG"><%=Resources.MP.Show_Original_Image%></label>
+        <%--<input id="RB_V_DIMG" type="radio" name="DIMG" disabled="disabled" />
+        <label for="RB_V_DIMG"><%=Resources.MP.Show_Original_Image%></label>--%>
         <input id="RB_SM_DIMG" type="radio" name="DIMG" disabled="disabled" />
         <label for="RB_SM_DIMG"><%=Resources.MP.Show_Small_Image%></label>
     </div>
@@ -799,9 +799,9 @@
                     <div style="position: relative; border: 1px solid #111111; padding: 20px; box-sizing: border-box; margin: 30px auto; width: 59%;float:right;">
                         <span style="position: absolute; top: -1em; left: 10%; line-height: 2em; padding: 0 1em; background-color: #fff;">報表內容</span>
                         <div style="text-align:left;float:left;width:50%;">
-                            <input type="checkbox" name="R3_Report_Select_Column" id="R3_RSC_CB_IM" checked />
-                            <label for="R3_RSC_CB_IM">頤坊型號</label>
-                            <br />
+                            <input type="checkbox" name="R3_Report_Select_Column" id="R3_RSC_CB_IM" checked style="display:none;" />
+                            <label for="R3_RSC_CB_IM" style="display:none;">頤坊型號</label>
+                            <%--<br />--%>
                             <input type="checkbox" name="R3_Report_Select_Column" id="R3_RSC_CB_CustM" />
                             <label for="R3_RSC_CB_CustM">客戶型號</label>
                             <br />
