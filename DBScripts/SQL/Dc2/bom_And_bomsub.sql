@@ -1,8 +1,18 @@
+/* 本機同步
+SELECT TOP 1 * FROM Dc2..suplu
+--UNION
+SELECT TOP 1 * FROM [192.168.1.135].Dc2.dbo.suplu
+
+INSERT INTO Dc2..suplu with(tablock)
+SELECT * FROM [192.168.1.135].Dc2.dbo.suplu
+*/
 USE Dc2;
-IF EXISTS(SELECT 1 FROM Dc2..bom)
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[bom]') AND type in (N'U'))
 BEGIN
 	DROP TABLE Dc2..bom;
 END
+GO
+
 CREATE TABLE [dbo].[bom](
 	[序號] [int] NOT NULL,
 	[SUPLU_SEQ] [INT] NOT NULL,--New
@@ -13,6 +23,8 @@ CREATE TABLE [dbo].[bom](
 	[備註] [varchar](320) NULL,
 	[部門] [varchar](2) NULL,
 	[變更日期] [datetime] NULL,
+	[建立人員] [varchar](6) NULL,
+	[建立日期] [datetime] NULL,
 	[更新人員] [varchar](6) NULL,
 	[更新日期] [datetime] NULL,
 	[註記] [bit] NULL,--New
@@ -37,10 +49,11 @@ CREATE INDEX BOM_IDX_SUPLU_SEQ ON Dc2..bom([SUPLU_SEQ])
 CREATE INDEX BOM_IDX_SEQ ON Dc2..bom(序號)
 
 
-IF EXISTS(SELECT 1 FROM Dc2..bomsub)
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[bomsub]') AND type in (N'U'))
 BEGIN
 	DROP TABLE Dc2..bomsub;
 END
+GO
 CREATE TABLE [dbo].[bomsub](
 	[序號] [int] NOT NULL,
 	[PARENT_SEQ] [int] NULL,--New
@@ -63,6 +76,8 @@ CREATE TABLE [dbo].[bomsub](
 	[不展開] [bit] NULL,--New
 	[不計成本] [bit] NULL,--New
 	[變更日期] [datetime] NULL,
+	[建立人員] [varchar](6) NULL,
+	[建立日期] [datetime] NULL,
 	[更新人員] [varchar](6) NULL,
 	[更新日期] [datetime] NULL,
  CONSTRAINT [PK_bomsub] PRIMARY KEY CLUSTERED ([序號] ASC)
@@ -105,6 +120,8 @@ SELECT [序號],
 	CAST(0 AS bit) [不發單], CAST(0 AS bit) [不展開], 
 	CAST(IIF(LEFT([轉入單位],1) = 'S',1,0) AS bit) [不計成本],
 	[變更日期],
+	RTRIM(CAST([更新人員] AS VARCHAR(6))) [建立人員],
+	[更新日期] [建立日期],
 	RTRIM(CAST([更新人員] AS VARCHAR(6))) [更新人員],
 	[更新日期]
 FROM Bc2..bomsub A
@@ -124,6 +141,8 @@ SELECT [序號],
 	[備註], 
 	RTRIM(CAST([部門] AS VARCHAR(2))) [部門],
 	[變更日期],
+	RTRIM(CAST([更新人員] AS VARCHAR(6))) [建立人員],
+	[更新日期] [建立日期],
 	RTRIM(CAST([更新人員] AS VARCHAR(6))) [更新人員],
 	[更新日期],
 	CAST(0 AS BIT) [註記] --註記需等Detail同步後

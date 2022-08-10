@@ -14,29 +14,31 @@
         $(document).ready(function () {
             var Edit_Mode;
             var IMG_Has_Read = false;
-            var Product_Selector_Type;
+            var Supplier_Selector_Type;
             document.body.style.overflow = 'hidden';
             //Form_Mode_Change("Search");//WD
             //Search_BOM();//WD
             //"Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Name"].ToString().Trim() %>",
 
-            $('#BT_Product_Selector_M').on('click', function () {
+            $('#BT_Supplier_Selector_M').on('click', function () {
                 $("#Search_Supplier_Dialog").dialog('open');
-                Product_Selector_Type = "M";
+                Supplier_Selector_Type = "M";
             });
 
-            $('#BT_Product_Selector_EP').on('click', function () {
+            $('#BT_Supplier_Selector_EP').on('click', function () {
                 $("#Search_Supplier_Dialog").dialog('open');
-                Product_Selector_Type = "EP";
+                Supplier_Selector_Type = "EP";
             });
 
             $('#SSD_Table_Supplier').on('click', '.SUP_SEL', function () {
-                switch (Product_Selector_Type) {
+                switch (Supplier_Selector_Type) {
                     case "M":
                         $('#TB_M_S_No').val($(this).parent().parent().find('td:nth(2)').text());
+                        $('#TB_M_S_SName').val($(this).parent().parent().find('td:nth(3)').text());
                         break;
                     case "EP":
                         $('#TB_EP_S_No').val($(this).parent().parent().find('td:nth(2)').text());
+                        $('#TB_EP_S_SName').val($(this).parent().parent().find('td:nth(3)').text());
                         break;
                 }
                 $("#Search_Supplier_Dialog").dialog('close');
@@ -126,15 +128,15 @@
 
             function Search_BOM() {
                 $.ajax({
-                    url: "/Base/Cost/New_Cost_Search.ashx",
+                    url: "/Base/BOM/BOM_MMT.ashx",
                     data: {
-                        "Call_Type": "Cost_Report_C_Search",
-                        "IM": $('#TB_IM').val(),
-                        "SaleM": $('#TB_SaleM').val(),
-                        "SampleM": $('#TB_SampleM').val(),
-                        "S_No": $('#TB_S_No').val(),
-                        "S_SName": $('#TB_S_SName').val(),
-                        "PI": $('#TB_PI').val()
+                        "Call_Type": "BOM_MMT_Search",
+                        "MM": $('#TB_MM').val(),
+                        "EPM": $('#TB_EPM').val(),
+                        "M_S_No": $('#TB_M_S_No').val(),
+                        "M_S_SName": $('#TB_M_S_SName').val(),
+                        "EP_S_No": $('#TB_EP_S_No').val(),
+                        "EP_S_SName": $('#TB_EP_S_SName').val()
                     },
                     cache: false,
                     async: false,
@@ -142,6 +144,7 @@
                     datatype: "json",
                     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                     success: function (R) {
+                        console.warn(R);
                         if (R.length === 0) {
                             alert('<%=Resources.MP.Data_Not_Exists_Alert%>');
                             Form_Mode_Change("Base");
@@ -149,58 +152,57 @@
                         else {
                             var Table_HTML =
                                 '<thead><tr>'
-                                + '</th><th>' + '<%=Resources.MP.Developing%>'
-                                + '</th><th>' + '<%=Resources.MP.Ivan_Model%>'
                                 + '</th><th>' + '<%=Resources.MP.Supplier_Short_Name%>'
-                                + '</th><th>' + '<%=Resources.MP.Sale_Model%>'
-                                + '</th><th>' + '<%=Resources.MP.Sample_Product_No%>'
-                                + '</th><th class="DIMG">' + '<%=Resources.MP.Image%>'
-                                + '</th><th>' + '<%=Resources.MP.Product_Information%>'
+                                + '</th><th>' + '<%=Resources.MP.Material_Model%>'
+                                + '</th><th>' + '<%=Resources.MP.Master_Supplier_S_Name%>'
+                                + '</th><th>' + '<%=Resources.MP.End_Product_Model%>'
                                 + '</th><th>' + '<%=Resources.MP.Unit%>'
-                                + '</th><th>' + '<%=Resources.MP.Big_Stock%>'
-                                + '</th><th>' + '<%=Resources.MP.Add_Date%>'
-                                + '</th><th>' + '<%=Resources.MP.Last_Check_And_Accept_Day%>'
-                                + '</th><th>' + '<%=Resources.MP.Last_Price_Day%>'
+                                + '</th><th>' + '<%=Resources.MP.Material_Amount%>'
+                                + '</th><th>' + '<%=Resources.MP.Rank%>'
+                                + '</th><th class="DIMG">' + '<%=Resources.MP.Material%><%=Resources.MP.Speace%><%=Resources.MP.Image%>'
+                                + '</th><th class="DIMG">' + '<%=Resources.MP.End_Product%><%=Resources.MP.Speace%><%=Resources.MP.Image%>'
+                                + '</th><th>' + '<%=Resources.MP.Product_Information%>'
                                 + '</th><th>' + '<%=Resources.MP.Supplier_No%>'
-                                + '</th><th>Source'
+                                + '</th><th>' + '<%=Resources.MP.Final_Supplier%>'
                                 + '</th><th>' + '<%=Resources.MP.SEQ%>'
                                 + '</th><th>' + '<%=Resources.MP.Update_User%>'
                                 + '</th><th>' + '<%=Resources.MP.Update_Date%>'
                                 + '</th></tr></thead><tbody>';
                             $(R).each(function (i) {
                                 Table_HTML +=
-                                    '<tr><td>' + String(R[i].開發中 ?? "") +
-                                    '</td><td><input class="Call_Product_Tool" SUPLU_SEQ = "' + String(R[i].序號 ?? "")
+                                    '<tr><td>' + String(R[i].廠商簡稱 ?? "") +
+                                    '</td><td><input class="Call_Product_Tool" SUPLU_SEQ = "' + String(R[i].D_SUPLU_SEQ ?? "")
+                                    + '" type="button" value="' + String(R[i].材料型號 ?? "")
+                                    + '" style="text-align:left;width:100%;z-index:1000;' + ((R[i].D_Has_IMG) ? 'background: #90ee90;' : '') + '" />' +
+                                    '</td><td>' + String(R[i].完成者簡稱 ?? "") +
+                                    '</td><td><input class="Call_Product_Tool" SUPLU_SEQ = "' + String(R[i].SUPLU_SEQ  ?? "")
                                     + '" type="button" value="' + String(R[i].頤坊型號 ?? "")
                                     + '" style="text-align:left;width:100%;z-index:1000;' + ((R[i].Has_IMG) ? 'background: #90ee90;' : '') + '" />' +
-                                    '</td><td>' + String(R[i].廠商簡稱 ?? "") +
-                                    '</td><td>' + String(R[i].銷售型號 ?? "") +
-                                    '</td><td>' + String(R[i].暫時型號 ?? "") +
-                                    '</td><td class="DIMG" style="text-align:center;">' +
-                                    ((R[i].Has_IMG) ? ('<img type="Product" SEQ="' + String(R[i].序號 ?? "") + '" />') : ('<%=Resources.MP.Image_NotExists%>')) +
-                                    '</td><td>' + String(R[i].產品說明 ?? "") +
                                     '</td><td>' + String(R[i].單位 ?? "") +
-                                    '</td><td style="text-align:right;">' + String(R[i].大貨庫存數 ?? "") +
-                                    '</td><td>' + String(R[i].新增日期 ?? "") +
-                                    '</td><td>' + String(R[i].最後點收日 ?? "") +
-                                    '</td><td>' + String(R[i].最後單價日 ?? "") +
+                                    '</td><td style="text-align:right;">' + String(R[i].材料用量 ?? "") +
+                                    '</td><td>' + String(R[i].階層 ?? "") +
+                                    '</td><td class="DIMG" style="text-align:center; height:100px;">' +
+                                        ((R[i].D_Has_IMG) ? ('<img type="Product" SEQ="' + String(R[i].D_SUPLU_SEQ ?? "") + '" />') : ('<%=Resources.MP.Image_NotExists%>')) +
+                                    '</td><td class="DIMG" style="text-align:center; height:100px;">' +
+                                        ((R[i].Has_IMG) ? ('<img type="Product" SEQ="' + String(R[i].SUPLU_SEQ ?? "") + '" />') : ('<%=Resources.MP.Image_NotExists%>')) +
+                                    '</td><td>' + String(R[i].產品說明 ?? "") +
                                     '</td><td>' + String(R[i].廠商編號 ?? "") +
-                                    '</td><td>' + String(R[i].來源 ?? "") +
-                                    '</td><td class="SEQ">' + String(R[i].序號 ?? "") +
+                                    '</td><td>' + String(R[i].最後完成者 ?? "") +
+                                    '</td><td>' + String(R[i].序號 ?? "") +
                                     '</td><td>' + String(R[i].更新人員 ?? "") +
                                     '</td><td>' + String(R[i].更新日期 ?? "") +
                                     '</td></tr>';
                             });
 
                             Table_HTML += '</tbody>';
-                            $('#Table_Search_CP').html(Table_HTML);
+                            $('#Table_Search_BOMD').html(Table_HTML);
 
                             $('.DIMG').toggle(!$('#RB_DV_DIMG').prop('checked'));
-                            $('#Table_Search_CP_info').text('Showing ' + $('#Table_Search_CP > tbody tr').length + ' entries');
+                            $('#Table_Search_BOMD_info').text('Showing ' + $('#Table_Search_BOMD > tbody tr').length + ' entries');
                             IMG_Has_Read = false;//初始化IMG讀取
 
-                            $('#Table_Search_CP').css('white-space', 'nowrap');
-                            $('#Table_Search_CP thead th').css('text-align', 'center');
+                            $('#Table_Search_BOMD').css('white-space', 'nowrap');
+                            $('#Table_Search_BOMD thead th').css('text-align', 'center');
 
                             Re_Bind_Inner_JS();
                         }
@@ -220,16 +222,16 @@
                         break;
                     case "RB_V_DIMG":
                         Show_IMG = true;
-                        $('.DIMG img').css({ 'height': '', 'width': '' });
+                        $('.DIMG img').css({ 'max-height': '', 'max-width': '' });
                         break;
                     case "RB_SM_DIMG":
                         Show_IMG = true;
-                        $('.DIMG img').css({ 'height': '100px', 'width': '100px' });
+                        $('.DIMG img').css({ 'max-height': '100px', 'max-width': '100px' });
                         break;
                 }
                 if (Show_IMG && !IMG_Has_Read) {
                     FN_GET_IMG($('#Table_Exec_Data img[type=Product]'));
-                    FN_GET_IMG($('#Table_Search_CP img[type=Product]'));
+                    FN_GET_IMG($('#Table_Search_BOMD img[type=Product]'));
                 }
                 function FN_GET_IMG(IMG) {//取得順序調整，Exec優先
                     $(IMG).each(function (i) {
@@ -298,7 +300,7 @@
                         FromTable.html('');
                     }
                     $('#Table_Exec_Data_info').text('Showing ' + $('#Table_Exec_Data > tbody tr').length + ' entries');
-                    $('#Table_Search_CP_info').text('Showing ' + $('#Table_Search_CP > tbody tr').length + ' entries');
+                    $('#Table_Search_BOMD_info').text('Showing ' + $('#Table_Search_BOMD > tbody tr').length + ' entries');
 
                     $('.Exist_Select').toggle(Boolean($('#Table_Exec_Data').find('tbody tr').length > 0));
                     $('.For_Cost').toggle(Boolean($('#DDL_Data_Souce').val() == 'Cost'));
@@ -308,17 +310,17 @@
                 }
             }
 
-            $('#Table_Search_CP').on('click', 'tbody tr', function () {
-                Item_Move($(this), $('#Table_Exec_Data'), $('#Table_Search_CP'), false);
+            $('#Table_Search_BOMD').on('click', 'tbody tr', function () {
+                Item_Move($(this), $('#Table_Exec_Data'), $('#Table_Search_BOMD'), false);
             });
             $('#Table_Exec_Data').on('click', 'tbody tr', function () {
-                Item_Move($(this), $('#Table_Search_CP'), $('#Table_Exec_Data'), false);
+                Item_Move($(this), $('#Table_Search_BOMD'), $('#Table_Exec_Data'), false);
             });
             $('#BT_ATR').on('click', function () {
-                Item_Move($(this), $('#Table_Exec_Data'), $('#Table_Search_CP'), true);
+                Item_Move($(this), $('#Table_Exec_Data'), $('#Table_Search_BOMD'), true);
             });
             $('#BT_ATL').on('click', function () {
-                Item_Move($(this), $('#Table_Search_CP'), $('#Table_Exec_Data'), true);
+                Item_Move($(this), $('#Table_Search_BOMD'), $('#Table_Exec_Data'), true);
             });
         });
     </script>
@@ -337,7 +339,7 @@
                 background-color: #f8981d;
                 color: white;
             }
-        #Table_Search_CP tbody tr:hover, #Table_Exec_Data tbody tr:hover{
+        #Table_Search_BOMD tbody tr:hover, #Table_Exec_Data tbody tr:hover{
             background-color: #f8981d;
             color: white;
         }
@@ -390,23 +392,27 @@
             <td></td><td></td>
         </tr>
         <tr>
-            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Material%><%=Resources.MP.Speace%><%=Resources.MP.Supplier_No%></td>
+            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Material%><%=Resources.MP.Speace%><%=Resources.MP.Supplier%></td>
             <td style="text-align: left; width: 15%;">
                 <div style="width: 90%; float: left; z-index: -10;">
                     <input id="TB_M_S_No" style="width: 100%; z-index: -10;" />
+                    <br />
+                    <input id="TB_M_S_SName" style="width: 111%; z-index: -10;" />
                 </div>
                 <div style="width: 10%; float: right; z-index: 10;">
-                    <input id="BT_Product_Selector_M" type="button" value="…" style="float: right; z-index: 10; width: 100%;" />
+                    <input id="BT_Supplier_Selector_M" type="button" value="…" style="float: right; z-index: 10; width: 100%;" />
                 </div>
             </td>
             
-            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.End_Product%><%=Resources.MP.Speace%><%=Resources.MP.Supplier_No%></td>
+            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Final_Supplier%></td>
             <td style="text-align: left; width: 15%;">
                 <div style="width: 90%; float: left; z-index: -10;">
                     <input id="TB_EP_S_No" style="width: 100%; z-index: -10;" />
+                    <br />
+                    <input id="TB_EP_S_SName" style="width: 111%; z-index: -10;" />
                 </div>
                 <div style="width: 10%; float: right; z-index: 10;">
-                    <input id="BT_Product_Selector_EP" type="button" value="…" style="float: right; z-index: 10; width: 100%;" />
+                    <input id="BT_Supplier_Selector_EP" type="button" value="…" style="float: right; z-index: 10; width: 100%;" />
                 </div>
             </td>
         </tr>
@@ -446,8 +452,8 @@
     </div>
     <div style="width: 98%; margin: 0 auto;">
         <div id="Div_DT_View" style="width: 60%; height: 65vh; overflow: auto; display: none; float: left;border-style:solid;border-width:1px; ">
-            <span class="dataTables_info" id="Table_Search_CP_info" role="status" aria-live="polite"></span>
-            <table id="Table_Search_CP" style="width: 99%;" class="table table-striped table-bordered">
+            <span class="dataTables_info" id="Table_Search_BOMD_info" role="status" aria-live="polite"></span>
+            <table id="Table_Search_BOMD" style="width: 99%;" class="table table-striped table-bordered">
                 <thead></thead>
                 <tbody></tbody>
             </table>

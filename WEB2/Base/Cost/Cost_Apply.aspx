@@ -179,15 +179,15 @@
                         break;
                     case "RB_V_DIMG":
                         Show_IMG = true;
-                        $('.DIMG img').css({ 'height': '', 'width': '' });
+                        $('.DIMG img').css({ 'max-height': '', 'max-width': '' });
                         break;
                     case "RB_SM_DIMG":
                         Show_IMG = true;
-                        $('.DIMG img').css({ 'height': '100px', 'width': '100px' });
+                        $('.DIMG img').css({ 'max-height': '100px', 'max-width': '100px' });
                         break;
                     case "RB_New":
                         Show_IMG = true;
-                        $('.DIMG img').css('height', '100px');
+                        $('.DIMG img').css('max-height', '100px');
 
                         //$('#Table_Exec_Data thead').toggle(false);
                         //$('#Table_Exec_Data tbody tr').attr('style', 'display: block;border: 1px solid #01977a;margin: 10px 0;border - radius: 5pt;background-color: #fff;');

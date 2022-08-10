@@ -19,7 +19,7 @@
             Form_Mode_Change("Search");//WD
             Search_Cost();//WD
 
-            $('#BT_Product_Selector').on('click', function () {
+            $('#BT_Supplier_Selector').on('click', function () {
                 $("#Search_Supplier_Dialog").dialog('open');
             });
 
@@ -413,11 +413,11 @@
                         break;
                     case "RB_V_DIMG":
                         Show_IMG = true;
-                        $('.DIMG img').css({ 'height': '', 'width': '' });
+                        $('.DIMG img').css({ 'max-height': '', 'max-width': '' });
                         break;
                     case "RB_SM_DIMG":
                         Show_IMG = true;
-                        $('.DIMG img').css({ 'height': '100px', 'width': '100px' });
+                        $('.DIMG img').css({ 'max-height': '100px', 'max-width': '100px' });
                         break;
                 }
                 if (Show_IMG && !IMG_Has_Read) {
@@ -603,7 +603,7 @@
                     <input id="TB_S_No" style="width: 100%; z-index: -10;" />
                 </div>
                 <div style="width: 10%; float: right; z-index: 10;">
-                    <input id="BT_Product_Selector" type="button" value="…" style="float: right; z-index: 10; width: 100%;" />
+                    <input id="BT_Supplier_Selector" type="button" value="…" style="float: right; z-index: 10; width: 100%;" />
                 </div>
             </td>
             <td style="text-align: right; text-wrap: none; width: 10%;" class="Cost"><%=Resources.MP.Supplier_Short_Name%></td>

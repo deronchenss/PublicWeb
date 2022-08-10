@@ -530,8 +530,8 @@
                         $('.Rank_td:contains(2)').parent().find('td:lt(7)').not(':nth-child(1), :nth-child(6)').each(function () { $(this).text('\xa0\xa0\xa0\xa0' + $(this).text()) });
                         $('.Rank_td:contains(3)').parent().find('td:lt(7)').not(':nth-child(1), :nth-child(6)').each(function () { $(this).text('\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + $(this).text()) });
                         $('.DIMG').toggle(!$('#RB_DV_DIMG').prop('checked'));
-                        $('.DIMG img').css('height', ($('#RB_SM_DIMG').prop('checked')) ? '100px' : '');
-                        $('.DIMG img').css('width', ($('#RB_SM_DIMG').prop('checked')) ? '100px' : '');
+                        $('.DIMG img').css('max-height', ($('#RB_SM_DIMG').prop('checked')) ? '100px' : '');
+                        $('.DIMG img').css('max-width', ($('#RB_SM_DIMG').prop('checked')) ? '100px' : '');
 
                         //$('#Table_Search_BOM_D tr').toggle(true);
                         //$('#Table_Search_BOM_D .Expand').text('-');
