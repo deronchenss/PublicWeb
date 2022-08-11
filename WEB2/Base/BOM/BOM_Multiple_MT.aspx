@@ -1,6 +1,7 @@
 ﻿<%@ Page Title="BOM Multiple Maintenance" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" %>
 <%@ Register TagPrefix="uc1" TagName="uc1" Src="~/User_Control/Dia_Supplier_Selector.ascx" %>
 <%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_ALL.ascx" %>
+<%@ Register TagPrefix="uc3" TagName="uc3" Src="~/User_Control/Dia_Product_Selector.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
 </asp:Content>
@@ -15,10 +16,10 @@
             var Edit_Mode;
             var IMG_Has_Read = false;
             var Supplier_Selector_Type;
+            var Click_tr_IDX;
             document.body.style.overflow = 'hidden';
-            //Form_Mode_Change("Search");//WD
-            //Search_BOM();//WD
-            //"Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Name"].ToString().Trim() %>",
+            Form_Mode_Change("Search");//WD
+            Search_BOM();//WD
 
             $('#BT_Supplier_Selector_M').on('click', function () {
                 $("#Search_Supplier_Dialog").dialog('open');
@@ -44,17 +45,59 @@
                 $("#Search_Supplier_Dialog").dialog('close');
             });
 
-            $('#BT_RP_Print').on('click', function () {
+            $('#DNT_BT_Product_Selector').on('click', function () {
+                $("#Search_Product_Dialog").dialog('open');
+            });
+
+            $('#SPD_Table_Product').on('click', '.PROD_SEL', function () {
+                $('#DNT_HDN_SUPLU_SEQ').val($(this).parent().parent().find('td:nth(1)').text());
+                $('#DNT_TB_IM').val($(this).parent().parent().find('td:nth(3)').text());
+                $('#DNT_TB_S_ALL').val($(this).parent().parent().find('td:nth(5)').text());
+                $('#DNT_TB_P_IM').val($(this).parent().parent().find('td:nth(7)').text());
+                $("#Search_Product_Dialog").dialog('close');
+            });
+
+            $('#BT_Edit').on('click', function () {
                 var Exec_SEQ = '';
-                $("body").loading(); // 遮罩開始
                 $('#Table_Exec_Data tbody tr .SEQ').each(function (i) {
                     if (i > 0) {
                         Exec_SEQ += ',';
                     }
                     Exec_SEQ += $(this).text();
                 });
-                console.warn(Exec_SEQ);
-                //Update Ajax
+                if ($('#DNT_HDN_SUPLU_SEQ').val().length > 0) {
+                    if (confirm('選取材料有不同，確定一併更新？')) {
+                        $.ajax({
+                            url: "/Base/BOM/BOM_MMT.ashx",
+                            data: {
+                                "Call_Type": "BOM_MMT_Update",
+                                "SEQ_Array": Exec_SEQ,
+                                "New_IM": $('#DNT_HDN_SUPLU_SEQ').val(),
+                                "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Name"].ToString().Trim() %>"
+                            },
+                            cache: false,
+                            async: false,
+                            type: "POST",
+                            datatype: "json",
+                            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                            success: function (R) {
+                                alert(Exec_SEQ + ' > 已Update');
+                                //清空Exec
+
+                                $('#Table_Exec_Data').html('');
+                                $('#Table_Exec_Data_info').text('Showing 0 entries');
+                                Form_Mode_Change("Search");
+                                Search_BOM();
+                            },
+                            error: function (ex) {
+                                alert(ex);
+                            }
+                        });
+                    }
+                }
+                else {
+                    alert('請選擇變更後的新材料');
+                }
             });
 
             function Re_Bind_Inner_JS() {
@@ -87,19 +130,22 @@
                         $('#Div_DT_View').css('width', '60%');
                         $('#Div_Exec_Data').css('width', '35%');
                         $('#Div_Exec_Data').css('float', 'Right');
+                        Click_tr_IDX = null;
+                        $('#Table_Exec_Data tbody tr').css('background-color', '');
+                        $('#Table_Exec_Data tbody tr').css('color', 'black');
                         break;
-                    case "Review_Data":
+                    case "Review_Data"://WD
                         Edit_Mode = "Edit";
                         $('.V_BT').attr('disabled', false);
-                        $('#V_BT_Review').attr('disabled', 'disabled');
+                        //$('#V_BT_Review').attr('disabled', 'disabled');
                         $('#Div_DT_View, #Div_Data_Control, #Div_Edit_Area').toggle(false);
                         $('#Div_Exec_Data').css('width', '100%');
                         $('#Div_Exec_Data').css('float', 'Right');
                         break;
                     case "Edit_Data":
                         Edit_Mode = "Edit";
-                        //$('.V_BT').attr('disabled', false);
-                        //$('#V_BT_Review').attr('disabled', 'disabled');
+                        $('.V_BT').attr('disabled', false);
+                        $('#V_BT_Edit').attr('disabled', 'disabled');
                         $('#Div_DT_View, #Div_Data_Control').toggle(false);
                         $('#Div_Edit_Area').toggle(true);
                         $('#Div_Exec_Data').css('width', '60%');
@@ -119,12 +165,11 @@
                 $(this).attr('disabled', 'disabled');
             });
 
-            $('.V_Report').on('click', function () {
-                Form_Mode_Change("Edit_Data");
-                $('[Control_By]').toggle(false);
-                $('[Control_By=' + $(this).prop('id') + ']').toggle(true);
-                //$(this).attr()
-            });
+            //$('.V_Report').on('click', function () {
+            //    Form_Mode_Change("Edit_Data");
+            //    $('[Control_By]').toggle(false);
+            //    $('[Control_By=' + $(this).prop('id') + ']').toggle(true);
+            //});
 
             function Search_BOM() {
                 $.ajax({
@@ -144,7 +189,7 @@
                     datatype: "json",
                     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                     success: function (R) {
-                        console.warn(R);
+                        //console.warn(R);
                         if (R.length === 0) {
                             alert('<%=Resources.MP.Data_Not_Exists_Alert%>');
                             Form_Mode_Change("Base");
@@ -181,14 +226,14 @@
                                     '</td><td>' + String(R[i].單位 ?? "") +
                                     '</td><td style="text-align:right;">' + String(R[i].材料用量 ?? "") +
                                     '</td><td>' + String(R[i].階層 ?? "") +
-                                    '</td><td class="DIMG" style="text-align:center; height:100px;">' +
+                                    '</td><td class="DIMG" style="text-align:center; height:100px; vertical-align:middle;">' +
                                         ((R[i].D_Has_IMG) ? ('<img type="Product" SEQ="' + String(R[i].D_SUPLU_SEQ ?? "") + '" />') : ('<%=Resources.MP.Image_NotExists%>')) +
-                                    '</td><td class="DIMG" style="text-align:center; height:100px;">' +
+                                    '</td><td class="DIMG" style="text-align:center; height:100px; vertical-align:middle;">' +
                                         ((R[i].Has_IMG) ? ('<img type="Product" SEQ="' + String(R[i].SUPLU_SEQ ?? "") + '" />') : ('<%=Resources.MP.Image_NotExists%>')) +
                                     '</td><td>' + String(R[i].產品說明 ?? "") +
                                     '</td><td>' + String(R[i].廠商編號 ?? "") +
                                     '</td><td>' + String(R[i].最後完成者 ?? "") +
-                                    '</td><td>' + String(R[i].序號 ?? "") +
+                                    '</td><td class="SEQ">' + String(R[i].序號 ?? "") +//Class辨別左右全移
                                     '</td><td>' + String(R[i].更新人員 ?? "") +
                                     '</td><td>' + String(R[i].更新日期 ?? "") +
                                     '</td></tr>';
@@ -203,6 +248,7 @@
 
                             $('#Table_Search_BOMD').css('white-space', 'nowrap');
                             $('#Table_Search_BOMD thead th').css('text-align', 'center');
+                            $('#Table_Search_BOMD tbody td').css('vertical-align', 'middle');
 
                             Re_Bind_Inner_JS();
                         }
@@ -262,8 +308,9 @@
                 }
             });
 
-            $('#BT_Next, #V_BT_Review').on('click', function () {
-                Form_Mode_Change("Review_Data");
+            $('#BT_Next, #V_BT_Edit').on('click', function () {
+                //Form_Mode_Change("Review_Data");//Pass?
+                Form_Mode_Change("Edit_Data");
             });
 
             $('#V_BT_Master').on('click', function () {
@@ -303,8 +350,6 @@
                     $('#Table_Search_BOMD_info').text('Showing ' + $('#Table_Search_BOMD > tbody tr').length + ' entries');
 
                     $('.Exist_Select').toggle(Boolean($('#Table_Exec_Data').find('tbody tr').length > 0));
-                    $('.For_Cost').toggle(Boolean($('#DDL_Data_Souce').val() == 'Cost'));
-                    $('.For_Price').toggle(Boolean($('#DDL_Data_Souce').val() == 'Price'));
 
                     Re_Bind_Inner_JS();
                 }
@@ -314,13 +359,92 @@
                 Item_Move($(this), $('#Table_Exec_Data'), $('#Table_Search_BOMD'), false);
             });
             $('#Table_Exec_Data').on('click', 'tbody tr', function () {
-                Item_Move($(this), $('#Table_Search_BOMD'), $('#Table_Exec_Data'), false);
+                switch (Edit_Mode) {
+                    case "Can_Move":
+                        Item_Move($(this), $('#Table_Search_BOMD'), $('#Table_Exec_Data'), false);
+                        break;
+                    case "Edit":
+                        Click_tr_IDX = $(this).index();
+                        FN_Tr_Click($(this));
+                        break;
+                }
             });
             $('#BT_ATR').on('click', function () {
                 Item_Move($(this), $('#Table_Exec_Data'), $('#Table_Search_BOMD'), true);
             });
             $('#BT_ATL').on('click', function () {
                 Item_Move($(this), $('#Table_Search_BOMD'), $('#Table_Exec_Data'), true);
+            });
+
+            $(window).keydown(function (e) {
+                if (Click_tr_IDX != null) {
+                    switch (e.keyCode) {
+                        case 38://^
+                            if (Click_tr_IDX > 0) {
+                                Click_tr_IDX -= 1;
+                            }
+                            FN_Tr_Click($('#Table_Exec_Data tbody tr:nth(' + Click_tr_IDX + ')'));
+                            break;
+                        case 40://v
+                            if (Click_tr_IDX < ($('#Table_Exec_Data tbody tr').length - 1)) {
+                                Click_tr_IDX += 1;
+                            }
+                            FN_Tr_Click($('#Table_Exec_Data tbody tr:nth(' + Click_tr_IDX + ')'));
+                            break;
+                    }
+                }
+            });
+
+            function FN_Tr_Click(Click_tr) {
+                Click_tr.parent().find('tr').css('background-color', '');
+                Click_tr.parent().find('tr').css('color', 'black');
+                Click_tr.css('background-color', '#5a1400');
+                Click_tr.css('color', 'white');
+
+                $('#DOT_TB_IM').val(Click_tr.find('td').eq(1).find('input').val());
+                $('#DOT_TB_S_ALL').val(Click_tr.find('td').eq(0).text());
+                $('#DOT_TB_PI').val(Click_tr.find('td').eq(9).text());
+            };
+
+            $('#Table_Search_BOMD, #Table_Exec_Data').on('click', 'thead th', function () {//Sort
+                $(this).siblings().removeClass('focus');
+                $(this).addClass('focus');
+
+                var Sort_Table = $(this).parents('table');
+                var IDX = $(this).index();
+
+                if ($(this).is('.asc')) {
+                    $(this).removeClass('asc');
+                    $(this).addClass('desc selected');
+                    sortOrder = -1;
+                } else {
+                    $(this).addClass('asc selected');
+                    $(this).removeClass('desc');
+                    sortOrder = 1;
+                }
+                $(this).siblings().removeClass('asc selected desc selected');
+                var arrData = Sort_Table.find('tbody>tr:has(td)').get();//$('table').find('tbody >tr:has(td)').get();
+                console.warn($(this).text());
+
+                arrData.sort(function (a, b) {
+                    var val1 = $(a).children('td').eq(IDX).text(); 
+                    if (val1.length == 0) {
+                        val1 = $(a).children('td').eq(IDX).find('input').val();
+                    }
+                    
+                    var val2 = $(b).children('td').eq(IDX).text();
+                    if (val2.length == 0) {
+                        val2 = $(b).children('td').eq(IDX).find('input').val();
+                    }
+
+                    if ($.isNumeric(val1) && $.isNumeric(val2))
+                        return sortOrder == 1 ? val1 - val2 : val2 - val1;
+                    else
+                        return (val1 < val2) ? -sortOrder : (val1 > val2) ? sortOrder : 0;
+                });
+                $.each(arrData, function (index, row) {
+                    Sort_Table.find('tbody').append(row);
+                });
             });
         });
     </script>
@@ -373,6 +497,7 @@
     </style>
     <uc1:uc1 ID="uc1" runat="server" /> 
     <uc2:uc2 ID="uc2" runat="server" /> 
+    <uc3:uc3 ID="uc3" runat="server" /> 
 
     <table class="table_th" style="text-align: left;">
         <tr>
@@ -419,9 +544,6 @@
         <tr>
             <td class="tdtstyleRight" colspan="7">
                 <input type="button" id="BT_Search" class="M_BT" value="<%=Resources.MP.Search%>" />
-                <%--<input type="button" id="BT_Cancel" class="M_BT" value="<%=Resources.MP.Cancel%>" style="display: none;" />--%>
-                <%--<input type="button" id="BT_Re_Select" class="M_BT" value="<%=Resources.MP.Re_Selet%>" style="display:none;" />--%>
-                <%--<input type="button" id="BT_Save" class="M_BT" value="<%=Resources.MP.Save%>" style="display:none;" />--%>
             </td>
         </tr>
         <tr>
@@ -438,9 +560,9 @@
     <div style="width: 99%; margin: 0 auto; background-color: white;">
         &nbsp;
         <input id="V_BT_Master" type="button" class="V_BT" value="<%=Resources.MP.Select%>" disabled="disabled" />
-        <input id="V_BT_Review" type="button" class="V_BT Exist_Select" style="display:none;" value="<%=Resources.MP.Material_Model%><%=Resources.MP.Speace%><%=Resources.MP.Edit%>" />
-        <input id="V_BT_Report_1" type="button" class="V_BT Exist_Select V_Report For_Cost" style="display:none;" value="成本分析" />
-        <%--<input type="button" class="V_BT" value="<%=Resources.MP.Sample%>" onclick="$('.Div_D').css('display','none');$('#Div_More').css('display','');" />--%>
+        <%--<input id="V_BT_Review" type="button" class="V_BT Exist_Select" style="display:none;" value="TTT" />--%>
+        <input id="V_BT_Edit" type="button" class="V_BT Exist_Select" style="display:none;" value="<%=Resources.MP.Material_Model%><%=Resources.MP.Speace%><%=Resources.MP.Edit%>" />
+        <%--<input id="V_BT_Report_1" type="button" class="V_BT Exist_Select V_Report" style="display:none;" value="成本分析" />--%>
     </div>
     <div>&nbsp;&nbsp;&nbsp;&nbsp;
         <input id="RB_DV_DIMG" type="radio" name="DIMG" disabled="disabled" checked="checked" />
@@ -483,28 +605,69 @@
             </table>
         </div>
 
-        <div id="Div_Edit_Area" style="width: 35%; height: 65vh; overflow: auto; display: none; float: right;border-style:solid;border-width:1px; ">
-            <div class="search_section_control" control_by="V_BT_Report_1" style="display: none;">
-                <div style="position: relative; border: 1px solid #111111; padding: 20px; box-sizing: border-box; margin: 30px auto; width: 80%;">
-                    <span style="position: absolute; top: -1em; left: 10%; line-height: 2em; padding: 0 1em; background-color: #fff;">報表類型</span>
-                    <input type="radio" value="成本分析" checked />
-                    <span>成本分析表(附圖)</span>
+        <div id="Div_Edit_Area" style="width: 35%; height: 65vh; overflow: auto; display: none; float: right;border-style:solid;border-width:1px;">
+            <div class="search_section_control"><%--control_by="V_BT_Report_1" style="display: none;"--%>
+                <div style="position: relative; border: 1px solid #111111; padding: 20px; box-sizing: border-box; margin: 30px auto; width: 90%;background-color:silver;">
+                    <span style="position: absolute; top: -1em; left: 10%; line-height: 2em; padding: 0 1em; background-color: #fff;"><%=Resources.MP.Old%><%=Resources.MP.Speace%><%=Resources.MP.Material%></span>
+                    <table style="border-collapse: separate; border-spacing: 0px 8px; margin: 0 auto; width: 100%;" id="DEA_Old_Table">
+                        <tr>
+                            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Old%><%=Resources.MP.Speace%><%=Resources.MP.Material%></td>
+                            <td style="text-align: left; width: 15%;">
+                                <input style="width: 80%;" id="DOT_TB_IM" class="disable" disabled="disabled" />
+                            </td>
+                            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Old%><%=Resources.MP.Speace%><%=Resources.MP.Material_Supplier_ALL%></td>
+                            <td style="text-align: left; width: 15%;">
+                                <input style="width: 100%;" id="DOT_TB_S_ALL" class="disable" disabled="disabled" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Old%><%=Resources.MP.Speace%><%=Resources.MP.Product_Information%></td>
+                            <td style="text-align: left; width: 15%;" colspan="4">
+                                <input id="DOT_TB_PI" class="disable" disabled="disabled" style="width: 100%;" />
+                            </td>
+                        </tr>
+                    </table>
                 </div>
-                <div style="position: relative; border: 1px solid #111111; padding: 20px; box-sizing: border-box; margin: 30px auto; width: 80%;">
-                    <span style="position: absolute; top: -1em; left: 10%; line-height: 2em; padding: 0 1em; background-color: #fff;">報表內容</span>
-                    <input type="checkbox" id="R1_CB_MSRP" checked />
-                    <label for="R1_CB_MSRP">門市與MSRP</label>
-                    <br />
-                    <input type="checkbox" id="R1_CB_Print_PW" />
-                    <label for="R1_CB_Print_PW">印價格填寫欄</label>
+                <div style="position: relative; border: 1px solid #111111; padding: 20px; box-sizing: border-box; margin: 30px auto; width: 90%;">
+                    <span style="position: absolute; top: -1em; left: 10%; line-height: 2em; padding: 0 1em; background-color: #fff;"><%=Resources.MP.New%><%=Resources.MP.Speace%><%=Resources.MP.Material%></span>
+                    <table style="border-collapse: separate; border-spacing: 0px 8px; margin: 0 auto; width: 100%;" id="DEA_New_Table">
+                        <tr>
+                            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.New%><%=Resources.MP.Speace%><%=Resources.MP.Material%></td>
+                            <td style="text-align: left; width: 15%;">
+                                <div style="width: 80%; float: left; z-index: -10;">
+                                    <input id="DNT_TB_IM" class="disable" autocomplete="off" disabled="disabled" style="width: 100%; z-index: -10;" />
+                                </div>
+                                <div style="width: 20%; float: right; z-index: 10;">
+                                    <input id="DNT_BT_Product_Selector" type="button" value="…" style="float: right; z-index: 10;" />
+                                </div>
+                                <input type="hidden" id="DNT_HDN_SUPLU_SEQ" />
+                            </td>
+                            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.New%><%=Resources.MP.Speace%><%=Resources.MP.Material_Supplier_ALL%></td>
+                            <td style="text-align: left; width: 15%;">
+                                <input id="DNT_TB_S_ALL" class="disable" disabled="disabled" style="width: 100%;" />
+                                <%--<input type="hidden" id="DNT_HDN_S_No" />
+                                <input type="hidden" id="DNT_HDN_S_SName" />--%>
+                            </td>
+                            <%--<td style="text-align: right; text-wrap: none; width: 10%;"></td>
+                            <td></td>
+                            <td style="text-align: right; text-wrap: none; width: 10%;"></td>
+                            <td></td>--%>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Product_Information%></td>
+                            <td style="text-align: left; width: 15%;" colspan="7">
+                                <input id="DNT_TB_P_IM" class="disable" disabled="disabled" style="width: 100%;" />
+                            </td>
+                        </tr>
+                    </table>
+
                 </div>
             </div>
             <br />
             <div style="width: 100%; text-align: center;">
-                <input id="BT_RP_Print" type="button" class="BTN" style="display:inline-block;" value="列印" />
+                <input id="BT_Edit" type="button" class="BTN" style="display:inline-block;" value="<%=Resources.MP.Edit%>" />
             </div>
         </div>
-
     </div>
 
     <br />

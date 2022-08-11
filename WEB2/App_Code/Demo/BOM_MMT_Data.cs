@@ -22,6 +22,7 @@ namespace Demo
         {
             context = _context;
         }
+        #region BOM_MMT_Search
         public DataTable BOM_MMT_Search()
         {
             conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
@@ -40,7 +41,8 @@ namespace Demo
                                 BD.SUPLU_SEQ, BD.D_SUPLU_SEQ, BD.[更新人員],
                             	LEFT(RTRIM(CONVERT(VARCHAR(20),BD.[更新日期],20)),16) [更新日期],
                                 CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = BD.[SUPLU_SEQ]),0) AS BIT) [Has_IMG], 
-                                CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = BD.[D_SUPLU_SEQ]),0) AS BIT) [D_Has_IMG]
+                                CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = BD.[D_SUPLU_SEQ]),0) AS BIT) [D_Has_IMG],
+                                BD.[更新日期] [sort]
                             FROM Dc2..bomsub BD
                             	INNER JOIN Dc2..suplu C ON C.[序號] = BD.D_SUPLU_SEQ
                             WHERE BD.[材料型號] LIKE @MM + '%'
@@ -48,7 +50,8 @@ namespace Demo
                                 AND BD.[廠商編號] LIKE @M_S_No + '%'
                                 AND BD.[廠商簡稱] LIKE @M_S_SName + '%'
                                 AND BD.[最後完成者] LIKE @EP_S_No + '%' 
-                                AND BD.[完成者簡稱] LIKE @EP_S_SName + '%' ";
+                                AND BD.[完成者簡稱] LIKE @EP_S_SName + '%' 
+                            ORDER BY [sort] desc, [頤坊型號] asc ";
                         cmd.Parameters.AddWithValue("MM", context.Request["MM"]);
                         cmd.Parameters.AddWithValue("EPM", context.Request["EPM"]);
                         cmd.Parameters.AddWithValue("M_S_No", context.Request["M_S_No"]);
@@ -57,7 +60,7 @@ namespace Demo
                         cmd.Parameters.AddWithValue("EP_S_SName", context.Request["EP_S_SName"]);
                         break;
                 }
-                
+
                 cmd.CommandText = sqlStr;
                 SqlDataAdapter SDA = new SqlDataAdapter(cmd);
                 SDA.Fill(dt);
@@ -73,6 +76,55 @@ namespace Demo
                 throw ex;
             }
         }
+        #endregion
+
+        #region BOM_MMT_Update
+        public void BOM_MMT_Update()
+        {
+            conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
+            cmd.Connection = conn;
+            try
+            {
+                conn.Open();
+                switch (context.Request["Call_Type"])
+                {
+                    case "BOM_MMT_Update":
+                        sqlStr = @" UPDATE Dc2..bomsub
+                                    SET [材料型號] = @MM,
+                                        [更新人員] = @Update_User, 
+                                        [更新日期] = GETDATE()
+                                    WHERE [序號] IN ({0}) ";
+                        string[] SEQ_A = context.Request["SEQ_Array"].ToString().Split(',');
+
+                        string New_IN_Filter = "@SEQ";
+                        cmd.Parameters.AddWithValue("SEQ", SEQ_A[0].ToString()); ;
+                        cmd.Parameters.AddWithValue("MM", context.Request["New_IM"]);
+                        cmd.Parameters.AddWithValue("Update_User", context.Session["Name"] ?? "Ivan10");
+
+                        for (int i = 1; i < SEQ_A.Length; i++)
+                        {
+                            New_IN_Filter += ",@SEQ" + i;
+                            cmd.Parameters.AddWithValue("SEQ" + i, SEQ_A[i].ToString());
+                        }
+                        sqlStr = string.Format(sqlStr, New_IN_Filter);
+
+                        cmd.CommandText = sqlStr;
+
+                        cmd.ExecuteNonQuery();
+                        Log.InsertLog(context, context.Session["Name"], cmd.CommandText);
+                        conn.Close();
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.InsertLog(context, context.Session["Name"], cmd.CommandText ?? "", ex.ToString(), false);
+                conn.Close();
+                throw ex;
+            }
+        }
+
+        #endregion
     }
 }
 

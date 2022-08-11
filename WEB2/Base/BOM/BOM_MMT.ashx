@@ -31,6 +31,13 @@ public class BOM_MMT : IHttpHandler, IRequiresSessionState
                     case "BOM_MMT_Search":
                         dt = BMD.BOM_MMT_Search();
                         break;
+                    case "BOM_MMT_Update":
+                        BMD.BOM_MMT_Update();
+                        //result = dal.InsertStkio();
+                        context.Response.StatusCode = 200;
+                        //context.Response.Write(result);
+                        context.Response.End();
+                        break;
                 }
                 var json = JsonConvert.SerializeObject(dt);
                 context.Response.ContentType = "text/json";
