@@ -27,8 +27,9 @@ CREATE TABLE [dbo].[stkio](
 	[客戶編號] [varchar](8) NULL,
 	[客戶簡稱] [varchar](20) NULL,
 	[完成品型號] [varchar](15) NULL,
-	[備註] [varchar](30) NULL,
+	[備註] [nvarchar](30) NULL,
 	[內銷入庫] [bit] NULL,
+	[已結案] [bit] NULL,
 	[已刪除] [bit] NULL,
 	[變更日期] [datetime] NULL,
 	[建立人員] [varchar](6) NULL,
@@ -68,7 +69,7 @@ INSERT INTO Dc2..stkio with(tablock)
 SELECT [序號], 0 [SOURCE_SEQ], '' [SOURCE_TABLE], (SELECT [序號] FROM Bc2..suplu2 C WHERE C.廠商編號 = S.廠商編號 AND C.頤坊型號 = S.頤坊型號) [SUPLU_SEQ], RTRIM([訂單號碼]), RTRIM([單據編號]),
 	[異動日期], RTRIM([帳項]), RTRIM([帳項原因]), RTRIM([廠商編號]), RTRIM([廠商簡稱]), RTRIM([頤坊型號]),
 	RTRIM([暫時型號]), RTRIM([單位]), RTRIM([庫區]), [入庫數], [出庫數], RTRIM([庫位]), [核銷數], [異動前庫存],
-	RTRIM([客戶編號]), RTRIM([客戶簡稱]), RTRIM([完成品型號]), RTRIM([備註]), [內銷入庫], [已刪除], [變更日期], RTRIM([更新人員]), [更新日期], RTRIM([更新人員]), [更新日期]
+	RTRIM([客戶編號]), RTRIM([客戶簡稱]), RTRIM([完成品型號]), RTRIM([備註]), [內銷入庫], [已刪除], [已刪除], [變更日期], RTRIM([更新人員]), [更新日期], RTRIM([更新人員]), [更新日期]
 FROM Bc2..stkio S
 
 
@@ -102,7 +103,7 @@ CREATE TABLE [dbo].[stkioh](
 	[客戶編號] [varchar](8) NULL,
 	[客戶簡稱] [varchar](20) NULL,
 	[完成品型號] [varchar](15) NULL,
-	[備註] [varchar](30) NULL,
+	[備註] [nvarchar](30) NULL,
 	[內銷入庫] [bit] NULL,
 	[已刪除] [bit] NULL,
 	[變更日期] [datetime] NULL,

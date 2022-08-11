@@ -249,6 +249,7 @@
                                             <a href="/Stock/Stock_Search.aspx"><%--庫存查詢--%><%=Resources.MP.Stock%><%=Resources.MP.Speace%><%=Resources.MP.Search%></a>
                                             <a href="/Stock/Stock_IO_Search.aspx"><%--庫存入出查詢--%><%=Resources.MP.Stock%><%=Resources.MP.IO%><%=Resources.MP.Search%></a>
                                             <a href="/Stock/Stock_IO_MT.aspx"><%--庫存入出查詢--%><%=Resources.MP.Stock%><%=Resources.MP.IO%><%=Resources.MP.Maintenance%></a>
+                                            <a href="/Stock/Stock_IO_Approve.aspx"><%--庫存入出查詢--%><%=Resources.MP.Stock%><%=Resources.MP.IO%><%=Resources.MP.Approve%></a>
                                         </li>
                                     </ul>
                                 </li>

@@ -37,7 +37,7 @@ namespace Ivan_Service
 			                          ,S.單據編號
 			                          ,IIF(S.異動前庫存 = 0, NULL, S.異動前庫存) 異動前庫存
 			                          ,IIF(SU.大貨庫存數 = 0, NULL, SU.大貨庫存數) AS 大貨庫存數
-			                          ,IIF((SELECT SUM(ISNULL(出庫數,0)) FROM stkio INS WHERE ISNULL(INS.已刪除,0) != 1 AND INS.SUPLU_SEQ = S.SUPLU_SEQ) = 0,NULL, (SELECT SUM(ISNULL(出庫數,0)) FROM stkio INS WHERE ISNULL(INS.已刪除,0) != 1 AND INS.SUPLU_SEQ = S.SUPLU_SEQ)) AS 分配庫存數
+			                          ,IIF((SELECT SUM(ISNULL(出庫數,0) - ISNULL(核銷數,0)) FROM stkio INS WHERE ISNULL(INS.已刪除,0) != 1 AND ISNULL(INS.已結案,0) != 1 AND INS.SUPLU_SEQ = S.SUPLU_SEQ) = 0,NULL, (SELECT SUM(ISNULL(出庫數,0) - ISNULL(核銷數,0)) FROM stkio INS WHERE ISNULL(INS.已刪除,0) != 1 AND ISNULL(INS.已結案,0) != 1 AND INS.SUPLU_SEQ = S.SUPLU_SEQ)) AS 分配庫存數
 			                          ,S.備註
 			                          ,S.庫位
 			                          ,S.庫區
@@ -50,13 +50,14 @@ namespace Ivan_Service
 			                          ,S.序號
 			                          ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = S.SUPLU_SEQ) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
 			                          ,S.SUPLU_SEQ
-                                      ,CASE WHEN ISNULL(SU.大貨庫存數,0) >= ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) AND ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) > 0 AND ISNULL(SU.大貨庫存數,0) >= ISNULL((SELECT SUM(ISNULL(出庫數,0)) FROM stkio INS WHERE ISNULL(INS.已刪除,0) != 1 AND INS.SUPLU_SEQ = S.SUPLU_SEQ),0) THEN 'Y' 
+                                      ,CASE WHEN ISNULL(SU.大貨庫存數,0) >= ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) AND ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) > 0 AND ISNULL(SU.大貨庫存數,0) >= ISNULL((SELECT SUM(ISNULL(出庫數,0) - ISNULL(核銷數,0)) FROM stkio INS WHERE ISNULL(INS.已刪除,0) != 1 AND ISNULL(INS.已結案,0) != 1 AND INS.SUPLU_SEQ = S.SUPLU_SEQ),0) THEN 'Y' 
                                             ELSE 'N' END 庫存足夠
-                                      ,CASE WHEN ISNULL(SU.大貨庫存數,0) >= ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) AND ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) > 0 AND ISNULL(SU.大貨庫存數,0) < ISNULL((SELECT SUM(ISNULL(出庫數,0)) FROM stkio INS WHERE ISNULL(INS.已刪除,0) != 1 AND INS.SUPLU_SEQ = S.SUPLU_SEQ),0) THEN 'Y' 
+                                      ,CASE WHEN ISNULL(SU.大貨庫存數,0) >= ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) AND ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) > 0 AND ISNULL(SU.大貨庫存數,0) < ISNULL((SELECT SUM(ISNULL(出庫數,0) - ISNULL(核銷數,0)) FROM stkio INS WHERE ISNULL(INS.已刪除,0) != 1 AND ISNULL(INS.已結案,0) != 1 AND INS.SUPLU_SEQ = S.SUPLU_SEQ),0) THEN 'Y' 
                                             ELSE 'N' END 分配數不足
                         FROM {1} S
                         JOIN suplu SU ON S.SUPLU_SEQ = SU.序號
                         WHERE ISNULL(S.已刪除,0) != 1
+                        {2}
                         AND (ISNULL(S.入庫數,0) + ISNUll(S.出庫數,0)) != 0
                          ";
 
@@ -94,12 +95,12 @@ namespace Ivan_Service
                         case "資料來源":
                             if("0".Equals(context.Request[form]))
                             {
-                                sqlStr = string.Format(sqlStr, "NULL", "stkio");
+                                sqlStr = string.Format(sqlStr, "NULL", "stkio", " AND ISNULL(S.已結案,0) != 1 ");
 
                             }
                             else if ("1".Equals(context.Request[form]))
                             {
-                                sqlStr = string.Format(sqlStr, "IIF(S.實扣快取數=0,NULL,S.實扣快取數)", "stkioh");
+                                sqlStr = string.Format(sqlStr, "IIF(S.實扣快取數=0,NULL,S.實扣快取數)", "stkioh", "");
                             }
                             break;
                         default:
@@ -136,8 +137,10 @@ namespace Ivan_Service
 			                          ,S.單據編號
 			                          ,IIF(S.入庫數 = 0, NULL, S.入庫數) 入庫數
 			                          ,IIF(S.出庫數 = 0, NULL, S.出庫數) 出庫數
-			                          ,(SELECT SH.入庫數 + SH.出庫數 FROM stkioh SH WHERE SH.SOURCE_TABLE = 'stkio' AND S.序號 = SH.SOURCE_SEQ) 核銷數
-			                          ,S.帳項
+                                      ,IIF(S.核銷數 = 0, NULL, S.核銷數) 核銷數
+			                          --,(SELECT SH.入庫數 + SH.出庫數 FROM stkioh SH WHERE SH.SOURCE_TABLE = 'stkio' AND S.序號 = SH.SOURCE_SEQ) 核銷數
+			                          ,SU.產品說明
+                                      ,S.帳項
                                       ,S.備註
 			                          ,S.廠商編號
 			                          ,S.客戶編號
@@ -147,7 +150,9 @@ namespace Ivan_Service
 			                          ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = S.SUPLU_SEQ) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
 			                          ,S.SUPLU_SEQ
                         FROM stkio S
+                        JOIN suplu SU ON S.SUPLU_SEQ = SU.序號
                         WHERE ISNULL(S.已刪除,0) != 1
+                        AND ISNULL(S.已結案,0) != 1
                         AND (ISNULL(S.入庫數,0) + ISNUll(S.出庫數,0)) != 0
                          ";
 
@@ -190,7 +195,110 @@ namespace Ivan_Service
                 }
             }
 
-            sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
+            sqlStr += " ORDER BY S.頤坊型號, S.更新日期 ";
+
+            dt = GetDataTableWithLog(sqlStr);
+            return dt;
+        }
+
+        /// <summary>
+        /// 庫存入出核銷 查詢 Return DataTable
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public DataTable SearchTableForAp()
+        {
+            DataTable dt = new DataTable();
+            string sqlStr = "";
+
+            sqlStr = @"SELECT Top 500 S.訂單號碼
+			                          ,S.頤坊型號
+                                      {扣快取}
+                                      ,CONVERT(VARCHAR,S.更新日期,23) 更新日期
+		                              ,S.廠商簡稱
+			                          ,S.單位
+                                      ,S.{出入庫}數 {庫區}{出入庫}
+			                          ,SU.{庫區}庫存數 庫存數
+                                      ,IIF('{出入庫}' = '出庫' AND SU.{庫區}庫存數 > 0 AND S.{出入庫}數 > SU.{庫區}庫存數, SU.{庫區}庫存數, S.{出入庫}數) 本次核銷數量
+                                      ,{庫區}庫位 AS 目前庫位
+			                          ,S.庫位 本次庫位
+                                      ,ISNULL(S.備註,'') 備註
+                                      ,SU.產品說明
+                                      ,SU.暫時型號
+			                          ,S.單據編號
+			                          ,S.廠商編號
+			                          ,S.客戶編號
+			                          ,S.客戶簡稱
+			                          ,S.帳項
+			                          ,S.更新人員
+                                      ,'{庫區}' 庫區
+                                      ,'{出入庫}' 出入庫
+			                          ,S.序號
+			                          ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = S.SUPLU_SEQ) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
+			                          ,S.SUPLU_SEQ
+                        FROM stkio S
+                        JOIN SUPLU SU ON S.SUPLU_SEQ = SU.序號
+                        WHERE ISNULL(S.已刪除,0) != 1
+                        AND ISNULL(S.已結案,0) != 1
+                        AND (ISNULL(S.入庫數,0) + ISNUll(S.出庫數,0)) != 0
+                         ";
+
+            //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
+            foreach (string form in context.Request.Form)
+            {
+                if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type")
+                {
+                    string debug = context.Request[form];
+                    switch (form)
+                    {
+                        case "產品說明":
+                        case "廠商簡稱":
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE '%' + @" + form + " + '%' ";
+                            this.SetParameters(form, context.Request[form]);
+                            break;
+                        case "更新日期_S":
+                            sqlStr += " AND CONVERT(DATE,S.[更新日期]) >= @更新日期_S";
+                            this.SetParameters(form, context.Request[form]);
+                            break;
+                        case "更新日期_E":
+                            sqlStr += " AND CONVERT(DATE,S.[更新日期]) <= @更新日期_E";
+                            this.SetParameters(form, context.Request[form]);
+                            break;
+                        case "庫區":
+                            sqlStr = sqlStr.Replace("{庫區}", context.Request[form]);
+                            sqlStr += " AND S.庫區 = @庫區";
+                            this.SetParameters(form, context.Request[form]);
+                            break;
+                        case "查詢出入庫":
+                            if ("入庫".Equals(context.Request[form]))
+                            {
+                                sqlStr = sqlStr.Replace("{出入庫}", context.Request[form]);
+                                sqlStr += " AND ISNULL(S.入庫數,0) <> 0";
+                            }
+                            else if ("出庫".Equals(context.Request[form]))
+                            {
+                                sqlStr = sqlStr.Replace("{出入庫}", context.Request[form]);
+                                sqlStr += " AND ISNULL(S.出庫數,0) <> 0";
+                            }
+                            break;
+                        default:
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE @" + form + " + '%'";
+                            this.SetParameters(form, context.Request[form]);
+                            break;
+                    }
+                }
+            }
+
+            if ("大貨".Equals(context.Request["庫區"]) && "出庫".Equals(context.Request["查詢出入庫"]))
+            {
+                sqlStr = sqlStr.Replace("{扣快取}", ",'Y' 扣快取");
+            }
+            else
+            {
+                sqlStr = sqlStr.Replace("{扣快取}", ",'N' 扣快取");
+            }
+
+            sqlStr += " ORDER BY S.頤坊型號, S.更新日期 ";
 
             dt = GetDataTableWithLog(sqlStr);
             return dt;
@@ -326,6 +434,21 @@ namespace Ivan_Service
                     column.Append($" [{property.Name}],");
                     columnVar.Append($" GETDATE(),");
                 }
+                else if ("庫位".Equals(property.Name))
+                {
+                    //庫位空的抓DEFAULT
+                    if (string.IsNullOrEmpty(context.Request[property.Name]))
+                    {
+                        column.Append($" [{property.Name}],");
+                        columnVar.Append($" (SELECT "+ context.Request["庫區"] + "庫位 FROM suplu WHERE 序號 = @SUPLU_SEQ),");
+                    }
+                    else
+                    {
+                        column.Append($" [{property.Name}],");
+                        columnVar.Append($" @{property.Name},");
+                        SetParameters($"@{property.Name}", context.Request[property.Name]);
+                    }
+                }
                 else
                 {
                     if (string.IsNullOrEmpty(context.Request[property.Name]))
@@ -385,6 +508,128 @@ namespace Ivan_Service
 
             return res;
         }
+
+        /// <summary>
+        /// 核銷 Stkio 
+        /// </summary>
+        /// <returns></returns>
+        public int ApproveStkio()
+        {
+            string sqlStr = @"      UPDATE [dbo].[stkio]
+                                       SET 已結案 = CASE WHEN ISNULL(核銷數,0) + @APPROVE_CNT >= ISNULL(入庫數,0) + ISNULL(出庫數,0) THEN 1 ELSE 0 END 
+                                          ,核銷數 = ISNULL(核銷數,0) + @APPROVE_CNT
+                                          ,更新日期 = GETDATE()
+										  ,更新人員 = @UPD_USER
+                                    WHERE 序號 = @SEQ
+                                    
+                                    INSERT INTO [dbo].[stkioh]
+											([序號]
+											,[SUPLU_SEQ]
+											,SOURCE_SEQ
+											,SOURCE_TABLE
+											,[訂單號碼]
+											,[單據編號]
+											,[異動日期]
+											,[帳項]
+											,[帳項原因]
+											,[廠商編號]
+											,[廠商簡稱]
+											,[頤坊型號]
+											,[暫時型號]
+											,[單位]
+											,[庫區]
+											,[入庫數]
+											,[出庫數]
+											,[庫位]
+											,[核銷數]
+											,[異動前庫存]
+											,[實扣快取數]
+											,[客戶編號]
+											,[客戶簡稱]
+											,[完成品型號]
+											,[備註]
+											,[內銷入庫]
+											,[已刪除]
+											,[變更日期]
+                                            ,[建立人員]
+											,[建立日期]
+											,[更新人員]
+											,[更新日期]
+											)
+										SELECT (Select IsNull(Max(序號),0)+1 From StkioH) [序號]
+											,A.SUPLU_SEQ [SUPLU_SEQ]
+											,@SEQ SOURCE_SEQ
+											,'stkio' SOURCE_TABLE
+											,A.訂單號碼 [訂單號碼]
+											,A.單據編號 [單據編號]
+											,GETDATE() [異動日期]
+											,A.帳項 [帳項]
+											,NULL [帳項原因]
+											,S.[廠商編號]
+											,S.[廠商簡稱]
+											,S.[頤坊型號]
+											,S.[暫時型號]
+											,S.[單位]
+											,A.庫區 [庫區]
+											,CASE WHEN A.入庫數 > 0 THEN @APPROVE_CNT ELSE 0 END [入庫數]
+											,CASE WHEN A.出庫數 > 0 THEN @APPROVE_CNT ELSE 0 END [出庫數]
+											,@STOCK_LOC [庫位]
+											,0 [核銷數]
+											,S.{庫區}庫存數 [異動前庫存]
+											,CASE WHEN @QUICK_TAKE = 'Y' THEN @APPROVE_CNT ELSE 0 END [實扣快取數]
+											,NULL 客戶編號
+						       			    ,NULL 客戶簡稱
+											,NULL [完成品型號]
+											,NULL [備註]
+											,NULL [內銷入庫]
+											,0 [已刪除]
+											,NULL [變更日期]
+                                            ,@UPD_USER [建立人員]
+											,GETDATE() [建立日期]
+											,@UPD_USER [更新人員]
+											,GETDATE() [更新日期]
+									FROM stkio A
+									JOIN SUPLU S ON A.SUPLU_SEQ = S.序號
+                                    WHERE A.序號 = @SEQ
+
+                                    UPDATE SUPLU
+                                    SET {庫區}庫存數 = ISNULL({庫區}庫存數,0) + (CASE WHEN ISNULL(ST.出庫數,0) > 0 THEN -1 WHEN ISNULL(ST.入庫數,0) > 0 THEN 1 ELSE 0 END * @APPROVE_CNT)
+									   ,{庫區}庫位 = @STOCK_LOC
+									   ,更新日期 = GETDATE()
+                                       ,更新人員 = @UPD_USER
+                                    FROM SUPLU S
+                                    JOIN stkio ST ON S.序號 = ST.SUPLU_SEQ
+                                    WHERE ST.序號 = @SEQ
+
+                                    ";
+
+            string[] seqArray = context.Request["SEQ[]"].Split(',');
+            string[] approveCntArr = context.Request["APPROVE_CNT[]"].Split(',');
+            string[] stockPosArr = context.Request["STOCK_POS[]"].Split(',');
+            string[] stockLocArr = context.Request["STOCK_LOC[]"].Split(',');
+            string[] remarkArr = context.Request["REMARK[]"].Split(',');
+            string[] quickTakeArr = context.Request["QUICK_TAKE[]"].Split(',');
+
+            this.SetTran();
+            for (int cnt = 0; cnt < seqArray.Length; cnt++)
+            {
+                this.ClearParameter();
+                this.SetParameters("SEQ", seqArray[cnt]);
+                this.SetParameters("APPROVE_CNT", Convert.ToDecimal(approveCntArr[cnt]));
+                this.SetParameters("STOCK_LOC", stockLocArr[cnt]);
+                this.SetParameters("REMARK", remarkArr[cnt]);
+                this.SetParameters("QUICK_TAKE", quickTakeArr[cnt]);
+                this.SetParameters("UPD_USER", "IVAN10");
+
+                sqlStr = sqlStr.Replace("{庫區}", stockPosArr[cnt]);
+                ExecuteWithLog(sqlStr);
+            }
+            int res = 1;
+            this.TranCommit();
+
+            return res;
+        }
+
         #endregion
 
         #region 刪除區域

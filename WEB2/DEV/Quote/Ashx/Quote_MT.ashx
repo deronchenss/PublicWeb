@@ -33,7 +33,7 @@ public class Quote_MT : IHttpHandler, IRequiresSessionState
                         switch (context.Request["Call_Type"])
                         {
                             case "Quote_Base":
-                                cmd.CommandText = @" SELECT TOP 500 Quah.報價單號, CONVERT(VARCHAR, Quah.報價日期, 120) 報價日期, Quah.客戶簡稱, Quah.頤坊型號, Quah.單位
+                                cmd.CommandText = @" SELECT TOP 500 Quah.報價單號, CONVERT(VARCHAR, Quah.報價日期, 23) 報價日期, Quah.客戶簡稱, Quah.頤坊型號, Quah.單位
                                                             ,IIF(Quah.美元單價 = 0, NULL, Quah.美元單價) 美元單價, IIF(Quah.台幣單價=0,NULL, Quah.台幣單價) 台幣單價
                                                             ,IIF(Quah.MIN_1 = 0, NULL, Quah.MIN_1) 基本量_1
                                                             ,產品說明, 單位, 廠商編號, 廠商簡稱,客戶編號
@@ -107,11 +107,11 @@ public class Quote_MT : IHttpHandler, IRequiresSessionState
                                                             ,[頤坊型號] = @IVAN_TYPE
                                                             ,[產品說明] = @PROD_DESC
                                                             ,[單位] = @UNIT
-                                                            ,[美元單價] = IIF(@USD = '', 0,CONVERT(DECIMAL,@USD))
-                                                            ,[台幣單價] = IIF(@NTD = '', 0,CONVERT(DECIMAL,@NTD))
-                                                            ,[單價_2] = IIF(@PRICE_2 = '', 0,CONVERT(DECIMAL,@PRICE_2))
-                                                            ,[單價_3] = IIF(@PRICE_3 = '', 0,CONVERT(DECIMAL,@PRICE_3))
-                                                            ,[單價_4] = IIF(@PRICE_4 = '', 0,CONVERT(DECIMAL,@PRICE_4))
+                                                            ,[美元單價] = IIF(@USD = '', 0,CONVERT(DECIMAL(18,3),@USD))
+                                                            ,[台幣單價] = IIF(@NTD = '', 0,CONVERT(DECIMAL(18,3),@NTD))
+                                                            ,[單價_2] = IIF(@PRICE_2 = '', 0,CONVERT(DECIMAL(18,3),@PRICE_2))
+                                                            ,[單價_3] = IIF(@PRICE_3 = '', 0,CONVERT(DECIMAL(18,3),@PRICE_3))
+                                                            ,[單價_4] = IIF(@PRICE_4 = '', 0,CONVERT(DECIMAL(18,3),@PRICE_4))
                                                             ,[min_1] = IIF(@MIN_1 = '', 0,CONVERT(DECIMAL,@MIN_1))
                                                             ,[min_2] = IIF(@MIN_2 = '', 0,CONVERT(DECIMAL,@MIN_2))
                                                             ,[min_3] = IIF(@MIN_3 = '', 0,CONVERT(DECIMAL,@MIN_3))

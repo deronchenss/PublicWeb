@@ -339,6 +339,7 @@
                         <option value="新竹">新竹</option>
                         <option value="樣品">樣品</option>
                         <option value="展場">展場</option>
+                        <option value="準備">準備</option>
                         <option value="託管">託管</option>
                         <option value="留底">留底</option>
                         <option value="展示">展示</option>

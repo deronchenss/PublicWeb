@@ -721,7 +721,7 @@
                         </td>
                         <td class="tdEditstyle">產品說明</td>
                         <td class="tdbstyle">
-                            <input id="E_PROD_DESC" DT_Fill_Name="產品說明"  class="textbox_char updColumn" disabled="disabled" />
+                            <input id="E_PROD_DESC" DT_Fill_Name="產品說明"  class="textbox_char" disabled="disabled" />
                         </td>
                     </tr>
                     <tr class="trstyle">
@@ -739,8 +739,7 @@
                         <td class="tdEditstyle">庫區</td>
                         <td class="tdbstyle">
                              <select id="E_STOCK_POS" DT_Fill_Name="庫區" class="updColumn" >
-                                <option selected="selected"value="">不限</option>
-                                <option value="大貨">大貨</option>
+                                <option selected="selected" value="大貨">大貨</option>
                                 <option value="分配">分配</option>
                                 <option value="內湖">內湖</option>
                                 <option value="新竹">新竹</option>

@@ -26,22 +26,10 @@ public class Stock_IO_Approve : IHttpHandler, IRequiresSessionState
                 switch (context.Request["Call_Type"])
                 {
                     case "SEARCH":
-                        dt = dal.SearchTableForMT();
+                        dt = dal.SearchTableForAp();
                         break;
-                    case "INSERT":
-                        result = dal.InsertStkio();
-                        context.Response.StatusCode = 200;
-                        context.Response.Write(result);
-                        context.Response.End();
-                        break;
-                    case "UPDATE":
-                        result = dal.UpdateStkio();
-                        context.Response.StatusCode = 200;
-                        context.Response.Write(result);
-                        context.Response.End();
-                        break;
-                    case "DELETE":
-                        result = dal.DeleteStkio();
+                    case "APPROVE":
+                        result = dal.ApproveStkio();
                         context.Response.StatusCode = 200;
                         context.Response.Write(result);
                         context.Response.End();

@@ -458,7 +458,7 @@
 
                     var packCntIndex = $('#Table_EXEC_Data thead th:contains(備貨數量)').index() + 1; //備貨數量INDEX
                     var oriPackCnt = $tableRow.find('td:nth-child(' + packCntIndex + ')').text();
-                    if (packCnt > oriPackCnt) {
+                    if (packCnt > parseFloat(oriPackCnt)) {
                         alert('第' + tableCnt + '筆，本次備貨數 大於 備貨數量!');
                         return;
                     }
