@@ -10,6 +10,8 @@ namespace Ivan_Service
         {
             context = _context;
         }
+        #region TEST
+        #endregion
 
         /// <summary>
         /// 庫存查詢 查詢 Return DataTable
