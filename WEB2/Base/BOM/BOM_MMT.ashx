@@ -33,7 +33,6 @@ public class BOM_MMT : IHttpHandler, IRequiresSessionState
                         break;
                     case "BOM_MMT_Update":
                         BMD.BOM_MMT_Update();
-                        //result = dal.InsertStkio();
                         context.Response.StatusCode = 200;
                         //context.Response.Write(result);
                         context.Response.End();

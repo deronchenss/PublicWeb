@@ -90,15 +90,20 @@ namespace Demo
                 {
                     case "BOM_MMT_Update":
                         sqlStr = @" UPDATE Dc2..bomsub
-                                    SET [材料型號] = @MM,
+                                    SET [材料型號] = C.[頤坊型號],
+                                        [廠商編號] = C.[廠商編號],
+                                        [廠商簡稱] = C.[廠商簡稱],
+                                        [D_SUPLU_SEQ] = @New_D_SUPLU_SEQ,
                                         [更新人員] = @Update_User, 
                                         [更新日期] = GETDATE()
-                                    WHERE [序號] IN ({0}) ";
+                                    FROM Dc2..suplu C
+                                    WHERE Dc2..bomsub.[序號] IN ({0}) 
+                                        AND C.[序號] = @New_D_SUPLU_SEQ ";
                         string[] SEQ_A = context.Request["SEQ_Array"].ToString().Split(',');
 
                         string New_IN_Filter = "@SEQ";
                         cmd.Parameters.AddWithValue("SEQ", SEQ_A[0].ToString()); ;
-                        cmd.Parameters.AddWithValue("MM", context.Request["New_IM"]);
+                        cmd.Parameters.AddWithValue("New_D_SUPLU_SEQ", context.Request["New_D_SUPLU_SEQ"]);
                         cmd.Parameters.AddWithValue("Update_User", context.Session["Name"] ?? "Ivan10");
 
                         for (int i = 1; i < SEQ_A.Length; i++)

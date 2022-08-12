@@ -15,9 +15,10 @@
         $(document).ready(function () {
             var Edit_Mode;
             var IMG_Has_Read = false;
+            DDL_Bind();
             document.body.style.overflow = 'hidden';
-            Form_Mode_Change("Search");//WD
-            Search_Cost();//WD
+            //Form_Mode_Change("Search");//WD
+            //Search_Cost();//WD
 
             $('#BT_Supplier_Selector').on('click', function () {
                 $("#Search_Supplier_Dialog").dialog('open');
@@ -250,7 +251,8 @@
                         "SampleM": $('#TB_SampleM').val(),
                         "S_No": $('#TB_S_No').val(),
                         "S_SName": $('#TB_S_SName').val(),
-                        "PI": $('#TB_PI').val()
+                        "PI": $('#TB_PI').val(),
+                        "PS": $('#DDL_PS').val()
                     },
                     cache: false,
                     async: false,
@@ -268,6 +270,7 @@
                                 + '</th><th>' + '<%=Resources.MP.Developing%>'
                                 + '</th><th>' + '<%=Resources.MP.Ivan_Model%>'
                                 + '</th><th>' + '<%=Resources.MP.Supplier_Short_Name%>'
+                                + '</th><th>' + '<%=Resources.MP.Product_Status%>'
                                 + '</th><th>' + '<%=Resources.MP.Sale_Model%>'
                                 + '</th><th>' + '<%=Resources.MP.Sample_Product_No%>'
                                 + '</th><th class="DIMG">' + '<%=Resources.MP.Image%>'
@@ -290,6 +293,7 @@
                                     + '" type="button" value="' + String(R[i].頤坊型號 ?? "")
                                     + '" style="text-align:left;width:100%;z-index:1000;' + ((R[i].Has_IMG) ? 'background: #90ee90;' : '') + '" />' +
                                     '</td><td>' + String(R[i].廠商簡稱 ?? "") +
+                                    '</td><td>' + String(R[i].產品狀態 ?? "") +
                                     '</td><td>' + String(R[i].銷售型號 ?? "") +
                                     '</td><td>' + String(R[i].暫時型號 ?? "") +
                                     '</td><td class="DIMG" style="text-align:center;">' +
@@ -335,7 +339,8 @@
                         "SaleM": $('#TB_SaleM').val(),
                         "C_No": $('#TB_C_No').val(),
                         "C_SName": $('#TB_C_SName').val(),
-                        "PI": $('#TB_PI').val()
+                        "PI": $('#TB_PI').val(),
+                        "PS": $('#DDL_PS').val()
                     },
                     cache: false,
                     async: false,
@@ -353,6 +358,7 @@
                                 + '</th><th>' + '<%=Resources.MP.Developing%>'
                                 + '</th><th>' + '<%=Resources.MP.Ivan_Model%>'
                                 + '</th><th>' + '<%=Resources.MP.Customer_Short_Name%>'
+                                + '</th><th>' + '<%=Resources.MP.Product_Status%>'
                                 + '</th><th>' + '<%=Resources.MP.Customer_Model%>'
                                 + '</th><th>' + '<%=Resources.MP.Sale_Model%>'
                                 + '</th><th class="DIMG">' + '<%=Resources.MP.Image%>'
@@ -373,6 +379,7 @@
                                     + '" type="button" value="' + String(R[i].頤坊型號 ?? "")
                                     + '" style="text-align:left;width:100%;z-index:1000;' + ((R[i].Has_IMG) ? 'background: #90ee90;' : '') + '" />' +
                                     '</td><td>' + String(R[i].客戶簡稱 ?? "") +
+                                    '</td><td>' + String(R[i].產品狀態 ?? "") +
                                     '</td><td>' + String(R[i].客戶型號 ?? "") +
                                     '</td><td>' + String(R[i].銷售型號 ?? "") +
                                     '</td><td class="DIMG" style="text-align:center;">' +
@@ -514,6 +521,29 @@
                 Item_Move($(this), $('#Table_Search_CP'), $('#Table_Exec_Data'), true);
             });
         });
+
+        function DDL_Bind() {
+            $.ajax({
+                url: "/Web_Service/DDL_DataBind.asmx/Product_Status",
+                cache: false,
+                dataType: "json",
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    var Json_Response = JSON.parse(data.d);
+                    var DDL_Option = "<option></option>";
+
+                    $.each(Json_Response, function (i, value) {
+                        DDL_Option += '<option value="' + value.val + '">' + value.txt + '</option>';
+                    });
+                    $('#DDL_PS').html(DDL_Option);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+            });
+        };
+
     </script>
 
     <style type="text/css">
@@ -624,6 +654,12 @@
             <td style="text-align: left; width: 15%;display:none;" class="Price">
                 <input id="TB_C_SName" style="width: 100%;" />
             </td>
+            
+            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Product_Status%></td>
+            <td style="text-align: left; width: 15%;">
+                <select id="DDL_PS" style="width: 100%;"></select>
+            </td>
+
         </tr>
         <tr>
             <td style="text-align: right; text-wrap: none; width: 10%;" class="Cost"><%=Resources.MP.Product_Information%></td>

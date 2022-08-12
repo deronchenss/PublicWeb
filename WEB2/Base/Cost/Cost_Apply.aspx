@@ -88,6 +88,7 @@
                                 + '</th><th>' + '<%=Resources.MP.Ivan_Model%>'
                                 + '</th><th>' + '<%=Resources.MP.Supplier_Model%>'
                                 + '</th><th>' + '<%=Resources.MP.Sale_Model%>'
+                                + '</th><th>' + '<%=Resources.MP.Product_Status%>'
                                 + '</th><th>' + '<%=Resources.MP.Product_Information%>'
                                 + '</th><th class="DIMG">' + '<%=Resources.MP.Image%>'
                                 + '</th><th class="For_U" style="display:none;">' + '<%=Resources.MP.Apply_Reason%>'
@@ -134,6 +135,7 @@
                                     '</td><td data-th="<%=Resources.MP.Ivan_Model%>">' + String(response[i].IM ?? "") +
                                     '</td><td data-th="<%=Resources.MP.Supplier_Model%>">' + String(response[i].SM ?? "") +
                                     '</td><td data-th="<%=Resources.MP.Sale_Model%>">' + String(response[i].SaleM ?? "") +
+                                    '</td><td data-th="<%=Resources.MP.Product_Status%>">' + String(response[i].PS ?? "") +
                                     '</td><td data-th="<%=Resources.MP.Product_Information%>">' + String(response[i].PI ?? "") +
                                         (((response[i].Change_Log ?? "").length > 0) ? ('<br /><span style="color:blue;" title="' + (response[i].Change_Log ?? "") + '">移入檢視變更記錄</sapn>') : '') +
                                     '</td><td class="DIMG" style="text-align:center;" data-th="<%=Resources.MP.Image%>">' +

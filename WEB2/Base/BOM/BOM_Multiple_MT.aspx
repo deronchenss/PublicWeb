@@ -65,14 +65,19 @@
                     }
                     Exec_SEQ += $(this).text();
                 });
+
                 if ($('#DNT_HDN_SUPLU_SEQ').val().length > 0) {
-                    if (confirm('選取材料有不同，確定一併更新？')) {
+                    var Update_Check = true;
+                    if ($('#Table_Exec_Data tbody tr .D_SUPLU_SEQ').filter(function () { return $(this).attr('SUPLU_SEQ') != $('#DDT_HDN_D_SUPLU_SEQ').val(); }).length > 0) {
+                        Update_Check = confirm('選取材料有不同，確定一併更新？');
+                    }
+                    if (Update_Check) {
                         $.ajax({
                             url: "/Base/BOM/BOM_MMT.ashx",
                             data: {
                                 "Call_Type": "BOM_MMT_Update",
                                 "SEQ_Array": Exec_SEQ,
-                                "New_IM": $('#DNT_HDN_SUPLU_SEQ').val(),
+                                "New_D_SUPLU_SEQ": $('#DNT_HDN_SUPLU_SEQ').val(),
                                 "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Name"].ToString().Trim() %>"
                             },
                             cache: false,
@@ -82,8 +87,6 @@
                             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                             success: function (R) {
                                 alert(Exec_SEQ + ' > 已Update');
-                                //清空Exec
-
                                 $('#Table_Exec_Data').html('');
                                 $('#Table_Exec_Data_info').text('Showing 0 entries');
                                 Form_Mode_Change("Search");
@@ -134,14 +137,14 @@
                         $('#Table_Exec_Data tbody tr').css('background-color', '');
                         $('#Table_Exec_Data tbody tr').css('color', 'black');
                         break;
-                    case "Review_Data"://WD
-                        Edit_Mode = "Edit";
-                        $('.V_BT').attr('disabled', false);
-                        //$('#V_BT_Review').attr('disabled', 'disabled');
-                        $('#Div_DT_View, #Div_Data_Control, #Div_Edit_Area').toggle(false);
-                        $('#Div_Exec_Data').css('width', '100%');
-                        $('#Div_Exec_Data').css('float', 'Right');
-                        break;
+                    //case "Review_Data"://WD
+                    //    Edit_Mode = "Edit";
+                    //    $('.V_BT').attr('disabled', false);
+                    //    //$('#V_BT_Review').attr('disabled', 'disabled');
+                    //    $('#Div_DT_View, #Div_Data_Control, #Div_Edit_Area').toggle(false);
+                    //    $('#Div_Exec_Data').css('width', '100%');
+                    //    $('#Div_Exec_Data').css('float', 'Right');
+                    //    break;
                     case "Edit_Data":
                         Edit_Mode = "Edit";
                         $('.V_BT').attr('disabled', false);
@@ -216,7 +219,7 @@
                             $(R).each(function (i) {
                                 Table_HTML +=
                                     '<tr><td>' + String(R[i].廠商簡稱 ?? "") +
-                                    '</td><td><input class="Call_Product_Tool" SUPLU_SEQ = "' + String(R[i].D_SUPLU_SEQ ?? "")
+                                    '</td><td><input class="Call_Product_Tool D_SUPLU_SEQ" SUPLU_SEQ = "' + String(R[i].D_SUPLU_SEQ ?? "")
                                     + '" type="button" value="' + String(R[i].材料型號 ?? "")
                                     + '" style="text-align:left;width:100%;z-index:1000;' + ((R[i].D_Has_IMG) ? 'background: #90ee90;' : '') + '" />' +
                                     '</td><td>' + String(R[i].完成者簡稱 ?? "") +
@@ -309,8 +312,10 @@
             });
 
             $('#BT_Next, #V_BT_Edit').on('click', function () {
-                //Form_Mode_Change("Review_Data");//Pass?
+                //Form_Mode_Change("Review_Data");//Pass
                 Form_Mode_Change("Edit_Data");
+                Click_tr_IDX = 0;
+                FN_Tr_Click($('#Table_Exec_Data tbody tr:nth(' + Click_tr_IDX + ')'));
             });
 
             $('#V_BT_Master').on('click', function () {
@@ -402,6 +407,7 @@
                 Click_tr.css('color', 'white');
 
                 $('#DOT_TB_IM').val(Click_tr.find('td').eq(1).find('input').val());
+                $('#DDT_HDN_D_SUPLU_SEQ').val(Click_tr.find('td').eq(1).find('input').attr('SUPLU_SEQ'));
                 $('#DOT_TB_S_ALL').val(Click_tr.find('td').eq(0).text());
                 $('#DOT_TB_PI').val(Click_tr.find('td').eq(9).text());
             };
@@ -423,7 +429,7 @@
                     sortOrder = 1;
                 }
                 $(this).siblings().removeClass('asc selected desc selected');
-                var arrData = Sort_Table.find('tbody>tr:has(td)').get();//$('table').find('tbody >tr:has(td)').get();
+                var arrData = Sort_Table.find('tbody>tr:has(td)').get();
                 console.warn($(this).text());
 
                 arrData.sort(function (a, b) {
@@ -614,6 +620,7 @@
                             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Old%><%=Resources.MP.Speace%><%=Resources.MP.Material%></td>
                             <td style="text-align: left; width: 15%;">
                                 <input style="width: 80%;" id="DOT_TB_IM" class="disable" disabled="disabled" />
+                                <input type="hidden" id="DDT_HDN_D_SUPLU_SEQ" />
                             </td>
                             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Old%><%=Resources.MP.Speace%><%=Resources.MP.Material_Supplier_ALL%></td>
                             <td style="text-align: left; width: 15%;">
@@ -645,13 +652,7 @@
                             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.New%><%=Resources.MP.Speace%><%=Resources.MP.Material_Supplier_ALL%></td>
                             <td style="text-align: left; width: 15%;">
                                 <input id="DNT_TB_S_ALL" class="disable" disabled="disabled" style="width: 100%;" />
-                                <%--<input type="hidden" id="DNT_HDN_S_No" />
-                                <input type="hidden" id="DNT_HDN_S_SName" />--%>
                             </td>
-                            <%--<td style="text-align: right; text-wrap: none; width: 10%;"></td>
-                            <td></td>
-                            <td style="text-align: right; text-wrap: none; width: 10%;"></td>
-                            <td></td>--%>
                         </tr>
                         <tr>
                             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Product_Information%></td>

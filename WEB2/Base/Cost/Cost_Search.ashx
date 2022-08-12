@@ -75,7 +75,7 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                                          SELECT IIF(ISNULL(A.[MSRP],0) = 0,'0', CAST(ROUND( (A.MSRP - A.Cost) / A.MSRP * 100 ,2,2) AS VARCHAR(20)) + '%' )  [GP], * 
                                          FROM (
                                             SELECT TOP 500 P.[開發中], P.[廠商簡稱], P.[頤坊型號], P.[廠商型號], P.[銷售型號], P.[產品說明], P.[單位], 
-                                                REPLACE(CONVERT(VARCHAR(40),CAST(P.[台幣單價] AS MONEY),1),'.00','') [台幣單價], 
+                                                REPLACE(CONVERT(VARCHAR(40),CAST(P.[台幣單價] AS MONEY),1),'.00','') [台幣單價], P.[產品狀態],
                                                 P.[美元單價], P.[外幣幣別], P.[外幣單價], REPLACE(P.[變更記錄],'""','') [變更記錄], P.[MSRP], 
                                             	CASE WHEN ISNULL(P.[MSRP],0) = 0 THEN 0
                                             		 WHEN (SELECT 1 FROM Dc2..bom BM WHERE BM.SUPLU_SEQ = P.[序號]) IS NULL THEN ROUND(P.[美元單價] + (P.[台幣單價] / @PUR_USD_Rate),2)
@@ -210,6 +210,7 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                             IM = sdr["頤坊型號"],
                             SM = sdr["廠商型號"],
                             SaleM = sdr["銷售型號"],
+                            PS = sdr["產品狀態"],
                             PI = sdr["產品說明"],
                             Unit = sdr["單位"],
                             TWD_P = sdr["台幣單價"],

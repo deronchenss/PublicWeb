@@ -112,7 +112,7 @@ public class New_Cost_Search : IHttpHandler, IRequiresSessionState
                     cmd.Parameters.AddWithValue("S_SName", context.Request["S_SName"]);
                     break;
                 case "Cost_Report_C_Search":
-                    cmd.CommandText = @" SELECT TOP 500 C.[開發中], C.[廠商簡稱], C.[頤坊型號], C.[銷售型號], C.[暫時型號], C.[產品說明], C.[單位], 
+                    cmd.CommandText = @" SELECT TOP 500 C.[開發中], C.[廠商簡稱], C.[頤坊型號], C.[銷售型號], C.[暫時型號], C.[產品說明], C.[單位], C.[產品狀態],
                                             IIF(C.[大貨庫存數] = 0, '', CONVERT(VARCHAR,CAST(C.[大貨庫存數] AS MONEY),1)) [大貨庫存數],
                                          	CONVERT(VARCHAR(20),C.[新增日期],23) [新增日期],
 	                                        CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = C.[序號]),0) AS BIT) [Has_IMG], 
@@ -127,6 +127,7 @@ public class New_Cost_Search : IHttpHandler, IRequiresSessionState
                                             AND C.[廠商編號] LIKE @S_No + '%'
                                             AND C.[廠商簡稱] LIKE @S_SName + '%'
                                             AND C.[產品說明] LIKE '%' + @PI + '%'
+                                            AND C.[產品狀態] LIKE @PS + '%'
                                          ORDER BY [sort] DESC ";
                     cmd.Parameters.AddWithValue("IM", context.Request["IM"]);
                     cmd.Parameters.AddWithValue("SaleM", context.Request["SaleM"]);
@@ -134,11 +135,12 @@ public class New_Cost_Search : IHttpHandler, IRequiresSessionState
                     cmd.Parameters.AddWithValue("S_No", context.Request["S_No"]);
                     cmd.Parameters.AddWithValue("S_SName", context.Request["S_SName"]);
                     cmd.Parameters.AddWithValue("PI", context.Request["PI"]);
+                    cmd.Parameters.AddWithValue("PS", context.Request["PS"]);
                     break;
                 case "Cost_Report_P_Search":
                     cmd.CommandText = @" SELECT TOP 500 P.[開發中], P.[客戶簡稱], P.[頤坊型號], P.[客戶型號], 
                                          	CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = P.[SUPLU_SEQ]),0) AS BIT) [Has_IMG], 
-                                         	C.[銷售型號], 
+                                         	C.[銷售型號], C.[產品狀態],
                                             P.[SUPLU_SEQ],
                                          	P.[產品說明], P.[單位], P.[廠商編號], P.[廠商簡稱], P.[客戶編號], 'Price' [來源], P.[序號], P.[更新人員], 
                                          	LEFT(RTRIM(CONVERT(VARCHAR(20),P.[更新日期],20)),16) [更新日期], P.[更新日期] [sort]
@@ -149,12 +151,14 @@ public class New_Cost_Search : IHttpHandler, IRequiresSessionState
                                             AND P.[客戶編號] LIKE @C_No + '%'
                                             AND P.[客戶簡稱] LIKE @C_SName + '%'
                                             AND P.[產品說明] LIKE '%' + @PI + '%'
+                                            AND C.[產品狀態] LIKE @PS + '%'
                                          ORDER BY [sort] DESC ";
                     cmd.Parameters.AddWithValue("IM", context.Request["IM"]);
                     cmd.Parameters.AddWithValue("SaleM", context.Request["SaleM"]);
                     cmd.Parameters.AddWithValue("C_No", context.Request["C_No"]);
                     cmd.Parameters.AddWithValue("C_SName", context.Request["C_SName"]);
                     cmd.Parameters.AddWithValue("PI", context.Request["PI"]);
+                    cmd.Parameters.AddWithValue("PS", context.Request["PS"]);
                     break;
                 case "Cost_Report_Print":
                     string RPT_File = "", SQL_Str = "";

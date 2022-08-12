@@ -94,6 +94,7 @@
                                 + '</th><th>' + '<%=Resources.MP.Ivan_Model%>'
                                 + '</th><th>' + '<%=Resources.MP.Supplier_Model%>'
                                 + '</th><th>' + '<%=Resources.MP.Sale_Model%>'
+                                + '</th><th>' + '<%=Resources.MP.Product_Status%>'
                                 + '</th><th>' + '<%=Resources.MP.Product_Information%>'
                                 + '</th><th class="DIMG">' + '<%=Resources.MP.Image%>'
                                 + '</th><th>' + '<%=Resources.MP.Apply_Reason%>'
@@ -119,6 +120,7 @@
                                     '</td><td>' + String(response[i].IM ?? "") +
                                     '</td><td>' + String(response[i].SM ?? "") +
                                     '</td><td>' + String(response[i].SaleM ?? "") +
+                                    '</td><td>' + String(response[i].PS ?? "") +
                                     '</td><td>' + String(response[i].PI ?? "") +
                                     (((response[i].Change_Log ?? "").length > 0) ? ('<br /><span style="color:blue;" title="' + (response[i].Change_Log ?? "") + '">移入檢視變更記錄</sapn>') : '') +
                                     '</td><td class="DIMG" style="text-align:center;">' +
