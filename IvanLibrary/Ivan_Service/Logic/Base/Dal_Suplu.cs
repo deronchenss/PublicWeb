@@ -10,8 +10,6 @@ namespace Ivan_Service
         {
             context = _context;
         }
-        #region TEST
-        #endregion
 
         /// <summary>
         /// 庫存查詢 查詢 Return DataTable
@@ -91,7 +89,7 @@ namespace Ivan_Service
 			                           ,S.廠商庫位
 			                           ,IIF(S.設計庫存數 = 0, NULL, S.設計庫存數) 設計庫存數
 			                           ,S.產品說明
-			                           ,S.英文說明
+			                           ,S.英文說明--
 			                           ,S.大貨庫更
 			                           ,S.工時
 			                           ,S.廠商型號
