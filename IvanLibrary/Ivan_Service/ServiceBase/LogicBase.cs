@@ -14,12 +14,12 @@ namespace Ivan_Service
             try
             {
                 DataTable dt = GetDataTable(sqlStr);
-                Log.InsertLog(context, context.Session["Account"], sqlStr);
+                Log.InsertLog(context, context.Session["Account"], sqlStr, parmStr);
                 return dt;
             }
             catch (Exception ex)
             {
-                Log.InsertLog(context, context.Session["Account"], sqlStr, ex.ToString(), false);
+                Log.InsertLog(context, context.Session["Account"], sqlStr, parmStr, ex.ToString(), false);
                 throw ex;
             }
         }
@@ -30,12 +30,26 @@ namespace Ivan_Service
             {
                 int res = 0;
                 res = Execute(sqlStr);
-                Log.InsertLog(context, context.Session["Account"], sqlStr);
+                Log.InsertLog(context, context.Session["Account"], sqlStr, parmStr);
                 return res;
             }
             catch (Exception ex)
             {
-                Log.InsertLog(context, context.Session["Account"], sqlStr, ex.ToString(), false);
+                Log.InsertLog(context, context.Session["Account"], sqlStr, parmStr, ex.ToString(), false);
+                throw ex;
+            }
+        }
+
+        protected void TranCommitWithLog()
+        {
+            try
+            {
+                this.TranCommit();
+                Log.InsertLog(context, context.Session["Account"], sqlStr, parmStr);
+            }
+            catch (Exception ex)
+            {
+                Log.InsertLog(context, context.Session["Account"], sqlStr, parmStr, ex.ToString(), false);
                 throw ex;
             }
         }
@@ -46,12 +60,12 @@ namespace Ivan_Service
             {
                 int res = 0;
                 res = Insert(entity);
-                Log.InsertLog(context, context.Session["Account"], sqlStr);
+                Log.InsertLog(context, context.Session["Account"], sqlStr, parmStr);
                 return res;
             }
             catch (Exception ex)
             {
-                Log.InsertLog(context, context.Session["Account"], sqlStr, ex.ToString(), false);
+                Log.InsertLog(context, context.Session["Account"], sqlStr, parmStr, ex.ToString(), false);
                 throw ex;
             }
         }

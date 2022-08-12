@@ -20,14 +20,24 @@ namespace Ivan_Log
         public string PROG_URL { get; set; }
 
         /// <summary>
-        /// 查詢新增修改刪除(ELSE)
+        /// CONTEXT Call_Type
         /// </summary>
         public string CALL_TYPE { get; set; }
 
         /// <summary>
-        /// Http Request Context
+        /// CONTEXT
         /// </summary>
         public string CALL_CONTEXT { get; set; }
+
+        /// <summary>
+        /// SQL PARAMETER 變數
+        /// </summary>
+        public string SQL_PARAMETERS { get; set; }
+
+        /// <summary>
+        /// 錯誤訊息
+        /// </summary>
+        public string ERROR_MSG { get; set; }
 
         /// <summary>
         /// 執行語法

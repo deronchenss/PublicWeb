@@ -18,6 +18,9 @@ namespace Ivan_Dal
         //最後寫入SQL語句 LOG用
         public string sqlStr => cmd.CommandText;
 
+        //sqlparameters string 
+        public string parmStr = "";
+
         private void SetConnection()
         {
             if(conn.State != ConnectionState.Open)
@@ -51,6 +54,10 @@ namespace Ivan_Dal
         /// </summary>
         public void ClearParameter()
         {
+            if (!isTran)
+            {
+                parmStr = "";
+            }
             cmd.Parameters.Clear();
         }
 
@@ -61,6 +68,7 @@ namespace Ivan_Dal
         /// <param name="value"></param>
         public void SetParameters(string paramName, object value)
         {
+            parmStr += (paramName + ":" + Convert.ToString(value) + ",");
             cmd.Parameters.AddWithValue(paramName, value);
         }
 

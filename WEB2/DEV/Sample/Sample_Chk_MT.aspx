@@ -348,10 +348,6 @@
     <div style="width:98%;margin:0 auto; ">
         <div class="search_section_all">
             <table class="search_section_control">
-            <tr class="trstyle"> 
-                <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp
-                </td>
-            </tr>
             <tr class="trstyle">
                 <td class="tdhstyle">點收批號</td>
                 <td class="tdbstyle">
@@ -386,9 +382,6 @@
                 <td class="tdbstyle">
                     <input id="Q_FACT_S_NAME" class="textbox_char" />
                 </td>
-            </tr>
-            <tr>
-                <td style="height: 5px; font-size: smaller;" colspan="8">&nbsp</td>
             </tr>
             <tr class="trstyle">
                 <td class="tdtstyleRight" colspan="8">

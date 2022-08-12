@@ -7,12 +7,6 @@
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
     <script src="/js/jquery.dataTables.min.js"></script>
     <script src="/js/dataTables.bootstrap4.min.js"></script>
-    <style type="text/css">
-       .tableClick {
-            color: white;
-            background-color: rgb(90, 20, 0) !important;
-        }
-    </style>
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;

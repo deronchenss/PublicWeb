@@ -71,7 +71,7 @@ namespace Demo
             }
             catch (Exception ex)
             {
-                Log.InsertLog(context, context.Session["Name"], cmd.CommandText ?? "", ex.ToString(), false);
+                Log.InsertLog(context, context.Session["Name"], cmd.CommandText ?? "", "", ex.ToString(), false);
                 conn.Close();
                 throw ex;
             }
@@ -123,7 +123,7 @@ namespace Demo
             }
             catch (Exception ex)
             {
-                Log.InsertLog(context, context.Session["Name"], cmd.CommandText ?? "", ex.ToString(), false);
+                Log.InsertLog(context, context.Session["Name"], cmd.CommandText ?? "", "", ex.ToString(), false);
                 conn.Close();
                 throw ex;
             }

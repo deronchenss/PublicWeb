@@ -442,6 +442,10 @@
                         alert('第' + tableCnt + '筆，備貨數量 > 庫存數，請重新確認!');
                         return;
                     }
+                    if (appCnt == 0) {
+                        alert('第' + tableCnt + '筆，備貨數量為 0，請重新確認!');
+                        return;
+                    }
                     liSeq.push(seq);
                     liAppCnt.push(appCnt);
                     liBatchNo.push(batchNo);

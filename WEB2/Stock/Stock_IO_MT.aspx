@@ -305,6 +305,9 @@
                     if ($(this).attr('type') == 'checkbox') {
                         dataReq[$(this).attr('DT_Fill_Name')] = ($(this).is(':checked') ? '1' : '0');
                     }
+                    else if ($(this).attr('type') == 'number') {
+                        dataReq[$(this).attr('DT_Fill_Name')] = ($.trim($(this).val()) == '' ? 0 : $(this).val());
+                    }
                     else {
                         dataReq[$(this).attr('DT_Fill_Name')] = $(this).val();
                     }
@@ -378,6 +381,9 @@
                 $('.updColumn').each(function () {
                     if ($(this).attr('type') == 'checkbox') {
                         dataReq[$(this).attr('DT_Fill_Name')] = ($(this).is(':checked') ? '1' : '0');
+                    }
+                    else if ($(this).attr('type') == 'number') {
+                        dataReq[$(this).attr('DT_Fill_Name')] = ($.trim($(this).val()) == '' ? 0 : $(this).val());
                     }
                     else {
                         dataReq[$(this).attr('DT_Fill_Name')] = $(this).val();

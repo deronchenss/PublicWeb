@@ -478,7 +478,7 @@ public class New_Cost_Search : IHttpHandler, IRequiresSessionState
 
         catch (SqlException ex)
         {
-            Log.InsertLog(context, context.Session["Account"], cmd.CommandText ?? "", ex.ToString(), false);
+            Log.InsertLog(context, context.Session["Account"], cmd.CommandText ?? "", "", ex.ToString(), false);
             context.Response.StatusCode = 404;
             context.Response.Write(ex.Message);
         }

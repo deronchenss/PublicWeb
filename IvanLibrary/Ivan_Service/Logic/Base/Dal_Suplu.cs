@@ -89,7 +89,7 @@ namespace Ivan_Service
 			                           ,S.廠商庫位
 			                           ,IIF(S.設計庫存數 = 0, NULL, S.設計庫存數) 設計庫存數
 			                           ,S.產品說明
-			                           ,S.英文說明--
+			                           ,S.英文ISP
 			                           ,S.大貨庫更
 			                           ,S.工時
 			                           ,S.廠商型號
@@ -165,6 +165,81 @@ namespace Ivan_Service
                             {
                                 sqlStr += " AND IIF(ISNULL(總庫存,0) - 大貨庫存數 = 0, NULL, ISNULL(總庫存,0) - 大貨庫存數) > 0 ";
                             }
+                            break;
+                        case "庫位":
+                            sqlStr += " AND ISNULL(S.[" + context.Request["倉位"] + "庫位],'') LIKE '%' + @" + form + " + '%' ";
+                            this.SetParameters(form, context.Request[form]);
+                            break;
+                        default:
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE @" + form + " + '%'";
+                            this.SetParameters(form, context.Request[form]);
+                            break;
+                    }
+                }
+            }
+
+            sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
+
+            dt = GetDataTableWithLog(sqlStr);
+
+            return dt;
+        }
+
+        /// <summary>
+        /// 庫存入出多筆新增 查詢 Return DataTable
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public DataTable SearchTableForMutiInsert()
+        {
+            DataTable dt = new DataTable();
+            string sqlStr = "";
+
+            sqlStr = @" SELECT  Top 500 S.廠商簡稱
+			                           ,S.頤坊型號
+			                           ,S.銷售型號
+                                       ,S.產品狀態
+			                           ,IIF(S.{庫區}庫存數 = 0, NULL, S.{庫區}庫存數) {庫區}庫存數
+                                       ,0 出入庫數
+			                           ,S.{庫區}庫位
+                                       ,S.{庫區}庫位 本次庫位
+			                           ,S.單位
+			                           ,S.產品說明
+			                           ,S.英文ISP
+			                           ,S.大貨庫更
+			                           ,S.廠商型號
+			                           ,S.暫時型號
+			                           ,S.頤坊條碼
+			                           ,S.備註給倉庫
+			                           ,S.產品二階
+			                           ,S.廠商編號
+			                           ,CONVERT(VARCHAR,S.停用日期,23) 停用日期
+			                           ,S.序號
+                                       ,'{庫區}' 庫區
+			                           ,S.更新人員
+			                           ,CONVERT(VARCHAR,S.更新日期,23) 更新日期 
+                                       ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = S.序號) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
+                        FROM suplu S
+                        WHERE 1=1 
+                         ";
+
+            //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
+            foreach (string form in context.Request.Form)
+            {
+                if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type")
+                {
+                    string debug = context.Request[form];
+                    switch (form)
+                    {
+                        case "產品說明":
+                        case "廠商簡稱":
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE '%' + @" + form + " + '%' ";
+                            this.SetParameters(form, context.Request[form]);
+                            break;
+                        case "庫區":
+                            sqlStr += " AND ISNULL(S.{庫區}庫存數,0) <> 0";
+                            sqlStr = sqlStr.Replace("{庫區}", context.Request[form]);
+                            this.SetParameters(form, context.Request[form]);
                             break;
                         case "庫位":
                             sqlStr += " AND ISNULL(S.[" + context.Request["倉位"] + "庫位],'') LIKE '%' + @" + form + " + '%' ";

@@ -7,6 +7,9 @@ using System.Web;
 
 namespace Ivan_Service
 {
+    /// <summary>
+    /// 核銷數邏輯待stkio 資料都已結案或刪除 剩新資料再調整
+    /// </summary>
     public class Dal_Stkio : LogicBase
     {
         public Dal_Stkio(HttpContext _context)
@@ -217,9 +220,9 @@ namespace Ivan_Service
                                       ,CONVERT(VARCHAR,S.更新日期,23) 更新日期
 		                              ,S.廠商簡稱
 			                          ,S.單位
-                                      ,S.{出入庫}數 {庫區}{出入庫}
+                                      ,S.{出入庫}數 - ISNULL(S.核銷數,0) {庫區}{出入庫}
 			                          ,SU.{庫區}庫存數 庫存數
-                                      ,IIF('{出入庫}' = '出庫' AND SU.{庫區}庫存數 > 0 AND S.{出入庫}數 > SU.{庫區}庫存數, SU.{庫區}庫存數, S.{出入庫}數) 本次核銷數量
+                                      ,IIF('{出入庫}' = '出庫' AND SU.{庫區}庫存數 > 0 AND (S.{出入庫}數 - ISNULL(S.核銷數,0)) > SU.{庫區}庫存數, SU.{庫區}庫存數, (S.{出入庫}數 - ISNULL(S.核銷數,0))) 本次核銷數量
                                       ,{庫區}庫位 AS 目前庫位
 			                          ,S.庫位 本次庫位
                                       ,ISNULL(S.備註,'') 備註
@@ -469,6 +472,121 @@ namespace Ivan_Service
             return res;
         }
 
+        /// <summary>
+        /// 多筆 Insert Stkio 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public int MutiInsertStkio()
+        {
+            string sqlStr = @"   INSERT INTO [dbo].[stkio]
+                                               ([序號]
+                                               ,[SOURCE_SEQ]
+                                               ,[SOURCE_TABLE]
+                                               ,[SUPLU_SEQ]
+                                               ,[訂單號碼]
+                                               ,[單據編號]
+                                               ,[異動日期]
+                                               ,[帳項]
+                                               ,[帳項原因]
+                                               ,[廠商編號]
+                                               ,[廠商簡稱]
+                                               ,[頤坊型號]
+                                               ,[暫時型號]
+                                               ,[單位]
+                                               ,[庫區]
+                                               ,[入庫數]
+                                               ,[出庫數]
+                                               ,[庫位]
+                                               ,[核銷數]
+                                               ,[異動前庫存]
+                                               ,[客戶編號]
+                                               ,[客戶簡稱]
+                                               ,[完成品型號]
+                                               ,[備註]
+                                               ,[內銷入庫]
+                                               ,[已結案]
+                                               ,[已刪除]
+                                               ,[變更日期]
+                                               ,[建立人員]
+                                               ,[建立日期]
+                                               ,[更新人員]
+                                               ,[更新日期])
+                                         SELECT (Select IsNull(Max(序號),0)+1 From stkio) [序號]
+                                               ,@SEQ [SOURCE_SEQ]
+                                               ,'suplu' [SOURCE_TABLE]
+                                               ,@SEQ [SUPLU_SEQ]
+                                               ,@訂單號碼 [訂單號碼]
+                                               ,@單據編號 [單據編號]
+                                               ,NULL [異動日期]
+                                               ,@帳項 [帳項]
+                                               ,NULL [帳項原因]
+                                               ,[廠商編號]
+                                               ,[廠商簡稱]
+                                               ,[頤坊型號]
+                                               ,[暫時型號]
+                                               ,[單位]
+                                               ,@STOCK_POS [庫區]
+                                               ,CASE WHEN @入出庫 = '入庫' THEN @STOCK_IO_CNT ELSE 0 END [入庫數]
+                                               ,CASE WHEN @入出庫 = '出庫' THEN @STOCK_IO_CNT ELSE 0 END [出庫數]
+                                               ,@STOCK_LOC [庫位]
+                                               ,0 [核銷數]
+                                               ,NULL [異動前庫存]
+                                               ,@客戶編號 [客戶編號]
+                                               ,@客戶簡稱 [客戶簡稱]
+                                               ,NULL [完成品型號]
+                                               ,@備註 [備註]
+                                               ,NULL [內銷入庫]
+                                               ,0 [已結案]
+                                               ,0 [已刪除]
+                                               ,GETDATE() [變更日期]
+                                               ,@UPD_USER [建立人員]
+                                               ,GETDATE() [建立日期]
+                                               ,@UPD_USER [更新人員]
+                                               ,GETDATE() [更新日期]
+	                                    FROM suplu
+	                                    WHERE 序號 = @SEQ
+
+									";
+          
+            string[] seqArray = context.Request["SEQ[]"].Split(',');
+            string[] approveCntArr = context.Request["STOCK_IO_CNT[]"].Split(',');
+            string[] stockLocArr = context.Request["STOCK_LOC[]"].Split(',');
+            string[] stockPosArr = context.Request["STOCK_POS[]"].Split(',');
+
+            int res = 0;
+            this.SetTran();
+            for (int cnt = 0; cnt < seqArray.Length; cnt++)
+            {
+                ClearParameter();
+                this.SetParameters("SEQ", seqArray[cnt]);
+                this.SetParameters("STOCK_IO_CNT", Convert.ToDecimal(approveCntArr[cnt]));
+                this.SetParameters("STOCK_POS", stockPosArr[cnt]);
+                this.SetParameters("STOCK_LOC", stockLocArr[cnt]);
+                this.SetParameters("UPD_USER", "IVAN10");
+
+                //一次性變數 不重複設
+                foreach (string form in context.Request.Form)
+                {
+                    if (form != "Call_Type" && !form.Contains("[]"))
+                    {
+                        switch (form)
+                        {
+                            default:
+                                this.SetParameters(form, context.Request[form]);
+                                break;
+                        }
+                    }
+                }
+
+                res += Execute(sqlStr);
+            }
+            //Log一次寫
+            this.TranCommitWithLog();
+
+            return res;
+        }
+
         #endregion
 
         #region 更新區域
@@ -610,6 +728,7 @@ namespace Ivan_Service
             string[] remarkArr = context.Request["REMARK[]"].Split(',');
             string[] quickTakeArr = context.Request["QUICK_TAKE[]"].Split(',');
 
+            int res = 0;
             this.SetTran();
             for (int cnt = 0; cnt < seqArray.Length; cnt++)
             {
@@ -622,10 +741,9 @@ namespace Ivan_Service
                 this.SetParameters("UPD_USER", "IVAN10");
 
                 sqlStr = sqlStr.Replace("{庫區}", stockPosArr[cnt]);
-                ExecuteWithLog(sqlStr);
+                res += Execute(sqlStr);
             }
-            int res = 1;
-            this.TranCommit();
+            this.TranCommitWithLog();
 
             return res;
         }
