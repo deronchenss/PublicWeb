@@ -1,4 +1,5 @@
 ﻿using Ivan_Dal;
+using Ivan_Log;
 using System.Data;
 using System.Web;
 
@@ -203,8 +204,11 @@ namespace Ivan_Service
 				this.SetParameters("PACK_NO", context.Request["PACK_NO"]);
 				this.SetParameters("SAMPLE_NO", context.Request["SAMPLE_NO"]);
 				this.SetParameters("UPD_USER", "IVAN10");
-				ExecuteWithLog(sqlStr);
+				Execute(sqlStr);
 			}
+
+			//後續還有語法，額外紀錄LOG
+			Log.InsertLog(context, context.Session["Account"], sqlStr, parmStr);
 
 			//最後更新重量 只更新第一筆
 			sqlStr = @" UPDATE paku

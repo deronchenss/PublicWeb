@@ -232,9 +232,9 @@ namespace Ivan_Service
                 this.SetParameters("HEIGHT", string.IsNullOrEmpty(heightArr[cnt]) ? "0" : heightArr[cnt]);
                 this.SetParameters("IVAN_TYPE", ivanType[cnt]);
                 this.SetParameters("FACT_NO", factNo[cnt]);
-                ExecuteWithLog(sqlStr);
+                Execute(sqlStr);
             }
-            this.TranCommit();
+            this.TranCommitWithLog();
             return res;
         }
 

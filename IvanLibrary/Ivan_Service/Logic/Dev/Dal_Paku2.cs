@@ -233,9 +233,9 @@ namespace Ivan_Service
 				this.SetParameters("CUST_NO", context.Request["CUST_NO"]);
 				this.SetParameters("CUST_S_NAME", context.Request["CUST_S_NAME"]);
 				this.SetParameters("USER", "IVAN10");
-				res = ExecuteWithLog(sqlStr);
+				res = Execute(sqlStr);
 			}
-			this.TranCommit();
+			this.TranCommitWithLog();
 
 			return res;
 		}
@@ -350,9 +350,9 @@ namespace Ivan_Service
 				this.ClearParameter();
 				this.SetParameters("SEQ", seqArray[cnt]);
 				this.SetParameters("UPD_USER", "IVAN10");
-				ExecuteWithLog(sqlStr);
+				Execute(sqlStr);
 			}
-			this.TranCommit();
+			this.TranCommitWithLog();
 
 			return res;
 		}

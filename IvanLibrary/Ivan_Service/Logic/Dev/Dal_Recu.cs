@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using Ivan_Log;
+using System.Data;
 using System.Web;
 
 namespace Ivan_Service
@@ -184,8 +185,11 @@ namespace Ivan_Service
                                 WHERE 序號 = @SEQ";
                 }
 
-                ExecuteWithLog(sqlStr);
+                Execute(sqlStr);
             }
+
+            //後續還有語法，額外紀錄LOG
+            Log.InsertLog(context, context.Session["Account"], sqlStr, parmStr);
 
             //根據寫入到貨數量 一次更新結案狀態
             sqlStr = @"UPDATE pudu
