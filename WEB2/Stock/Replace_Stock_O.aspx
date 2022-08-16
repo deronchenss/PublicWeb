@@ -64,9 +64,8 @@
                         $('#Div_DT_View').css('display', 'none');
                         $('#BT_Cancel').css('display', 'none');
                         $('#BT_Search').css('display', '');
-                        $('#BT_Update').css('display', 'none');
 
-                        V_BT_CHG($('#BT_S_BASE'));
+                        V_BT_CHG($('#BT_S_EXEC'));
                         break;
                     case "EXEC":
                         $('.Div_D').css('display', 'none');
@@ -215,7 +214,7 @@
                                 "columns": columns,
                                 "columnDefs": [
                                     {
-                                        className: 'text-right', targets: [8, 9, 10] //數字靠右
+                                        className: 'text-right', targets: [5, 6, 8] //數字靠右
                                     },
                                 ],
                                 "order": [1, "asc"], //根據 頤坊型號 排序
@@ -366,11 +365,6 @@
                 ClickToEdit($(this));
             });
 
-            $('#BT_EXECUTE_CANCEL').on('click', function () {
-                Edit_Mode = "Base";
-                Form_Mode_Change("Search");
-            });
-
             //功能選單
             $('#BT_S_EXEC').on('click', function () {
                 Form_Mode_Change("EXEC");
@@ -485,7 +479,6 @@
                 <div style="height: 10vh; font-size: smaller;" >&nbsp</div>
                 <div style="text-align:center">
                      <input id="BT_EXECUTE" style="font-size:20px" type="button" value="執行"  />
-                     <input id="BT_EXECUTE_CANCEL" style="font-size:20px" type="button" value="返回" />
                 </div>
             </div>
             <div id="Div_IMG_DETAIL" class=" Div_D" style="width:35%;height:71vh; border-style:solid;border-width:1px; float:right; overflow:auto ">

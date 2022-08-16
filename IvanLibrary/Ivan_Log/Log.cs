@@ -33,7 +33,7 @@ namespace Ivan_Log
             logModel.SQL_PARAMETERS = paraStr;
             logModel.ERROR_MSG = errMsg;
             logModel.CALL_CONTEXT = HttpUtility.UrlDecode(context.Request.Form.ToString(), Encoding.UTF8);
-            logModel.SQL_TEXT = sqlStr.Replace("\t","").Replace("\r\n", "");
+            logModel.SQL_TEXT = sqlStr.Replace("\t","").Replace("\r\n", "").Replace("     ", " ").Replace("    ", " ").Replace("   ", " ").Replace("  ", " ");
             logModel.SERVER_IP = context.Request.Url.Authority;
             logModel.CLIENT_IP = context.Request.UserHostAddress;
             logModel.RESULT = result ? "SUCCESS" : "FAIL";
