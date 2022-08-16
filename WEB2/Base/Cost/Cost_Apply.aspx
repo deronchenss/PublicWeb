@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Cost Apply" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Cost_Apply.aspx.cs" Inherits="Cost_Cost_Apply" %>
+﻿<%@ Page Title="Cost Apply" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" %>
 <%@ Register TagPrefix="uc1" TagName="uc1" Src="~/User_Control/Dia_Duo_Datetime_Picker.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
@@ -400,7 +400,7 @@
             </td>
             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Developing%></td>
             <td style="text-align: left; width: 15%;">
-                <select id="DDL_DVN">
+                <select id="DDL_DVN" style="height:28.5px;">
                     <option selected="selected" value="Y">開發中</option>
                     <option value="R">申請中</option>
                     <option>ALL</option>

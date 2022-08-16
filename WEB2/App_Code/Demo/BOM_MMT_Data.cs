@@ -111,7 +111,7 @@ namespace Demo
                             New_IN_Filter += ",@SEQ" + i;
                             cmd.Parameters.AddWithValue("SEQ" + i, SEQ_A[i].ToString());
                         }
-                        sqlStr = string.Format(sqlStr, New_IN_Filter);
+                        sqlStr = string.Format(sqlStr, New_IN_Filter); 
 
                         cmd.CommandText = sqlStr;
 
@@ -128,7 +128,6 @@ namespace Demo
                 throw ex;
             }
         }
-
         #endregion
     }
 }

@@ -130,6 +130,8 @@
                                             <ul class="dropdown">
                                                 <li><a href="/Base/Cost/Cost_MT.aspx" IVM_PERMISSIONS="30"><%=Resources.MP.Product%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
                                                     </a></li>
+                                                <li><a href="/Base/Cost/Cost_Multiple_MT.aspx" IVM_PERMISSIONS="0"><%=Resources.MP.Product%><%=Resources.MP.Speace%><%=Resources.MP.Multiple%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
+                                                    </a></li>
                                                 <li><a href="/Base/Cost/Cost_Class.aspx" IVM_PERMISSIONS="26"><%=Resources.MP.Cost_Class%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
                                                     </a></li>
                                                 <li><a href="/Base/Cost/Cost_Apply.aspx" IVM_PERMISSIONS="33"><%=Resources.MP.Product%><%=Resources.MP.Speace%><%=Resources.MP.Applyopen%>
@@ -154,9 +156,9 @@
                                             <a href="#" IVM_PERMISSIONS="31">BOM
                                             </a>
                                             <ul class="dropdown">
-                                                <li><a href="/Base/BOM/BOM_MT.aspx" IVM_PERMISSIONS="32">BOM<%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
+                                                <li><a href="/Base/BOM/BOM_MT.aspx" IVM_PERMISSIONS="32">BOM<%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>(成品變更)
                                                     </a></li>
-                                                <li><a href="/Base/BOM/BOM_Multiple_MT.aspx" IVM_PERMISSIONS="0">BOM<%=Resources.MP.Speace%><%=Resources.MP.Multiple%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
+                                                <li><a href="/Base/BOM/BOM_Multiple_MT.aspx" IVM_PERMISSIONS="0">BOM<%=Resources.MP.Speace%><%=Resources.MP.Multiple%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>(材料變更)
                                                     </a></li>
                                             </ul>
                                         </li>

@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Cost Report" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Cost_Report.aspx.cs" Inherits="Cost_Cost_Report" %>
+﻿<%@ Page Title="Cost Report" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" %>
 <%@ Register TagPrefix="uc1" TagName="uc1" Src="~/User_Control/Dia_Supplier_Selector.ascx" %>
 <%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_ALL.ascx" %>
 <%@ Register TagPrefix="uc3" TagName="uc3" Src="~/User_Control/Dia_Customer_Selector.ascx" %>
@@ -601,7 +601,7 @@
             <td rowspan="5" style="width:5%">
                 <span>Data Source</span>
                 <br />
-                <select id="DDL_Data_Souce" style="width:100%;">
+                <select id="DDL_Data_Souce" style="width:100%;height:28.5px;">
                     <option selected="selected">Cost</option>
                     <option>Price</option>
                 </select>
@@ -657,7 +657,7 @@
             
             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Product_Status%></td>
             <td style="text-align: left; width: 15%;">
-                <select id="DDL_PS" style="width: 100%;"></select>
+                <select id="DDL_PS" style="width: 100%;height:28.5px;"></select>
             </td>
 
         </tr>

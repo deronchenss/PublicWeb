@@ -915,4 +915,19 @@
   <data name="Material" xml:space="preserve">
     <value>材料</value>
   </data>
+  <data name="Enable" xml:space="preserve">
+    <value>啟用</value>
+  </data>
+  <data name="Process" xml:space="preserve">
+    <value>處理</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>狀態</value>
+  </data>
+  <data name="Word_Size" xml:space="preserve">
+    <value>字級</value>
+  </data>
+  <data name="Word_Type" xml:space="preserve">
+    <value>字型</value>
+  </data>
 </root>
