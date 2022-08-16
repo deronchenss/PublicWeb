@@ -21,8 +21,8 @@
                     $("#Duo_Datetime_Picker_Dialog").dialog('close');
                 },
                 "Clear": function () {
-                    TB_DS.val('');
-                    TB_DE.val('');
+                    $('.TB_DS' + $('#DDPB_HDN_DP_Control').val() + '[type=date]').val('');
+                    $('.TB_DE' + $('#DDPB_HDN_DP_Control').val() + '[type=date]').val('');
                     $("#Duo_Datetime_Picker_Dialog").dialog('close');
                 }
             }
