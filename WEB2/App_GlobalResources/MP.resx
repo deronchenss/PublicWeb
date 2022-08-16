@@ -930,4 +930,10 @@
   <data name="Word_Type" xml:space="preserve">
     <value>字型</value>
   </data>
+  <data name="Replace" xml:space="preserve">
+    <value>替代</value>
+  </data>
+  <data name="Stock_O" xml:space="preserve">
+    <value>出庫</value>
+  </data>
 </root>

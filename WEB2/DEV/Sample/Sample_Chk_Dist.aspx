@@ -706,7 +706,7 @@
             </div>
     
             <div id="Div_Exec_Ship_Go_Section" class="ExecSection" style="width:28%;height:71vh; border-style:solid;border-width:1px; float:right;">
-                <table class="edit_section_control">
+                <table class="edit_section_control" style="width:auto">
                     <tr> 
                         <td style="height: 2vh; font-size: smaller;" >&nbsp</td>
                     </tr>

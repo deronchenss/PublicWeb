@@ -1224,7 +1224,7 @@
                 </table>
             </div>
             <div id="Div_SET_SEQ" class=" Div_D" style="width:35%;height:71vh; border-style:solid;border-width:1px; float:right; ">
-                <table class="search_section_control">
+                <table class="search_section_control" style="width:auto">
                     <tr class="trstyle"> 
                         <td class="tdbstyle" style="height: 15vh; font-size: smaller;" >&nbsp</td>
                     </tr>

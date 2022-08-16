@@ -663,7 +663,7 @@
                     <input type="button" id="BT_Search" class="buttonStyle" value="<%=Resources.MP.Search%>" />
                     <input type="button" id="BT_Insert" class="buttonStyle" value="<%=Resources.MP.Insert%>" />
                     <input type="button" id="BT_Update" class="buttonStyle" value="修改" />
-                    <input type="button" id="BT_Cancel" class="buttonStyle" value="<%=Resources.MP.Cancel%>" style="display: none;" />
+                    <input type="reset" id="BT_Cancel" class="buttonStyle" value="<%=Resources.MP.Cancel%>" style="display: none;" />
                 </td>
             </tr>
         </table>

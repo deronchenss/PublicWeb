@@ -57,7 +57,7 @@ namespace Ivan_Service
 			                           ,S.大貨庫位
 			                           ,IIF(S.快取庫存數 = 0, NULL, S.快取庫存數) 快取庫存數 
 			                           ,S.快取庫位
-			                           ,IIF(S.分配庫存數 = 0, NULL, S.分配庫存數) 分配庫存數
+			                           ,(SELECT IIF(SUM(出庫數) = 0, NULL, SUM(出庫數)) FROM stkio ST WHERE SUPLU_SEQ = S.序號 AND ISNULL(ST.已結案,0) = 0 AND ISNULL(ST.已刪除,0) = 0) 分配庫存數
 			                           ,IIF(P.庫存在途數 = 0, NULL, P.庫存在途數) 庫存在途數
 			                           ,IIF(P.在途數 = 0, NULL, P.在途數) 在途數
 			                           , CASE WHEN IsNull(S.ISP安全數,0)=1 AND IsNull(S.ISP庫存數,0)>0 THEN '上架' 
@@ -106,7 +106,7 @@ namespace Ivan_Service
 			                           ,S.更新人員
 			                           ,CONVERT(VARCHAR,S.更新日期,23) 更新日期 
                                        ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = S.序號) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
-                                       ,CASE WHEN ISNULL(S.大貨安全數,0) > 0 AND ISNULL(S.大貨庫存數,0) + IIF(S.分配庫存數 = 0, NULL, S.分配庫存數) + IIF(P.庫存在途數 = 0, NULL, P.庫存在途數) < ISNULL(S.大貨安全數,0) THEN 'Y' ELSE 'N' END 安全數不足
+                                       ,CASE WHEN ISNULL(S.大貨安全數,0) > 0 AND ISNULL(S.大貨庫存數,0) + (SELECT SUM(ISNULL(出庫數,0)) FROM stkio ST WHERE SUPLU_SEQ = S.序號 AND ISNULL(ST.已結案,0) = 0 AND ISNULL(ST.已刪除,0) = 0) + ISNULL(P.庫存在途數, 0) < ISNULL(S.大貨安全數,0) THEN 'Y' ELSE 'N' END 安全數不足
                         FROM suplu S
                         LEFT JOIN S1 ON S.頤坊型號 = S1.頤坊型號 AND S.產品二階 = S1.產品二階
                         LEFT JOIN PUD_CNT P ON S.序號 = P.SUPLU_SEQ
@@ -182,6 +182,68 @@ namespace Ivan_Service
 
             dt = GetDataTableWithLog(sqlStr);
 
+            return dt;
+        }
+
+        /// <summary>
+        /// 替代庫存出庫 查詢 Return DataTable
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public DataTable SearchTableForReplace()
+        {
+            DataTable dt = new DataTable();
+            string sqlStr = "";
+
+            sqlStr = @" ;WITH S1 
+                        AS
+                        (
+	                        SELECT 頤坊型號,產品二階, SUM(大貨庫存數) 總庫存
+	                        FROM suplu S1 
+	                        GROUP BY 頤坊型號,產品二階
+                        ) 
+                        SELECT  Top 500 S.廠商簡稱
+			                           ,S.頤坊型號
+			                           ,S.銷售型號
+                                       ,S.產品狀態
+			                           ,S.單位
+			                           ,IIF(S.大貨庫存數 = 0, NULL, S.大貨庫存數) 大貨庫存數
+			                           ,IIF(ISNULL(總庫存,0) - 大貨庫存數 = 0, NULL, ISNULL(總庫存,0) - 大貨庫存數)  替代庫存數
+                                       ,S.大貨庫位 大貨庫位
+                                       ,(SELECT IIF(SUM(出庫數) = 0, NULL, SUM(出庫數)) FROM stkio ST WHERE SUPLU_SEQ = S.序號 AND ISNULL(ST.已結案,0) = 0 AND ISNULL(ST.已刪除,0) = 0) 分配庫存數
+			                           ,S.產品說明
+			                           ,S.廠商型號
+			                           ,S.暫時型號
+			                           ,S.廠商編號
+			                           ,S.序號
+			                           ,S.更新人員
+			                           ,CONVERT(VARCHAR,S.更新日期,23) 更新日期 
+                                       ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = S.序號) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
+                        FROM suplu S
+                        LEFT JOIN S1 ON S.頤坊型號 = S1.頤坊型號 AND S.產品二階 = S1.產品二階
+                        WHERE 1=1 
+                         ";
+
+            //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
+            foreach (string form in context.Request.Form)
+            {
+                if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type")
+                {
+                    string debug = context.Request[form];
+                    switch (form)
+                    {
+                        default:
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE @" + form + " + '%'";
+                            this.SetParameters(form, context.Request[form]);
+                            break;
+                    }
+                }
+            }
+            
+            
+            sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
+
+            dt = GetDataTableWithLog(sqlStr);
             return dt;
         }
 

@@ -909,6 +909,12 @@
   <data name="Material" xml:space="preserve">
     <value>Material</value>
   </data>
+  <data name="Replace" xml:space="preserve">
+    <value>Replace</value>
+  </data>
+  <data name="Stock_O" xml:space="preserve">
+    <value>Out Of Stock</value>
+  </data>
   <data name="Enable" xml:space="preserve">
     <value>Enable</value>
   </data>

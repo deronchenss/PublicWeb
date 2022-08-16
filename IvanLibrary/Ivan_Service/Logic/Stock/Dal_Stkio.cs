@@ -430,7 +430,7 @@ namespace Ivan_Service
                 else if ("建立人員".Equals(property.Name) || "更新人員".Equals(property.Name))
                 {
                     column.Append($" [{property.Name}],");
-                    columnVar.Append($" 'IVAN10',");
+                    columnVar.Append($" '{context.Session["Account"] ?? "IVAN10"}',");
                 }
                 else if ("建立日期".Equals(property.Name) || "更新日期".Equals(property.Name))
                 {
@@ -519,7 +519,7 @@ namespace Ivan_Service
                                                ,@訂單號碼 [訂單號碼]
                                                ,@單據編號 [單據編號]
                                                ,NULL [異動日期]
-                                               ,@帳項 [帳項]
+                                               ,@BILL_TYPE [帳項]
                                                ,NULL [帳項原因]
                                                ,[廠商編號]
                                                ,[廠商簡稱]
@@ -527,8 +527,8 @@ namespace Ivan_Service
                                                ,[暫時型號]
                                                ,[單位]
                                                ,@STOCK_POS [庫區]
-                                               ,CASE WHEN @入出庫 = '入庫' THEN @STOCK_IO_CNT ELSE 0 END [入庫數]
-                                               ,CASE WHEN @入出庫 = '出庫' THEN @STOCK_IO_CNT ELSE 0 END [出庫數]
+                                               ,CASE WHEN @STOCK_IO = '入庫' THEN @STOCK_IO_CNT ELSE 0 END [入庫數]
+                                               ,CASE WHEN @STOCK_IO = '出庫' THEN @STOCK_IO_CNT ELSE 0 END [出庫數]
                                                ,@STOCK_LOC [庫位]
                                                ,0 [核銷數]
                                                ,NULL [異動前庫存]
@@ -551,8 +551,14 @@ namespace Ivan_Service
           
             string[] seqArray = context.Request["SEQ[]"].Split(',');
             string[] approveCntArr = context.Request["STOCK_IO_CNT[]"].Split(',');
-            string[] stockLocArr = context.Request["STOCK_LOC[]"].Split(',');
+            string[] stockIOArr = context.Request["STOCK_IO[]"].Split(',');
             string[] stockPosArr = context.Request["STOCK_POS[]"].Split(',');
+            string[] billTypeArr = context.Request["BILL_TYPE[]"].Split(',');
+            string[] stockLocArr = new string[0];
+            if (!string.IsNullOrEmpty(context.Request["STOCK_LOC[]"]))
+            {
+                stockLocArr = context.Request["STOCK_LOC[]"].Split(',');
+            }
 
             int res = 0;
             this.SetTran();
@@ -562,10 +568,20 @@ namespace Ivan_Service
                 this.SetParameters("SEQ", seqArray[cnt]);
                 this.SetParameters("STOCK_IO_CNT", Convert.ToDecimal(approveCntArr[cnt]));
                 this.SetParameters("STOCK_POS", stockPosArr[cnt]);
-                this.SetParameters("STOCK_LOC", stockLocArr[cnt]);
-                this.SetParameters("UPD_USER", "IVAN10");
+                this.SetParameters("STOCK_IO", stockIOArr[cnt]);
+                this.SetParameters("BILL_TYPE", billTypeArr[cnt]);
+                this.SetParameters("UPD_USER", context.Session["Account"] ?? "IVAN10");
 
-                //一次性變數 不重複設
+                if (stockLocArr.Length > 0)
+                {
+                    this.SetParameters("STOCK_LOC", stockLocArr[cnt]);
+                }
+                else
+                {
+                    //庫位沒有傳入 用 庫區 + 庫位寫入
+                    sqlStr = context.Request["STOCK_LOC"] ?? sqlStr.Replace("@STOCK_LOC", stockPosArr[cnt] + "庫位");
+                }
+
                 foreach (string form in context.Request.Form)
                 {
                     if (form != "Call_Type" && !form.Contains("[]"))
@@ -620,7 +636,7 @@ namespace Ivan_Service
             sqlStr += " WHERE [序號] = @SEQ ";
 
             this.SetTran();
-            this.SetParameters("UPD_USER", "IVAN10");
+            this.SetParameters("UPD_USER", context.Session["Account"] ?? "IVAN10");
             int res = ExecuteWithLog(sqlStr);
             this.TranCommit();
 
@@ -698,7 +714,7 @@ namespace Ivan_Service
 											,NULL 客戶編號
 						       			    ,NULL 客戶簡稱
 											,NULL [完成品型號]
-											,NULL [備註]
+											,[備註]
 											,NULL [內銷入庫]
 											,0 [已刪除]
 											,NULL [變更日期]
@@ -738,7 +754,7 @@ namespace Ivan_Service
                 this.SetParameters("STOCK_LOC", stockLocArr[cnt]);
                 this.SetParameters("REMARK", remarkArr[cnt]);
                 this.SetParameters("QUICK_TAKE", quickTakeArr[cnt]);
-                this.SetParameters("UPD_USER", "IVAN10");
+                this.SetParameters("UPD_USER", context.Session["Account"] ?? "IVAN10");
 
                 sqlStr = sqlStr.Replace("{庫區}", stockPosArr[cnt]);
                 res += Execute(sqlStr);
@@ -766,7 +782,7 @@ namespace Ivan_Service
                                      ";
 
             this.SetParameters("SEQ", context.Request["SEQ"]);
-            this.SetParameters("UPD_USER", "IVAN10");
+            this.SetParameters("UPD_USER", context.Session["Account"] ?? "IVAN10");
 
             this.SetTran();
             res = ExecuteWithLog(sqlStr);

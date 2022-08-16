@@ -474,20 +474,24 @@
                 var liSeq = [];
                 var liStockIOCnt = [];
                 var liStockPos = [];
+                var liStockIO = [];
                 var liStockLoc = [];
+                var liBillType = [];
                 var execCnt = $('#Table_EXEC_Data > tbody tr[role=row]').length;
-
+                var err = false;
                 $('#Table_EXEC_Data > tbody tr[role=row]').each(function (index) {
                     var stockIOCnt = $(this).find('#E_IO_CNT').val();
                     if ($.trim(stockIOCnt) == 0 || $.trim(stockIOCnt) == '') {
                         alert('第' + (index + 1) + '筆，入出數不可為 0!');
-                        return;
+                        err = true;
+                        return err;
                     }
 
                     var stockLoc = $(this).find('#E_STOCK_LOC').val();
                     if ($.trim(stockLoc) == '') {
                         alert('第' + (index + 1) + '筆，庫位未設定!');
-                        return;
+                        err = true;
+                        return err;
                     }
 
                     var seqIndex = $('#Table_EXEC_Data thead th:contains(序號)').index() + 1; //序號INDEX
@@ -496,7 +500,12 @@
                     liStockPos.push($(this).find('td:nth-child(' + stockPosIndex + ')').text());
                     liStockIOCnt.push(stockIOCnt);
                     liStockLoc.push(stockLoc);
+                    liStockIO.push($('#E_STOCK_IO').val());
+                    liBillType.push($('#E_BILL_TYPE').val());
                 })
+                if (err) {
+                    return;
+                }
 
                 //檢核開始
                 if ($.trim($('#E_ORDER_NO').val()) == '') {
@@ -511,8 +520,10 @@
                     dataReq['Call_Type'] = 'MUTI_INSERT';
                     dataReq['SEQ'] = liSeq;
                     dataReq['STOCK_IO_CNT'] = liStockIOCnt;
+                    dataReq['STOCK_IO'] = liStockIO;
                     dataReq['STOCK_POS'] = liStockPos;
                     dataReq['STOCK_LOC'] = liStockLoc;
+                    dataReq['BILL_TYPE'] = liBillType;
 
                     //組json data
                     $('.updColumn').each(function () {
@@ -616,14 +627,6 @@
                 Form_Mode_Change("Search");
             });
 
-            $('#E_ALL_STOCK_LOC_CHK').on('click', function () {
-                $('.fillStockLoc').val($('#E_ALL_STOCK_LOC').val());
-            });
-
-            $('#E_ALL_REMARK_CHK').on('click', function () {
-                $('.fillRemark').val($('#E_ALL_REMARK').val());
-            });
-
             //功能選單
             $('#BT_S_CHS').on('click', function () {
                 Edit_Mode = "Base";
@@ -721,7 +724,7 @@
             <tr class="trstyle">
                 <td class="tdtstyleRight" colspan="8">
                     <input type="button" id="BT_Search" class="buttonStyle" value="<%=Resources.MP.Search%>" />
-                    <input type="button" id="BT_Cancel" class="buttonStyle" value="<%=Resources.MP.Cancel%>" style="display: none;" />
+                    <input type="reset" id="BT_Cancel" class="buttonStyle" value="<%=Resources.MP.Cancel%>" style="display: none;" />
                 </td>
             </tr>
         </table>
@@ -781,7 +784,7 @@
             </div>
     
             <div id="Div_Exec_Section" style="width:30%; height:71vh;white-space:nowrap; border-style:solid; border-width:1px;  float:right; overflow:auto">
-                <table class="edit_section_control">
+                <table class="edit_section_control" style="width:auto">
                     <tr class="trstyle"> 
                         <td style="height: 5vh; font-size: smaller;" >&nbsp</td>
                     </tr>
@@ -794,7 +797,7 @@
                     <tr class="trstyle" >
                          <td class="tdhstyle">入出庫</td>
                         <td class="tdbstyle">
-                            <select id="E_STOCK_IO" DT_Fill_Name="入出庫" class="textbox_char updColumn" >
+                            <select id="E_STOCK_IO" DT_Fill_Name="入出庫" class="textbox_char" >
                                 <option selected="selected" value="出庫">出庫</option>
                                 <option value="入庫">入庫</option>
                             </select>

@@ -409,7 +409,7 @@
                 });
             };          
  
-            //寫入備貨 TABLE
+            //寫入 TABLE
             function Approve() {
                 var liSeq = [];
                 var liApproveCnt = [];
@@ -419,7 +419,7 @@
                 var liQuickTake = [];
 
                 var execCnt = $('#Table_EXEC_Data > tbody tr[role=row]').length;
-
+                var err = false;
                 $('#Table_EXEC_Data > tbody tr[role=row]').each(function (index) {
                     var stockIndex = $('#Table_EXEC_Data thead th:contains(庫存數)').index() + 1; //庫存數INDEX
                     var stockIOIndex = $('#Table_EXEC_Data thead th:contains(出入庫)').index() + 1; //出入庫INDEX
@@ -429,19 +429,22 @@
 
                     if (approveCnt == 0 || approveCnt == '') {
                         alert('第' + (index + 1) + '筆，核銷數不可為 0!');
-                        return;
+                        err = true;
+                        return err;
                     }
 
                     stockCnt = ($.trim(stockCnt) == '' ? 0 : stockCnt); 
                     if (approveCnt > parseFloat(stockCnt) && stockIO == '出庫') {
                         alert('第' + (index + 1) + '筆，出庫核銷數 大於 庫存數!');
-                        return;
+                        err = true;
+                        return err;
                     }
 
                     var stockLoc = $(this).find('#E_STOCK_LOC').val();
                     if ($.trim(stockLoc) == '') {
                         alert('第' + (index + 1) + '筆，庫位未設定!');
-                        return;
+                        err = true;
+                        return err;
                     }
 
                     var seqIndex = $('#Table_EXEC_Data thead th:contains(序號)').index() + 1; //序號INDEX
@@ -452,6 +455,10 @@
                     liRemark.push($(this).find('#E_REMARK').val());
                     liQuickTake.push($(this).find('#E_QUICK_TAKE').is(":checked") ? 'Y' : 'N');
                 })
+
+                if (err) {
+                    return;
+                }
 
                 $.ajax({
                     url: apiUrl,
@@ -642,7 +649,7 @@
             <tr class="trstyle">
                 <td class="tdtstyleRight" colspan="8">
                     <input type="button" id="BT_Search" class="buttonStyle" value="<%=Resources.MP.Search%>" />
-                    <input type="button" id="BT_Cancel" class="buttonStyle" value="<%=Resources.MP.Cancel%>" style="display: none;" />
+                    <input type="reset" id="BT_Cancel" class="buttonStyle" value="<%=Resources.MP.Cancel%>" style="display: none;" />
                 </td>
             </tr>
         </table>
@@ -702,40 +709,35 @@
             </div>
     
             <div id="Div_Exec_Section" style="width:28%;height:71vh; border-style:solid;border-width:1px; float:right;">
-                <table class="search_section_control">
-                    <tr> 
-                        <td style="height: 2vh; font-size: smaller;" >&nbsp</td>
-                    </tr>
-                    <tr  style="font-size:20px">
-                        <td colspan="2"  id="E_APPROVE_TITLE" >核銷項次:</td>
-                    </tr>
-                    <tr> 
-                        <td style="height: 10vh; font-size: smaller;" >&nbsp</td>
-                    </tr>
-                    <tr >
-                        <td class="tdhstyle">庫位</td>
-                        <td class="tdbstyle">
-                            <input id="E_ALL_STOCK_LOC"  class="textbox_char"  />
-                            <input id="E_ALL_STOCK_LOC_CHK" type="button" value="Reset" />
-                        </td>
-                    </tr>
-                    <tr >
-                        <td class="tdhstyle">備註</td>
-                        <td class="tdbstyle">
-                             <input id="E_ALL_REMARK"  class="textbox_char" maxlength="30" />
-                            <input id="E_ALL_REMARK_CHK" type="button" value="Reset" />
-                        </td>
-                    </tr>
-                    <tr class="trstyle"> 
-                        <td class="tdbstyle" style="height: 10vh; font-size: smaller;" >&nbsp</td>
-                    </tr>
-                    <tr >
-                        <td colspan="2">
-                            <input id="BT_EXECUTE" style="font-size:20px" type="button" value="執行"  />
-                            <input id="BT_EXECUTE_CANCEL" style="font-size:20px" type="button" value="返回" />
-                        </td>
-                    </tr>
-                </table>
+                <div class="search_section_control">
+                    <div style="position: relative; border: 1px solid #111111; padding: 20px; box-sizing: border-box; margin: 30px auto; width: 90%;">
+                        <span style="position: absolute; top: -1em; left: 10%; line-height: 2em; padding: 0 1em; background-color: #fff;">批次更新選取資料</span>
+                        <table style="margin:0 auto">
+                            <tr style="font-size:20px">
+                                <td colspan="2"  id="E_APPROVE_TITLE" >核銷項次:</td>
+                            </tr>
+                            <tr >
+                                <td class="tdhstyle">庫位</td>
+                                <td class="tdbstyle">
+                                    <input id="E_ALL_STOCK_LOC"  class="textbox_char"  />
+                                    <input id="E_ALL_STOCK_LOC_CHK" type="button" value="Reset" />
+                                </td>
+                            </tr>
+                            <tr >
+                                <td class="tdhstyle">備註</td>
+                                <td class="tdbstyle">
+                                     <input id="E_ALL_REMARK"  class="textbox_char" maxlength="30" />
+                                    <input id="E_ALL_REMARK_CHK" type="button" value="Reset" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div style="height: 10vh; font-size: smaller;" >&nbsp</div>
+                <div style="text-align:center">
+                     <input id="BT_EXECUTE" style="font-size:20px" type="button" value="執行"  />
+                    <input id="BT_EXECUTE_CANCEL" style="font-size:20px" type="button" value="返回" />
+                </div>
             </div> 
             <div id="Div_IMG_DETAIL" style="width:28%;height:71vh; border-style:solid;border-width:1px; float:right; overflow:auto ">
                 <table class="edit_section_control">
