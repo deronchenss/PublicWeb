@@ -936,4 +936,10 @@
   <data name="Stock_O" xml:space="preserve">
     <value>出庫</value>
   </data>
+  <data name="Change" xml:space="preserve">
+    <value>變更</value>
+  </data>
+  <data name="Stock_Loc" xml:space="preserve">
+    <value>庫位</value>
+  </data>
 </root>

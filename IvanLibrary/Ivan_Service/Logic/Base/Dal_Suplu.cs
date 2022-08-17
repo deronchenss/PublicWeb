@@ -1,4 +1,5 @@
 ﻿using Ivan_Dal;
+using System;
 using System.Data;
 using System.Web;
 
@@ -248,6 +249,76 @@ namespace Ivan_Service
         }
 
         /// <summary>
+        /// 庫位變更 查詢 Return DataTable
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public DataTable SearchTableForUpdLoc()
+        {
+            DataTable dt = new DataTable();
+            string sqlStr = "";
+
+            sqlStr = @" SELECT  Top 500 S.廠商簡稱
+			                           ,S.頤坊型號
+			                           ,S.銷售型號
+                                       ,S.產品狀態
+			                           ,S.單位
+			                           ,IIF(S.{庫區}庫存數 = 0, NULL, S.{庫區}庫存數) {庫區}庫存數
+                                       ,S.{庫區}庫位 {庫區}庫位
+                                       ,(SELECT IIF(SUM(出庫數) = 0, NULL, SUM(出庫數)) FROM stkio ST WHERE SUPLU_SEQ = S.序號 AND ISNULL(ST.已結案,0) = 0 AND ISNULL(ST.已刪除,0) = 0) 分配庫存數
+			                           ,S.產品說明
+			                           ,S.廠商型號
+			                           ,S.暫時型號
+			                           ,S.廠商編號
+			                           ,S.序號
+			                           ,S.更新人員
+			                           ,CONVERT(VARCHAR,S.更新日期,23) 更新日期 
+                                       ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = S.序號) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
+                        FROM suplu S
+                        WHERE 1=1 
+                         ";
+
+            //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
+            foreach (string form in context.Request.Form)
+            {
+                if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type")
+                {
+                    string debug = context.Request[form];
+                    switch (form)
+                    {
+                        case "廠商簡稱":
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE '%' + @" + form + " + '%' ";
+                            this.SetParameters(form, context.Request[form]);
+                            break;
+                        case "庫位":
+                            sqlStr += $" AND S.{context.Request["庫區"]}庫位 LIKE '%' + @" + form + " + '%' ";
+                            this.SetParameters(form, context.Request[form]);
+                            break;
+                        case "庫區":
+                            sqlStr = sqlStr.Replace("{庫區}", context.Request[form]);
+                            break;
+                        case "限有庫存":
+                            if("1".Equals(context.Request[form]))
+                            {
+                                sqlStr += $" AND ISNULL(S.{context.Request["庫區"]}庫存數, 0) > 0 ";
+                            }
+                            break;
+                        default:
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE @" + form + " + '%'";
+                            this.SetParameters(form, context.Request[form]);
+                            break;
+                    }
+                }
+            }
+
+
+            sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
+
+            dt = GetDataTableWithLog(sqlStr);
+            return dt;
+        }
+
+        /// <summary>
         /// 庫存入出多筆新增 查詢 Return DataTable
         /// </summary>
         /// <param name="context"></param>
@@ -418,5 +489,51 @@ namespace Ivan_Service
             dt = GetDataTableWithLog(sqlStr);
             return dt;
         }
+
+        #region 更新區域
+        /// <summary>
+        /// UPDATE Suplu 多筆SEQ 
+        /// </summary>
+        /// <returns></returns>
+        public int UpdateSuplu()
+        {
+            string sqlStr = @"      UPDATE [dbo].[suplu]
+                                       SET 更新日期 = GETDATE()
+										  ,更新人員 = @UPD_USER
+                                    ";
+
+
+            string[] seqArray = context.Request["SEQ[]"].Split(',');
+            int res = 0;
+            this.SetTran();
+            for (int cnt = 0; cnt < seqArray.Length; cnt++)
+            {
+                this.ClearParameter();
+                string otherStr = "";
+                foreach (string form in context.Request.Form)
+                {
+                    if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type" && form != "SEQ" && !form.Contains("[]"))
+                    {
+                        switch (form)
+                        {
+                            default:
+                                this.SetParameters(form, context.Request[form]);
+                                otherStr += " ," + form + " = @" + form;
+                                break;
+                        }
+                    }
+                }
+                otherStr += " WHERE [序號] = @SEQ ";
+               
+                this.SetParameters("SEQ", seqArray[cnt]);
+                this.SetParameters("UPD_USER", context.Session["Account"] ?? "IVAN10");
+                res += Execute(sqlStr + otherStr);
+            }
+            this.TranCommitWithLog();
+
+            return res;
+        }
+        #endregion
+
     }
 }

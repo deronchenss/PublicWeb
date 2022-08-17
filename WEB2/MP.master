@@ -253,7 +253,8 @@
                                             <a href="/Stock/Stock_IO_MutiInsert.aspx"><%--庫存入出多筆新增--%><%=Resources.MP.Stock%><%=Resources.MP.IO%><%=Resources.MP.Multiple%><%=Resources.MP.Insert%></a>
                                             <a href="/Stock/Stock_IO_MT.aspx"><%--庫存入出維護--%><%=Resources.MP.Stock%><%=Resources.MP.IO%><%=Resources.MP.Maintenance%></a>
                                             <a href="/Stock/Stock_IO_Approve.aspx"><%--庫存入出核銷--%><%=Resources.MP.Stock%><%=Resources.MP.IO%><%=Resources.MP.Approve%></a>
-                                             <a href="/Stock/Replace_Stock_O.aspx"><%--替代庫存出庫--%><%=Resources.MP.Replace%><%=Resources.MP.Stock%><%=Resources.MP.Stock_O%></a>
+                                            <a href="/Stock/Replace_Stock_O.aspx"><%--替代庫存出庫--%><%=Resources.MP.Replace%><%=Resources.MP.Stock%><%=Resources.MP.Stock_O%></a>
+                                            <a href="/Stock/Stock_LOC_UPD.aspx"><%--庫位變更--%><%=Resources.MP.Stock_Loc%><%=Resources.MP.Change%></a>
                                         </li>
                                     </ul>
                                 </li>

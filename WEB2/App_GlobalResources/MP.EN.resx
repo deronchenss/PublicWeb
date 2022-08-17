@@ -930,4 +930,10 @@
   <data name="Word_Type" xml:space="preserve">
     <value>Word_Type</value>
   </data>
+  <data name="Change" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="Stock_Loc" xml:space="preserve">
+    <value>Stock Location</value>
+  </data>
 </root>
