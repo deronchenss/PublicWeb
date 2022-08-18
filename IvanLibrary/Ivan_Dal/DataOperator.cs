@@ -54,10 +54,7 @@ namespace Ivan_Dal
         /// </summary>
         public void ClearParameter()
         {
-            if (!isTran)
-            {
-                parmStr = "";
-            }
+            parmStr = "";
             cmd.Parameters.Clear();
         }
 

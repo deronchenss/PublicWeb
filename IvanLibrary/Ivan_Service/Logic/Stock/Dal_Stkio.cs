@@ -1,6 +1,7 @@
-﻿using Ivan.DAL.Models;
+﻿using Ivan.Models;
 using Ivan_Dal;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Web;
@@ -223,8 +224,8 @@ namespace Ivan_Service
                                       ,S.{出入庫}數 - ISNULL(S.核銷數,0) {庫區}{出入庫}
 			                          ,SU.{庫區}庫存數 庫存數
                                       ,IIF('{出入庫}' = '出庫' AND SU.{庫區}庫存數 > 0 AND (S.{出入庫}數 - ISNULL(S.核銷數,0)) > SU.{庫區}庫存數, SU.{庫區}庫存數, (S.{出入庫}數 - ISNULL(S.核銷數,0))) 本次核銷數量
-                                      ,{庫區}庫位 AS 目前庫位
-			                          ,S.庫位 本次庫位
+                                      ,ISNULL({庫區}庫位,'') AS 目前庫位
+			                          ,ISNULL(S.庫位,'') 本次庫位
                                       ,ISNULL(S.備註,'') 備註
                                       ,SU.產品說明
                                       ,SU.暫時型號
@@ -477,7 +478,7 @@ namespace Ivan_Service
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public int MutiInsertStkio()
+        public int MutiInsertStkio(List<StkioFromSuplu> liEntity)
         {
             string sqlStr = @"   INSERT INTO [dbo].[stkio]
                                                ([序號]
@@ -516,8 +517,8 @@ namespace Ivan_Service
                                                ,@SEQ [SOURCE_SEQ]
                                                ,'suplu' [SOURCE_TABLE]
                                                ,@SEQ [SUPLU_SEQ]
-                                               ,@訂單號碼 [訂單號碼]
-                                               ,@單據編號 [單據編號]
+                                               ,@ORDER_NO [訂單號碼]
+                                               ,@DOCUMENT_NO [單據編號]
                                                ,NULL [異動日期]
                                                ,@BILL_TYPE [帳項]
                                                ,NULL [帳項原因]
@@ -527,15 +528,15 @@ namespace Ivan_Service
                                                ,[暫時型號]
                                                ,[單位]
                                                ,@STOCK_POS [庫區]
-                                               ,CASE WHEN @STOCK_IO = '入庫' THEN @STOCK_IO_CNT ELSE 0 END [入庫數]
-                                               ,CASE WHEN @STOCK_IO = '出庫' THEN @STOCK_IO_CNT ELSE 0 END [出庫數]
+                                               ,@STOCK_I_CNT [入庫數]
+                                               ,@STOCK_O_CNT [出庫數]
                                                ,@STOCK_LOC [庫位]
                                                ,0 [核銷數]
                                                ,NULL [異動前庫存]
-                                               ,@客戶編號 [客戶編號]
-                                               ,@客戶簡稱 [客戶簡稱]
+                                               ,@CUST_NO [客戶編號]
+                                               ,@CUST_S_NAME [客戶簡稱]
                                                ,NULL [完成品型號]
-                                               ,@備註 [備註]
+                                               ,@REMARK [備註]
                                                ,NULL [內銷入庫]
                                                ,0 [已結案]
                                                ,0 [已刪除]
@@ -546,60 +547,37 @@ namespace Ivan_Service
                                                ,GETDATE() [更新日期]
 	                                    FROM suplu
 	                                    WHERE 序號 = @SEQ
-
 									";
-          
-            string[] seqArray = context.Request["SEQ[]"].Split(',');
-            string[] approveCntArr = context.Request["STOCK_IO_CNT[]"].Split(',');
-            string[] stockIOArr = context.Request["STOCK_IO[]"].Split(',');
-            string[] stockPosArr = context.Request["STOCK_POS[]"].Split(',');
-            string[] billTypeArr = context.Request["BILL_TYPE[]"].Split(',');
-            string[] stockLocArr = new string[0];
-            if (!string.IsNullOrEmpty(context.Request["STOCK_LOC[]"]))
-            {
-                stockLocArr = context.Request["STOCK_LOC[]"].Split(',');
-            }
 
             int res = 0;
             this.SetTran();
-            for (int cnt = 0; cnt < seqArray.Length; cnt++)
+            foreach (StkioFromSuplu entity in liEntity)
             {
                 ClearParameter();
-                this.SetParameters("SEQ", seqArray[cnt]);
-                this.SetParameters("STOCK_IO_CNT", Convert.ToDecimal(approveCntArr[cnt]));
-                this.SetParameters("STOCK_POS", stockPosArr[cnt]);
-                this.SetParameters("STOCK_IO", stockIOArr[cnt]);
-                this.SetParameters("BILL_TYPE", billTypeArr[cnt]);
-                this.SetParameters("UPD_USER", context.Session["Account"] ?? "IVAN10");
-
-                if (stockLocArr.Length > 0)
+                foreach (var property in entity.GetType().GetProperties())
                 {
-                    this.SetParameters("STOCK_LOC", stockLocArr[cnt]);
-                }
-                else
-                {
-                    //庫位沒有傳入 用 庫區 + 庫位寫入
-                    sqlStr = context.Request["STOCK_LOC"] ?? sqlStr.Replace("@STOCK_LOC", stockPosArr[cnt] + "庫位");
-                }
-
-                foreach (string form in context.Request.Form)
-                {
-                    if (form != "Call_Type" && !form.Contains("[]"))
+                    if ("STOCK_LOC".Equals(property.Name))
                     {
-                        switch (form)
+                        //庫位沒有傳入 用 庫區 + 庫位寫入
+                        if (string.IsNullOrEmpty(entity.STOCK_LOC))
                         {
-                            default:
-                                this.SetParameters(form, context.Request[form]);
-                                break;
+                            sqlStr = sqlStr.Replace($"@{property.Name}", entity.STOCK_POS + "庫位");
+                        }
+                        else
+                        {
+                            SetParameters($"@{property.Name}", property.GetValue(entity));
                         }
                     }
+                    else
+                    {
+                        SetParameters($"@{property.Name}", property.GetValue(entity));
+                    }
                 }
-
+                this.SetParameters("UPD_USER", context.Session["Account"] ?? "IVAN10");
                 res += Execute(sqlStr);
             }
             //Log一次寫
             this.TranCommitWithLog();
-
             return res;
         }
 

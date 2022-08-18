@@ -10,7 +10,6 @@ using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using CrystalDecisions.CrystalReports.Engine;
 using Ivan_Service;
-using Ivan.DAL.Models;
 
 public class Stock_LOC_UPD : IHttpHandler, IRequiresSessionState
 {

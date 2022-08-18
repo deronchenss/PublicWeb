@@ -471,42 +471,6 @@
  
             //寫入 TABLE
             function MutiInsert() {
-                var liSeq = [];
-                var liStockIOCnt = [];
-                var liStockPos = [];
-                var liStockIO = [];
-                var liStockLoc = [];
-                var liBillType = [];
-                var execCnt = $('#Table_EXEC_Data > tbody tr[role=row]').length;
-                var err = false;
-                $('#Table_EXEC_Data > tbody tr[role=row]').each(function (index) {
-                    var stockIOCnt = $(this).find('#E_IO_CNT').val();
-                    if ($.trim(stockIOCnt) == 0 || $.trim(stockIOCnt) == '') {
-                        alert('第' + (index + 1) + '筆，入出數不可為 0!');
-                        err = true;
-                        return err;
-                    }
-
-                    var stockLoc = $(this).find('#E_STOCK_LOC').val();
-                    if ($.trim(stockLoc) == '') {
-                        alert('第' + (index + 1) + '筆，庫位未設定!');
-                        err = true;
-                        return err;
-                    }
-
-                    var seqIndex = $('#Table_EXEC_Data thead th:contains(序號)').index() + 1; //序號INDEX
-                    liSeq.push($(this).find('td:nth-child(' + seqIndex + ')').text());
-                    var stockPosIndex = $('#Table_EXEC_Data thead th:contains(庫區)').index() + 1; //庫區INDEX
-                    liStockPos.push($(this).find('td:nth-child(' + stockPosIndex + ')').text());
-                    liStockIOCnt.push(stockIOCnt);
-                    liStockLoc.push(stockLoc);
-                    liStockIO.push($('#E_STOCK_IO').val());
-                    liBillType.push($('#E_BILL_TYPE').val());
-                })
-                if (err) {
-                    return;
-                }
-
                 //檢核開始
                 if ($.trim($('#E_ORDER_NO').val()) == '') {
                     alert('訂單號碼不可空白!');
@@ -515,28 +479,48 @@
                     alert('帳項不可為空白!');
                 }
                 else {
+                    var execCnt = $('#Table_EXEC_Data > tbody tr[role=row]').length;
+                    var err = false;
+                    var execData = [];
+
+                    $('#Table_EXEC_Data > tbody tr[role=row]').each(function (index) {
+                        var stockIOCnt = $(this).find('#E_IO_CNT').val();
+                        if ($.trim(stockIOCnt) == 0 || $.trim(stockIOCnt) == '') {
+                            alert('第' + (index + 1) + '筆，入出數不可為 0!');
+                            err = true;
+                            return err;
+                        }
+
+                        var stockLoc = $(this).find('#E_STOCK_LOC').val();
+                        if ($.trim(stockLoc) == '') {
+                            alert('第' + (index + 1) + '筆，庫位未設定!');
+                            err = true;
+                            return err;
+                        }
+
+                        var object = {};
+                        var seqIndex = $('#Table_EXEC_Data thead th:contains(序號)').index() + 1; //序號INDEX
+                        var stockPosIndex = $('#Table_EXEC_Data thead th:contains(庫區)').index() + 1; //庫區INDEX
+                        object['SEQ'] = $(this).find('td:nth-child(' + seqIndex + ')').text();
+                        object['ORDER_NO'] = $('#E_ORDER_NO').val();
+                        object['DOCUMENT_NO'] = $('#E_DOCUMENT_NO').val();
+                        object['BILL_TYPE'] = $('#E_BILL_TYPE').val();
+                        object['STOCK_POS'] = $(this).find('td:nth-child(' + stockPosIndex + ')').text();
+                        object['STOCK_I_CNT'] = ($('#E_STOCK_IO').val() == '入庫' ? stockIOCnt : '0');
+                        object['STOCK_O_CNT'] = ($('#E_STOCK_IO').val() == '出庫' ? stockIOCnt : '0');
+                        object['STOCK_LOC'] = stockLoc; //空的抓預設庫位
+                        object['CUST_NO'] = $('#E_CUST_NO').val();
+                        object['CUST_S_NAME'] = $('#E_CUST_S_NAME').val();
+                        object['REMARK'] = $('#E_REMARK').val();
+                        execData.push(object);
+                    })
+                    if (err) {
+                        return;
+                    }
 
                     var dataReq = {};
                     dataReq['Call_Type'] = 'MUTI_INSERT';
-                    dataReq['SEQ'] = liSeq;
-                    dataReq['STOCK_IO_CNT'] = liStockIOCnt;
-                    dataReq['STOCK_IO'] = liStockIO;
-                    dataReq['STOCK_POS'] = liStockPos;
-                    dataReq['STOCK_LOC'] = liStockLoc;
-                    dataReq['BILL_TYPE'] = liBillType;
-
-                    //組json data
-                    $('.updColumn').each(function () {
-                        if ($(this).attr('type') == 'checkbox') {
-                            dataReq[$(this).attr('DT_Fill_Name')] = ($(this).is(':checked') ? '1' : '0');
-                        }
-                        else if ($(this).attr('type') == 'number') {
-                            dataReq[$(this).attr('DT_Fill_Name')] = ($.trim($(this).val()) == '' ? 0 : $(this).val());
-                        }
-                        else {
-                            dataReq[$(this).attr('DT_Fill_Name')] = $(this).val();
-                        }
-                    });
+                    dataReq['EXEC_DATA'] = JSON.stringify(execData);
 
                     $.ajax({
                         url: apiUrl,

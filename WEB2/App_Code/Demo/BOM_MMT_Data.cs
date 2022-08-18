@@ -1,5 +1,4 @@
-﻿using Ivan.DAL.Models;
-using Ivan_Dal;
+﻿using Ivan_Dal;
 using System;
 using System.Data;
 using System.Text;

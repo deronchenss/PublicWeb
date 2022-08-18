@@ -275,40 +275,41 @@
                     alert('入庫廠商不可空白!');
                 }
                 else {
-                    var liSeq = [];
-                    var liStockIOCnt = [];
-                    var liStockPos = [];
-                    var liStockIO = [];
-                    var liBillType = [];
+                    var execData = [];
 
                     //待出庫
-                    liSeq.push($('#E_SEQ_O').val());
-                    liStockIOCnt.push($('#E_STOCK_O_CNT').val());
-                    liStockPos.push('大貨');
-                    liStockIO.push('出庫');
-                    liBillType.push('G');
+                    var objectO = {};
+                    objectO['SEQ'] = $('#E_SEQ_O').val();
+                    objectO['ORDER_NO'] = $('#E_ORDER_NO').val();
+                    objectO['DOCUMENT_NO'] = '替代庫存出庫';
+                    objectO['BILL_TYPE'] = 'G';
+                    objectO['STOCK_POS'] = '大貨';
+                    objectO['STOCK_I_CNT'] = '0';
+                    objectO['STOCK_O_CNT'] = $('#E_STOCK_O_CNT').val();
+                    objectO['STOCK_LOC'] = ''; //空的抓預設庫位
+                    objectO['CUST_NO'] = '';
+                    objectO['CUST_S_NAME'] = '';
+                    objectO['REMARK'] = $('#E_REMARK').val();
+                    execData.push(objectO);
 
                     //待入庫
-                    liSeq.push($('#E_SEQ_I').val());
-                    liStockIOCnt.push($('#E_STOCK_O_CNT').val());
-                    liStockPos.push('大貨');
-                    liStockIO.push('入庫');
-                    liBillType.push('5');
+                    var objectI = {};
+                    objectI['SEQ'] = $('#E_SEQ_I').val();
+                    objectI['ORDER_NO'] = $('#E_ORDER_NO').val();
+                    objectI['DOCUMENT_NO'] = '替代庫存出庫';
+                    objectI['BILL_TYPE'] = '5';
+                    objectI['STOCK_POS'] = '大貨';
+                    objectI['STOCK_I_CNT'] = $('#E_STOCK_O_CNT').val();
+                    objectI['STOCK_O_CNT'] = '0';
+                    objectI['STOCK_LOC'] = ''; //空的抓預設庫位
+                    objectI['CUST_NO'] = '';
+                    objectI['CUST_S_NAME'] = '';
+                    objectI['REMARK'] = $('#E_REMARK').val();
+                    execData.push(objectI);
 
                     var dataReq = {};
                     dataReq['Call_Type'] = 'EXEC';
-                    dataReq['SEQ'] = liSeq;
-                    dataReq['STOCK_POS'] = liStockPos;
-                    dataReq['STOCK_IO_CNT'] = liStockIOCnt;
-                    dataReq['STOCK_IO'] = liStockIO;
-                    dataReq['BILL_TYPE'] = liBillType;
-                    dataReq['訂單號碼'] = $('#E_ORDER_NO').val();
-                    dataReq['單據編號'] = '替代庫存出庫';
-                    dataReq['客戶編號'] = '';
-                    dataReq['客戶簡稱'] = '';
-                    dataReq['廠商編號'] = $('#E_FACT_NO_I').val();
-                    dataReq['廠商簡稱'] = $('#E_FACT_S_NAME_I').val();
-                    dataReq['備註'] = $('#E_REMARK').val();
+                    dataReq['EXEC_DATA'] = JSON.stringify(execData);
 
                     $.ajax({
                         url: apiUrl,
@@ -430,7 +431,6 @@
                      <tr class="trstyle">
                         <td class="tdEditstyle">出庫廠商</td>
                         <td class="tdbstyle">
-                            <input id="E_SEQ_I" type="hidden"  class="textbox_char" disabled="disabled" />
                             <input id="E_FACT_NO_O" DT_Fill_Name="廠商編號"  class="textbox_char" disabled="disabled" />
                         </td>
                         <td class="tdEditstyle">出庫廠商簡稱</td>
@@ -461,6 +461,7 @@
                     <tr class="trstyle">
                         <td class="tdEditstyle">入庫廠商</td>
                         <td class="tdbstyle">
+                            <input id="E_SEQ_I" type="hidden"  class="textbox_char" disabled="disabled" />
                             <input id="E_FACT_NO_I" class="textbox_char" disabled="disabled" />
                             <input id="BT_E_FACT_NO" style="font-size:15px" type="button" value="..." />
                         </td>

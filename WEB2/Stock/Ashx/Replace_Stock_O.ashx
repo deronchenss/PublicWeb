@@ -8,8 +8,8 @@ using System.Data;
 using System.Configuration;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json;
-using CrystalDecisions.CrystalReports.Engine;
 using Ivan_Service;
+using Ivan.Models;
 
 public class Replace_Stock_O : IHttpHandler, IRequiresSessionState
 {
@@ -30,7 +30,8 @@ public class Replace_Stock_O : IHttpHandler, IRequiresSessionState
                         dt = dalSup.SearchTableForReplace();
                         break;
                     case "EXEC":
-                        result = dalStk.MutiInsertStkio();
+                        List<StkioFromSuplu> entity = JsonConvert.DeserializeObject<List<StkioFromSuplu>>(context.Request["EXEC_DATA"]);
+                        result = dalStk.MutiInsertStkio(entity);
                         context.Response.StatusCode = 200;
                         context.Response.Write(result);
                         context.Response.End();

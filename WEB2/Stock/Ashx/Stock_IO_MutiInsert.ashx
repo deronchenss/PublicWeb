@@ -10,6 +10,7 @@ using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using CrystalDecisions.CrystalReports.Engine;
 using Ivan_Service;
+using Ivan.Models;
 
 public class Stock_IO_MutiInsert : IHttpHandler, IRequiresSessionState
 {
@@ -30,7 +31,8 @@ public class Stock_IO_MutiInsert : IHttpHandler, IRequiresSessionState
                         dt = dalSuplu.SearchTableForMutiInsert();
                         break;
                     case "MUTI_INSERT":
-                        result = dalStkio.MutiInsertStkio();
+                        List<StkioFromSuplu> entity = JsonConvert.DeserializeObject<List<StkioFromSuplu>>(context.Request["EXEC_DATA"]);
+                        result = dalStkio.MutiInsertStkio(entity);
                         context.Response.StatusCode = 200;
                         context.Response.Write(result);
                         context.Response.End();

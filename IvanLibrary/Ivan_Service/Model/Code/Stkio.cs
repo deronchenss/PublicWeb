@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Ivan.DAL.Models
+namespace Ivan.Models
 {
 	public class Stkio
 	{
@@ -67,6 +67,35 @@ namespace Ivan.DAL.Models
 
 		public DateTime? 更新日期 { get; set; }
 
+	}
+
+	/// <summary>
+	/// 多筆寫入 Stkio From Suplu 需要的參數
+	/// </summary>
+	public class StkioFromSuplu
+	{
+		//序號
+		public string SEQ { get; set; }
+		//訂單號碼
+		public string ORDER_NO { get; set; }
+		//單據編號
+		public string DOCUMENT_NO { get; set; }
+		//帳項
+		public string BILL_TYPE { get; set; }
+		//庫區
+		public string STOCK_POS { get; set; }
+		//入庫數
+		public string STOCK_I_CNT { get; set; }
+		//出庫數
+		public string STOCK_O_CNT { get; set; }
+		//庫位
+		public string STOCK_LOC { get; set; }
+		//客戶編號
+		public string CUST_NO { get; set; }
+		//客戶簡稱
+		public string CUST_S_NAME { get; set; }
+		//REMARK
+		public string REMARK { get; set; }
 	}
 }
 
