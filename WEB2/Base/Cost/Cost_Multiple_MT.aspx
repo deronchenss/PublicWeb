@@ -1,7 +1,6 @@
 ﻿<%@ Page Title="Cost Multiple Maintenance" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" %>
 <%@ Register TagPrefix="uc1" TagName="uc1" Src="~/User_Control/Dia_Supplier_Selector.ascx" %>
 <%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_ALL.ascx" %>
-<%@ Register TagPrefix="uc3" TagName="uc3" Src="~/User_Control/Dia_Product_Selector.ascx" %>
 <%@ Register TagPrefix="uc4" TagName="uc4" Src="~/User_Control/Dia_Duo_Datetime_Picker.ascx" %>
 
 
@@ -12,97 +11,88 @@
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
     <script src="/js/jquery.dataTables.min.js"></script>
     <script src="/js/dataTables.bootstrap4.min.js"></script>
-    
+
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
             var IMG_Has_Read = false;
-            var Supplier_Selector_Type;
-            var Click_tr_IDX;
+            //var Click_tr_IDX;
             document.body.style.overflow = 'hidden';
-            //Form_Mode_Change("Search");//WD
-            //Search_BOM();//WD
+            Search_Cost();//WD
+            Form_Mode_Change("Search");//WD
 
-            $('#BT_Supplier_Selector_M').on('click', function () {
+            $('#BT_Supplier_Selector').on('click', function () {
                 $("#Search_Supplier_Dialog").dialog('open');
-                Supplier_Selector_Type = "M";
-            });
-
-            $('#BT_Supplier_Selector_EP').on('click', function () {
-                $("#Search_Supplier_Dialog").dialog('open');
-                Supplier_Selector_Type = "EP";
             });
 
             $('#SSD_Table_Supplier').on('click', '.SUP_SEL', function () {
-                switch (Supplier_Selector_Type) {
-                    case "M":
-                        $('#TB_M_S_No').val($(this).parent().parent().find('td:nth(2)').text());
-                        $('#TB_M_S_SName').val($(this).parent().parent().find('td:nth(3)').text());
-                        break;
-                    case "EP":
-                        $('#TB_EP_S_No').val($(this).parent().parent().find('td:nth(2)').text());
-                        $('#TB_EP_S_SName').val($(this).parent().parent().find('td:nth(3)').text());
-                        break;
-                }
+                $('#TB_S_No').val($(this).parent().parent().find('td:nth(2)').text());
+                $('#TB_S_SName').val($(this).parent().parent().find('td:nth(3)').text());
                 $("#Search_Supplier_Dialog").dialog('close');
             });
-
-            $('#DNT_BT_Product_Selector').on('click', function () {
-                $("#Search_Product_Dialog").dialog('open');
-            });
-
-            $('#SPD_Table_Product').on('click', '.PROD_SEL', function () {
-                $('#DNT_HDN_SUPLU_SEQ').val($(this).parent().parent().find('td:nth(1)').text());
-                $('#DNT_TB_IM').val($(this).parent().parent().find('td:nth(3)').text());
-                $('#DNT_TB_S_ALL').val($(this).parent().parent().find('td:nth(5)').text());
-                $('#DNT_TB_P_IM').val($(this).parent().parent().find('td:nth(7)').text());
-                $("#Search_Product_Dialog").dialog('close');
-            });
-
             $('#BT_Edit').on('click', function () {
-                var Exec_SEQ = '';
-                $('#Table_Exec_Data tbody tr .SEQ').each(function (i) {
-                    if (i > 0) {
-                        Exec_SEQ += ',';
-                    }
-                    Exec_SEQ += $(this).text();
+                <%--var Exec_Tr = "[";
+                $('#Table_Exec_Data tbody tr').each(function (j) {
+                    if (j > 0) { Exec_Tr += "," };
+                    Exec_Tr += "{";
+                    $(this).find('.Edit_Data').each(function (i) {
+                        Exec_Tr += "'" + $(this).attr('Column_Name') + "':'" + $(this).val() + "',";
+                    })
+                    Exec_Tr += "'更新人員':'" + "<%=(Session["Account"] == null) ? "Ivan10" : Session["Name"].ToString().Trim() %>" + "',";
+                    Exec_Tr += "'序號':'" + $(this).find('.SEQ').text() + "'";
+                    Exec_Tr += "}";
+                });
+                Exec_Tr += "]";--%>
+                var E_Json = [];
+                $('#Table_Exec_Data tbody tr').each(function (j) {
+                    var Exec_Obj = {};
+                    $(this).find('.Edit_Data').each(function (i) {
+                        switch ($(this).attr('Column_Name')) {
+                            case "台幣單價":
+                            case "美元單價":
+                            case "單價_2":
+                            case "單價_3":
+                            case "外幣單價":
+                            case "MIN_1":
+                            case "MIN_2":
+                            case "MIN_3":
+                                Exec_Obj[$(this).attr('Column_Name')] = (($(this).val().length === 0) ? "0": $(this).val());
+                                break;
+                            default:
+                                Exec_Obj[$(this).attr('Column_Name')] = $(this).val();
+                                break;
+                        }
+                    })
+                    Exec_Obj["更新人員"] = "<%=(Session["Account"] == null) ? "Ivan10" : Session["Name"].ToString().Trim() %>";
+                    Exec_Obj["序號"] = $(this).find('.SEQ').text();
+                    E_Json.push(Exec_Obj);
                 });
 
-                if ($('#DNT_HDN_SUPLU_SEQ').val().length > 0) {
-                    var Update_Check = true;
-                    if ($('#Table_Exec_Data tbody tr .D_SUPLU_SEQ').filter(function () { return $(this).attr('SUPLU_SEQ') != $('#DDT_HDN_D_SUPLU_SEQ').val(); }).length > 0) {
-                        Update_Check = confirm('選取材料有不同，確定一併更新？');
+                $.ajax({
+                    url: "/Base/Cost/Ashx/Cost_MMT.ashx",
+                    data: {
+                        "Call_Type": "Cost_MMT_Update",
+                        "Exec_Data": JSON.stringify(E_Json)
+                    },
+                    cache: false,
+                    async: false,
+                    type: "POST",
+                    datatype: "json",
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    success: function (R) {
+                        alert('儲存完成');
+                        console.warn(R);
+                        $('#Table_Exec_Data').html('');
+                        $('#Reset_Area_Table input').not('[type=button]').val('');
+
+                        $('#Table_Exec_Data_info').text('Showing 0 entries');
+                        Form_Mode_Change("Search");
+                        Search_Cost();
+                    },
+                    error: function (ex) {
+                        alert(ex);
                     }
-                    if (Update_Check) {
-                        $.ajax({
-                            url: "/Base/BOM/BOM_MMT.ashx",
-                            data: {
-                                "Call_Type": "BOM_MMT_Update",
-                                "SEQ_Array": Exec_SEQ,
-                                "New_D_SUPLU_SEQ": $('#DNT_HDN_SUPLU_SEQ').val(),
-                                "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Name"].ToString().Trim() %>"
-                            },
-                            cache: false,
-                            async: false,
-                            type: "POST",
-                            datatype: "json",
-                            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                            success: function (R) {
-                                alert(Exec_SEQ + ' > 已Update');
-                                $('#Table_Exec_Data').html('');
-                                $('#Table_Exec_Data_info').text('Showing 0 entries');
-                                Form_Mode_Change("Search");
-                                Search_BOM();
-                            },
-                            error: function (ex) {
-                                alert(ex);
-                            }
-                        });
-                    }
-                }
-                else {
-                    alert('請選擇變更後的新材料');
-                }
+                });
             });
 
             function Re_Bind_Inner_JS() {
@@ -135,9 +125,15 @@
                         $('#Div_DT_View').css('width', '60%');
                         $('#Div_Exec_Data').css('width', '35%');
                         $('#Div_Exec_Data').css('float', 'Right');
-                        Click_tr_IDX = null;
+                        //Click_tr_IDX = null;
                         $('#Table_Exec_Data tbody tr').css('background-color', '');
                         $('#Table_Exec_Data tbody tr').css('color', 'black');
+                        //$('#Div_Exec_Data .Change_VE').each(function () {
+                        //    $(this).html($(this).find('input textarea').val());
+                        //});
+                        $('#Div_Exec_Data tbody tr td[Original_Data]').each(function () {
+                            $(this).html($(this).attr('Original_Data'));
+                        });
                         break;
                     //case "Review_Data"://WD
                     //    Edit_Mode = "Edit";
@@ -156,18 +152,55 @@
                         $('#Div_Exec_Data').css('width', '60%');
                         $('#Div_Exec_Data').css('float', 'left');
                         $('#Div_Edit_Area').css('width', '39%');
+                        $('#Div_Exec_Data .Change_VE').each(function () {
+                            $(this).attr('Original_Data', $(this).text());
+                            switch ($(this).attr('colDB')) {
+                                case "最後單價日":
+                                    $(this).html('<input type="date" class="Edit_Data" Column_Name="' + $(this).attr('colDB') + '" value="' + $(this).text() + '"/>');
+                                    break;
+                                case "產品說明":
+                                case "備註給開發":
+                                case "備註給採購":
+                                    $(this).html('<textarea class="Edit_Data" Column_Name="' + $(this).attr('colDB') + '">' + $(this).text() + '</textarea>');
+                                    break;
+                                case "台幣單價":
+                                case "美元單價":
+                                case "單價_2":
+                                case "單價_3":
+                                case "外幣單價":
+                                case "MIN_1":
+                                case "MIN_2":
+                                case "MIN_3":
+                                    $(this).html('<input type="number" style="text-align:right;width:80px;" min="0" step="0.1" class="Edit_Data" Column_Name="' + $(this).attr('colDB') + '" value="' + $(this).text().replace(',', '') + '"/>');
+                                    break;
+                                default:
+                                    $(this).html('<input class="Edit_Data" Column_Name="' + $(this).attr('colDB') + '" value="' + $(this).text() + '"/>');
+                                    break;
+                            }
+                        });
+                        $('#Div_Exec_Data').find('.Unit').css('width', '80px');
                         break;
                 }
             }
 
             $('#BT_Search').on('click', function () {
                 Form_Mode_Change("Search");
-                Search_BOM();
+                Search_Cost();
             });
 
             $('.V_BT').on('click', function () {
                 $('.V_BT').attr('disabled', false);
                 $(this).attr('disabled', 'disabled');
+            });
+
+            $('#BT_Next, #V_BT_Edit').on('click', function () {
+                Form_Mode_Change("Edit_Data");
+                //Click_tr_IDX = 0;
+                //FN_Tr_Click($('#Table_Exec_Data tbody tr:nth(' + Click_tr_IDX + ')'));
+            });
+
+            $('#V_BT_Master').on('click', function () {
+                Form_Mode_Change("Search");
             });
 
             //$('.V_Report').on('click', function () {
@@ -176,17 +209,20 @@
             //    $('[Control_By=' + $(this).prop('id') + ']').toggle(true);
             //});
 
-            function Search_BOM() {
+            function Search_Cost() {
                 $.ajax({
-                    url: "/Base/BOM/BOM_MMT.ashx",
+                    url: "/Base/Cost/Ashx/Cost_MMT.ashx",
                     data: {
-                        "Call_Type": "BOM_MMT_Search",
-                        "MM": $('#TB_MM').val(),
-                        "EPM": $('#TB_EPM').val(),
-                        "M_S_No": $('#TB_M_S_No').val(),
-                        "M_S_SName": $('#TB_M_S_SName').val(),
-                        "EP_S_No": $('#TB_EP_S_No').val(),
-                        "EP_S_SName": $('#TB_EP_S_SName').val()
+                        "Call_Type": "Cost_MMT_Search",
+                        "IM": $('#TB_IM').val(),
+                        "SupM": $('#TB_SupM').val(),
+                        "S_No": $('#TB_S_No').val(),
+                        "S_SName": $('#TB_S_SName').val(),
+                        "N_DS": $('#TB_Date_S1').val(),
+                        "N_DE": $('#TB_Date_E1').val(),
+                        "LCACD_DS": $('#TB_Date_S2').val(),
+                        "LCACD_DE": $('#TB_Date_E2').val(),
+                        "PI": $('#TB_PI').val()
                     },
                     cache: false,
                     async: false,
@@ -201,65 +237,101 @@
                         }
                         else {
                             var Table_HTML =
-                                '<thead><tr>'
-                                + '</th><th>' + '<%=Resources.MP.Supplier_Short_Name%>'
-                                + '</th><th>' + '<%=Resources.MP.Material_Model%>'
-                                + '</th><th>' + '<%=Resources.MP.Master_Supplier_S_Name%>'
-                                + '</th><th>' + '<%=Resources.MP.End_Product_Model%>'
-                                + '</th><th>' + '<%=Resources.MP.Unit%>'
-                                + '</th><th>' + '<%=Resources.MP.Material_Amount%>'
-                                + '</th><th>' + '<%=Resources.MP.Rank%>'
-                                + '</th><th class="DIMG">' + '<%=Resources.MP.Material%><%=Resources.MP.Speace%><%=Resources.MP.Image%>'
-                                + '</th><th class="DIMG">' + '<%=Resources.MP.End_Product%><%=Resources.MP.Speace%><%=Resources.MP.Image%>'
-                                + '</th><th>' + '<%=Resources.MP.Product_Information%>'
-                                + '</th><th>' + '<%=Resources.MP.Supplier_No%>'
-                                + '</th><th>' + '<%=Resources.MP.Final_Supplier%>'
-                                + '</th><th>' + '<%=Resources.MP.SEQ%>'
-                                + '</th><th>' + '<%=Resources.MP.Update_User%>'
-                                + '</th><th>' + '<%=Resources.MP.Update_Date%>'
-                                + '</th></tr></thead><tbody>';
+                                '<thead>\
+                                    <tr>\
+                                        <th>' + '<%=Resources.MP.Developing%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Product_Status%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Ivan_Model%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Sale_Model%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Supplier_Model%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Supplier_Short_Name%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Unit%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Price_TWD%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Price_USD%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Currency%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Price_Curr%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Last_Check_And_Accept_Day%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Last_Price_Day%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Price_T%>_2' + '</th>\
+                                        <th>' + '<%=Resources.MP.Price_T%>_3' + '</th>\
+                                        <th>MIN_1</th>\
+                                        <th>MIN_2</th>\
+                                        <th>MIN_3</th>\
+                                        <th class="DIMG">' + '<%=Resources.MP.Image%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Product_Information%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Sample_Product_No%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Remark_Develop%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Remark_Purchase%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Add_Date%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Stop_Date%>' + '</th>\
+                                        <th>UnActive</th>\
+                                        <th>' + '<%=Resources.MP.Supplier_No%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.SEQ%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Update_User%>' + '</th>\
+                                        <th>' + '<%=Resources.MP.Update_Date%>' + '</th>\
+                                   </tr>\
+                            </thead>\
+                            <tbody>';
+
                             $(R).each(function (i) {
                                 Table_HTML +=
-                                    '<tr><td>' + String(R[i].廠商簡稱 ?? "") +
-                                    '</td><td><input class="Call_Product_Tool D_SUPLU_SEQ" SUPLU_SEQ = "' + String(R[i].D_SUPLU_SEQ ?? "")
-                                    + '" type="button" value="' + String(R[i].材料型號 ?? "")
-                                    + '" style="text-align:left;width:100%;z-index:1000;' + ((R[i].D_Has_IMG) ? 'background: #90ee90;' : '') + '" />' +
-                                    '</td><td>' + String(R[i].完成者簡稱 ?? "") +
-                                    '</td><td><input class="Call_Product_Tool" SUPLU_SEQ = "' + String(R[i].SUPLU_SEQ  ?? "")
-                                    + '" type="button" value="' + String(R[i].頤坊型號 ?? "")
-                                    + '" style="text-align:left;width:100%;z-index:1000;' + ((R[i].Has_IMG) ? 'background: #90ee90;' : '') + '" />' +
-                                    '</td><td>' + String(R[i].單位 ?? "") +
-                                    '</td><td style="text-align:right;">' + String(R[i].材料用量 ?? "") +
-                                    '</td><td>' + String(R[i].階層 ?? "") +
-                                    '</td><td class="DIMG" style="text-align:center; height:100px; vertical-align:middle;">' +
-                                        ((R[i].D_Has_IMG) ? ('<img type="Product" SEQ="' + String(R[i].D_SUPLU_SEQ ?? "") + '" />') : ('<%=Resources.MP.Image_NotExists%>')) +
-                                    '</td><td class="DIMG" style="text-align:center; height:100px; vertical-align:middle;">' +
-                                        ((R[i].Has_IMG) ? ('<img type="Product" SEQ="' + String(R[i].SUPLU_SEQ ?? "") + '" />') : ('<%=Resources.MP.Image_NotExists%>')) +
-                                    '</td><td>' + String(R[i].產品說明 ?? "") +
-                                    '</td><td>' + String(R[i].廠商編號 ?? "") +
-                                    '</td><td>' + String(R[i].最後完成者 ?? "") +
-                                    '</td><td class="SEQ">' + String(R[i].序號 ?? "") +//Class辨別左右全移
-                                    '</td><td>' + String(R[i].更新人員 ?? "") +
-                                    '</td><td>' + String(R[i].更新日期 ?? "") +
-                                    '</td></tr>';
+                                    '<tr>\
+                                    <td>' + String(R[i].開發中 ?? "") + '</td>\
+                                    <td>' + String(R[i].產品狀態 ?? "") + '</td>\
+                                    <td>\
+                                        <input class="Call_Product_Tool" SUPLU_SEQ = "' + String(R[i].序號 ?? "") + '" \
+                                               type="button" value="' + String(R[i].頤坊型號 ?? "") + '" \
+                                               style="text-align:left;width:100%;z-index:1000;' + ((R[i].Has_IMG) ? 'background: #90ee90;' : '') + '" />\
+                                    </td>\
+                                    <td>' + String(R[i].銷售型號 ?? "").trim() + '</td>\
+                                    <td class="Change_VE" colDB="廠商型號">' + String(R[i].廠商型號 ?? "").trim() + '</td>\
+                                    <td>' + String(R[i].廠商簡稱 ?? "").trim() + '</td>\
+                                    <td class="Change_VE" colDB="單位">' + String(R[i].單位 ?? "").trim() + '</td>\
+                                    <td class="Change_VE" colDB="台幣單價" style="text-align:right;">' + String(R[i].台幣單價 ?? "") + '</td>\
+                                    <td class="Change_VE" colDB="美元單價" style="text-align:right;">' + String(R[i].美元單價 ?? "") + '</td>\
+                                    <td>' + String(R[i].幣別 ?? "") + '</td>\
+                                    <td class="Change_VE" colDB="外幣單價" style="text-align:right;">' + String(R[i].外幣單價 ?? "") + '</td>\
+                                    <td>' + String(R[i].最後點收日 ?? "") + '</td>\
+                                    <td class="Change_VE" colDB="最後單價日">' + String(R[i].最後單價日 ?? "") + '</td>\
+                                    <td class="Change_VE" colDB="單價_2" style="text-align:right;">' + String(R[i].單價_2 ?? "") + '</td>\
+                                    <td class="Change_VE" colDB="單價_3" style="text-align:right;">' + String(R[i].單價_3 ?? "") + '</td>\
+                                    <td class="Change_VE" colDB="MIN_1" style="text-align:right;">' + String(R[i].MIN_1 ?? "") + '</td>\
+                                    <td class="Change_VE" colDB="MIN_2" style="text-align:right;">' + String(R[i].MIN_2 ?? "") + '</td>\
+                                    <td class="Change_VE" colDB="MIN_3" style="text-align:right;">' + String(R[i].MIN_3 ?? "") + '</td>\
+                                    <td class="DIMG" style="text-align:center; height:100px; vertical-align:middle;">' +
+                                    ((R[i].Has_IMG) ? ('<img type="Product" SEQ="' + String(R[i].序號 ?? "") + '" />') : ('<%=Resources.MP.Image_NotExists%>')) +
+                                    '</td>\
+                                    <td class="Change_VE" colDB="產品說明">' + String(R[i].產品說明 ?? "").trim() + '</td>\
+                                    <td>' + String(R[i].暫時型號 ?? "") + '</td>\
+                                    <td class="Change_VE" colDB="備註給開發">' + String(R[i].備註給開發 ?? "").trim() + '</td>\
+                                    <td class="Change_VE" colDB="備註給採購">' + String(R[i].備註給採購 ?? "").trim() + '</td>\
+                                    <td>' + String(R[i].新增日期 ?? "") + '</td>\
+                                    <td>' + String(R[i].停用日期 ?? "") + '</td>\
+                                    <td>' + String(R[i].UnActive ?? "") + '</td>\
+                                    <td>' + String(R[i].廠商編號 ?? "") + '</td>\
+                                    <td class="SEQ">' + String(R[i].序號 ?? "") + '</td>\
+                                    <td>' + String(R[i].更新人員 ?? "") + '</td>\
+                                    <td>' + String(R[i].更新日期 ?? "") + '</td>\
+                                </tr>';
                             });
 
                             Table_HTML += '</tbody>';
-                            $('#Table_Search_BOMD').html(Table_HTML);
+                            $('#Table_Search_Cost').html(Table_HTML);
 
                             $('.DIMG').toggle(!$('#RB_DV_DIMG').prop('checked'));
-                            $('#Table_Search_BOMD_info').text('Showing ' + $('#Table_Search_BOMD > tbody tr').length + ' entries');
+                            $('#Table_Search_Cost_info').text('Showing ' + $('#Table_Search_Cost > tbody tr').length + ' entries');
                             IMG_Has_Read = false;//初始化IMG讀取
 
-                            $('#Table_Search_BOMD').css('white-space', 'nowrap');
-                            $('#Table_Search_BOMD thead th').css('text-align', 'center');
-                            $('#Table_Search_BOMD tbody td').css('vertical-align', 'middle');
+                            $('#Table_Search_Cost').css('white-space', 'nowrap');
+                            $('#Table_Search_Cost thead th').css('text-align', 'center');
+                            $('#Table_Search_Cost tbody td').css('vertical-align', 'middle');
 
                             Re_Bind_Inner_JS();
                         }
                     },
                     error: function (ex) {
-                        alert(ex);
+                        //alert(ex);
+                        console.warn(ex);
                     }
                 });
             };
@@ -282,7 +354,7 @@
                 }
                 if (Show_IMG && !IMG_Has_Read) {
                     FN_GET_IMG($('#Table_Exec_Data img[type=Product]'));
-                    FN_GET_IMG($('#Table_Search_BOMD img[type=Product]'));
+                    FN_GET_IMG($('#Table_Search_Cost img[type=Product]'));
                 }
                 function FN_GET_IMG(IMG) {//取得順序調整，Exec優先
                     $(IMG).each(function (i) {
@@ -313,17 +385,6 @@
                 }
             });
 
-            $('#BT_Next, #V_BT_Edit').on('click', function () {
-                //Form_Mode_Change("Review_Data");//Pass
-                Form_Mode_Change("Edit_Data");
-                Click_tr_IDX = 0;
-                FN_Tr_Click($('#Table_Exec_Data tbody tr:nth(' + Click_tr_IDX + ')'));
-            });
-
-            $('#V_BT_Master').on('click', function () {
-                Form_Mode_Change("Search");
-            });
-            
             function Item_Move(click_tr, ToTable, FromTable, Full) {
                 if (Edit_Mode == "Can_Move") {
                     if (ToTable.find('tbody tr').length === 0) {
@@ -354,7 +415,7 @@
                         FromTable.html('');
                     }
                     $('#Table_Exec_Data_info').text('Showing ' + $('#Table_Exec_Data > tbody tr').length + ' entries');
-                    $('#Table_Search_BOMD_info').text('Showing ' + $('#Table_Search_BOMD > tbody tr').length + ' entries');
+                    $('#Table_Search_Cost_info').text('Showing ' + $('#Table_Search_Cost > tbody tr').length + ' entries');
 
                     $('.Exist_Select').toggle(Boolean($('#Table_Exec_Data').find('tbody tr').length > 0));
 
@@ -362,59 +423,64 @@
                 }
             }
 
-            $('#Table_Search_BOMD').on('click', 'tbody tr', function () {
-                Item_Move($(this), $('#Table_Exec_Data'), $('#Table_Search_BOMD'), false);
+            $('#Table_Search_Cost').on('click', 'tbody tr', function () {
+                Item_Move($(this), $('#Table_Exec_Data'), $('#Table_Search_Cost'), false);
             });
             $('#Table_Exec_Data').on('click', 'tbody tr', function () {
                 switch (Edit_Mode) {
                     case "Can_Move":
-                        Item_Move($(this), $('#Table_Search_BOMD'), $('#Table_Exec_Data'), false);
+                        Item_Move($(this), $('#Table_Search_Cost'), $('#Table_Exec_Data'), false);
                         break;
                     case "Edit":
-                        Click_tr_IDX = $(this).index();
-                        FN_Tr_Click($(this));
+                        //Click_tr_IDX = $(this).index();
+                        //FN_Tr_Click($(this));
                         break;
                 }
             });
             $('#BT_ATR').on('click', function () {
-                Item_Move($(this), $('#Table_Exec_Data'), $('#Table_Search_BOMD'), true);
+                Item_Move($(this), $('#Table_Exec_Data'), $('#Table_Search_Cost'), true);
             });
             $('#BT_ATL').on('click', function () {
-                Item_Move($(this), $('#Table_Search_BOMD'), $('#Table_Exec_Data'), true);
+                Item_Move($(this), $('#Table_Search_Cost'), $('#Table_Exec_Data'), true);
             });
 
-            $(window).keydown(function (e) {
-                if (Click_tr_IDX != null) {
-                    switch (e.keyCode) {
-                        case 38://^
-                            if (Click_tr_IDX > 0) {
-                                Click_tr_IDX -= 1;
-                            }
-                            FN_Tr_Click($('#Table_Exec_Data tbody tr:nth(' + Click_tr_IDX + ')'));
-                            break;
-                        case 40://v
-                            if (Click_tr_IDX < ($('#Table_Exec_Data tbody tr').length - 1)) {
-                                Click_tr_IDX += 1;
-                            }
-                            FN_Tr_Click($('#Table_Exec_Data tbody tr:nth(' + Click_tr_IDX + ')'));
-                            break;
-                    }
-                }
+            //$(window).keydown(function (e) {
+            //    if (Click_tr_IDX != null) {
+            //        switch (e.keyCode) {
+            //            case 38://^
+            //                if (Click_tr_IDX > 0) {
+            //                    Click_tr_IDX -= 1;
+            //                }
+            //                FN_Tr_Click($('#Table_Exec_Data tbody tr:nth(' + Click_tr_IDX + ')'));
+            //                break;
+            //            case 40://v
+            //                if (Click_tr_IDX < ($('#Table_Exec_Data tbody tr').length - 1)) {
+            //                    Click_tr_IDX += 1;
+            //                }
+            //                FN_Tr_Click($('#Table_Exec_Data tbody tr:nth(' + Click_tr_IDX + ')'));
+            //                break;
+            //        }
+            //    }
+            //});
+
+            //function FN_Tr_Click(Click_tr) {
+            //    Click_tr.parent().find('tr').css('background-color', '');
+            //    Click_tr.parent().find('tr').css('color', 'black');
+            //    Click_tr.css('background-color', '#5a1400');
+            //    Click_tr.css('color', 'white');
+
+            //    $('#DOT_TB_IM').val(Click_tr.find('td').eq(1).find('input').val());
+            //    $('#DDT_HDN_D_SUPLU_SEQ').val(Click_tr.find('td').eq(1).find('input').attr('SUPLU_SEQ'));
+            //    $('#DOT_TB_S_ALL').val(Click_tr.find('td').eq(0).text());
+            //    $('#DOT_TB_PI').val(Click_tr.find('td').eq(9).text());
+            //};
+
+            $('#Reset_Area_Table input[Replace_Target][Data_By]').on('click', function () {
+                var Data_By_Element = "#" + $(this).attr('Data_By');
+                $('[column_name=' + $(this).attr('Replace_Target') + ']').val($(Data_By_Element).val());
             });
 
-            function FN_Tr_Click(Click_tr) {
-                Click_tr.parent().find('tr').css('background-color', '');
-                Click_tr.parent().find('tr').css('color', 'black');
-                Click_tr.css('background-color', '#5a1400');
-                Click_tr.css('color', 'white');
-
-                $('#DOT_TB_IM').val(Click_tr.find('td').eq(1).find('input').val());
-                $('#DDT_HDN_D_SUPLU_SEQ').val(Click_tr.find('td').eq(1).find('input').attr('SUPLU_SEQ'));
-                $('#DOT_TB_S_ALL').val(Click_tr.find('td').eq(0).text());
-                $('#DOT_TB_PI').val(Click_tr.find('td').eq(9).text());
-            };
-
-            $('#Table_Search_BOMD, #Table_Exec_Data').on('click', 'thead th', function () {//Sort
+            $('#Table_Search_Cost, #Table_Exec_Data').on('click', 'thead th', function () {//Sort
                 $(this).siblings().removeClass('focus');
                 $(this).addClass('focus');
 
@@ -435,11 +501,11 @@
                 console.warn($(this).text());
 
                 arrData.sort(function (a, b) {
-                    var val1 = $(a).children('td').eq(IDX).text(); 
+                    var val1 = $(a).children('td').eq(IDX).text();
                     if (val1.length == 0) {
                         val1 = $(a).children('td').eq(IDX).find('input').val();
                     }
-                    
+
                     var val2 = $(b).children('td').eq(IDX).text();
                     if (val2.length == 0) {
                         val2 = $(b).children('td').eq(IDX).find('input').val();
@@ -471,7 +537,7 @@
                 background-color: #f8981d;
                 color: white;
             }
-        #Table_Search_BOMD tbody tr:hover, #Table_Exec_Data tbody tr:hover{
+        #Table_Search_Cost tbody tr:hover, #Table_Exec_Data tbody tr:hover{
             background-color: #f8981d;
             color: white;
         }
@@ -505,7 +571,6 @@
     </style>
     <uc1:uc1 ID="uc1" runat="server" /> 
     <uc2:uc2 ID="uc2" runat="server" /> 
-    <uc3:uc3 ID="uc3" runat="server" /> 
     <uc4:uc4 ID="uc4" runat="server" /> 
 
     <table class="table_th" style="text-align: left;">
@@ -514,45 +579,51 @@
             <td style="text-align: left; width: 15%;">
                 <input id="TB_IM" autocomplete="off" style="width: 100%;" />
             </td>
-            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Add_Date%></td>
+            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Supplier_Model%></td>
             <td style="text-align: left; width: 15%;">
+                <input id="TB_SupM" autocomplete="off" style="width: 100%;" />
+            </td>
+            
+            <td style="text-align: right; text-wrap: none; width: 10%;" rowspan="2">
+                <%=Resources.MP.Supplier_No%>
+                <br />
+                <%=Resources.MP.Supplier_Short_Name%>
+            </td>
+            <td style="text-align: left; width: 15%;" rowspan="2">
+                <div style="width: 90%; float: left; z-index: -10;">
+                    <input id="TB_S_No" style="width: 100%; z-index: -10;" />
+                    <br />
+                    <input id="TB_S_SName" style="width: 111%; z-index: -10;" />
+                </div>
+                <div style="width: 10%; float: right; z-index: 10;">
+                    <input id="BT_Supplier_Selector" type="button" value="…" style="float: right; z-index: 10; width: 100%;" />
+                </div>
+            </td>
+            <td style="text-align: right; text-wrap: none; width: 10%;" rowspan="2">
+                <%=Resources.MP.Add_Date%>
+                <br />
+                <%=Resources.MP.Last_Check_And_Accept_Day%>
+            </td>
+            <td style="text-align: left; width: 15%;" rowspan="2">
                 <div style="width: 90%; float: left; z-index: -10;">
                     <input id="TB_Date_S1" class="TB_DS1" type="date" style="width: 50%;" /><input id="TB_Date_E1" type="date" class="TB_DE1" style="width: 50%;" />
                 </div>
                 <div style="width: 10%; float: right; z-index: 10;">
                     <input id="BT_Duo_Datetime_Picker" type="button" value="…" style="float: right; z-index: 10; width: 100%;" onclick="$('#DDPB_HDN_DP_Control').val(1);$('#Duo_Datetime_Picker_Dialog').dialog('open');" />
                 </div>
-            </td>
-            <td style="text-align: right; text-wrap: none; width: 10%;display:none;"></td>
-            <td style="text-align: left; width: 15%;display:none;"></td>
-            <td style="text-align: right; text-wrap: none; width: 10%;display:none;"></td>
-            <td style="text-align: left; width: 15%;display:none;"></td>
-            <td></td><td></td>
-        </tr>
-        <tr>
-            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Supplier_No%>
                 <br />
-                <%=Resources.MP.Supplier_Short_Name%>
-            </td>
-            <td style="text-align: left; width: 15%;">
-                <div style="width: 90%; float: left; z-index: -10;">
-                    <input id="TB_M_S_No" style="width: 100%; z-index: -10;" />
-                    <br />
-                    <input id="TB_M_S_SName" style="width: 111%; z-index: -10;" />
-                </div>
-                <div style="width: 10%; float: right; z-index: 10;">
-                    <input id="BT_Supplier_Selector_M" type="button" value="…" style="float: right; z-index: 10; width: 100%;" />
-                </div>
-            </td>
-            
-            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Last_Check_And_Accept_Day%></td>
-            <td style="text-align: left; width: 15%;">
                 <div style="width: 90%; float: left; z-index: -10;">
                     <input id="TB_Date_S2" class="TB_DS2" type="date" style="width: 50%;" /><input id="TB_Date_E2" type="date" class="TB_DE2" style="width: 50%;" />
                 </div>
                 <div style="width: 10%; float: right; z-index: 10;">
                     <input id="BT_Duo_Datetime_Picker2" type="button" value="…" style="float: right; z-index: 10; width: 100%;" onclick="$('#DDPB_HDN_DP_Control').val(2);$('#Duo_Datetime_Picker_Dialog').dialog('open');" />
                 </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; text-wrap: none; width: 10%;" ><%=Resources.MP.Product_Information%></td>
+            <td style="text-align: left; width: 40%;" colspan="3">
+                <input id="TB_PI" style="width: 100%;" />
             </td>
         </tr>
         <tr>
@@ -588,8 +659,8 @@
     </div>
     <div style="width: 98%; margin: 0 auto;">
         <div id="Div_DT_View" style="width: 60%; height: 70vh; overflow: auto; display: none; float: left;border-style:solid;border-width:1px;">
-            <span class="dataTables_info" id="Table_Search_BOMD_info" role="status" aria-live="polite"></span>
-            <table id="Table_Search_BOMD" style="width: 99%;" class="table table-striped table-bordered">
+            <span class="dataTables_info" id="Table_Search_Cost_info" role="status" aria-live="polite"></span>
+            <table id="Table_Search_Cost" style="width: 99%;" class="table table-striped table-bordered">
                 <thead></thead>
                 <tbody></tbody>
             </table>
@@ -630,16 +701,16 @@
                                 <input id="RAT_TB_SupM" autocomplete="off" style="width: 100%; z-index: -10;" />
                             </div>
                             <div style="width: 20%; float: left; z-index: 10;">
-                                <input id="RAT_BT_SupM_RS" type="button" value="Reset" style="float: left; z-index: 10;" />
+                                <input Replace_Target="廠商型號" Data_By="RAT_TB_SupM" type="button" value="Reset" style="float: left; z-index: 10;" />
                             </div>
                         </td>
                         <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Unit%></td>
                         <td style="text-align: left; width: 30%;">
                             <div style="width: 80%; float: left; z-index: -10;">
-                                <input id="RAT_TB_Unit" type="number" min="0" step="0.1" autocomplete="off" style="width: 100%; z-index: -10;" />
+                                <input id="RAT_TB_Unit" autocomplete="off" style="width: 100%; z-index: -10;" />
                             </div>
                             <div style="width: 20%; float: right; z-index: 10;">
-                                <input id="RAT_BT_Unit_RS" type="button" value="Reset" style="float: left; z-index: 10;" />
+                                <input Replace_Target="單位" Data_By="RAT_TB_Unit" type="button" value="Reset" style="float: left; z-index: 10;" />
                             </div>
                         </td>
                     </tr>
@@ -650,7 +721,7 @@
                                 <input id="RAT_TB_PI" autocomplete="off" style="width: 100%; z-index: -10;" />
                             </div>
                             <div style="width: 8.6%; float: right; z-index: 10;">
-                                <input id="RAT_BT_PI_RS" type="button" value="Reset" style="float: left; z-index: 10;" />
+                                <input Replace_Target="產品說明" Data_By="RAT_TB_PI" type="button" value="Reset" style="float: left; z-index: 10;" />
                             </div>
                         </td>
                     </tr>
@@ -658,19 +729,19 @@
                         <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Price_TWD%></td>
                         <td style="text-align: left; width: 30%;">
                             <div style="width: 80%; float: left; z-index: -10;">
-                                <input id="RAT_TB_TWD_P" type="number" min="0" step="0.1" autocomplete="off" style="width: 100%; z-index: -10;" />
+                                <input id="RAT_TB_P_TWD" type="number" min="0" step="0.1" autocomplete="off" style="width: 100%; z-index: -10;" />
                             </div>
                             <div style="width: 20%; float: right; z-index: 10;">
-                                <input id="RAT_BT_TWD_P_RS" type="button" value="Reset" style="float: left; z-index: 10;" />
+                                <input Replace_Target="台幣單價" Data_By="RAT_TB_P_TWD" type="button" value="Reset" style="float: left; z-index: 10;" />
                             </div>
                         </td>
                         <td style="text-align: right; text-wrap: none; width: 10%;" rowspan="2">MIN_1</td>
                         <td style="text-align: left; width: 30%;" rowspan="2">
                             <div style="width: 80%; float: left; z-index: -10;">
-                                <input id="RAT_TB_MIN_1" type="number" min="0" step="0.1" autocomplete="off" style="width: 100%; z-index: -10;" />
+                                <input id="RAT_TB_MIN_1" type="number" min="0" step="1" autocomplete="off" style="width: 100%; z-index: -10;" />
                             </div>
                             <div style="width: 20%; float: right; z-index: 10;">
-                                <input id="RAT_BT_P_RS" type="button" value="Reset" style="float: left; z-index: 10;" />
+                                <input Replace_Target="MIN_1" Data_By="RAT_TB_MIN_1" type="button" value="Reset" style="float: left; z-index: 10;" />
                             </div>
                         </td>
                     </tr>
@@ -678,10 +749,10 @@
                         <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Price_USD%></td>
                         <td style="text-align: left; width: 30%;">
                             <div style="width: 80%; float: left; z-index: -10;">
-                                <input id="RAT_TB_USD_P" type="number" min="0" step="0.1" autocomplete="off" style="width: 100%; z-index: -10;" />
+                                <input id="RAT_TB_P_USD" type="number" min="0" step="0.1" autocomplete="off" style="width: 100%; z-index: -10;" />
                             </div>
                             <div style="width: 20%; float: right; z-index: 10;">
-                                <input id="RAT_BT_USD_P_RS" type="button" value="Reset" style="float: left; z-index: 10;" />
+                                <input Replace_Target="美元單價" Data_By="RAT_TB_P_USD" type="button" value="Reset" style="float: left; z-index: 10;" />
                             </div>
                         </td>
                     </tr>
@@ -692,16 +763,16 @@
                                 <input id="RAT_TB_P2" type="number" min="0" step="0.1" autocomplete="off" style="width: 100%; z-index: -10;" />
                             </div>
                             <div style="width: 20%; float: right; z-index: 10;">
-                                <input id="RAT_BT_P2_RS" type="button" value="Reset" style="float: left; z-index: 10;" />
+                                <input Replace_Target="單價_2" Data_By="RAT_TB_P2" type="button" value="Reset" style="float: left; z-index: 10;" />
                             </div>
                         </td>
                         <td style="text-align: right; text-wrap: none; width: 10%;">MIN_2</td>
                         <td style="text-align: left; width: 30%;">
                             <div style="width: 80%; float: left; z-index: -10;">
-                                <input id="RAT_TB_MIN_2" type="number" min="0" step="0.1" autocomplete="off" style="width: 100%; z-index: -10;" />
+                                <input id="RAT_TB_MIN_2" type="number" min="0" step="1" autocomplete="off" style="width: 100%; z-index: -10;" />
                             </div>
                             <div style="width: 20%; float: right; z-index: 10;">
-                                <input id="RAT_BT_MIN_2_RS" type="button" value="Reset" style="float: left; z-index: 10;" />
+                                <input Replace_Target="MIN_2" Data_By="RAT_TB_MIN_2" type="button" value="Reset" style="float: left; z-index: 10;" />
                             </div>
                         </td>
                     </tr>
@@ -712,16 +783,16 @@
                                 <input id="RAT_TB_P3" type="number" min="0" step="0.1" autocomplete="off" style="width: 100%; z-index: -10;" />
                             </div>
                             <div style="width: 20%; float: right; z-index: 10;">
-                                <input id="RAT_BT_P3_RS" type="button" value="Reset" style="float: left; z-index: 10;" />
+                                <input Replace_Target="單價_3" Data_By="RAT_TB_P3" type="button" value="Reset" style="float: left; z-index: 10;" />
                             </div>
                         </td>
                         <td style="text-align: right; text-wrap: none; width: 10%;">MIN_3</td>
                         <td style="text-align: left; width: 30%;">
                             <div style="width: 80%; float: left; z-index: -10;">
-                                <input id="RAT_TB_MIN_3" type="number" min="0" step="0.1" autocomplete="off" style="width: 100%; z-index: -10;" />
+                                <input id="RAT_TB_MIN_3" type="number" min="0" step="1" autocomplete="off" style="width: 100%; z-index: -10;" />
                             </div>
                             <div style="width: 20%; float: right; z-index: 10;">
-                                <input id="RAT_BT_MIN_3_RS" type="button" value="Reset" style="float: left; z-index: 10;" />
+                                <input Replace_Target="MIN_3" Data_By="RAT_TB_MIN_3" type="button" value="Reset" style="float: left; z-index: 10;" />
                             </div>
                         </td>
                     </tr>
@@ -729,10 +800,10 @@
                         <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Price_Curr%></td>
                         <td style="text-align: left; width: 30%;">
                             <div style="width: 80%; float: left; z-index: -10;">
-                                <input id="RAT_TB_CP" type="number" min="0" step="0.1" autocomplete="off" style="width: 100%; z-index: -10;" />
+                                <input id="RAT_TB_P_Curr" type="number" min="0" step="0.1" autocomplete="off" style="width: 100%; z-index: -10;" />
                             </div>
                             <div style="width: 20%; float: right; z-index: 10;">
-                                <input id="RAT_BT_CP_RS" type="button" value="Reset" style="float: left; z-index: 10;" />
+                                <input Replace_Target="外幣單價" Data_By="RAT_TB_P_Curr" type="button" value="Reset" style="float: left; z-index: 10;" />
                             </div>
                         </td>
                         <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Last_Price_Day%></td>
@@ -741,7 +812,7 @@
                                 <input id="RAT_TB_LSPD" type="date" autocomplete="off" style="width: 100%; z-index: -10;" />
                             </div>
                             <div style="width: 20%; float: right; z-index: 10;">
-                                <input id="RAT_BT_LSPD_RS" type="button" value="Reset" style="float: left; z-index: 10;" />
+                                <input Replace_Target="最後單價日" Data_By="RAT_TB_LSPD" type="button" value="Reset" style="float: left; z-index: 10;" />
                             </div>
                         </td>
                     </tr>
@@ -749,10 +820,10 @@
                         <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Develop_Remark%></td>
                         <td style="text-align: left; width: 30%;" colspan="3">
                             <div style="width: 91.4%; float: left; z-index: -10;">
-                                <input id="RAT_TB_DR" autocomplete="off" style="width: 100%; z-index: -10;" />
+                                <input id="RAT_TB_Remark_D" autocomplete="off" style="width: 100%; z-index: -10;" />
                             </div>
                             <div style="width: 8.6%; float: right; z-index: 10;">
-                                <input id="RAT_BT_DR_RS" type="button" value="Reset" style="float: left; z-index: 10;" />
+                                <input Replace_Target="備註給開發" Data_By="RAT_TB_Remark_D" type="button" value="Reset" style="float: left; z-index: 10;" />
                             </div>
                         </td>
                     </tr>
@@ -760,15 +831,16 @@
                         <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Purchase_Remark%></td>
                         <td style="text-align: left; width: 30%;" colspan="3">
                             <div style="width: 91.4%; float: left; z-index: -10;">
-                                <input id="RAT_TB_PR" autocomplete="off" style="width: 100%; z-index: -10;" />
+                                <input id="RAT_TB_Remark_R" autocomplete="off" style="width: 100%; z-index: -10;" />
                             </div>
                             <div style="width: 8.6%; float: right; z-index: 10;">
-                                <input id="RAT_BT_PR_RS" type="button" value="Reset" style="float: left; z-index: 10;" />
+                                <input Replace_Target="備註給採購" Data_By="RAT_TB_Remark_R" type="button" value="Reset" style="float: left; z-index: 10;" />
                             </div>
                         </td>
                     </tr>
                     
-                    <tr>
+                    <%--商標欄位暫時取消
+                        <tr>
                         <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Trademark%><%=Resources.MP.Speace%><%=Resources.MP.Status%></td>
                         <td style="text-align: left; width: 30%;">
                             <div style="width: 80%; float: left; z-index: -10;">
@@ -827,7 +899,7 @@
                                 <input id="RAT_BT_MR_RS" type="button" value="Reset" style="float: left; z-index: 10;" />
                             </div>
                         </td>
-                    </tr>
+                    </tr>--%>
                 </table>
             </div>
 

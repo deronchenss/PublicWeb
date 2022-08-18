@@ -21,7 +21,7 @@
 --ALTER TABLE Dc2..suplu ALTER COLUMN [變更記錄] NVARCHAR(MAX)
 --ALTER TABLE Dc2..suplu ADD [申請原因] NVARCHAR(50)--20220614
 --20220809-Drop column [英文說明](by suplu4) & 英文ISP, 中文ISP > Nvarchar(360)
-
+--20220816-Will Add [英文說明_IV01] & [英文說明_門市](bit)
 
 --use Dc2  
 --EXEC sp_rename 'dbo.suplu.內箱包裝數', '內盒容量', 'COLUMN';
