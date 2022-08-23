@@ -130,8 +130,8 @@ public class Cost_Save : IHttpHandler, IRequiresSessionState
                                              [產品長度] = @PL, 
                                              [產品寬度] = @PW, 
                                              [產品高度] = @PH, 
-                                             [包裝深長] = @PGL, 
-                                             [包裝面寬] = @PGW, 
+                                             [包裝長度] = @PGL, 
+                                             [包裝寬度] = @PGW, 
                                              [包裝高度] = @PGH
                                          WHERE [序號] = @SEQ; ";
                     cmd.Parameters.AddWithValue("SEQ", context.Request["SEQ"]);

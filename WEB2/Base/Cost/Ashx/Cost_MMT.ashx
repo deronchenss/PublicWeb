@@ -24,7 +24,6 @@ public class Cost_MMT : IHttpHandler, IRequiresSessionState
             DataTable dt = new DataTable();
             try
             {
-                //var BMD = new BOM_MMT_Data(context);
                 var Cost = new Cost(context);
                 switch (context.Request["Call_Type"])
                 {
@@ -47,7 +46,6 @@ public class Cost_MMT : IHttpHandler, IRequiresSessionState
                 context.Response.StatusCode = 404;
                 context.Response.Write(ex.Message);
             }
-
         }
     }
 

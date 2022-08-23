@@ -50,6 +50,32 @@ public class DDL_DataBind : System.Web.Services.WebService
         return json;
     }
     [WebMethod]
+    public string REF_Data_Basic(string Call_Code)
+    {
+        List<object> RF = new List<object>();
+        SqlConnection conn = new SqlConnection();
+        conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
+        SqlCommand cmd = new SqlCommand();
+
+        cmd.CommandText = @" SELECT RTRIM([內容]) [txt], RTRIM([內容]) [val] FROM Dc2..Refdata WHERE [代碼] = @代碼 order by 1 ";
+        cmd.Connection = conn;
+        cmd.Parameters.AddWithValue("代碼", Call_Code);
+        conn.Open();
+        SqlDataReader sdr = cmd.ExecuteReader();
+
+        while (sdr.Read())
+        {
+            RF.Add(new
+            {
+                txt = sdr["txt"],
+                val = sdr["val"]
+            });
+        }
+        conn.Close();
+        var json = (new JavaScriptSerializer().Serialize(RF));
+        return json;
+    }
+    [WebMethod]
     public string Design_Person()
     {
         List<object> DP = new List<object>();

@@ -18,13 +18,7 @@ namespace Ivan_Service.FN.Base
         {
             SQL_STR = @" 
                 SELECT TOP 500 C.[開發中], C.[產品狀態], C.[頤坊型號], C.[銷售型號], C.[廠商型號], C.[廠商簡稱], C.[單位], C.[外幣幣別], 
-                               IIF(C.[台幣單價] = 0,'', CONVERT(VARCHAR,CAST(C.[台幣單價] AS MONEY),1)) [台幣單價],
-                               IIF(C.[美元單價] = 0,'', CONVERT(VARCHAR,CAST(C.[美元單價] AS MONEY),1)) [美元單價],
-                               IIF(C.[單價_2] = 0,'', CONVERT(VARCHAR,CAST(C.[單價_2] AS MONEY),1)) [單價_2],
-                               IIF(C.[單價_3] = 0,'', CONVERT(VARCHAR,CAST(C.[單價_3] AS MONEY),1)) [單價_3],
-                               IIF(C.[MIN_1] = 0,'', REPLACE(CONVERT(VARCHAR,CAST(C.[MIN_1] AS MONEY),1),'.00','')) [MIN_1],
-                               IIF(C.[MIN_2] = 0,'', REPLACE(CONVERT(VARCHAR,CAST(C.[MIN_2] AS MONEY),1),'.00','')) [MIN_2],
-                               IIF(C.[MIN_3] = 0,'', REPLACE(CONVERT(VARCHAR,CAST(C.[MIN_3] AS MONEY),1),'.00','')) [MIN_3],
+                               C.[台幣單價], C.[美元單價], C.[單價_2], C.[單價_3], C.[MIN_1], C.[MIN_2], C.[MIN_3],
                                C.[產品說明], C.[暫時型號], C.[備註給開發], C.[備註給採購], C.[UnActive], C.[廠商編號],
                 	           C.[圖型啟用], C.[序號], C.[更新人員],
                                CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = C.[序號]),0) AS BIT) [Has_IMG],
@@ -33,7 +27,14 @@ namespace Ivan_Service.FN.Base
                                LEFT(RTRIM(CONVERT(VARCHAR(20),C.[新增日期],20)),16) [新增日期],
                                LEFT(RTRIM(CONVERT(VARCHAR(20),C.[停用日期],20)),16) [停用日期],
                                LEFT(RTRIM(CONVERT(VARCHAR(20),C.[更新日期],20)),16) [更新日期],
-                               C.[更新日期] [sort]
+                               C.[更新日期] [sort],
+                               C.[淨重], C.[毛重],
+                               C.[外箱編號], C.[外箱長度], C.[外箱寬度], C.[外箱高度],
+                               C.[內盒容量], C.[內盒數], C.[內箱數],
+                               C.[單位淨重], C.[單位毛重],
+                               C.[產品長度], C.[產品寬度], C.[產品高度],
+                               C.[包裝長度], C.[包裝寬度], C.[包裝高度],
+                               C.[寄送袋子], C.[寄送吊卡], C.[特殊包裝], C.[自有條碼]
                 FROM Dc2..suplu C
                 WHERE C.[頤坊型號] LIKE @IM + '%'
                     AND C.[廠商型號] LIKE @SupM + '%'
@@ -79,7 +80,28 @@ namespace Ivan_Service.FN.Base
                                      [備註給開發] = @備註給開發,
                                      [備註給採購] = @備註給採購,
                                      [更新人員] = @更新人員, 
-                                     [更新日期] = GETDATE()
+                                     [更新日期] = GETDATE(),
+                                     [淨重] = @淨重, 
+                                     [毛重] = @毛重,
+                                     [外箱編號] = @外箱編號,
+                                     [外箱長度] = @外箱長度, 
+                                     [外箱寬度] = @外箱寬度,
+                                     [外箱高度] = @外箱高度,
+                                     [內盒容量] = @內盒容量, 
+                                     [內盒數] = @內盒數, 
+                                     [內箱數] = @內箱數,
+                                     [單位淨重] = @單位淨重,
+                                     [單位毛重] = @單位毛重,
+                                     [產品長度] = @產品長度, 
+                                     [產品寬度] = @產品寬度, 
+                                     [產品高度] = @產品高度,
+                                     [包裝長度] = @包裝長度, 
+                                     [包裝寬度] = @包裝寬度, 
+                                     [包裝高度] = @包裝高度,
+                                     [寄送袋子] = @寄送袋子, 
+                                     [寄送吊卡] = @寄送吊卡, 
+                                     [特殊包裝] = @特殊包裝,
+                                     [自有條碼] = @自有條碼
                                  WHERE [序號] = @序號 ";
                     this.ClearParameter();
                     this.SetParameters("廠商型號",Request_DT.Rows[i]["廠商型號"]);
@@ -98,6 +120,28 @@ namespace Ivan_Service.FN.Base
                     this.SetParameters("備註給採購",Request_DT.Rows[i]["備註給採購"]);
                     this.SetParameters("更新人員", Request_DT.Rows[i]["更新人員"]);
                     this.SetParameters("序號", Request_DT.Rows[i]["序號"]);
+
+                    this.SetParameters("淨重", Request_DT.Rows[i]["淨重"]);
+                    this.SetParameters("毛重", Request_DT.Rows[i]["毛重"]);
+                    this.SetParameters("外箱編號", Request_DT.Rows[i]["外箱編號"]);
+                    this.SetParameters("外箱長度", Request_DT.Rows[i]["外箱長度"]);
+                    this.SetParameters("外箱寬度", Request_DT.Rows[i]["外箱寬度"]);
+                    this.SetParameters("外箱高度", Request_DT.Rows[i]["外箱高度"]);
+                    this.SetParameters("內盒容量", Request_DT.Rows[i]["內盒容量"]);
+                    this.SetParameters("內盒數", Request_DT.Rows[i]["內盒數"]);
+                    this.SetParameters("內箱數", Request_DT.Rows[i]["內箱數"]);
+                    this.SetParameters("單位淨重", Request_DT.Rows[i]["單位淨重"]);
+                    this.SetParameters("單位毛重", Request_DT.Rows[i]["單位毛重"]);
+                    this.SetParameters("產品長度", Request_DT.Rows[i]["產品長度"]);
+                    this.SetParameters("產品寬度", Request_DT.Rows[i]["產品寬度"]);
+                    this.SetParameters("產品高度", Request_DT.Rows[i]["產品高度"]);
+                    this.SetParameters("包裝長度", Request_DT.Rows[i]["包裝長度"]);
+                    this.SetParameters("包裝寬度", Request_DT.Rows[i]["包裝寬度"]);
+                    this.SetParameters("包裝高度", Request_DT.Rows[i]["包裝高度"]);
+                    this.SetParameters("寄送袋子", Request_DT.Rows[i]["寄送袋子"]);
+                    this.SetParameters("寄送吊卡", Request_DT.Rows[i]["寄送吊卡"]);
+                    this.SetParameters("特殊包裝", Request_DT.Rows[i]["特殊包裝"]);
+                    this.SetParameters("自有條碼", Request_DT.Rows[i]["自有條碼"]);
 
                     this.SetTran();
                     int TT = Execute(SQL_STR);

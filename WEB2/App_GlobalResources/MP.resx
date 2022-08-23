@@ -942,4 +942,7 @@
   <data name="Stock_Loc" xml:space="preserve">
     <value>庫位</value>
   </data>
+  <data name="Assembly" xml:space="preserve">
+    <value>裝配</value>
+  </data>
 </root>

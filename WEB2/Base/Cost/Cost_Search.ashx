@@ -59,7 +59,7 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                                                               [製造規格], 
                                                               [工時], [內盒容量], [外箱編號], [淨重],
                                                               [內盒數], [外箱長度], [毛重], [外箱寬度], [外箱高度], [內箱數],
-                                                              [單位淨重], [單位毛重], [產品長度], [產品寬度], [產品高度], [包裝深長], [包裝面寬], [包裝高度]
+                                                              [單位淨重], [單位毛重], [產品長度], [產品寬度], [產品高度], [包裝長度], [包裝寬度], [包裝高度]
                                                  FROM Dc2..suplu a
                                                  WHERE [序號] = @SEQ ";
                     cmd.Parameters.AddWithValue("SEQ", context.Request["SEQ"]);
@@ -185,8 +185,8 @@ public class Cost_Search : IHttpHandler, IRequiresSessionState
                             PL = sdr["產品長度"],
                             PW = sdr["產品寬度"],
                             PH = sdr["產品高度"],
-                            PGL = sdr["包裝深長"],
-                            PGW = sdr["包裝面寬"],
+                            PGL = sdr["包裝長度"],
+                            PGW = sdr["包裝寬度"],
                             PGH = sdr["包裝高度"],
                         });
                     }

@@ -936,4 +936,7 @@
   <data name="Stock_Loc" xml:space="preserve">
     <value>Stock Location</value>
   </data>
+  <data name="Assembly" xml:space="preserve">
+    <value>Assembly</value>
+  </data>
 </root>
