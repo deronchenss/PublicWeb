@@ -283,11 +283,9 @@
                                 $stockLoccolumn.html(style);
                                 style = '<input id="E_REMARK" class="tableInput fillRemark" style="text-align: right;" disabled="disabled" value="' + rowData.備註 + '" />';
                                 $remarkIvan.html(style);
-
     
                                 style = '<input type="checkbox" id="E_QUICK_TAKE"  style="text-align:center" class="tableInput tbChkBox" disabled="disabled" checked />';
                                 $quickTakeIvan.html((rowData.扣快取 == 'Y') ? style: '');
-
                                
                                 //button
                                 var ivanStyle = '<input class="Call_Product_Tool" SUPLU_SEQ = "' + (rowData.SUPLU_SEQ ?? "")
@@ -647,7 +645,7 @@
                 </td>
             </tr>
             <tr class="trstyle">
-                <td class="tdtstyleRight" colspan="8">
+                <td class="tdtstyleRight" colspan="7">
                     <input type="button" id="BT_Search" class="buttonStyle" value="<%=Resources.MP.Search%>" />
                     <input type="reset" id="BT_Cancel" class="buttonStyle" value="<%=Resources.MP.Cancel%>" style="display: none;" />
                 </td>

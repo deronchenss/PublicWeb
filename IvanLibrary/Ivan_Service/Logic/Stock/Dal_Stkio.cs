@@ -206,6 +206,90 @@ namespace Ivan_Service
         }
 
         /// <summary>
+        /// 門市庫取核銷 查詢 Return DataTable
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public DataTable SearchTableStoreAp()
+        {
+            DataTable dt = new DataTable();
+            string sqlStr = "";
+
+            sqlStr = @"SELECT Top 500 S.訂單號碼
+			                          ,S.廠商簡稱
+			                          ,S.頤坊型號
+                                      {扣快取}
+			                          ,S.單位
+			                          ,ISNULL(S.出庫數,0)-ISNULL(S.核銷數,0) AS 預定數量
+                                      ,CASE WHEN ISNULL(S.出庫數,0)-ISNULL(S.核銷數,0) > ISNULL(SU.{庫區}庫存數,0) THEN ISNULL(SU.{庫區}庫存數,0) 
+                                            ELSE ISNULL(S.出庫數,0)-ISNULL(S.核銷數,0) END AS 本次核銷
+			                          ,ISNULL(SU.{庫區}庫存數,0) AS 庫存數
+			                          ,{快取} AS 快取庫存數
+			                          ,ISNULL(S.庫位,'') AS 庫位
+			                          ,S.備註
+			                          ,SU.銷售型號
+			                          ,RTRIM(SU.產品說明) AS 產品說明
+			                          ,S.單據編號
+			                          ,S.庫區 AS 出區
+			                          ,SU.產品一階
+			                          ,S.廠商編號
+			                          ,S.序號
+			                          ,S.更新人員
+			                          ,CONVERT(VARCHAR,S.更新日期,23) 更新日期
+			                          ,S.SUPLU_SEQ
+                                      ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = S.SUPLU_SEQ) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
+                        FROM Stkio S 
+                        INNER JOIN SUPLU SU ON S.SUPLU_SEQ = SU.序號  
+                        WHERE ISNULL(S.出庫數,0)-ISNULL(S.核銷數,0) > 0 
+                        AND ISNULL(S.已刪除,0) = 0  
+                        AND ISNULL(S.已結案,0) = 0  
+                        AND ISNULL(S.出庫數,0) <> 0    
+                         ";
+
+            //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
+            foreach (string form in context.Request.Form)
+            {
+                if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type")
+                {
+                    string debug = context.Request[form];
+                    switch (form)
+                    {
+                        case "更新日期_S":
+                            sqlStr += " AND CONVERT(DATE,S.[更新日期]) >= @更新日期_S";
+                            this.SetParameters(form, context.Request[form]);
+                            break;
+                        case "更新日期_E":
+                            sqlStr += " AND CONVERT(DATE,S.[更新日期]) <= @更新日期_E";
+                            this.SetParameters(form, context.Request[form]);
+                            break;
+                        case "庫區":
+                            if ("大貨".Equals(context.Request[form]))
+                            {
+                                sqlStr = sqlStr.Replace("{快取}", "ISNULL(SU.快取庫存數, 0)").Replace("{扣快取}", ",'Y' 扣快取");
+                            }
+                            else 
+                            {
+                                sqlStr = sqlStr.Replace("{快取}", "0").Replace("{扣快取}", ",'N' 扣快取");
+                            }
+
+                            sqlStr = sqlStr.Replace("{庫區}", context.Request[form]);
+                            sqlStr += " AND S.庫區 = @庫區";
+                            this.SetParameters(form, context.Request[form]);
+                            break;
+                        default:
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE @" + form + " + '%'";
+                            this.SetParameters(form, context.Request[form]);
+                            break;
+                    }
+                }
+            }
+
+            sqlStr += " ORDER BY S.頤坊型號, S.更新日期 ";
+            dt = GetDataTableWithLog(sqlStr);
+            return dt;
+        }
+
+        /// <summary>
         /// 庫存入出核銷 查詢 Return DataTable
         /// </summary>
         /// <param name="context"></param>
@@ -707,6 +791,7 @@ namespace Ivan_Service
                                     UPDATE SUPLU
                                     SET {庫區}庫存數 = ISNULL({庫區}庫存數,0) + (CASE WHEN ISNULL(ST.出庫數,0) > 0 THEN -1 WHEN ISNULL(ST.入庫數,0) > 0 THEN 1 ELSE 0 END * @APPROVE_CNT)
 									   ,{庫區}庫位 = @STOCK_LOC
+                                       ,快取庫存數 = ISNULL(快取庫存數,0) - CASE WHEN @QUICK_TAKE = 'Y' THEN @STOCK_O_CNT ELSE 0 END
 									   ,更新日期 = GETDATE()
                                        ,更新人員 = @UPD_USER
                                     FROM SUPLU S

@@ -945,4 +945,16 @@
   <data name="Assembly" xml:space="preserve">
     <value>裝配</value>
   </data>
+  <data name="Apply" xml:space="preserve">
+    <value>申請</value>
+  </data>
+  <data name="Stock_Take" xml:space="preserve">
+    <value>庫取</value>
+  </data>
+  <data name="Store" xml:space="preserve">
+    <value>門市</value>
+  </data>
+  <data name="Store_Sale" xml:space="preserve">
+    <value>內銷</value>
+  </data>
 </root>

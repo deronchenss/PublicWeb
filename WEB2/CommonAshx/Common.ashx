@@ -16,6 +16,7 @@ public class Common : IHttpHandler, IRequiresSessionState
     {
         DataTable dt = new DataTable();
         Dal_Refdata dalRefData = new Dal_Refdata(context);
+        Dal_Nofile dalNoFile = new Dal_Nofile(context);
 
         if (!string.IsNullOrEmpty(context.Request["Call_Type"]))
         {
@@ -51,7 +52,13 @@ public class Common : IHttpHandler, IRequiresSessionState
 
                                 break;
                             case "GET_DATA_FROM_REFDATA":
-                                 dt = dalRefData.SearchTable();
+                                dt = dalRefData.SearchTable();
+                                break;
+                            case "GET_NO_FROM_NOFILE":
+                                string newNo = dalNoFile.SearchTable();
+                                context.Response.StatusCode = 200;
+                                context.Response.Write(newNo);
+                                context.Response.End();
                                 break;
                         }
 

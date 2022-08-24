@@ -1,4 +1,4 @@
-﻿<%@ Page Title="庫存入出核銷" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Stock_LOC_UPD.aspx.cs" Inherits="Stock_LOC_UPD" %>
+﻿<%@ Page Title="庫位變更" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Stock_LOC_UPD.aspx.cs" Inherits="Stock_LOC_UPD" %>
 <%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_ALL.ascx" %>
 <%@ Register TagPrefix="uc3" TagName="uc3" Src="~/User_Control/Dia_Duo_Datetime_Picker.ascx" %>
 
@@ -597,7 +597,7 @@
                 </td>
             </tr>
             <tr class="trstyle">
-                <td class="tdtstyleRight" colspan="8">
+                <td class="tdtstyleRight" colspan="7">
                     <input type="button" id="BT_Search" class="buttonStyle" value="<%=Resources.MP.Search%>" />
                     <input type="reset" id="BT_Cancel" class="buttonStyle" value="<%=Resources.MP.Cancel%>" style="display: none;" />
                 </td>

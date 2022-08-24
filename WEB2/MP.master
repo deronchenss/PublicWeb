@@ -259,6 +259,14 @@
                                     </ul>
                                 </li>
                                 <li class="has-children">
+                                    <a href="#" class="nav-link" style="vertical-align:sub;"><%--內銷--%><%=Resources.MP.Store_Sale%></a>
+                                    <ul class="dropdown">
+                                        <li>
+                                            <a href="/Store/Store_StockIO_Ins.aspx"><%--門市庫取申請--%><%=Resources.MP.Store%><%=Resources.MP.Stock_Take%><%=Resources.MP.Apply%></a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="has-children">
                                     <a href="#"><%=Resources.MP.More%></a>
                                     <ul class="dropdown">
                                         <li class="has-children">

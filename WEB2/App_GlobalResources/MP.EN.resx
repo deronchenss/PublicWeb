@@ -939,4 +939,16 @@
   <data name="Assembly" xml:space="preserve">
     <value>Assembly</value>
   </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Stock_Take" xml:space="preserve">
+    <value>Stock Take</value>
+  </data>
+  <data name="Store" xml:space="preserve">
+    <value>Store</value>
+  </data>
+  <data name="Store_Sale" xml:space="preserve">
+    <value>Domestic sales</value>
+  </data>
 </root>

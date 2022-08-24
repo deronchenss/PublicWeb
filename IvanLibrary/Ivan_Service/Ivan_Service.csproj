@@ -50,6 +50,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FN\Base\Cost.cs" />
+    <Compile Include="Logic\Code\Dal_Nofile.cs" />
+    <Compile Include="Logic\Dal_Template.cs" />
+    <Compile Include="Logic\Stock\Dal_Stock_Sale.cs" />
     <Compile Include="Logic\Stock\Dal_Stkio.cs" />
     <Compile Include="Logic\Base\Dal_Suplu.cs" />
     <Compile Include="Logic\Code\Dal_Refdata.cs" />
@@ -59,7 +62,8 @@
     <Compile Include="Logic\Dev\Dal_Recua.cs" />
     <Compile Include="Logic\Dev\Dal_Pudu.cs" />
     <Compile Include="Logic\Dev\Dal_Recu.cs" />
-    <Compile Include="Model\Code\Stkio.cs" />
+    <Compile Include="Model\Stock\Stkio_Sale.cs" />
+    <Compile Include="Model\Stock\Stkio.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceBase\LogicBase.cs" />
   </ItemGroup>

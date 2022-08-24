@@ -659,7 +659,7 @@
                 </td>
             </tr>
             <tr class="trstyle">
-                <td class="tdtstyleRight" colspan="8">
+                <td class="tdtstyleRight" colspan="7">
                     <input type="button" id="BT_Search" class="buttonStyle" value="<%=Resources.MP.Search%>" />
                     <input type="button" id="BT_Insert" class="buttonStyle" value="<%=Resources.MP.Insert%>" />
                     <input type="button" id="BT_Update" class="buttonStyle" value="修改" />
