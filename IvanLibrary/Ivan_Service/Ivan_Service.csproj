@@ -49,6 +49,7 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FN\Base\Price.cs" />
     <Compile Include="FN\Base\Cost.cs" />
     <Compile Include="Logic\Code\Dal_Nofile.cs" />
     <Compile Include="Logic\Dal_Template.cs" />

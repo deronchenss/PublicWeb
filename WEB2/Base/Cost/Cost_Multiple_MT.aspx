@@ -211,19 +211,27 @@
             //    $('[Control_By=' + $(this).prop('id') + ']').toggle(true);
             //});
             function Search_Cost() {
+                var S_Json = [];
+                var Search_Obj = {};
+                $('[request_colname]').each(function () {
+                    Search_Obj[$(this).attr('request_colname')] = $(this).val();
+                });
+                S_Json.push(Search_Obj);
+
                 $.ajax({
                     url: "/Base/Cost/Ashx/Cost_MMT.ashx",
                     data: {
                         "Call_Type": "Cost_MMT_Search",
-                        "IM": $('#TB_IM').val(),
-                        "SupM": $('#TB_SupM').val(),
-                        "S_No": $('#TB_S_No').val(),
-                        "S_SName": $('#TB_S_SName').val(),
-                        "N_DS": $('#TB_Date_S1').val(),
-                        "N_DE": $('#TB_Date_E1').val(),
-                        "LCACD_DS": $('#TB_Date_S2').val(),
-                        "LCACD_DE": $('#TB_Date_E2').val(),
-                        "PI": $('#TB_PI').val()
+                        "Search_Data": JSON.stringify(S_Json)
+                        //"IM": $('#TB_IM').val(),
+                        //"SupM": $('#TB_SupM').val(),
+                        //"S_No": $('#TB_S_No').val(),
+                        //"S_SName": $('#TB_S_SName').val(),
+                        //"N_DS": $('#TB_Date_S1').val(),
+                        //"N_DE": $('#TB_Date_E1').val(),
+                        //"LCACD_DS": $('#TB_Date_S2').val(),
+                        //"LCACD_DE": $('#TB_Date_E2').val(),
+                        //"PI": $('#TB_PI').val()
                     },
                     cache: false,
                     async: false,
@@ -370,7 +378,7 @@
                             $('#Table_Search_Cost').css('white-space', 'nowrap');
                             $('#Table_Search_Cost thead th').css('text-align', 'center');
                             $('#Table_Search_Cost tbody td').css('vertical-align', 'middle');
-                            $('#Table_Search_Cost tbody td').filter(function () { return parseFloat($(this).text()) === 0; }).text('');
+                            $('#Table_Search_Cost tbody td').filter(function () { return $(this).text() === "0"; }).text('');
                             Re_Bind_Inner_JS();
                         }
                     },
@@ -646,11 +654,11 @@
         <tr>
             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Ivan_Model%></td>
             <td style="text-align: left; width: 15%;">
-                <input id="TB_IM" autocomplete="off" style="width: 100%;" />
+                <input id="TB_IM" request_colname="頤坊型號" autocomplete="off" style="width: 100%;" />
             </td>
             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Supplier_Model%></td>
             <td style="text-align: left; width: 15%;">
-                <input id="TB_SupM" autocomplete="off" style="width: 100%;" />
+                <input id="TB_SupM" request_colname="廠商型號" autocomplete="off" style="width: 100%;" />
             </td>
             
             <td style="text-align: right; text-wrap: none; width: 10%;" rowspan="2">
@@ -660,9 +668,9 @@
             </td>
             <td style="text-align: left; width: 15%;" rowspan="2">
                 <div style="width: 90%; float: left; z-index: -10;">
-                    <input id="TB_S_No" style="width: 100%; z-index: -10;" />
+                    <input id="TB_S_No" request_colname="廠商編號" style="width: 100%; z-index: -10;" />
                     <br />
-                    <input id="TB_S_SName" style="width: 111%; z-index: -10;" />
+                    <input id="TB_S_SName" request_colname="廠商簡稱" style="width: 111%; z-index: -10;" />
                 </div>
                 <div style="width: 10%; float: right; z-index: 10;">
                     <input id="BT_Supplier_Selector" type="button" value="…" style="float: right; z-index: 10; width: 100%;" />
@@ -675,14 +683,14 @@
             </td>
             <td style="text-align: left; width: 15%;" rowspan="2">
                 <div style="width: 90%; float: left; z-index: -10;">
-                    <input id="TB_Date_S1" class="TB_DS1" type="date" style="width: 50%;" /><input id="TB_Date_E1" type="date" class="TB_DE1" style="width: 50%;" />
+                    <input id="TB_Date_S1" request_colname="N_DS" class="TB_DS1" type="date" style="width: 50%;" /><input id="TB_Date_E1" request_colname="N_DE" type="date" class="TB_DE1" style="width: 50%;" />
                 </div>
                 <div style="width: 10%; float: right; z-index: 10;">
                     <input id="BT_Duo_Datetime_Picker" type="button" value="…" style="float: right; z-index: 10; width: 100%;" onclick="$('#DDPB_HDN_DP_Control').val(1);$('#Duo_Datetime_Picker_Dialog').dialog('open');" />
                 </div>
                 <br />
                 <div style="width: 90%; float: left; z-index: -10;">
-                    <input id="TB_Date_S2" class="TB_DS2" type="date" style="width: 50%;" /><input id="TB_Date_E2" type="date" class="TB_DE2" style="width: 50%;" />
+                    <input id="TB_Date_S2" request_colname="LCACD_DS" class="TB_DS2" type="date" style="width: 50%;" /><input id="TB_Date_E2" request_colname="LCACD_DE" type="date" class="TB_DE2" style="width: 50%;" />
                 </div>
                 <div style="width: 10%; float: right; z-index: 10;">
                     <input id="BT_Duo_Datetime_Picker2" type="button" value="…" style="float: right; z-index: 10; width: 100%;" onclick="$('#DDPB_HDN_DP_Control').val(2);$('#Duo_Datetime_Picker_Dialog').dialog('open');" />
@@ -690,9 +698,9 @@
             </td>
         </tr>
         <tr>
-            <td style="text-align: right; text-wrap: none; width: 10%;" ><%=Resources.MP.Product_Information%></td>
+            <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Product_Information%></td>
             <td style="text-align: left; width: 40%;" colspan="3">
-                <input id="TB_PI" style="width: 100%;" />
+                <input id="TB_PI" request_colname="產品說明" style="width: 100%;" />
             </td>
         </tr>
         <tr>

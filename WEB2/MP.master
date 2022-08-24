@@ -150,6 +150,8 @@
                                             <ul class="dropdown">
                                                 <li><a href="/Base/Price/Price_MT.aspx" IVM_PERMISSIONS="36">Price<%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
                                                     </a></li>
+                                                <li><a href="/Base/Price/Price_Multiple_Copy.aspx">Price<%=Resources.MP.Speace%><%=Resources.MP.Multiple%><%=Resources.MP.Speace%><%=Resources.MP.Copy%>
+                                                    </a></li>
                                             </ul>
                                         </li>
                                         <li class="has-children">

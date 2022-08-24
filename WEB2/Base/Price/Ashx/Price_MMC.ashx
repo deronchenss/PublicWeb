@@ -1,4 +1,4 @@
-﻿<%@ WebHandler Language="C#" Class="Cost_MMT" %>
+﻿<%@ WebHandler Language="C#" Class="Price_MMC" %>
 
 using System.Collections.Generic;
 using System.Web;
@@ -15,7 +15,7 @@ using Newtonsoft.Json;
 using Ivan_Service.FN.Base;
 
 
-public class Cost_MMT : IHttpHandler, IRequiresSessionState
+public class Price_MMC : IHttpHandler, IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
     {
@@ -24,16 +24,14 @@ public class Cost_MMT : IHttpHandler, IRequiresSessionState
             DataTable dt = new DataTable();
             try
             {
-                var Cost = new Cost(context);
-                //var Cost = new Cost();
+                var Price = new Price(context);
                 switch (context.Request["Call_Type"])
                 {
-                    case "Cost_MMT_Search":
-                        dt = Cost.Cost_MMT_Search(JsonConvert.DeserializeObject<DataTable>(context.Request["Search_Data"]));
+                    case "Price_MMC_Search":
+                        dt = Price.Price_MMC_Search(JsonConvert.DeserializeObject<DataTable>(context.Request["Search_Data"]));
                         break;
-                    case "Cost_MMT_Update":
-                        //DataTable Request_DT = JsonConvert.DeserializeObject<DataTable>(context.Request["Exec_Data"]);
-                        Cost.Cost_MMT_Update(JsonConvert.DeserializeObject<DataTable>(context.Request["Exec_Data"]));
+                    case "Price_MMC_Copy":
+                        Price.Price_MMC_Copy(JsonConvert.DeserializeObject<DataTable>(context.Request["Exec_Data"]));
                         context.Response.StatusCode = 200;
                         context.Response.End();
                         break;

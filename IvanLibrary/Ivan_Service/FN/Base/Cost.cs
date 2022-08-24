@@ -14,7 +14,7 @@ namespace Ivan_Service.FN.Base
         string SQL_STR = "";
 
         #region Cost_MMT
-        public DataTable Cost_MMT_Search()
+        public DataTable Cost_MMT_Search(DataTable Request_DT)
         {
             SQL_STR = @" 
                 SELECT TOP 500 C.[開發中], C.[產品狀態], C.[頤坊型號], C.[銷售型號], C.[廠商型號], C.[廠商簡稱], C.[單位], C.[外幣幣別], 
@@ -36,24 +36,29 @@ namespace Ivan_Service.FN.Base
                                C.[包裝長度], C.[包裝寬度], C.[包裝高度],
                                C.[寄送袋子], C.[寄送吊卡], C.[特殊包裝], C.[自有條碼]
                 FROM Dc2..suplu C
-                WHERE C.[頤坊型號] LIKE @IM + '%'
-                    AND C.[廠商型號] LIKE @SupM + '%'
-                    AND C.[廠商編號] LIKE @S_No + '%'
-                    AND C.[廠商簡稱] LIKE @S_SName + '%'
+                WHERE C.[頤坊型號] LIKE @頤坊型號 + '%'
+                    AND C.[廠商型號] LIKE @廠商型號 + '%'
+                    AND C.[廠商編號] LIKE @廠商編號 + '%'
+                    AND C.[廠商簡稱] LIKE @廠商簡稱 + '%'
                     AND ((C.[新增日期] >= @N_DS AND C.[新增日期] <= DATEADD(DAY,+1,@N_DE)) OR (@N_DS ='' AND @N_DE = '' ))
                     AND ((C.[最後點收日] >= @LCACD_DS AND C.[最後點收日] <= DATEADD(DAY,+1,@LCACD_DE)) OR (@LCACD_DS ='' AND @LCACD_DE = '' ))
-                    AND C.[產品說明] LIKE '%' + @PI + '%'
-                ORDER BY sort DESC ";
+                    AND C.[產品說明] LIKE '%' + @產品說明 + '%'
+                --ORDER BY sort DESC ";
             this.ClearParameter();
-            this.SetParameters("IM", context.Request["IM"]);
-            this.SetParameters("SupM", context.Request["SupM"]);
-            this.SetParameters("S_No", context.Request["S_No"]);
-            this.SetParameters("S_SName", context.Request["S_SName"]);
-            this.SetParameters("N_DS", context.Request["N_DS"]);
-            this.SetParameters("N_DE", context.Request["N_DE"]);
-            this.SetParameters("LCACD_DS", context.Request["LCACD_DS"]);
-            this.SetParameters("LCACD_DE", context.Request["LCACD_DE"]);
-            this.SetParameters("PI", context.Request["PI"]);
+
+            for (int i = 0; i < Request_DT.Columns.Count; i++)
+            {
+                this.SetParameters(Request_DT.Columns[i].ColumnName, Request_DT.Rows[0][i]);
+            }
+            //this.SetParameters("IM", context.Request["IM"]);
+            //this.SetParameters("SupM", context.Request["SupM"]);
+            //this.SetParameters("S_No", context.Request["S_No"]);
+            //this.SetParameters("S_SName", context.Request["S_SName"]);
+            //this.SetParameters("N_DS", context.Request["N_DS"]);
+            //this.SetParameters("N_DE", context.Request["N_DE"]);
+            //this.SetParameters("LCACD_DS", context.Request["LCACD_DS"]);
+            //this.SetParameters("LCACD_DE", context.Request["LCACD_DE"]);
+            //this.SetParameters("PI", context.Request["PI"]);
             dt = GetDataTableWithLog(SQL_STR);
             return dt;
         }
