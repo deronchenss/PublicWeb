@@ -10,17 +10,14 @@ using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using CrystalDecisions.CrystalReports.Engine;
 using Ivan_Service;
+using Ivan_Log;
 
 public class Sample_Pack : IHttpHandler, IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
     {
-        DataTable dt = new DataTable();
-        Dal_Paku2 dalPaku2 = new Dal_Paku2(context);
-        Dal_Paku dalPaku = new Dal_Paku(context);
-        Dal_Invu dalInvu = new Dal_Invu(context);
-        
-        int result = 0;
+        SampleService service = new SampleService();
+        string result = "";
         if (!string.IsNullOrEmpty(context.Request["Call_Type"]))
         {
             try
@@ -28,34 +25,27 @@ public class Sample_Pack : IHttpHandler, IRequiresSessionState
                 switch (context.Request["Call_Type"])
                 {
                     case "SEARCH":
-                        dt = dalPaku2.SearchTable();
+                        result = JsonConvert.SerializeObject(service.SamplePackSearch(ContextFN.ContextToDictionary(context)));
                         break;
                     case "INSERT":
-                        result = dalPaku.InsertPaku();
-
-                        context.Response.StatusCode = 200;
-                        context.Response.Write(result);
-                        context.Response.End();
+                        result = service.SamplePackInsert(ContextFN.ContextToDictionary(context));
                         break;
                     case "DELETE":
-                        result = dalPaku2.DeletePaku2();
-
-                        context.Response.StatusCode = 200;
-                        context.Response.Write(result);
-                        context.Response.End();
+                        result = service.SamplePackDelete(ContextFN.ContextToDictionary(context));
                         break;
                     case "ChkIV":
-                        dt = dalInvu.SearchIV();
+                        result = JsonConvert.SerializeObject(service.SamplePackCheckIV(ContextFN.ContextToDictionary(context)));
                         break;
                 }
 
-                var json = JsonConvert.SerializeObject(dt);
+                Log.InsertLog(context, context.Session["Account"], service.sqlLogModel);
                 context.Response.StatusCode = 200;
                 context.Response.ContentType = "text/json";
-                context.Response.Write(json);
+                context.Response.Write(result);
             }
             catch (SqlException ex)
             {
+                Log.InsertLog(context, context.Session["Account"], service.sqlLogModel, ex.ToString(), false);
                 context.Response.StatusCode = 404;
                 context.Response.Write(ex.Message);
             }

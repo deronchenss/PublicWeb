@@ -10,15 +10,14 @@ using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using Ivan_Service;
 using Ivan.Models;
+using Ivan_Log;
 
 public class Store_StockIO_Approve : IHttpHandler, IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
     {
-        DataTable dt = new DataTable();
-        Dal_Stkio dalStk = new Dal_Stkio(context);
-        Dal_Stock_Sale dalStkSale = new Dal_Stock_Sale(context);
-        int result = 0;
+        StoreService service = new StoreService();
+        string result = "";
         if (!string.IsNullOrEmpty(context.Request["Call_Type"]))
         {
             try
@@ -26,24 +25,22 @@ public class Store_StockIO_Approve : IHttpHandler, IRequiresSessionState
                 switch (context.Request["Call_Type"])
                 {
                     case "SEARCH":
-                        dt = dalStk.SearchTableStoreAp();
+                        result = JsonConvert.SerializeObject(service.StoreStockApSearch(ContextFN.ContextToDictionary(context)));
                         break;
                     case "EXEC":
                         List<Stkio_SaleFromStkio> liEntity = JsonConvert.DeserializeObject<List<Stkio_SaleFromStkio>>(context.Request["EXEC_DATA"]);
-                        result = dalStkSale.MutiInsertStkioSale(liEntity);
-                        context.Response.StatusCode = 200;
-                        context.Response.Write(result);
-                        context.Response.End();
+                        result = service.StoreStockApExec(liEntity, context.Session["Account"]);
                         break;
                 }
 
-                var json = JsonConvert.SerializeObject(dt);
+                Log.InsertLog(context, context.Session["Account"], service.sqlLogModel);
                 context.Response.StatusCode = 200;
                 context.Response.ContentType = "text/json";
-                context.Response.Write(json);
+                context.Response.Write(result);
             }
             catch (SqlException ex)
             {
+                Log.InsertLog(context, context.Session["Account"], service.sqlLogModel, ex.ToString(), false);
                 context.Response.StatusCode = 404;
                 context.Response.Write(ex.Message);
             }

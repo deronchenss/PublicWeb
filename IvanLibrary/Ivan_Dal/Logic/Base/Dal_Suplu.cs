@@ -1,23 +1,18 @@
-﻿using Ivan_Dal;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Web;
 
-namespace Ivan_Service
+namespace Ivan_Dal
 {
-    public class Dal_Suplu : LogicBase
+    public class Dal_Suplu : DataOperator 
     {
-        public Dal_Suplu(HttpContext _context)
-        {
-            context = _context;
-        }
-
         /// <summary>
         /// 庫存查詢 查詢 Return DataTable
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTable()
+        public DataTable SearchTable(Dictionary<string, string> dic)
         {
             DataTable dt = new DataTable();
             string sqlStr = "";
@@ -126,65 +121,65 @@ namespace Ivan_Service
                          ";
 
             //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
-            foreach (string form in context.Request.Form)
+            foreach (string form in dic.Keys)
             {
-                if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type")
+                if (!string.IsNullOrEmpty(dic[form]) && form != "Account")
                 {
-                    string debug = context.Request[form];
+                    string debug = dic[form];
                     switch (form)
                     {
                         case "產品說明":
                         case "廠商簡稱":
                             sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE '%' + @" + form + " + '%' ";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                         case "倉位":
-                            if(context.Request[form].Equals("ISP"))
+                            if(dic[form].Equals("ISP"))
                             {
-                                sqlStr += " AND ISNULL(S.[" + context.Request[form] + "安全數],0) != 0 ";
+                                sqlStr += " AND ISNULL(S.[" + dic[form] + "安全數],0) != 0 ";
                             }
                             else
                             {
-                                sqlStr += " AND ISNULL(S.[" + context.Request[form] + "庫存數],0) != 0 ";
+                                sqlStr += " AND ISNULL(S.[" + dic[form] + "庫存數],0) != 0 ";
                             }
                             break;
                         case "限門市":
-                            if(context.Request[form] == "1")
+                            if(dic[form] == "1")
                             {
                                 sqlStr += " AND ISNULL(S.台北安全數,0) + ISNULL(S.台中安全數,0) + ISNULL(S.高雄安全數,0) <> 0 ";
                             }
                             break;
                         case "售完":
-                            if (context.Request[form] == "1")
+                            if (dic[form] == "1")
                             {
                                 sqlStr += " AND ISNULL(S.ISP安全數,0)=1 AND ISNULL(S.ISP庫存數,0)=0 ";
                             }
                             break;
                         case "草稿":
-                            if (context.Request[form] == "1")
+                            if (dic[form] == "1")
                             {
                                 sqlStr += " AND ISNULL(S.ISP安全數,0)=2 ";
                             }
                             break;
                         case "封存":
-                            if (context.Request[form] == "1")
+                            if (dic[form] == "1")
                             {
                                 sqlStr += " AND ISNULL(S.ISP安全數,0)=3 ";
                             }
                             break;
                         case "替代庫存":
-                            if (context.Request[form] == "1")
+                            if (dic[form] == "1")
                             {
                                 sqlStr += " AND IIF(ISNULL(總庫存,0) - 大貨庫存數 = 0, NULL, ISNULL(總庫存,0) - 大貨庫存數) > 0 ";
                             }
                             break;
                         case "庫位":
-                            sqlStr += " AND ISNULL(S.[" + context.Request["倉位"] + "庫位],'') LIKE '%' + @" + form + " + '%' ";
-                            this.SetParameters(form, context.Request[form]);
+                            sqlStr += " AND ISNULL(S.[" + dic["倉位"] + "庫位],'') LIKE '%' + @" + form + " + '%' ";
+                            this.SetParameters(form, dic[form]);
                             break;
                         default:
                             sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE @" + form + " + '%'";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                     }
                 }
@@ -192,7 +187,7 @@ namespace Ivan_Service
 
             sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
 
-            dt = GetDataTableWithLog(sqlStr);
+            dt = GetDataTable(sqlStr);
 
             return dt;
         }
@@ -202,7 +197,7 @@ namespace Ivan_Service
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTableForReplace()
+        public DataTable SearchTableForReplace(Dictionary<string, string> dic)
         {
             DataTable dt = new DataTable();
             string sqlStr = "";
@@ -248,16 +243,16 @@ namespace Ivan_Service
                          ";
 
             //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
-            foreach (string form in context.Request.Form)
+            foreach (string form in dic.Keys)
             {
-                if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type")
+                if (!string.IsNullOrEmpty(dic[form]) && form != "Account")
                 {
-                    string debug = context.Request[form];
+                    string debug = dic[form];
                     switch (form)
                     {
                         default:
                             sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE @" + form + " + '%'";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                     }
                 }
@@ -266,7 +261,7 @@ namespace Ivan_Service
             
             sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
 
-            dt = GetDataTableWithLog(sqlStr);
+            dt = GetDataTable(sqlStr);
             return dt;
         }
 
@@ -275,7 +270,7 @@ namespace Ivan_Service
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTableForUpdLoc()
+        public DataTable SearchTableForUpdLoc(Dictionary<string, string> dic)
         {
             DataTable dt = new DataTable();
             string sqlStr = "";
@@ -312,33 +307,33 @@ namespace Ivan_Service
                          ";
 
             //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
-            foreach (string form in context.Request.Form)
+            foreach (string form in dic.Keys)
             {
-                if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type")
+                if (!string.IsNullOrEmpty(dic[form]) && form != "Account")
                 {
-                    string debug = context.Request[form];
+                    string debug = dic[form];
                     switch (form)
                     {
                         case "廠商簡稱":
                             sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE '%' + @" + form + " + '%' ";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                         case "庫位":
-                            sqlStr += $" AND S.{context.Request["庫區"]}庫位 LIKE '%' + @" + form + " + '%' ";
-                            this.SetParameters(form, context.Request[form]);
+                            sqlStr += $" AND S.{dic["庫區"]}庫位 LIKE '%' + @" + form + " + '%' ";
+                            this.SetParameters(form, dic[form]);
                             break;
                         case "庫區":
-                            sqlStr = sqlStr.Replace("{庫區}", context.Request[form]);
+                            sqlStr = sqlStr.Replace("{庫區}", dic[form]);
                             break;
                         case "限有庫存":
-                            if("1".Equals(context.Request[form]))
+                            if("1".Equals(dic[form]))
                             {
-                                sqlStr += $" AND ISNULL(S.{context.Request["庫區"]}庫存數, 0) > 0 ";
+                                sqlStr += $" AND ISNULL(S.{dic["庫區"]}庫存數, 0) > 0 ";
                             }
                             break;
                         default:
                             sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE @" + form + " + '%'";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                     }
                 }
@@ -347,7 +342,7 @@ namespace Ivan_Service
 
             sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
 
-            dt = GetDataTableWithLog(sqlStr);
+            dt = GetDataTable(sqlStr);
             return dt;
         }
 
@@ -356,7 +351,7 @@ namespace Ivan_Service
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTableForMutiInsert()
+        public DataTable SearchTableForMutiInsert(Dictionary<string, string> dic)
         {
             DataTable dt = new DataTable();
             string sqlStr = "";
@@ -390,30 +385,30 @@ namespace Ivan_Service
                          ";
 
             //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
-            foreach (string form in context.Request.Form)
+            foreach (string form in dic.Keys)
             {
-                if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type")
+                if (!string.IsNullOrEmpty(dic[form]) && form != "Account")
                 {
-                    string debug = context.Request[form];
+                    string debug = dic[form];
                     switch (form)
                     {
                         case "產品說明":
                         case "廠商簡稱":
                             sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE '%' + @" + form + " + '%' ";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                         case "庫區":
                             sqlStr += " AND ISNULL(S.{庫區}庫存數,0) <> 0";
-                            sqlStr = sqlStr.Replace("{庫區}", context.Request[form]);
-                            this.SetParameters(form, context.Request[form]);
+                            sqlStr = sqlStr.Replace("{庫區}", dic[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                         case "庫位":
-                            sqlStr += " AND ISNULL(S.[" + context.Request["倉位"] + "庫位],'') LIKE '%' + @" + form + " + '%' ";
-                            this.SetParameters(form, context.Request[form]);
+                            sqlStr += " AND ISNULL(S.[" + dic["倉位"] + "庫位],'') LIKE '%' + @" + form + " + '%' ";
+                            this.SetParameters(form, dic[form]);
                             break;
                         default:
                             sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE @" + form + " + '%'";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                     }
                 }
@@ -421,7 +416,7 @@ namespace Ivan_Service
 
             sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
 
-            dt = GetDataTableWithLog(sqlStr);
+            dt = GetDataTable(sqlStr);
             return dt;
         }
 
@@ -430,7 +425,7 @@ namespace Ivan_Service
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTableForSample()
+        public DataTable SearchTableForSample(Dictionary<string, string> dic)
         {
             DataTable dt = new DataTable();
             string sqlStr = "";
@@ -453,11 +448,11 @@ namespace Ivan_Service
                                       ,CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = A.序號),0) AS BIT) [Has_IMG]
 					   FROM SUPLU A ";
 
-            foreach (string form in context.Request.Form)
+            foreach (string form in dic.Keys)
             {
-                if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type" && form != "DATA_SOURCE")
+                if (!string.IsNullOrEmpty(dic[form]) && form != "Account" && form != "DATA_SOURCE")
                 {
-                    string debug = context.Request[form];
+                    string debug = dic[form];
                     switch (form)
                     {
                         case "點收日期_S":
@@ -483,43 +478,43 @@ namespace Ivan_Service
 
             sqlStr += "WHERE 1=1";
             //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
-            foreach (string form in context.Request.Form)
+            foreach (string form in dic.Keys)
             {
-                if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type" && form != "DATA_SOURCE")
+                if (!string.IsNullOrEmpty(dic[form]) && form != "Account" && form != "DATA_SOURCE")
                 {
-                    string debug = context.Request[form];
+                    string debug = dic[form];
                     switch (form)
                     {
                         case "點收日期_S":
                             sqlStr += " AND CONVERT(DATE,R.[點收日期]) >= @點收日期_S";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                         case "點收日期_E":
                             sqlStr += " AND CONVERT(DATE,R.[點收日期]) <= @點收日期_E";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                         case "採購單號":
                         case "點收批號":
                             sqlStr += " AND ISNULL(R.[" + form + "],'') LIKE @" + form + " + '%'";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                         case "訂單號碼":
                             sqlStr += " AND ISNULL(ST.[" + form + "],'') LIKE @" + form + " + '%'";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                         case "廠商簡稱":
                             sqlStr += " AND ISNULL(A.[廠商簡稱],'') LIKE '%' + @廠商簡稱 + '%'";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                         default:
                             sqlStr += " AND ISNULL(A.[" + form + "],'') LIKE @" + form + " + '%'";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                     }
                 }
             }
 
-            dt = GetDataTableWithLog(sqlStr);
+            dt = GetDataTable(sqlStr);
             return dt;
         }
 
@@ -528,7 +523,7 @@ namespace Ivan_Service
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTableForStore()
+        public DataTable SearchTableForStore(Dictionary<string, string> dic)
         {
             DataTable dt = new DataTable();
             string sqlStr = "";
@@ -605,66 +600,66 @@ namespace Ivan_Service
                          ";
 
             //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
-            foreach (string form in context.Request.Form)
+            foreach (string form in dic.Keys)
             {
-                if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type")
+                if (!string.IsNullOrEmpty(dic[form]) && form != "Account")
                 {
                     switch (form)
                     {
                         case "庫存足夠":
-                            sqlStr += "內湖".Equals(context.Request["門市"]) ? " AND ISNULL(S.內湖庫存數,0) > 0 " : $" AND ISNULL(S.大貨庫存數,0) > IsNull(STK.分配,0)";
+                            sqlStr += "內湖".Equals(dic["門市"]) ? " AND ISNULL(S.內湖庫存數,0) > 0 " : $" AND ISNULL(S.大貨庫存數,0) > IsNull(STK.分配,0)";
                             break;
                         case "庫待不足":
-                            sqlStr += $" AND ISNULL({context.Request["門市"]}庫存數,0) + ISNULL({context.Request["門市"]}待入,0) < ISNULL({context.Request["門市"]}安全數,0) ";
+                            sqlStr += $" AND ISNULL({dic["門市"]}庫存數,0) + ISNULL({dic["門市"]}待入,0) < ISNULL({dic["門市"]}安全數,0) ";
                             break;
                         case "庫存狀態":
-                            switch (context.Request[form])
+                            switch (dic[form])
                             {
                                 case "50":
-                                    sqlStr += $" AND ISNULL(S.{context.Request["門市"]}安全數,0) * 0.5 > ISNULL(S.{context.Request["門市"]}庫存數,0) ";
+                                    sqlStr += $" AND ISNULL(S.{dic["門市"]}安全數,0) * 0.5 > ISNULL(S.{dic["門市"]}庫存數,0) ";
                                     break;
                                 case "20":
-                                    sqlStr += $" AND ISNULL(S.{context.Request["門市"]}安全數,0) * 0.2 > ISNULL(S.{context.Request["門市"]}庫存數,0) ";
+                                    sqlStr += $" AND ISNULL(S.{dic["門市"]}安全數,0) * 0.2 > ISNULL(S.{dic["門市"]}庫存數,0) ";
                                     break;
                                 case "建議採購":
-                                    sqlStr += $" AND ISNULL(S.{context.Request["門市"]}安全數,0) > ISNULL(S.{context.Request["門市"]}庫存數,0) ";
+                                    sqlStr += $" AND ISNULL(S.{dic["門市"]}安全數,0) > ISNULL(S.{dic["門市"]}庫存數,0) ";
                                     break;
                                 default:
-                                    sqlStr += $" AND ISNULL(S.{context.Request["門市"]}庫存數,0) > 0 ";
+                                    sqlStr += $" AND ISNULL(S.{dic["門市"]}庫存數,0) > 0 ";
                                     break;
                             }
                             break;
                         case "廠商簡稱":
                             sqlStr += " AND ISNULL(S.[廠商簡稱],'') LIKE '%' + @廠商簡稱 + '%'";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                         case "安全數":
-                            sqlStr += $" AND ISNULL(S.{context.Request["門市"]}安全數,0) > 1 ";
-                            this.SetParameters(form, context.Request[form]);
+                            sqlStr += $" AND ISNULL(S.{dic["門市"]}安全數,0) > 1 ";
+                            this.SetParameters(form, dic[form]);
                             break;
                         case "袋子吊卡":
                             sqlStr += " AND (ISNULL(S.寄送袋子,'') != '' OR ISNULL(S.寄送吊卡,'') !='' OR ISNULL(S.自備袋子,0) != '' OR IsNull(S.自備吊卡,0) != '' ) ";
                             break;
                         case "門市":
-                            sqlStr = sqlStr.Replace("{門市}", context.Request["門市"]);
+                            sqlStr = sqlStr.Replace("{門市}", dic["門市"]);
                             break;
                         case "庫區":
-                            sqlStr = sqlStr.Replace("{庫區}", context.Request["庫區"]);
+                            sqlStr = sqlStr.Replace("{庫區}", dic["庫區"]);
                             break;
                         case "產品分類":
                             sqlStr += " AND ISNULL(B.[" + form + "],'') LIKE @" + form + " + '%'";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                         default:
                             sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE @" + form + " + '%'";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                     }
                 }
             }
 
             sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
-            dt = GetDataTableWithLog(sqlStr);
+            dt = GetDataTable(sqlStr);
             return dt;
         }
 
@@ -673,7 +668,7 @@ namespace Ivan_Service
         /// UPDATE Suplu 多筆SEQ 
         /// </summary>
         /// <returns></returns>
-        public int UpdateSuplu()
+        public int UpdateSuplu(Dictionary<string, string> dic)
         {
             string sqlStr = @"      UPDATE [dbo].[suplu]
                                        SET 更新日期 = GETDATE()
@@ -681,21 +676,21 @@ namespace Ivan_Service
                                     ";
 
 
-            string[] seqArray = context.Request["SEQ[]"].Split(',');
+            string[] seqArray = dic["SEQ[]"].Split(',');
             int res = 0;
             this.SetTran();
             for (int cnt = 0; cnt < seqArray.Length; cnt++)
             {
                 this.ClearParameter();
                 string otherStr = "";
-                foreach (string form in context.Request.Form)
+                foreach (string form in dic.Keys)
                 {
-                    if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type" && form != "SEQ" && !form.Contains("[]"))
+                    if (!string.IsNullOrEmpty(dic[form]) && form != "Account" && form != "SEQ" && !form.Contains("[]"))
                     {
                         switch (form)
                         {
                             default:
-                                this.SetParameters(form, context.Request[form]);
+                                this.SetParameters(form, dic[form]);
                                 otherStr += " ," + form + " = @" + form;
                                 break;
                         }
@@ -704,10 +699,10 @@ namespace Ivan_Service
                 otherStr += " WHERE [序號] = @SEQ ";
                
                 this.SetParameters("SEQ", seqArray[cnt]);
-                this.SetParameters("UPD_USER", context.Session["Account"] ?? "IVAN10");
+                this.SetParameters("UPD_USER", dic["Account"] ?? "IVAN10");
                 res += Execute(sqlStr + otherStr);
             }
-            this.TranCommitWithLog();
+            this.TranCommit();
 
             return res;
         }

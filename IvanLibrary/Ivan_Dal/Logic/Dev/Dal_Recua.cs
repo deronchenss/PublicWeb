@@ -1,20 +1,15 @@
-﻿using System.Data;
-using System.Web;
+﻿using System.Collections.Generic;
+using System.Data;
 
-namespace Ivan_Service
+namespace Ivan_Dal
 {
-    public class Dal_Recua : LogicBase
+    public class Dal_Recua : DataOperator
     {
-        public Dal_Recua(HttpContext _context)
-        {
-            context = _context;
-        }
-
         /// <summary>
         /// 樣品點收維護 查詢 Return DataTable
         /// </summary>
         /// <returns></returns>
-        public DataTable SearchTable()
+        public DataTable SearchTable(Dictionary<string, string> dic)
         {
             DataTable dt = new DataTable();
             string sqlStr = "";
@@ -43,33 +38,33 @@ namespace Ivan_Service
                 WHERE 1=1 ";
 
             //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
-            foreach (string form in context.Request.Form)
+            foreach (string form in dic.Keys)
             {
-                if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type")
+                if (!string.IsNullOrEmpty(dic[form]) && form != "Account")
                 {
-                    string debug = context.Request[form];
+                    string debug = dic[form];
                     switch (form)
                     {
                         case "點收日期_S":
                             sqlStr += " AND CONVERT(DATE,[點收日期]) >= @點收日期_S";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                         case "點收日期_E":
                             sqlStr += " AND CONVERT(DATE,[點收日期]) <= @點收日期_E";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                         case "廠商簡稱":
                             sqlStr += " AND ISNULL(RA.[廠商簡稱],'') LIKE '%' + @廠商簡稱 + '%'";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                         default:
                             sqlStr += " AND ISNULL(RA.[" + form + "],'') LIKE @" + form + " + '%'";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                     }
                 }
             }
-            dt = GetDataTableWithLog(sqlStr);
+            dt = GetDataTable(sqlStr);
             return dt;
         }
 
@@ -77,7 +72,7 @@ namespace Ivan_Service
         /// 寫入點收 TABLE 
         /// </summary>
         /// <returns></returns>
-        public int InsertRecua()
+        public int InsertRecua(Dictionary<string, string> dic)
         {
             int res = 0;
             string sqlStr = @"      DECLARE @MAX_SEQ int; 
@@ -204,15 +199,15 @@ namespace Ivan_Service
                                     WHERE 頤坊型號 = @IVAN_TYPE
                                     AND 廠商編號 = @FACT_NO ";
 
-            string[] seqArray = context.Request["SEQ[]"].Split(',');
-            string[] chkCntArr = context.Request["CHK_CNT[]"].Split(',');
-            string[] netWeiArray = context.Request["NET_WEIGHT[]"].Split(',');
-            string[] weiArray = context.Request["WEIGHT[]"].Split(',');
-            string[] lenArr = context.Request["LEN[]"].Split(',');
-            string[] widthArray = context.Request["WIDTH[]"].Split(',');
-            string[] heightArr = context.Request["HEIGHT[]"].Split(',');
-            string[] ivanType = context.Request["IVAN_TYPE[]"].Split(',');
-            string[] factNo = context.Request["FACT_NO[]"].Split(',');
+            string[] seqArray = dic["SEQ[]"].Split(',');
+            string[] chkCntArr = dic["CHK_CNT[]"].Split(',');
+            string[] netWeiArray = dic["NET_WEIGHT[]"].Split(',');
+            string[] weiArray = dic["WEIGHT[]"].Split(',');
+            string[] lenArr = dic["LEN[]"].Split(',');
+            string[] widthArray = dic["WIDTH[]"].Split(',');
+            string[] heightArr = dic["HEIGHT[]"].Split(',');
+            string[] ivanType = dic["IVAN_TYPE[]"].Split(',');
+            string[] factNo = dic["FACT_NO[]"].Split(',');
 
             this.SetTran();
             for (int cnt = 0; cnt < seqArray.Length; cnt++)
@@ -220,10 +215,10 @@ namespace Ivan_Service
                 this.ClearParameter();
                 this.SetParameters("SEQ", seqArray[cnt]);
                 this.SetParameters("CHK_CNT", chkCntArr[cnt]);
-                this.SetParameters("CHK_BATCH_NO", context.Request["CHK_BATCH_NO"]);
-                this.SetParameters("TRANSFER_NO", context.Request["TRANSFER_NO"]);
-                this.SetParameters("CHK_DATE", context.Request["CHK_DATE"]);
-                this.SetParameters("TRANSFER_S_NAME", context.Request["TRANSFER_S_NAME"]);
+                this.SetParameters("CHK_BATCH_NO", dic["CHK_BATCH_NO"]);
+                this.SetParameters("TRANSFER_NO", dic["TRANSFER_NO"]);
+                this.SetParameters("CHK_DATE", dic["CHK_DATE"]);
+                this.SetParameters("TRANSFER_S_NAME", dic["TRANSFER_S_NAME"]);
                 this.SetParameters("UPD_USER", "IVAN10");
                 this.SetParameters("NET_WEI", string.IsNullOrEmpty(netWeiArray[cnt]) ? "0" : netWeiArray[cnt]);
                 this.SetParameters("WEI", string.IsNullOrEmpty(weiArray[cnt]) ? "0" : weiArray[cnt]);
@@ -234,7 +229,7 @@ namespace Ivan_Service
                 this.SetParameters("FACT_NO", factNo[cnt]);
                 Execute(sqlStr);
             }
-            this.TranCommitWithLog();
+            this.TranCommit();
             return res;
         }
 
@@ -242,7 +237,7 @@ namespace Ivan_Service
         /// 刪除點收 TABLE 
         /// </summary>
         /// <returns></returns>
-        public int DeleteRecua()
+        public int DeleteRecua(Dictionary<string, string> dic)
         {
             int res = 0;
             string sqlStr = @"      DELETE FROM RECUA 
@@ -266,11 +261,11 @@ namespace Ivan_Service
                                     AND SOURCE_SEQ = @SEQ
                                      ";
 
-            this.SetParameters("SEQ", context.Request["SEQ"]);
-            this.SetParameters("UPD_USER", "IVAN10");
+            this.SetParameters("SEQ", dic["SEQ"]);
+            this.SetParameters("UPD_USER", dic["Account"]);
 
             this.SetTran();
-            ExecuteWithLog(sqlStr);
+            Execute(sqlStr);
             this.TranCommit();
             return res;
         }

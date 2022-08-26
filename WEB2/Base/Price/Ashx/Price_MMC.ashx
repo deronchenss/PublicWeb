@@ -24,7 +24,7 @@ public class Price_MMC : IHttpHandler, IRequiresSessionState
             DataTable dt = new DataTable();
             try
             {
-                var Price = new Price(context);
+                var Price = new Price();
                 switch (context.Request["Call_Type"])
                 {
                     case "Price_MMC_Search":

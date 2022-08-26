@@ -951,4 +951,7 @@
   <data name="Store_Sale" xml:space="preserve">
     <value>Domestic sales</value>
   </data>
+  <data name="Write_Off" xml:space="preserve">
+    <value>Write Off</value>
+  </data>
 </root>

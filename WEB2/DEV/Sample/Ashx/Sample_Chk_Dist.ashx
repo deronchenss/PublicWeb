@@ -9,15 +9,14 @@ using System.Configuration;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using Ivan_Service;
+using Ivan_Log;
 
 public class Sample_Chk_Dist : IHttpHandler, IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
     {
-        Dal_Suplu dalSuplu = new Dal_Suplu(context);
-        Dal_Paku2 dalPaku2 = new Dal_Paku2(context);
-        DataTable dt = new DataTable();
-        int result = 0;
+        SampleService service = new SampleService();
+        string result = "";
         if (!string.IsNullOrEmpty(context.Request["Call_Type"]))
         {
             try
@@ -25,24 +24,21 @@ public class Sample_Chk_Dist : IHttpHandler, IRequiresSessionState
                 switch (context.Request["Call_Type"])
                 {
                     case "SEARCH":
-                        dt = dalSuplu.SearchTableForSample();
+                        result = JsonConvert.SerializeObject(service.SampleChkDistSearch(ContextFN.ContextToDictionary(context)));
                         break;
                     case "INSERT_PAKU2":
-                        result = dalPaku2.InsertPaku2();
-
-                        context.Response.StatusCode = 200;
-                        context.Response.Write(result);
-                        context.Response.End();
+                        result = service.SampleChkDistExec(ContextFN.ContextToDictionary(context));
                         break;
                 }
 
-                var json = JsonConvert.SerializeObject(dt);
+                Log.InsertLog(context, context.Session["Account"], service.sqlLogModel);
                 context.Response.StatusCode = 200;
                 context.Response.ContentType = "text/json";
-                context.Response.Write(json);
+                context.Response.Write(result);
             }
             catch (SqlException ex)
             {
+                Log.InsertLog(context, context.Session["Account"], service.sqlLogModel, ex.ToString(), false);
                 context.Response.StatusCode = 404;
                 context.Response.Write(ex.Message);
             }

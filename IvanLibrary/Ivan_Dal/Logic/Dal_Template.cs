@@ -1,19 +1,14 @@
 ﻿using Ivan.Models;
-using Ivan_Dal;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Web;
 
-namespace Ivan_Service
+namespace Ivan_Dal
 {
-    public class Dal_Template : LogicBase
+    public class Dal_Template : DataOperator
     {
-        public Dal_Template(HttpContext _context)
-        {
-            context = _context;
-        }
 
         #region 查詢區域
         #endregion

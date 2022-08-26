@@ -1,21 +1,17 @@
-﻿using Ivan_Dal;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Web;
 
-namespace Ivan_Service
+namespace Ivan_Dal
 {
-    public class Dal_Paku2 : LogicBase
+    public class Dal_Paku2 : DataOperator
 	{
-		public Dal_Paku2(HttpContext _context)
-		{
-			context = _context;
-		}
 		/// <summary>
 		/// 樣品備貨 查詢 Return DataTable
 		/// </summary>
-		/// <param name="context"></param>
+		/// <param name="dic"></param>
 		/// <returns></returns>
-		public DataTable SearchTable()
+		public DataTable SearchTable(Dictionary<string, string> dic)
 		{
 			DataTable dt = new DataTable();
 			string sqlStr = "";
@@ -64,45 +60,45 @@ namespace Ivan_Service
 						AND ISNULL(P.備貨數量,0)-ISNULL(TOT.出貨數量,0) > 0 ";
 
 			//共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
-			foreach (string form in context.Request.Form)
+			foreach (string form in dic.Keys)
 			{
-				if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type")
+				if (!string.IsNullOrEmpty(dic[form]) && form != "Account")
 				{
 					switch (form)
 					{
 						case "備貨日期_S":
 							sqlStr += " AND CONVERT(DATE,[備貨日期]) >= @備貨日期_S";
-							this.SetParameters(form, context.Request[form]);
+							this.SetParameters(form, dic[form]);
 							break;
 						case "備貨日期_E":
 							sqlStr += " AND CONVERT(DATE,[備貨日期]) <= @備貨日期_E";
-							this.SetParameters(form, context.Request[form]);
+							this.SetParameters(form, dic[form]);
 							break;
 						case "廠商簡稱":
 							sqlStr += " AND ISNULL(P.[廠商簡稱],'') LIKE '%' + @廠商簡稱 + '%'";
-							this.SetParameters(form, context.Request[form]);
+							this.SetParameters(form, dic[form]);
 							break;
 						case "客戶簡稱":
 							sqlStr += " AND ISNULL(P.[客戶簡稱],'') LIKE '%' + @客戶簡稱 + '%'";
-							this.SetParameters(form, context.Request[form]);
+							this.SetParameters(form, dic[form]);
 							break;
 						default:
 							sqlStr += " AND ISNULL(P.[" + form + "],'') LIKE @" + form + " + '%'";
-							this.SetParameters(form, context.Request[form]);
+							this.SetParameters(form, dic[form]);
 							break;
 					}
 				}
 			}
-			dt = GetDataTableWithLog(sqlStr);
+			dt = GetDataTable(sqlStr);
 			return dt;
 		}
 
 		/// <summary>
 		/// 寫入準備出貨 TABLE 
 		/// </summary>
-		/// <param name="context"></param>
+		/// <param name="dic"></param>
 		/// <returns></returns>
-		public int InsertPaku2()
+		public int InsertPaku2(Dictionary<string, string> dic)
 		{
 			int res = 0;
 			string sqlStr = @" DECLARE @MAX_SEQ int; 
@@ -219,9 +215,9 @@ namespace Ivan_Service
 						       WHERE 序號 = @SEQ
 						       ";
 
-			string[] seqArray = context.Request["SEQ[]"].Split(',');
-			string[] appCntArray = context.Request["APP_CNT[]"].Split(',');
-			string[] batchNoArray = context.Request["BATCH_NO[]"].Split(',');
+			string[] seqArray = dic["SEQ[]"].Split(',');
+			string[] appCntArray = dic["APP_CNT[]"].Split(',');
+			string[] batchNoArray = dic["BATCH_NO[]"].Split(',');
 
 			this.SetTran();
 			for (int cnt = 0; cnt < seqArray.Length; cnt++)
@@ -230,12 +226,12 @@ namespace Ivan_Service
 				this.SetParameters("SEQ", seqArray[cnt]);
 				this.SetParameters("APP_CNT", appCntArray[cnt]);
 				this.SetParameters("BATCH_NO", batchNoArray[cnt]);
-				this.SetParameters("CUST_NO", context.Request["CUST_NO"]);
-				this.SetParameters("CUST_S_NAME", context.Request["CUST_S_NAME"]);
-				this.SetParameters("USER", "IVAN10");
+				this.SetParameters("CUST_NO", dic["CUST_NO"]);
+				this.SetParameters("CUST_S_NAME", dic["CUST_S_NAME"]);
+				this.SetParameters("USER", dic["Account"]);
 				res = Execute(sqlStr);
 			}
-			this.TranCommitWithLog();
+			this.TranCommit();
 
 			return res;
 		}
@@ -243,9 +239,9 @@ namespace Ivan_Service
 		/// <summary>
 		/// 刪除集貨 TABLE 
 		/// </summary>
-		/// <param name="context"></param>
+		/// <param name="dic"></param>
 		/// <returns></returns>
-		public int DeletePaku2()
+		public int DeletePaku2(Dictionary<string, string> dic)
 		{
 			int res = 0;
 			string sqlStr = @"  DECLARE @ENTER_CNT DECIMAL(18,2)
@@ -342,17 +338,17 @@ namespace Ivan_Service
                                     WHERE P.序號 = @SEQ
 							";
 
-			string[] seqArray = context.Request["SEQ[]"].Split(',');
+			string[] seqArray = dic["SEQ[]"].Split(',');
 
 			this.SetTran();
 			for (int cnt = 0; cnt < seqArray.Length; cnt++)
 			{
 				this.ClearParameter();
 				this.SetParameters("SEQ", seqArray[cnt]);
-				this.SetParameters("UPD_USER", "IVAN10");
+				this.SetParameters("UPD_USER", dic["Account"]);
 				Execute(sqlStr);
 			}
-			this.TranCommitWithLog();
+			this.TranCommit();
 
 			return res;
 		}

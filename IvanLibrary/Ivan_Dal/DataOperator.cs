@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ivan.Models;
+using System;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace Ivan_Dal
 {
-    public class DataOperator
+    public class DataOperator : IDataOperator
     {
         private SqlCommand cmd = new SqlCommand();
         private SqlConnection conn = new SqlConnection();
@@ -15,11 +16,24 @@ namespace Ivan_Dal
         public string connStr = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
         bool isTran = false;
 
+        private SqlLogModel sqlLogModel = new SqlLogModel();
+
         //最後寫入SQL語句 LOG用
+        public SqlLogModel _sqlLogModel 
+        { 
+            get 
+            {
+                sqlLogModel.SQL_TEXT = sqlStr;
+                sqlLogModel.SQL_PARAMETERS = parmStr;
+                return sqlLogModel;
+            } 
+        }
+
         public string sqlStr => cmd.CommandText;
 
         //sqlparameters string 
-        public string parmStr = "";
+        public string parmStr => parmStrTmp;
+        public string parmStrTmp = "";
 
         private void SetConnection()
         {
@@ -54,7 +68,7 @@ namespace Ivan_Dal
         /// </summary>
         public void ClearParameter()
         {
-            parmStr = "";
+            parmStrTmp = "";
             cmd.Parameters.Clear();
         }
 
@@ -65,7 +79,7 @@ namespace Ivan_Dal
         /// <param name="value"></param>
         public void SetParameters(string paramName, object value)
         {
-            parmStr += (paramName + ":" + Convert.ToString(value) + ",");
+            parmStrTmp += (paramName + ":" + Convert.ToString(value) + ",");
             cmd.Parameters.AddWithValue(paramName, value);
         }
 

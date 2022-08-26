@@ -43,30 +43,26 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CrystalDecisions.CrystalReports.Engine, Version=13.0.4000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.ReportSource, Version=13.0.4000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.Shared, Version=13.0.4000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FN\Base\Price.cs" />
+    <Compile Include="CommonFN\ContextFN.cs" />
     <Compile Include="FN\Base\Cost.cs" />
-    <Compile Include="Logic\Code\Dal_Nofile.cs" />
-    <Compile Include="Logic\Dal_Template.cs" />
-    <Compile Include="Logic\Stock\Dal_Stock_Sale.cs" />
-    <Compile Include="Logic\Stock\Dal_Stkio.cs" />
-    <Compile Include="Logic\Base\Dal_Suplu.cs" />
-    <Compile Include="Logic\Code\Dal_Refdata.cs" />
-    <Compile Include="Logic\Dev\Dal_Invu.cs" />
-    <Compile Include="Logic\Dev\Dal_Paku2.cs" />
-    <Compile Include="Logic\Dev\Dal_Paku.cs" />
-    <Compile Include="Logic\Dev\Dal_Recua.cs" />
-    <Compile Include="Logic\Dev\Dal_Pudu.cs" />
-    <Compile Include="Logic\Dev\Dal_Recu.cs" />
-    <Compile Include="Model\Stock\Stkio_Sale.cs" />
-    <Compile Include="Model\Stock\Stkio.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServiceBase\LogicBase.cs" />
+    <Compile Include="ServiceBase\ServiceBase.cs" />
+    <Compile Include="Service\Common\CommonService.cs" />
+    <Compile Include="Service\DEV\QuoteService.cs" />
+    <Compile Include="Service\DEV\SampleService.cs" />
+    <Compile Include="Service\Stock\StockService.cs" />
+    <Compile Include="Service\Store\StoreService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ivan_Dal\Ivan_Dal.csproj">
@@ -77,6 +73,9 @@
       <Project>{8FE623B9-B5C4-4C98-936A-E15A449A5A46}</Project>
       <Name>Ivan_Log</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{C0C07587-41A7-46C8-8FBD-3F9C8EBE2DDC}" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

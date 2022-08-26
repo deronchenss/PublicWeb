@@ -2,7 +2,7 @@
 
 namespace Ivan_Log
 {
-    public class datalog
+    public class Datalog
     {
         /// <summary>
         /// LOG 日期

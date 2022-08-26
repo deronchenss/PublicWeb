@@ -957,4 +957,7 @@
   <data name="Store_Sale" xml:space="preserve">
     <value>內銷</value>
   </data>
+  <data name="Write_Off" xml:space="preserve">
+    <value>核銷</value>
+  </data>
 </root>

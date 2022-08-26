@@ -1,5 +1,4 @@
 ﻿using Ivan.Models;
-using Ivan_Dal;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -7,15 +6,10 @@ using System.Data;
 using System.Text;
 using System.Web;
 
-namespace Ivan_Service
+namespace Ivan_Dal
 {
-    public class Dal_Stock_Sale : LogicBase
+    public class Dal_Stock_Sale : DataOperator
     {
-        public Dal_Stock_Sale(HttpContext _context)
-        {
-            context = _context;
-        }
-
         #region 查詢區域
         #endregion
 
@@ -28,7 +22,7 @@ namespace Ivan_Service
         /// Step4: INSERT stkio_sale
         /// </summary>
         /// <returns></returns>
-        public int MutiInsertStkioSale(List<Stkio_SaleFromStkio> liEntity)
+        public int MutiInsertStkioSale(List<Stkio_SaleFromStkio> liEntity, object account)
         {
             string sqlStr = @"      INSERT INTO [dbo].[stkioh]
 											([序號]
@@ -198,11 +192,11 @@ namespace Ivan_Service
                         SetParameters($"@{property.Name}", property.GetValue(entity));
                     }
                 }
-                this.SetParameters("UPD_USER", context.Session["Account"] ?? "IVAN10");
+                this.SetParameters("UPD_USER", account ?? "IVAN10");
                 res += Execute(sqlStr);
             }
             //Log一次寫
-            this.TranCommitWithLog();
+            this.TranCommit();
             return res;
         }
         #endregion

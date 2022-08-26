@@ -1,22 +1,17 @@
-﻿using Ivan_Log;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Web;
 
-namespace Ivan_Service
+namespace Ivan_Dal
 {
-    public class Dal_Recu : LogicBase
+    public class Dal_Recu : DataOperator
     {
-        public Dal_Recu(HttpContext _context)
-        {
-            context = _context;
-        }
-
         /// <summary>
         /// 樣品到貨作業 查詢 Return DataTable
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTable()
+        public DataTable SearchTable(Dictionary<string, string> dic)
         {
             DataTable dt = new DataTable();
             string sqlStr = "";
@@ -55,34 +50,34 @@ namespace Ivan_Service
                           WHERE 1=1 ";
 
             //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
-            foreach (string form in context.Request.Form)
+            foreach (string form in dic.Keys)
             {
-                if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type")
+                if (!string.IsNullOrEmpty(dic[form]) && form != "Account")
                 {
-                    string debug = context.Request[form];
+                    string debug = dic[form];
                     switch (form)
                     {
                         case "到貨日期_S":
                             sqlStr += " AND CONVERT(DATE,[到貨日期]) >= @到貨日期_S";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                         case "到貨日期_E":
                             sqlStr += " AND CONVERT(DATE,[到貨日期]) <= @到貨日期_E";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                         case "廠商簡稱":
                             sqlStr += " AND ISNULL(R.[廠商簡稱],'') LIKE '%' + @廠商簡稱 + '%'";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                         default:
                             sqlStr += " AND ISNULL(R.[" + form + "],'') LIKE @" + form + " + '%'";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                     }
                 }
             }
 
-            dt = GetDataTableWithLog(sqlStr);
+            dt = GetDataTable(sqlStr);
             return dt;
         }
 
@@ -90,13 +85,13 @@ namespace Ivan_Service
         /// 寫入到貨 TABLE 
         /// </summary>
         /// <returns></returns>
-        public int InsertRecu()
+        public int InsertRecu(Dictionary<string, string> dic)
         {
             int res = 0;
-            string[] seqArray = context.Request["SEQ[]"].Split(',');
-            string[] invErrArray = context.Request["INVOICE_ERR[]"].Split(',');
-            string[] shipRemarkArray = context.Request["SHIP_ARR_REMARK[]"].Split(',');
-            string[] shipArrCnt = context.Request["ARR_CNT[]"].Split(',');
+            string[] seqArray = dic["SEQ[]"].Split(',');
+            string[] invErrArray = dic["INVOICE_ERR[]"].Split(',');
+            string[] shipRemarkArray = dic["SHIP_ARR_REMARK[]"].Split(',');
+            string[] shipArrCnt = dic["ARR_CNT[]"].Split(',');
             string sqlStr = @" INSERT INTO [dbo].[recu]
                                         ([序號]
                                         ,[PUDU_SEQ]
@@ -163,22 +158,21 @@ namespace Ivan_Service
             this.SetTran();
             for (int cnt = 0; cnt < seqArray.Length; cnt++)
             {
-
                 this.ClearParameter();
                 this.SetParameters("SEQ", seqArray[cnt]);
-                this.SetParameters("SHIP_GO_DATE", context.Request["SHIP_GO_DATE"]);
-                this.SetParameters("SHIP_ARR_DATE", context.Request["SHIP_ARR_DATE"]);
-                this.SetParameters("SHIP_ARR_NO", context.Request["SHIP_ARR_NO"]);
-                this.SetParameters("ORDER_ARR_DATE", context.Request["ORDER_ARR_DATE"]);
-                this.SetParameters("NO_PAY", context.Request["NO_PAY"]);
-                this.SetParameters("INVOICE_TYPE", context.Request["INVOICE_TYPE"]);
-                this.SetParameters("INVOICE_NO", context.Request["INVOICE_NO"]);
+                this.SetParameters("SHIP_GO_DATE", dic["SHIP_GO_DATE"]);
+                this.SetParameters("SHIP_ARR_DATE", dic["SHIP_ARR_DATE"]);
+                this.SetParameters("SHIP_ARR_NO", dic["SHIP_ARR_NO"]);
+                this.SetParameters("ORDER_ARR_DATE", dic["ORDER_ARR_DATE"]);
+                this.SetParameters("NO_PAY", dic["NO_PAY"]);
+                this.SetParameters("INVOICE_TYPE", dic["INVOICE_TYPE"]);
+                this.SetParameters("INVOICE_NO", dic["INVOICE_NO"]);
                 this.SetParameters("INVOICE_ERR", invErrArray[cnt]);
                 this.SetParameters("SHIP_ARR_REMARK", shipRemarkArray[cnt]);
                 this.SetParameters("SHIP_ARR_CNT", shipArrCnt[cnt]);
-                this.SetParameters("UPD_USER", "IVAN10");
+                this.SetParameters("UPD_USER", dic["Account"]);
 
-                if (context.Request["FORCE_CLOSE"] == "true")
+                if (dic["FORCE_CLOSE"] == "true")
                 {
                     sqlStr += @"UPDATE PUDU
                                 SET 強制結案 = 1, 結案 = 1
@@ -189,7 +183,7 @@ namespace Ivan_Service
             }
 
             //後續還有語法，額外紀錄LOG
-            Log.InsertLog(context, context.Session["Account"], sqlStr, parmStr);
+            //Log.InsertLog(context, context.Session["Account"], sqlStr, parmStr);
 
             //根據寫入到貨數量 一次更新結案狀態
             sqlStr = @"UPDATE pudu
@@ -203,7 +197,7 @@ namespace Ivan_Service
                                                         ELSE 1 END <> 0
                                             AND SUM(ISNULL(R.到貨數量,0)) >= pudu.採購數量
                                             AND ISNULL(pudu.結案,0) != 1    )";
-            ExecuteWithLog(sqlStr);
+            Execute(sqlStr);
 
             this.TranCommit();
             return res;
@@ -214,7 +208,7 @@ namespace Ivan_Service
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public int UpdateRecu()
+		public int UpdateRecu(Dictionary<string, string> dic)
         {
             string sql = "";
             string sqlStr = "";
@@ -226,19 +220,19 @@ namespace Ivan_Service
                         WHERE [序號] = @SEQ ";
 
             this.SetParameters("UPD_USER", "IVAN");
-            this.SetParameters("SEQ", context.Request["SEQ"]);
+            this.SetParameters("SEQ", dic["SEQ"]);
 
             //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
-            foreach (string form in context.Request.Form)
+            foreach (string form in dic.Keys)
             {
-                if (form != "Call_Type" && form != "SEQ")
+                if (form != "Account" && form != "SEQ")
                 {
-                    string debug = context.Request[form];
+                    string debug = dic[form];
                     switch (form)
                     {
                         default:
                             sql += " ," + form + " = @" + form;
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                     }
                 }
@@ -247,7 +241,7 @@ namespace Ivan_Service
             sqlStr = string.Format(sqlStr, sql);
 
             this.SetTran();
-            int res = ExecuteWithLog(sqlStr);
+            int res = Execute(sqlStr);
             this.TranCommit();
 
             return res;
@@ -257,18 +251,18 @@ namespace Ivan_Service
         /// 刪除RECU 單筆
         /// </summary>
         /// <returns></returns>
-        public int DeleteRecu()
+        public int DeleteRecu(Dictionary<string, string> dic)
         {
             int res = 0;
             string sqlStr = @"      DELETE FROM RECU
                                     WHERE [序號] = @SEQ
                                      ";
 
-            this.SetParameters("SEQ", context.Request["SEQ"]);
-            this.SetParameters("UPD_USER", "IVAN10");
+            this.SetParameters("SEQ", dic["SEQ"]);
+            this.SetParameters("UPD_USER", dic["Account"]);
 
             this.SetTran();
-            res = ExecuteWithLog(sqlStr);
+            res = Execute(sqlStr);
             this.TranCommit();
             return res;
         }
@@ -278,7 +272,7 @@ namespace Ivan_Service
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public DataTable SampleShippingReport()
+		public DataTable SampleShippingReport(Dictionary<string, string> dic)
         {
             DataTable dt = new DataTable();
             string sqlStr = "";
@@ -301,31 +295,31 @@ namespace Ivan_Service
                           INNER JOIN RECU R ON P.序號=R.PUDU_SEQ 
                           WHERE IsNull(台幣單價,0) > 0   ";
 
-            foreach (string form in context.Request.Form)
+            foreach (string form in dic.Keys)
             {
-                if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type" && form != "RPT_TYPE")
+                if (!string.IsNullOrEmpty(dic[form]) && form != "Account" && form != "RPT_TYPE")
                 {
-                    string debug = context.Request[form];
+                    string debug = dic[form];
                     switch (form)
                     {
                         case "出貨日期_S":
                             sqlStr += " AND CONVERT(DATE,[出貨日期]) >= @出貨日期_S";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                         case "出貨日期_E":
                             sqlStr += " AND CONVERT(DATE,[出貨日期]) <= @出貨日期_E";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                         default:
                             sqlStr += " AND ISNULL(R.[" + form + "],'') LIKE @" + form + " + '%'";
-                            this.SetParameters(form, context.Request[form]);
+                            this.SetParameters(form, dic[form]);
                             break;
                     }
                 }
             }
 
             sqlStr += " GROUP BY P.廠商簡稱,R.出貨日期,R.發票號碼,R.到貨備註, R.發票樣式, 發票異常, P.廠商編號";
-            dt = GetDataTableWithLog(sqlStr);
+            dt = GetDataTable(sqlStr);
             return dt;
         }
     }

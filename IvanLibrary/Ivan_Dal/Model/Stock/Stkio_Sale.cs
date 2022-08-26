@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Ivan.Models
+﻿namespace Ivan.Models
 {
 	/// <summary>
 	/// 多筆寫入 Stkio_Sale From Stkio 需要的參數

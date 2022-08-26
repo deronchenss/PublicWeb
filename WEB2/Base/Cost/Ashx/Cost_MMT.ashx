@@ -13,6 +13,7 @@ using System.IO;
 using System.Web.UI.WebControls;
 using Newtonsoft.Json;
 using Ivan_Service.FN.Base;
+using Ivan_Service;
 
 
 public class Cost_MMT : IHttpHandler, IRequiresSessionState
@@ -24,8 +25,7 @@ public class Cost_MMT : IHttpHandler, IRequiresSessionState
             DataTable dt = new DataTable();
             try
             {
-                var Cost = new Cost(context);
-                //var Cost = new Cost();
+                var Cost = new Cost();
                 switch (context.Request["Call_Type"])
                 {
                     case "Cost_MMT_Search":

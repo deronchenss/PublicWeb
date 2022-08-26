@@ -15,10 +15,8 @@ public class Sample_Chk_MT : IHttpHandler, IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
     {
-        DataTable dt = new DataTable();
-        Dal_Recua dalRecua = new Dal_Recua(context);
-        
-        int result = 0;
+        SampleService service = new SampleService();
+        string result = "";
         if (!string.IsNullOrEmpty(context.Request["Call_Type"]))
         {
             try
@@ -26,24 +24,21 @@ public class Sample_Chk_MT : IHttpHandler, IRequiresSessionState
                 switch (context.Request["Call_Type"])
                 {
                     case "Search_Recua":
-                        dt = dalRecua.SearchTable();
+                        result = JsonConvert.SerializeObject(service.SampleChkMTSearch(ContextFN.ContextToDictionary(context)));
                         break;
                     case "DELETE_RECUA":
-                        result = dalRecua.DeleteRecua();
-
-                        context.Response.StatusCode = 200;
-                        context.Response.Write(result);
-                        context.Response.End();
+                        result = service.SampleChkMTDelete(ContextFN.ContextToDictionary(context));
                         break;
                 }
 
-                var json = JsonConvert.SerializeObject(dt);
+                Log.InsertLog(context, context.Session["Account"], service.sqlLogModel);
                 context.Response.StatusCode = 200;
                 context.Response.ContentType = "text/json";
-                context.Response.Write(json);
+                context.Response.Write(result);
             }
             catch (SqlException ex)
             {
+                Log.InsertLog(context, context.Session["Account"], service.sqlLogModel, ex.ToString(), false);
                 context.Response.StatusCode = 404;
                 context.Response.Write(ex.Message);
             }

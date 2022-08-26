@@ -10,56 +10,41 @@ using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using CrystalDecisions.CrystalReports.Engine;
 using Ivan_Service;
+using Ivan_Log;
 
 public class Sample_MT : IHttpHandler, IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
     {
-        DataTable dt = new DataTable();
-        Dal_Pudu dal = new Dal_Pudu(context);
-
+        SampleService service = new SampleService();
+        string result = "";
         if (!string.IsNullOrEmpty(context.Request["Call_Type"]))
         {
             try
             {
-                int res = 0;
                 switch (context.Request["Call_Type"])
                 {
                     case "Sample_Base":
-                        dt = dal.SearchTableForMT();
+                        result = JsonConvert.SerializeObject(service.SampleMTSearch(ContextFN.ContextToDictionary(context)));
                         break;
                     case "UPD_SAMPLE":
-                        res = dal.UpdatePudu();
-                        context.Response.StatusCode = 200;
-                        context.Response.Write(res);
-                        context.Response.End();
+                        result = service.SampleMTUpdate(ContextFN.ContextToDictionary(context));
                         break;
                     case "INSERT_SAMPLE":
-                        res = dal.InsertPudu();
-                        context.Response.StatusCode = 200;
-                        context.Response.Write(res);
-                        context.Response.End();
+                        result = service.SampleMTInsert(ContextFN.ContextToDictionary(context));
                         break;
                     case "SEQ_PURC_SEQ":
-                        res = dal.UpdateSeq();
-                        context.Response.StatusCode = res != 1 ? 200 : 404;
-                        context.Response.Write(res);
-                        context.Response.End();
+                        result = service.SampleMTUpdateSeq(ContextFN.ContextToDictionary(context));
                         break;
                     case "UPD_RPT_REMARK":
-                        res = dal.UpdateRptRemark();
-                        context.Response.StatusCode = res > 0 ? 200 : 404;
-                        context.Response.Write(res);
-                        context.Response.End();
+                        result = service.SampleMTUpdateRptRemark(ContextFN.ContextToDictionary(context));
                         break;
                     case "UPD_WRITEOFF":
-                        dal.UpdateWriteOff();
-                        context.Response.StatusCode = 200;
-                        context.Response.Write(res);
-                        context.Response.End();
+                        result = service.SampleMTUpdateWriteOff(ContextFN.ContextToDictionary(context));
                         break;
                     case "PRINT_RPT":
                         string rptDir = "~/DEV/Sample/Rpt/Sample_Dev.rpt";
+                        DataTable dt = new DataTable();
                         if(context.Request["WORK_TYPE"] != "3")
                         {
                             switch (context.Request["WORK_TYPE"])
@@ -80,7 +65,8 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                             rptDir = "~/DEV/Sample/Rpt/Sample_Chk.rpt";
                         }
 
-                        dt = dal.SampleMTReport();
+                        //報表型別不同自行處理
+                        dt = service.SampleMTReport(ContextFN.ContextToDictionary(context));
                         if (dt != null && dt.Rows.Count > 0)
                         {
                             ReportDocument rptDoc = new ReportDocument();
@@ -108,12 +94,14 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                         break;
                 }
 
-                var json = JsonConvert.SerializeObject(dt);
+                Log.InsertLog(context, context.Session["Account"], service.sqlLogModel);
+                context.Response.StatusCode = 200;
                 context.Response.ContentType = "text/json";
-                context.Response.Write(json);
+                context.Response.Write(result);
             }
             catch (SqlException ex)
             {
+                Log.InsertLog(context, context.Session["Account"], service.sqlLogModel, ex.ToString(), false);
                 context.Response.StatusCode = 404;
                 context.Response.Write(ex.Message);
             }

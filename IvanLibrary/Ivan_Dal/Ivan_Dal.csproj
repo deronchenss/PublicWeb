@@ -52,6 +52,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataOperator.cs" />
+    <Compile Include="Interface\IDataOperator.cs" />
+    <Compile Include="Logic\Base\Dal_Suplu.cs" />
+    <Compile Include="Logic\Code\Dal_Nofile.cs" />
+    <Compile Include="Logic\Code\Dal_Refdata.cs" />
+    <Compile Include="Logic\Dal_Template.cs" />
+    <Compile Include="Logic\Dev\Dal_Invu.cs" />
+    <Compile Include="Logic\Dev\Dal_Paku.cs" />
+    <Compile Include="Logic\Dev\Dal_Paku2.cs" />
+    <Compile Include="Logic\Dev\Dal_Pudu.cs" />
+    <Compile Include="Logic\Dev\Dal_Recu.cs" />
+    <Compile Include="Logic\Dev\Dal_Recua.cs" />
+    <Compile Include="Logic\Stock\Dal_Stkio.cs" />
+    <Compile Include="Logic\Stock\Dal_Stock_Sale.cs" />
+    <Compile Include="Model\Log\SqlLogModel.cs" />
+    <Compile Include="Model\Stock\Stkio.cs" />
+    <Compile Include="Model\Stock\Stkio_Sale.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

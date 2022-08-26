@@ -10,16 +10,14 @@ using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using CrystalDecisions.CrystalReports.Engine;
 using Ivan_Service;
+using Ivan_Log;
 
 public class Sample_Chk : IHttpHandler, IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
     {
-        DataTable dt = new DataTable();
-        Dal_Pudu dalPudu = new Dal_Pudu(context);
-        Dal_Recua dalRecua = new Dal_Recua(context);
-        
-        int result = 0;
+        SampleService service = new SampleService();
+        string result = "";
         if (!string.IsNullOrEmpty(context.Request["Call_Type"]))
         {
             try
@@ -27,24 +25,21 @@ public class Sample_Chk : IHttpHandler, IRequiresSessionState
                 switch (context.Request["Call_Type"])
                 {
                     case "SEARCH_PUDU":
-                        dt = dalPudu.SearchTable();
+                        result = JsonConvert.SerializeObject(service.SampleChkSearch(ContextFN.ContextToDictionary(context)));
                         break;
                     case "INSERT_RECUA":
-                        result = dalRecua.InsertRecua();
-
-                        context.Response.StatusCode = 200;
-                        context.Response.Write(result);
-                        context.Response.End();
+                        result = service.SampleChkExec(ContextFN.ContextToDictionary(context));
                         break;
                 }
 
-                var json = JsonConvert.SerializeObject(dt);
+                Log.InsertLog(context, context.Session["Account"], service.sqlLogModel);
                 context.Response.StatusCode = 200;
                 context.Response.ContentType = "text/json";
-                context.Response.Write(json);
+                context.Response.Write(result);
             }
             catch (SqlException ex)
             {
+                Log.InsertLog(context, context.Session["Account"], service.sqlLogModel, ex.ToString(), false);
                 context.Response.StatusCode = 404;
                 context.Response.Write(ex.Message);
             }

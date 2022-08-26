@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace Ivan.Models
 {
@@ -96,6 +95,8 @@ namespace Ivan.Models
 		public string CUST_S_NAME { get; set; }
 		//REMARK
 		public string REMARK { get; set; }
+		//更新人員
+		public string UPD_USER { get; set; }
 	}
 }
 

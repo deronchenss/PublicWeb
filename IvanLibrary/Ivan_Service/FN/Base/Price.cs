@@ -1,15 +1,11 @@
-﻿using System.Data;
+﻿using Ivan_Dal;
+using System.Data;
 using System.Web;
 
 namespace Ivan_Service.FN.Base
 {
-    public class Price : LogicBase
+    public class Price : DataOperator
     {
-        public Price(HttpContext _context)
-        {
-            context = _context;
-        }
-
         DataTable dt = new DataTable();
         string SQL_STR = "";
 
@@ -38,7 +34,7 @@ namespace Ivan_Service.FN.Base
             {
                 this.SetParameters(Request_DT.Columns[i].ColumnName, Request_DT.Rows[0][i]);
             }
-            dt = GetDataTableWithLog(SQL_STR);
+            dt = GetDataTable(SQL_STR);
             return dt;
         }
 
@@ -75,7 +71,7 @@ namespace Ivan_Service.FN.Base
                         this.SetParameters(Request_DT.Columns[j].ColumnName, Request_DT.Rows[i][j]);
                     }
                     this.SetTran();
-                    int TT = ExecuteWithLog(SQL_STR);
+                    int TT = Execute(SQL_STR);
                     this.TranCommit();
                 }
             }

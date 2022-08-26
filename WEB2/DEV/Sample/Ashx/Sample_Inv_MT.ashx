@@ -10,15 +10,14 @@ using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using CrystalDecisions.CrystalReports.Engine;
 using Ivan_Service;
+using Ivan_Log;
 
 public class Sample_Inv_MT : IHttpHandler, IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
     {
-        DataTable dt = new DataTable();
-        Dal_Invu dalInvu = new Dal_Invu(context);
-
-        int result = 0;
+        SampleService service = new SampleService();
+        string result = "";
         if (!string.IsNullOrEmpty(context.Request["Call_Type"]))
         {
             try
@@ -26,37 +25,31 @@ public class Sample_Inv_MT : IHttpHandler, IRequiresSessionState
                 switch (context.Request["Call_Type"])
                 {
                     case "Search":
-                        dt = dalInvu.SearchTable();
+                        result = JsonConvert.SerializeObject(service.SampleInvMTSearch(ContextFN.ContextToDictionary(context)));
                         break;
                     case "INSERT":
-                        string invoiceNo = dalInvu.InsertInvu();
-
-                        context.Response.StatusCode = 200;
-                        context.Response.Write(invoiceNo);
-                        context.Response.End();
+                        result = service.SampleInvMTInsert(ContextFN.ContextToDictionary(context));
                         break;
                     case "UPD":
-                        result = dalInvu.UpdateInvu();
-
-                        context.Response.StatusCode = 200;
-                        context.Response.Write(result);
-                        context.Response.End();
+                        result = service.SampleInvMTUpdate(ContextFN.ContextToDictionary(context));
                         break;
                     case "PRINT_RPT":
                         string rptDir = "~/DEV/Sample/Rpt/Sample_Invoice.rpt";
-
+                        DataTable dt = new DataTable();
                         switch(context.Request["RPT_TYPE"])
                         {
                             case "0":
                                 rptDir = "~/DEV/Sample/Rpt/Sample_Invoice.rpt";
-                                dt = dalInvu.SampleIVReport();
+                                dt = service.SampleInvMTReportIV(ContextFN.ContextToDictionary(context));
                                 break;
                             case "1":
                                 rptDir = "~/DEV/Sample/Rpt/Sample_IV_Packing.rpt";
-                                dt = dalInvu.SamplePackingReport();
+                                dt = service.SampleInvMTReportPacking(ContextFN.ContextToDictionary(context));
                                 break;
                         }
-                            
+
+                        //型別不同自行處理
+                        Log.InsertLog(context, context.Session["Account"], service.sqlLogModel);
                         if (dt != null && dt.Rows.Count > 0)
                         {
                             ReportDocument rptDoc = new ReportDocument();
@@ -84,13 +77,14 @@ public class Sample_Inv_MT : IHttpHandler, IRequiresSessionState
                         break;
                 }
 
-                var json = JsonConvert.SerializeObject(dt);
+                Log.InsertLog(context, context.Session["Account"], service.sqlLogModel);
                 context.Response.StatusCode = 200;
                 context.Response.ContentType = "text/json";
-                context.Response.Write(json);
+                context.Response.Write(result);
             }
             catch (SqlException ex)
             {
+                Log.InsertLog(context, context.Session["Account"], service.sqlLogModel, ex.ToString(), false);
                 context.Response.StatusCode = 404;
                 context.Response.Write(ex.Message);
             }

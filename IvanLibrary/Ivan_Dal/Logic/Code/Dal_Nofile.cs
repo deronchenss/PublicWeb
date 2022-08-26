@@ -1,21 +1,16 @@
 ﻿using System.Data;
 using System.Web;
 
-namespace Ivan_Service
+namespace Ivan_Dal
 {
-    public class Dal_Nofile : LogicBase
+    public class Dal_Nofile : DataOperator
     {
-        public Dal_Nofile(HttpContext _context)
-        {
-            context = _context;
-        }
-
         /// <summary>
         /// 組新的 NO BY 單據
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public string SearchTable()
+        public string SearchTable(string code, object user)
         {
             DataTable dt = new DataTable();
             string sqlStr = "";
@@ -36,10 +31,10 @@ namespace Ivan_Service
                         SELECT @NEW_NO NEW_NO
                         ";
 
-            this.SetParameters("CODE", context.Request["CODE"]);
-            this.SetParameters("USER", context.Session["Account"] ?? "IVAN10");
+            this.SetParameters("CODE", code);
+            this.SetParameters("USER", user ?? "IVAN10");
             this.SetTran();
-            dt = GetDataTableWithLog(sqlStr);
+            dt = GetDataTable(sqlStr);
             this.TranCommit();
             return dt.Rows[0]["NEW_NO"] == null ? "" : dt.Rows[0]["NEW_NO"].ToString();
         }

@@ -1,26 +1,18 @@
-﻿using Ivan_Dal;
-using Ivan_Log;
+﻿using System.Collections.Generic;
 using System.Data;
-using System.Web;
 
-namespace Ivan_Service
+namespace Ivan_Dal
 {
-    public class Dal_Paku : LogicBase
+    public class Dal_Paku : DataOperator
 	{
-		public Dal_Paku(HttpContext _context)
-		{
-			context = _context;
-		}
-
 		/// <summary>
 		/// 樣品備貨維護 查詢 Return DataTable
 		/// </summary>
 		/// <returns></returns>
-		public DataTable SearchTable()
+		public DataTable SearchTable(Dictionary<string, string> dic)
 		{
 			DataTable dt = new DataTable();
 			string sqlStr = "";
-
 			sqlStr = @" 
 						WITH TOT (INVOICE ,箱號, 淨重,毛重)
 						AS
@@ -73,36 +65,36 @@ namespace Ivan_Service
 						  WHERE ISNULL(P.已刪除,0) = 0 ";
 
 			//共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
-			foreach (string form in context.Request.Form)
+			foreach (string form in dic.Keys)
 			{
-				if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type")
+				if (!string.IsNullOrEmpty(dic[form]) && form != "Account")
 				{
 					switch (form)
 					{
 						case "更新日期_S":
 							sqlStr += " AND CONVERT(DATE,P.[更新日期]) >= @更新日期_S";
-							this.SetParameters(form, context.Request[form]);
+							this.SetParameters(form, dic[form]);
 							break;
 						case "更新日期_E":
 							sqlStr += " AND CONVERT(DATE,P.[更新日期]) <= @更新日期_E";
-							this.SetParameters(form, context.Request[form]);
+							this.SetParameters(form, dic[form]);
 							break;
 						case "廠商簡稱":
 							sqlStr += " AND ISNULL(P.[廠商簡稱],'') LIKE '%' + @廠商簡稱 + '%'";
-							this.SetParameters(form, context.Request[form]);
+							this.SetParameters(form, dic[form]);
 							break;
 						case "客戶簡稱":
 							sqlStr += " AND ISNULL(P.[客戶簡稱],'') LIKE '%' + @客戶簡稱 + '%'";
-							this.SetParameters(form, context.Request[form]);
+							this.SetParameters(form, dic[form]);
 							break;
 						default:
 							sqlStr += " AND ISNULL(P.[" + form + "],'') LIKE @" + form + " + '%'";
-							this.SetParameters(form, context.Request[form]);
+							this.SetParameters(form, dic[form]);
 							break;
 					}
 				}
 			}
-			dt = GetDataTableWithLog(sqlStr);
+			dt = GetDataTable(sqlStr);
 			return dt;
 		}
 
@@ -111,7 +103,7 @@ namespace Ivan_Service
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public int InsertPaku()
+		public int InsertPaku(Dictionary<string, string> dic)
 		{
 			int res = 0;
 			string sqlStr = @"   INSERT INTO [dbo].[paku]
@@ -188,9 +180,9 @@ namespace Ivan_Service
 
 									";
 
-			string[] seqArray = context.Request["SEQ[]"].Split(',');
-			string[] freeArr = context.Request["FREE[]"].Split(',');
-			string[] packCntArr = context.Request["PACK_CNT[]"].Split(',');
+			string[] seqArray = dic["SEQ[]"].Split(',');
+			string[] freeArr = dic["FREE[]"].Split(',');
+			string[] packCntArr = dic["PACK_CNT[]"].Split(',');
 
 			this.SetTran();
 			for (int cnt = 0; cnt < seqArray.Length; cnt++)
@@ -199,16 +191,16 @@ namespace Ivan_Service
 				this.SetParameters("SEQ", seqArray[cnt]);
 				this.SetParameters("PACK_CNT", packCntArr[cnt]);
 				this.SetParameters("FREE", freeArr[cnt]);
-				this.SetParameters("INVOICE", context.Request["INVOICE"]);
-				this.SetParameters("ATTN", context.Request["ATTN"]);
-				this.SetParameters("PACK_NO", context.Request["PACK_NO"]);
-				this.SetParameters("SAMPLE_NO", context.Request["SAMPLE_NO"]);
-				this.SetParameters("UPD_USER", "IVAN10");
+				this.SetParameters("INVOICE", dic["INVOICE"]);
+				this.SetParameters("ATTN", dic["ATTN"]);
+				this.SetParameters("PACK_NO", dic["PACK_NO"]);
+				this.SetParameters("SAMPLE_NO", dic["SAMPLE_NO"]);
+				this.SetParameters("UPD_USER", dic["Account"]);
 				Execute(sqlStr);
 			}
 
 			//後續還有語法，額外紀錄LOG
-			Log.InsertLog(context, context.Session["Account"], sqlStr, parmStr);
+			//Log.InsertLog(context, context.Session["Account"], sqlStr, parmStr);
 
 			//最後更新重量 只更新第一筆
 			sqlStr = @" UPDATE paku
@@ -227,9 +219,9 @@ namespace Ivan_Service
 									WHERE INVOICE = @INVOICE
 									AND 箱號 = @PACK_NO
 									Order By CASE When Substring(paku.箱號,1,1)>='A' Then substring(paku.箱號,1,1)+Right(Space(3)+Substring(Rtrim(paku.箱號),2,3),3) Else Right(Space(4)+Rtrim(paku.箱號),4) End,paku.淨重 DESC,paku.頤坊型號) ";
-			this.SetParameters("NET_WEIGHT", context.Request["NET_WEIGHT"]);
-			this.SetParameters("WEIGHT", context.Request["WEIGHT"]);
-			ExecuteWithLog(sqlStr);
+			this.SetParameters("NET_WEIGHT", dic["NET_WEIGHT"]);
+			this.SetParameters("WEIGHT", dic["WEIGHT"]);
+			Execute(sqlStr);
 
 			//更新發票
 			sqlStr = @" UPDATE invu
@@ -237,7 +229,7 @@ namespace Ivan_Service
 						WHERE INVOICE = @INVOICE
 				     ";
 
-			ExecuteWithLog(sqlStr);
+			Execute(sqlStr);
 
 			this.TranCommit();
 
@@ -249,17 +241,17 @@ namespace Ivan_Service
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public int UpdatePaku()
+		public int UpdatePaku(Dictionary<string, string> dic)
 		{
 			string sqlStr = @"      UPDATE [dbo].[paku]
                                        SET 更新日期 = GETDATE()
 										  ,更新人員 = @UPD_USER
                                     ";
 
-			foreach (string form in context.Request.Form)
+			foreach (string form in dic.Keys)
 			{
-				this.SetParameters(form, context.Request[form]); //因後續還有UPDATE重量語法，故所有變數皆須設定
-				if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type" && form != "SEQ")
+				this.SetParameters(form, dic[form]); //因後續還有UPDATE重量語法，故所有變數皆須設定
+				if (!string.IsNullOrEmpty(dic[form]) && form != "Account" && form != "SEQ")
 				{
 					switch (form)
 					{
@@ -282,8 +274,8 @@ namespace Ivan_Service
 						WHERE 序號 = @PAKU2_SEQ";
 			
 			this.SetTran();
-			this.SetParameters("UPD_USER", "IVAN10");
-			int res = ExecuteWithLog(sqlStr);
+			this.SetParameters("UPD_USER", dic["Account"]);
+			int res = Execute(sqlStr);
 
 			//最後更新重量 只更新第一筆
 			sqlStr = @" UPDATE paku
@@ -302,8 +294,7 @@ namespace Ivan_Service
 									WHERE INVOICE = @INVOICE
 									AND 箱號 = @箱號
 									Order By CASE When Substring(paku.箱號,1,1)>='A' Then substring(paku.箱號,1,1)+Right(Space(3)+Substring(Rtrim(paku.箱號),2,3),3) Else Right(Space(4)+Rtrim(paku.箱號),4) End,paku.淨重 DESC,paku.頤坊型號) ";
-			ExecuteWithLog(sqlStr);
-
+			Execute(sqlStr);
 			this.TranCommit();
 
 			return res;
@@ -314,7 +305,7 @@ namespace Ivan_Service
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public int DeletePaku()
+		public int DeletePaku(Dictionary<string, string> dic)
 		{
 			int res = 0;
 			string sqlStr = @"   UPDATE paku
@@ -334,11 +325,11 @@ namespace Ivan_Service
 
 							";
 
-			this.SetParameters("SEQ", context.Request["SEQ"]);
-			this.SetParameters("UPD_USER", "IVAN10");
+			this.SetParameters("SEQ", dic["SEQ"]);
+			this.SetParameters("UPD_USER", dic["Account"]);
 
 			this.SetTran();
-			ExecuteWithLog(sqlStr);
+			Execute(sqlStr);
 			this.TranCommit();
 
 			return res;

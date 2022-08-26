@@ -1,21 +1,17 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 using System.Web;
 
-namespace Ivan_Service
+namespace Ivan_Dal
 {
-    public class Dal_Invu : LogicBase
+    public class Dal_Invu : DataOperator
 	{
-		public Dal_Invu(HttpContext _context)
-		{
-			context = _context;
-		}
-
 		/// <summary>
 		/// 樣品發票 維護 Return DataTable
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public DataTable SearchTable()
+		public DataTable SearchTable(Dictionary<string, string> dic)
 		{
 			DataTable dt = new DataTable();
 			string sqlStr = "";
@@ -53,41 +49,41 @@ namespace Ivan_Service
 					  WHERE 1=1 ";
 
 			//共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
-			foreach (string form in context.Request.Form)
+			foreach (string form in dic.Keys)
 			{
-				if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type")
+				if (!string.IsNullOrEmpty(dic[form]) && form != "Account")
 				{
 					switch (form)
 					{
 						case "出貨日期_S":
 							sqlStr += " AND CONVERT(DATE,[出貨日期]) >= @出貨日期_S";
-							this.SetParameters(form, context.Request[form]);
+							this.SetParameters(form, dic[form]);
 							break;
 						case "出貨日期_E":
 							sqlStr += " AND CONVERT(DATE,[出貨日期]) <= @出貨日期_E";
-							this.SetParameters(form, context.Request[form]);
+							this.SetParameters(form, dic[form]);
 							break;
 						case "變更日期_S":
 							sqlStr += " AND CONVERT(DATE,[變更日期]) >= @變更日期_S";
-							this.SetParameters(form, context.Request[form]);
+							this.SetParameters(form, dic[form]);
 							break;
 						case "變更日期_E":
 							sqlStr += " AND CONVERT(DATE,[變更日期]) <= @變更日期_E";
-							this.SetParameters(form, context.Request[form]);
+							this.SetParameters(form, dic[form]);
 							break;
 						case "客戶簡稱":
 							sqlStr += " AND ISNULL([客戶簡稱],'') LIKE '%' + @客戶簡稱 + '%'";
-							this.SetParameters(form, context.Request[form]);
+							this.SetParameters(form, dic[form]);
 							break;
 						default:
 							sqlStr += " AND ISNULL([" + form + "],'') LIKE @" + form + " + '%'";
-							this.SetParameters(form, context.Request[form]);
+							this.SetParameters(form, dic[form]);
 							break;
 					}
 				}
 			}
 
-			dt = GetDataTableWithLog(sqlStr);
+			dt = GetDataTable(sqlStr);
 			return dt;
 		}
 
@@ -96,7 +92,7 @@ namespace Ivan_Service
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public DataTable SearchIV()
+		public DataTable SearchIV(Dictionary<string, string> dic)
 		{
 			DataTable dt = new DataTable();
 			string sqlStr = "";
@@ -105,8 +101,8 @@ namespace Ivan_Service
 						FROM invu 
 						WHERE INVOICE = @INVOICE ";
 
-			this.SetParameters("INVOICE", context.Request["INVOICE"]);
-			dt = GetDataTableWithLog(sqlStr);
+			this.SetParameters("INVOICE", dic["INVOICE"]);
+			dt = GetDataTable(sqlStr);
 			return dt;
 		}
 
@@ -115,7 +111,7 @@ namespace Ivan_Service
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public string InsertInvu()
+		public string InsertInvu(Dictionary<string, string> dic)
 		{
 			string sqlStr = @"      DECLARE @INVOICE_NO nvarchar(20); 
 									SELECT @INVOICE_NO = 字頭 + CONVERT(VARCHAR,年度) + RIGHT(REPLICATE('0', len(號碼長度)) + CONVERT(VARCHAR,號碼 + 1),len(號碼長度))  
@@ -155,10 +151,10 @@ namespace Ivan_Service
 
 			this.SetTran();
 			this.ClearParameter();
-			this.SetParameters("CUST_NO", context.Request["CUST_NO"]);
-			this.SetParameters("CUST_S_NAME", context.Request["CUST_S_NAME"]);
-			this.SetParameters("UPD_USER", "IVAN10");
-			DataTable dt = GetDataTableWithLog(sqlStr);
+			this.SetParameters("CUST_NO", dic["CUST_NO"]);
+			this.SetParameters("CUST_S_NAME", dic["CUST_S_NAME"]);
+			this.SetParameters("UPD_USER", dic["Account"]);
+			DataTable dt = GetDataTable(sqlStr);
 			this.TranCommit();
 
 			return dt.Rows[0]["INVOICE"].ToString();
@@ -169,22 +165,22 @@ namespace Ivan_Service
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public int UpdateInvu()
+		public int UpdateInvu(Dictionary<string, string> dic)
 		{
 			string sqlStr = @"      UPDATE [dbo].[invu]
                                        SET 更新日期 = GETDATE()
 										  ,更新人員 = @UPD_USER
                                     ";
 
-			foreach (string form in context.Request.Form)
+			foreach (string form in dic.Keys)
 			{
-				if (!string.IsNullOrEmpty(context.Request[form]) && form != "Call_Type" && form != "SEQ")
+				if (!string.IsNullOrEmpty(dic[form]) && form != "Account" && form != "SEQ")
 				{
 					switch (form)
 					{
 						default:
 							sqlStr += " ," + form + " = @" + form;
-							this.SetParameters(form, context.Request[form]);
+							this.SetParameters(form, dic[form]);
 							break;
 					}
 				}
@@ -193,9 +189,9 @@ namespace Ivan_Service
 			sqlStr += " WHERE 序號 = @SEQ ";
 
 			this.SetTran();
-			this.SetParameters("SEQ", context.Request["SEQ"]);
-			this.SetParameters("UPD_USER", "IVAN10");
-			int res = ExecuteWithLog(sqlStr);
+			this.SetParameters("SEQ", dic["SEQ"]);
+			this.SetParameters("UPD_USER", dic["Account"]);
+			int res = Execute(sqlStr);
 			this.TranCommit();
 
 			return res;
@@ -206,7 +202,7 @@ namespace Ivan_Service
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public DataTable SampleIVReport()
+		public DataTable SampleIVReport(Dictionary<string, string> dic)
 		{
 			DataTable dt = new DataTable();
 			string sqlStr = "";
@@ -266,8 +262,8 @@ namespace Ivan_Service
 						LEFT JOIN TRF T ON I.運輸編號=T.運輸編號
 						ORDER BY TOT.頤坊型號 ";
 
-			this.SetParameters("INVOICE_NO", context.Request["INVOICE_NO"]);
-			dt = GetDataTableWithLog(sqlStr);
+			this.SetParameters("INVOICE_NO", dic["INVOICE_NO"]);
+			dt = GetDataTable(sqlStr);
 			return dt;
 		}
 
@@ -276,7 +272,7 @@ namespace Ivan_Service
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public DataTable SamplePackingReport()
+		public DataTable SamplePackingReport(Dictionary<string, string> dic)
 		{
 			DataTable dt = new DataTable();
 			string sqlStr = "";
@@ -340,8 +336,8 @@ namespace Ivan_Service
 						Order By CASE When Substring(TOT.箱號,1,1)>='A' Then substring(TOT.箱號,1,1)+Right(Space(3)+Substring(Rtrim(TOT.箱號),2,3),3) Else Right(Space(4)+Rtrim(TOT.箱號),4) End,TOT.淨重 DESC,TOT.頤坊型號
 							";
 
-			this.SetParameters("INVOICE_NO", context.Request["INVOICE_NO"]);
-			dt = GetDataTableWithLog(sqlStr);
+			this.SetParameters("INVOICE_NO", dic["INVOICE_NO"]);
+			dt = GetDataTable(sqlStr);
 			return dt;
 		}
 	}

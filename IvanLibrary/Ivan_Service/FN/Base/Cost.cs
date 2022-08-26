@@ -1,15 +1,10 @@
-﻿using System.Data;
-using System.Web;
+﻿using Ivan_Dal;
+using System.Data;
 
 namespace Ivan_Service.FN.Base
 {
-    public class Cost : LogicBase
+    public class Cost : DataOperator
     {
-        public Cost(HttpContext _context)
-        {
-            context = _context;
-        }
-
         DataTable dt = new DataTable();
         string SQL_STR = "";
 
@@ -59,7 +54,7 @@ namespace Ivan_Service.FN.Base
             //this.SetParameters("LCACD_DS", context.Request["LCACD_DS"]);
             //this.SetParameters("LCACD_DE", context.Request["LCACD_DE"]);
             //this.SetParameters("PI", context.Request["PI"]);
-            dt = GetDataTableWithLog(SQL_STR);
+            dt = GetDataTable(SQL_STR);
             return dt;
         }
 

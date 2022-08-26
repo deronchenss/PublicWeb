@@ -15,8 +15,7 @@ public class Common : IHttpHandler, IRequiresSessionState
     public void ProcessRequest(HttpContext context)
     {
         DataTable dt = new DataTable();
-        Dal_Refdata dalRefData = new Dal_Refdata(context);
-        Dal_Nofile dalNoFile = new Dal_Nofile(context);
+        CommonService service = new CommonService();
 
         if (!string.IsNullOrEmpty(context.Request["Call_Type"]))
         {
@@ -52,10 +51,10 @@ public class Common : IHttpHandler, IRequiresSessionState
 
                                 break;
                             case "GET_DATA_FROM_REFDATA":
-                                dt = dalRefData.SearchTable();
+                                dt = service.GetRefData(context.Request["CODE"]);
                                 break;
                             case "GET_NO_FROM_NOFILE":
-                                string newNo = dalNoFile.SearchTable();
+                                string newNo = service.GetNofileNewNo(context.Request["CODE"], context.Session["Account"]);
                                 context.Response.StatusCode = 200;
                                 context.Response.Write(newNo);
                                 context.Response.End();
