@@ -150,7 +150,7 @@
                                             <ul class="dropdown">
                                                 <li><a href="/Base/Price/Price_MT.aspx" IVM_PERMISSIONS="36">Price<%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
                                                     </a></li>
-                                                <li><a href="/Base/Price/Price_Multiple_Copy.aspx">Price<%=Resources.MP.Speace%><%=Resources.MP.Multiple%><%=Resources.MP.Speace%><%=Resources.MP.Copy%>
+                                                <li><a href="/Base/Price/Price_Multiple_Copy.aspx" IVM_PERMISSIONS="">Price<%=Resources.MP.Speace%><%=Resources.MP.Multiple%><%=Resources.MP.Speace%><%=Resources.MP.Copy%>
                                                     </a></li>
                                             </ul>
                                         </li>
@@ -273,7 +273,7 @@
                                     <a href="#"><%=Resources.MP.More%></a>
                                     <ul class="dropdown">
                                         <li class="has-children">
-                                            <a href="#" ivm_permissions="22"><%=Resources.MP.Language%></a>
+                                            <a href="#"><%=Resources.MP.Language%></a>
                                             <ul class="dropdown">
                                                 <li>
                                                     <a href="#" onclick="document.cookie='Language=';javascript:location.reload();">中文</a>

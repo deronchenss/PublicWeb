@@ -84,8 +84,10 @@
                     datatype: "json",
                     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                     success: function (R) {
-                        var Price_Table_HTML =
-                            '<thead>\
+                        if (R.length > 0) {
+
+                            var Price_Table_HTML =
+                                '<thead>\
                                 <tr>\
                                     <th>' + '<%=Resources.MP.Developing%>' + '</th>\
                                     <th>' + '<%=Resources.MP.Customer_Short_Name%>' + '</th>\
@@ -109,9 +111,9 @@
                                     <th>' + '<%=Resources.MP.Update_Date%>' + '</th>\
                                 </tr>\
                             </thead><tbody>';
-                        $(R).each(function (i) {
-                            Price_Table_HTML +=
-                                '<tr>\
+                            $(R).each(function (i) {
+                                Price_Table_HTML +=
+                                    '<tr>\
                                     <td>' + String(R[i].開發中 ?? "") + '</td>\
                                     <td>' + String(R[i].客戶簡稱 ?? "") + '</td>\
                                     <td>' + String(R[i].頤坊型號 ?? "") + '</td>\
@@ -133,19 +135,23 @@
                                     <td>' + String(R[i].更新人員 ?? "") + '</td>\
                                     <td>' + String(R[i].更新日期 ?? "") + '</td>\
                                 </tr>';
-                        });
-                        Price_Table_HTML += '</tbody>';
-                        $('#PAD_DP_Table').html(Price_Table_HTML);
+                            });
+                            Price_Table_HTML += '</tbody>';
+                            $('#PAD_DP_Table').html(Price_Table_HTML);
 
-                        $('#PAD_DP_Table').css('white-space', 'nowrap');
-                        $('#PAD_DP_Table thead th').css({
-                            'text-align': 'center',
-                            'background-color': 'white',
-                            'position': 'sticky',
-                            'top':'0'
-                        });
+                            $('#PAD_DP_Table').css('white-space', 'nowrap');
+                            $('#PAD_DP_Table thead th').css({
+                                'text-align': 'center',
+                                'background-color': 'white',
+                                'position': 'sticky',
+                                'top': '0'
+                            });
+                            $('#PAD_DP_Table tbody td').css('vertical-align', 'middle');
+                        }
+                        else {
+                            $('#PAD_DP_Table').html('<span style="text-align:center;">無Price</span>');
+                        }
 
-                        $('#PAD_DP_Table tbody td').css('vertical-align', 'middle');
                     }
                 });
             }

@@ -20,8 +20,8 @@
             var Customer_Selector_Control;
             //var Click_tr_IDX;
             document.body.style.overflow = 'hidden';
-            Search_Price();//WD
-            Form_Mode_Change("Search");//WD
+            //Search_Price();//WD
+            //Form_Mode_Change("Search");//WD
 
             $('#SSD_Table_Supplier').on('click', '.SUP_SEL', function () {
                 $('#TB_S_No').val($(this).parent().parent().find('td:nth(2)').text());
@@ -60,11 +60,22 @@
                 Search_Price();
             });
 
-            $('#BT_Copy').on('click', function () {
+            function Check() {
+                var Check_Result = true;
+                var Repeat_IM;
                 if ($('#DNT_TB_C_No').val().trim().length === 0) {
+                    Check_Result = false;
                     alert("請選擇新客戶");
                 }
-                else {
+                if ($('#Table_Exec_Data tbody tr .C_No').filter(function () { return $(this).text() == $('#DNT_TB_C_No').val(); }).length > 0) {
+                    Check_Result = false;
+                    alert('複製對象與新客戶編號相同');
+                }
+                return Check_Result;
+            };
+
+            $('#BT_Copy').on('click', function () {
+                if (Check()) {
                     var E_Json = [];
                     $('#Table_Exec_Data tbody tr').each(function () {
                         var Exec_Obj = {};
@@ -108,7 +119,7 @@
                             //Table_Sort($('#Table_Search_Price thead th').filter(function () { return $(this).text() === "更新日期"; }).addClass('asc selected'));
                         },
                         error: function (ex) {
-                            alert(ex);
+                            alert(ex.responseText);
                         }
                     });
                 }
@@ -281,7 +292,7 @@
                                     <td>' + String(R[i].單價_2 ?? "").replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",") + '</td>\
                                     <td>' + String(R[i].廠商編號 ?? "") + '</td>\
                                     <td>' + String(R[i].廠商簡稱 ?? "") + '</td>\
-                                    <td>' + String(R[i].客戶編號 ?? "") + '</td>\
+                                    <td class="C_No">' + String(R[i].客戶編號 ?? "") + '</td>\
                                     <td class="SEQ">' + String(R[i].序號 ?? "") + '</td>\
                                     <td>' + String(R[i].更新人員 ?? "") + '</td>\
                                     <td>' + String(R[i].更新日期 ?? "") + '</td>\

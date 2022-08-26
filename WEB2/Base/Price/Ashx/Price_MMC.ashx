@@ -13,6 +13,7 @@ using System.IO;
 using System.Web.UI.WebControls;
 using Newtonsoft.Json;
 using Ivan_Service.FN.Base;
+using Ivan_Log;
 
 
 public class Price_MMC : IHttpHandler, IRequiresSessionState
@@ -22,16 +23,18 @@ public class Price_MMC : IHttpHandler, IRequiresSessionState
         if (!string.IsNullOrEmpty(context.Request["Call_Type"]))
         {
             DataTable dt = new DataTable();
+            var Price = new Price();
             try
             {
-                var Price = new Price();
                 switch (context.Request["Call_Type"])
                 {
                     case "Price_MMC_Search":
                         dt = Price.Price_MMC_Search(JsonConvert.DeserializeObject<DataTable>(context.Request["Search_Data"]));
+                        Log.InsertLog(context, context.Session["Name"], Price._sqlLogModel);
                         break;
                     case "Price_MMC_Copy":
                         Price.Price_MMC_Copy(JsonConvert.DeserializeObject<DataTable>(context.Request["Exec_Data"]));
+                        Log.InsertLog(context, context.Session["Name"], Price._sqlLogModel);
                         context.Response.StatusCode = 200;
                         context.Response.End();
                         break;
@@ -42,6 +45,7 @@ public class Price_MMC : IHttpHandler, IRequiresSessionState
             }
             catch (SqlException ex)
             {
+                Log.InsertLog(context, context.Session["Name"], Price._sqlLogModel, ex.ToString(), false);
                 context.Response.StatusCode = 404;
                 context.Response.Write(ex.Message);
             }
