@@ -18,8 +18,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable StoreStockInsSearch(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalSup);
-            return dalSup.SearchTableForStore(dic);
+            return this.GetDataTable(dalSup.SearchTableForStore(dic));
         }
 
         /// <summary>
@@ -28,8 +27,15 @@ namespace Ivan_Service
         /// <returns></returns>
         public string StoreStockInsExec(List<StkioFromSuplu> liEntity, object user)
         {
-            SetSqlLogModel(dalStk);
-            return Convert.ToString(dalStk.MutiInsertStkio(liEntity, user));
+            int res = 0;
+            _dataOperator.SetTran();
+            foreach (StkioFromSuplu entity in liEntity)
+            {
+                _dataOperator.ClearParameter();
+                res += this.Execute(dalStk.InsertStkioFromSuplu(entity, user));
+            }
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -38,8 +44,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable StoreStockApSearch(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalStk);
-            return dalStk.SearchTableStoreAp(dic);
+            return this.GetDataTable(dalStk.SearchTableStoreAp(dic));
         }
 
         /// <summary>
@@ -48,8 +53,15 @@ namespace Ivan_Service
         /// <returns></returns>
         public string StoreStockApExec(List<Stkio_SaleFromStkio> liEntity, object user)
         {
-            SetSqlLogModel(dalStkSale);
-            return Convert.ToString(dalStkSale.MutiInsertStkioSale(liEntity, user));
+            int res = 0;
+            _dataOperator.SetTran();
+            foreach (Stkio_SaleFromStkio entity in liEntity)
+            {
+                _dataOperator.ClearParameter();
+                res += this.Execute(dalStkSale.InsertStkioSale(entity, user));
+            }
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
     }
 }

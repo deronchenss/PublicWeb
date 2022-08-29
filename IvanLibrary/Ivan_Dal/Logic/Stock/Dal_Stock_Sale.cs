@@ -3,12 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
+using System.Data.SqlClient;
 using System.Text;
 using System.Web;
 
 namespace Ivan_Dal
 {
-    public class Dal_Stock_Sale : DataOperator
+    public class Dal_Stock_Sale : Dal_Base
     {
         #region 查詢區域
         #endregion
@@ -22,7 +23,7 @@ namespace Ivan_Dal
         /// Step4: INSERT stkio_sale
         /// </summary>
         /// <returns></returns>
-        public int MutiInsertStkioSale(List<Stkio_SaleFromStkio> liEntity, object account)
+        public IDalBase InsertStkioSale(Stkio_SaleFromStkio entity, object account)
         {
             string sqlStr = @"      INSERT INTO [dbo].[stkioh]
 											([序號]
@@ -174,30 +175,22 @@ namespace Ivan_Dal
                                         INNER JOIN suplu SU ON S.SUPLU_SEQ = SU.序號
 	                                    WHERE S.序號 = @SEQ
 									";
-
-            int res = 0;
-            this.SetTran();
-            foreach (Stkio_SaleFromStkio entity in liEntity)
+          
+            foreach (var property in entity.GetType().GetProperties())
             {
-                ClearParameter();
-                foreach (var property in entity.GetType().GetProperties())
+                if ("STOCK_POS_O".Equals(property.Name))
                 {
-                    if ("STOCK_POS_O".Equals(property.Name))
-                    {
-                        sqlStr = sqlStr.Replace("{庫區}", entity.STOCK_POS_O);
-                        SetParameters($"@{property.Name}", property.GetValue(entity));
-                    }
-                    else
-                    {
-                        SetParameters($"@{property.Name}", property.GetValue(entity));
-                    }
+                    sqlStr = sqlStr.Replace("{庫區}", entity.STOCK_POS_O);
+                    SetParameters($"@{property.Name}", property.GetValue(entity));
                 }
-                this.SetParameters("UPD_USER", account ?? "IVAN10");
-                res += Execute(sqlStr);
+                else
+                {
+                    SetParameters($"@{property.Name}", property.GetValue(entity));
+                }
             }
-            //Log一次寫
-            this.TranCommit();
-            return res;
+            this.SetParameters("UPD_USER", account ?? "IVAN10");
+            this.SetSqlText(sqlStr);
+            return this;
         }
         #endregion
 

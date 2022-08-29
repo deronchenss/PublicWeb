@@ -24,8 +24,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable SampleMTSearch(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalPudu);
-            return dalPudu.SearchTableForMT(dic);
+            return this.GetDataTable(dalPudu.SearchTableForMT(dic));
         }
 
         /// <summary>
@@ -34,8 +33,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable SampleMTReport(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalPudu);
-            return dalPudu.SampleMTReport(dic);
+            return this.GetDataTable(dalPudu.SampleMTReport(dic));
         }
 
         /// <summary>
@@ -44,8 +42,10 @@ namespace Ivan_Service
         /// <returns></returns>
         public string SampleMTInsert(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalPudu);
-            return Convert.ToString(dalPudu.InsertPudu(dic));
+            _dataOperator.SetTran();
+            int res = this.Execute(dalPudu.InsertPudu(dic));
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -54,8 +54,10 @@ namespace Ivan_Service
         /// <returns></returns>
         public string SampleMTUpdate(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalPudu);
-            return Convert.ToString(dalPudu.UpdatePudu(dic));
+            _dataOperator.SetTran();
+            int res = this.Execute(dalPudu.UpdatePudu(dic));
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -64,8 +66,10 @@ namespace Ivan_Service
         /// <returns></returns>
         public string SampleMTUpdateSeq(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalPudu);
-            return Convert.ToString(dalPudu.UpdateSeq(dic));
+            _dataOperator.SetTran();
+            int res = this.Execute(dalPudu.UpdateSeq(dic));
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -74,8 +78,10 @@ namespace Ivan_Service
         /// <returns></returns>
         public string SampleMTUpdateRptRemark(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalPudu);
-            return Convert.ToString(dalPudu.UpdateRptRemark(dic));
+            _dataOperator.SetTran();
+            int res = this.Execute(dalPudu.UpdateRptRemark(dic));
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -84,8 +90,15 @@ namespace Ivan_Service
         /// <returns></returns>
         public string SampleMTUpdateWriteOff(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalPudu);
-            return Convert.ToString(dalPudu.UpdateWriteOff(dic));
+            int res = 0;
+            _dataOperator.SetTran();
+            string[] seqArr = dic["SEQ[]"].Split(',');
+            foreach (string seq in seqArr)
+            {
+                res = this.Execute(dalPudu.UpdateWriteOff(dic,seq));
+            }
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -94,8 +107,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable SampleArrSearch(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalPudu);
-            return dalPudu.SearchTableForRecu(dic);
+            return this.GetDataTable(dalPudu.SearchTableForRecu(dic));
         }
 
         /// <summary>
@@ -104,8 +116,16 @@ namespace Ivan_Service
         /// <returns></returns>
         public string SampleArrExec(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalRecu);
-            return Convert.ToString(dalRecu.InsertRecu(dic));
+            string[] seqArray = dic["SEQ[]"].Split(',');
+            int res = 0;
+            _dataOperator.SetTran();
+            for (int cnt = 0; cnt < seqArray.Length; cnt++)
+            {
+                _dataOperator.ClearParameter();
+                res += this.Execute(dalRecu.InsertRecu(dic, cnt));
+            }
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -114,8 +134,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable SampleArrMTSearch(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalRecu);
-            return dalRecu.SearchTable(dic);
+            return this.GetDataTable(dalRecu.SearchTable(dic));
         }
 
         /// <summary>
@@ -124,8 +143,10 @@ namespace Ivan_Service
         /// <returns></returns>
         public string SampleArrMTUpdate(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalRecu);
-            return Convert.ToString(dalRecu.UpdateRecu(dic));
+            _dataOperator.SetTran();
+            int res = this.Execute(dalRecu.UpdateRecu(dic));
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -134,8 +155,10 @@ namespace Ivan_Service
         /// <returns></returns>
         public string SampleArrMTDelete(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalRecu);
-            return Convert.ToString(dalRecu.DeleteRecu(dic));
+            _dataOperator.SetTran();
+            int res = this.Execute(dalRecu.DeleteRecu(dic));
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -144,8 +167,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable SampleArrMTReport(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalRecu);
-            return dalRecu.SampleShippingReport(dic);
+            return this.GetDataTable(dalRecu.SampleShippingReport(dic));
         }
 
         /// <summary>
@@ -154,18 +176,25 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable SampleChkSearch(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalPudu);
-            return dalPudu.SearchTable(dic);
+            return this.GetDataTable(dalPudu.SearchTable(dic));
         }
 
         /// <summary>
-        /// 樣品點收作業 查詢
+        /// 樣品點收作業 執行
         /// </summary>
         /// <returns></returns>
         public string SampleChkExec(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalRecua);
-            return Convert.ToString(dalRecua.InsertRecua(dic));
+            string[] seqArray = dic["SEQ[]"].Split(',');
+            int res = 0;
+            _dataOperator.SetTran();
+            for (int cnt = 0; cnt < seqArray.Length; cnt++)
+            {
+                _dataOperator.ClearParameter();
+                res += this.Execute(dalRecua.InsertRecua(dic, cnt));
+            }
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -174,8 +203,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable SampleChkDistSearch(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalSup);
-            return dalSup.SearchTableForSample(dic);
+            return this.GetDataTable(dalSup.SearchTableForSample(dic));
         }
 
         /// <summary>
@@ -184,8 +212,16 @@ namespace Ivan_Service
         /// <returns></returns>
         public string SampleChkDistExec(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalPaku2);
-            return Convert.ToString(dalPaku2.InsertPaku2(dic));
+            string[] seqArray = dic["SEQ[]"].Split(',');
+            int res = 0;
+            _dataOperator.SetTran();
+            for (int cnt = 0; cnt < seqArray.Length; cnt++)
+            {
+                _dataOperator.ClearParameter();
+                res += this.Execute(dalPaku2.InsertPaku2(dic, cnt));
+            }
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -194,8 +230,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable SampleChkMTSearch(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalRecua);
-            return dalRecua.SearchTable(dic);
+            return this.GetDataTable(dalRecua.SearchTable(dic));
         }
 
         /// <summary>
@@ -204,8 +239,10 @@ namespace Ivan_Service
         /// <returns></returns>
         public string SampleChkMTDelete(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalRecua);
-            return Convert.ToString(dalRecua.DeleteRecua(dic));
+            _dataOperator.SetTran();
+            int res = this.Execute(dalRecua.DeleteRecua(dic));
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -214,8 +251,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable SampleInvMTSearch(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalInvu);
-            return dalInvu.SearchTable(dic);
+            return this.GetDataTable(dalInvu.SearchTable(dic));
         }
 
         /// <summary>
@@ -224,8 +260,10 @@ namespace Ivan_Service
         /// <returns></returns>
         public string SampleInvMTInsert(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalInvu);
-            return Convert.ToString(dalInvu.InsertInvu(dic));
+            _dataOperator.SetTran();
+            DataTable dt = this.GetDataTable(dalInvu.InsertInvu(dic));
+            _dataOperator.TranCommit();
+            return dt.Rows[0]["INVOICE"].ToString();
         }
 
         /// <summary>
@@ -234,8 +272,10 @@ namespace Ivan_Service
         /// <returns></returns>
         public string SampleInvMTUpdate(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalInvu);
-            return Convert.ToString(dalInvu.UpdateInvu(dic));
+            _dataOperator.SetTran();
+            int res = this.Execute(dalInvu.UpdateInvu(dic));
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -244,8 +284,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable SampleInvMTReportIV(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalInvu);
-            return dalInvu.SampleIVReport(dic);
+            return this.GetDataTable(dalInvu.SampleIVReport(dic));
         }
 
         /// <summary>
@@ -254,8 +293,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable SampleInvMTReportPacking(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalInvu);
-            return dalInvu.SamplePackingReport(dic);
+            return this.GetDataTable(dalInvu.SamplePackingReport(dic));
         }
 
         /// <summary>
@@ -264,8 +302,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable SamplePackSearch(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalPaku2);
-            return dalPaku2.SearchTable(dic);
+            return this.GetDataTable(dalPaku2.SearchTable(dic));
         }
 
         /// <summary>
@@ -274,8 +311,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable SamplePackCheckIV(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalInvu);
-            return dalInvu.SearchIV(dic);
+            return this.GetDataTable(dalInvu.SearchIV(dic));
         }
 
         /// <summary>
@@ -284,8 +320,16 @@ namespace Ivan_Service
         /// <returns></returns>
         public string SamplePackInsert(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalPaku);
-            return Convert.ToString(dalPaku.InsertPaku(dic));
+            string[] seqArray = dic["SEQ[]"].Split(',');
+            int res = 0;
+            _dataOperator.SetTran();
+            for (int cnt = 0; cnt < seqArray.Length; cnt++)
+            {
+                _dataOperator.ClearParameter();
+                res += this.Execute(dalPaku.InsertPaku(dic, cnt));
+            }
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -294,8 +338,16 @@ namespace Ivan_Service
         /// <returns></returns>
         public string SamplePackDelete(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalPaku2);
-            return Convert.ToString(dalPaku2.DeletePaku2(dic));
+            string[] seqArray = dic["SEQ[]"].Split(',');
+            int res = 0;
+            _dataOperator.SetTran();
+            for (int cnt = 0; cnt < seqArray.Length; cnt++)
+            {
+                _dataOperator.ClearParameter();
+                res += this.Execute(dalPaku2.DeletePaku2(dic, cnt));
+            }
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -304,8 +356,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable SamplePackMTSearch(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalPaku);
-            return dalPaku.SearchTable(dic);
+            return this.GetDataTable(dalPaku.SearchTable(dic));
         }
 
         /// <summary>
@@ -314,8 +365,10 @@ namespace Ivan_Service
         /// <returns></returns>
         public string SamplePackMTUpdate(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalPaku);
-            return Convert.ToString(dalPaku.UpdatePaku(dic));
+            _dataOperator.SetTran();
+            int res = this.Execute(dalPaku.UpdatePaku(dic));
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -324,8 +377,10 @@ namespace Ivan_Service
         /// <returns></returns>
         public string SamplePackMTDelete(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalPaku);
-            return Convert.ToString(dalPaku.DeletePaku(dic));
+            _dataOperator.SetTran();
+            int res = this.Execute(dalPaku.DeletePaku(dic));
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
     }
 }

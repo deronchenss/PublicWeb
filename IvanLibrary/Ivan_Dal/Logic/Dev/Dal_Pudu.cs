@@ -5,16 +5,15 @@ using System.Web;
 
 namespace Ivan_Dal
 {
-    public class Dal_Pudu : DataOperator
+    public class Dal_Pudu : Dal_Base
     {
         /// <summary>
         /// 樣品點收 查詢 Return DataTable
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTable(Dictionary<string, string> dic)
+        public IDalBase SearchTable(Dictionary<string, string> dic)
         {
-            DataTable dt = new DataTable();
             string sqlStr = "";
 			sqlStr = @" SELECT Top 500 
                         P.SUPLU_SEQ,P.採購單號,P.廠商簡稱,P.頤坊型號,
@@ -84,8 +83,8 @@ namespace Ivan_Dal
 			}
 
 			sqlStr += " ORDER BY P.採購單號,P.頤坊型號";
-            dt = GetDataTable(sqlStr);
-            return dt;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
@@ -93,7 +92,7 @@ namespace Ivan_Dal
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTableForMT(Dictionary<string, string> dic)
+        public IDalBase SearchTableForMT(Dictionary<string, string> dic)
         {
             DataTable dt = new DataTable();
             string sqlStr = "";
@@ -208,8 +207,8 @@ namespace Ivan_Dal
                                                               ,pudum.[預付日一],pudum.[預付款二],pudum.[預付日二]
                                                               ,pudum.[附加費],pudum.附加費說明
                                                               ,pudum.大備註一,pudum.大備註二,pudum.大備註三,pudum.特別事項";
-            dt = GetDataTable(sqlStr);
-            return dt;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
@@ -217,7 +216,7 @@ namespace Ivan_Dal
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTableForRecu(Dictionary<string, string> dic)
+        public IDalBase SearchTableForRecu(Dictionary<string, string> dic)
         {
             DataTable dt = new DataTable();
             string sqlStr = "";
@@ -300,8 +299,8 @@ namespace Ivan_Dal
             }
 
             sqlStr += " ORDER BY P.採購單號,P.頤坊型號";
-            dt = GetDataTable(sqlStr);
-            return dt;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
@@ -309,7 +308,7 @@ namespace Ivan_Dal
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public DataTable SampleMTReport(Dictionary<string, string> dic)
+		public IDalBase SampleMTReport(Dictionary<string, string> dic)
         {
             DataTable dt = new DataTable();
             string workType = "";
@@ -402,15 +401,15 @@ namespace Ivan_Dal
                                                      HAVING IsNull(P.採購數量,0) - SUM(IsNull(R.到貨數量,0)) > 0   ";
 
             }
-            dt = GetDataTable(sqlStr);
-            return dt;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
 		/// 寫入
 		/// </summary>
 		/// <returns></returns>
-		public int InsertPudu(Dictionary<string, string> dic)
+		public IDalBase InsertPudu(Dictionary<string, string> dic)
         {
             string sqlStr = @" INSERT INTO [dbo].[pudu]
                                     (序號,SUPLU_SEQ,[樣品號碼],[工作類別],[廠商編號],[廠商簡稱]
@@ -441,8 +440,6 @@ namespace Ivan_Dal
                                     --,IIF(@MIN_3 = '', 0,CONVERT(DECIMAL,@MIN_3))
                                     ,@UPD_USER, GETDATE() ";
 
-            this.SetTran();
-            this.ClearParameter();
             this.SetParameters("SEQ", dic["SEQ"]);
             this.SetParameters("SUPLU_SEQ", dic["SUPLU_SEQ"]);
             this.SetParameters("UNIT", dic["UNIT"]);
@@ -463,17 +460,16 @@ namespace Ivan_Dal
             this.SetParameters("PUDU_CNT", dic["PUDU_CNT"]);
             this.SetParameters("PUDU_GIVE_DATE", dic["PUDU_GIVE_DATE"]);
             this.SetParameters("UPD_USER", "IVAN10");
-            int res = Execute(sqlStr);
-            this.TranCommit();
 
-            return res;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
         /// UPDATE
         /// </summary>
         /// <returns></returns>
-        public int UpdatePudu(Dictionary<string, string> dic)
+        public IDalBase UpdatePudu(Dictionary<string, string> dic)
         {
             string sqlStr = @" UPDATE [dbo].[pudu]
                                 SET SUPLU_SEQ = @SUPLU_SEQ
@@ -567,18 +563,15 @@ namespace Ivan_Dal
             this.SetParameters("PUDU_GIVE_DATE", dic["PUDU_GIVE_DATE"]);
             this.SetParameters("UPD_USER", dic["Account"]);
 
-            this.SetTran();
-            int res = Execute(sqlStr);
-            this.TranCommit();
-
-            return res;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
         /// UPDATE SEQ
         /// </summary>
         /// <returns></returns>
-        public int UpdateSeq(Dictionary<string, string> dic)
+        public IDalBase UpdateSeq(Dictionary<string, string> dic)
         {
             string sqlStr = @" UPDATE pudu SET 採購單號 = N.SEQ
 			                                    ,採購交期 = @PUDU_GIVE_DATE
@@ -620,18 +613,15 @@ namespace Ivan_Dal
                 this.SetParameters("SET_SEQ_USER", "IVAN");
             }
 
-            this.SetTran();
-            int res = Execute(sqlStr);
-            this.TranCommit();
-
-            return res;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
         /// UPDATE RPT_REMARK
         /// </summary>
         /// <returns></returns>
-        public int UpdateRptRemark(Dictionary<string, string> dic)
+        public IDalBase UpdateRptRemark(Dictionary<string, string> dic)
         {
             string sqlStr = @" DELETE FROM pudum WHERE [採購單號] = @PUDU_NO
                                 INSERT INTO [dbo].[pudum]
@@ -654,7 +644,6 @@ namespace Ivan_Dal
                                     ,@UPD_USER [更新人員]
                                     ,GETDATE() [更新日期] ";
 
-            this.ClearParameter();
             this.SetParameters("PUDU_NO", dic["PUDU_NO"]);
             this.SetParameters("CURR_CODE", dic["CURR_CODE"]);
             this.SetParameters("PRE_PAY_AMT_1", dic["PRE_PAY_AMT_1"]);
@@ -669,37 +658,25 @@ namespace Ivan_Dal
             this.SetParameters("SPEC_REMARK", dic["SPEC_REMARK"]);
             this.SetParameters("UPD_USER", dic["Account"]);
 
-            this.SetTran();
-            int res = Execute(sqlStr);
-            this.TranCommit();
-
-            return res;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
         /// UPDATE 結案
         /// </summary>
         /// <returns></returns>
-        public int UpdateWriteOff(Dictionary<string, string> dic)
+        public IDalBase UpdateWriteOff(Dictionary<string, string> dic, string seq)
         {
-            string[] seqArr = dic["SEQ[]"].Split(',');
             string sqlStr = "";
-            int res = 0;
-
-            this.SetTran();
-            foreach (string seq in seqArr)
-            {
-                sqlStr = @" UPDATE pudu
-                            SET [結案] = @FORCE_CLOSE,
-                                [強制結案] = @FORCE_CLOSE
-                            WHERE 序號 = @SEQ";
-                this.ClearParameter();
-                this.SetParameters("SEQ", seq);
-                this.SetParameters("FORCE_CLOSE", dic["FORCE_CLOSE"]);
-                res += Execute(sqlStr);
-            }
-            this.TranCommit();
-            return res;
+            sqlStr = @" UPDATE pudu
+                        SET [結案] = @FORCE_CLOSE,
+                            [強制結案] = @FORCE_CLOSE
+                        WHERE 序號 = @SEQ";
+            this.SetParameters("SEQ", seq);
+            this.SetParameters("FORCE_CLOSE", dic["FORCE_CLOSE"]);
+            this.SetSqlText(sqlStr);
+            return this;
         }
     }
 }

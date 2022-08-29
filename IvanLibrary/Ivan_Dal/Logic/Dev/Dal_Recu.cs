@@ -4,16 +4,15 @@ using System.Web;
 
 namespace Ivan_Dal
 {
-    public class Dal_Recu : DataOperator
+    public class Dal_Recu : Dal_Base
     {
         /// <summary>
         /// 樣品到貨作業 查詢 Return DataTable
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTable(Dictionary<string, string> dic)
+        public IDalBase SearchTable(Dictionary<string, string> dic)
         {
-            DataTable dt = new DataTable();
             string sqlStr = "";
             sqlStr = @" SELECT TOP 500 R.[序號]
                                       ,P.[採購單號]
@@ -76,18 +75,16 @@ namespace Ivan_Dal
                     }
                 }
             }
-
-            dt = GetDataTable(sqlStr);
-            return dt;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
         /// 寫入到貨 TABLE 
         /// </summary>
         /// <returns></returns>
-        public int InsertRecu(Dictionary<string, string> dic)
+        public IDalBase InsertRecu(Dictionary<string, string> dic, int cnt)
         {
-            int res = 0;
             string[] seqArray = dic["SEQ[]"].Split(',');
             string[] invErrArray = dic["INVOICE_ERR[]"].Split(',');
             string[] shipRemarkArray = dic["SHIP_ARR_REMARK[]"].Split(',');
@@ -152,55 +149,45 @@ namespace Ivan_Dal
 	                                FROM pudu P
                                     LEFT JOIN RECUA RA ON P.序號 = RA.PUDU_SEQ
 	                                WHERE P.序號 = @SEQ
-                                                          
+                                    
+                                    --後續抽離!!
+                                    UPDATE pudu
+                                    SET 結案 = 1
+                                    FROM pudu P
+                                    WHERE P.序號 IN (SELECT pudu.序號 
+                                                     FROM pudu 
+                                                     JOIN recu R on pudu.序號 = R.PUDU_SEQ
+                                                     WHERE pudu.序號 = @SEQ
+                                                     GROUP BY pudu.序號, pudu.工作類別, pudu.採購數量, pudu.台幣單價, pudu.美元單價, pudu.外幣單價, pudu.結案
+                                                     HAVING CASE WHEN pudu.工作類別 LIKE '%詢%' THEN ISNULL(台幣單價,0) + ISNULL(美元單價,0) + ISNULL(外幣單價,0)
+                                                                 ELSE 1 END <> 0
+                                                     AND SUM(ISNULL(R.到貨數量,0)) >= pudu.採購數量
+                                                     AND ISNULL(pudu.結案,0) != 1  )
+
                                                         ";
 
-            this.SetTran();
-            for (int cnt = 0; cnt < seqArray.Length; cnt++)
+            this.SetParameters("SEQ", seqArray[cnt]);
+            this.SetParameters("SHIP_GO_DATE", dic["SHIP_GO_DATE"]);
+            this.SetParameters("SHIP_ARR_DATE", dic["SHIP_ARR_DATE"]);
+            this.SetParameters("SHIP_ARR_NO", dic["SHIP_ARR_NO"]);
+            this.SetParameters("ORDER_ARR_DATE", dic["ORDER_ARR_DATE"]);
+            this.SetParameters("NO_PAY", dic["NO_PAY"]);
+            this.SetParameters("INVOICE_TYPE", dic["INVOICE_TYPE"]);
+            this.SetParameters("INVOICE_NO", dic["INVOICE_NO"]);
+            this.SetParameters("INVOICE_ERR", invErrArray[cnt]);
+            this.SetParameters("SHIP_ARR_REMARK", shipRemarkArray[cnt]);
+            this.SetParameters("SHIP_ARR_CNT", shipArrCnt[cnt]);
+            this.SetParameters("UPD_USER", dic["Account"]);
+
+            if (dic["FORCE_CLOSE"] == "true")
             {
-                this.ClearParameter();
-                this.SetParameters("SEQ", seqArray[cnt]);
-                this.SetParameters("SHIP_GO_DATE", dic["SHIP_GO_DATE"]);
-                this.SetParameters("SHIP_ARR_DATE", dic["SHIP_ARR_DATE"]);
-                this.SetParameters("SHIP_ARR_NO", dic["SHIP_ARR_NO"]);
-                this.SetParameters("ORDER_ARR_DATE", dic["ORDER_ARR_DATE"]);
-                this.SetParameters("NO_PAY", dic["NO_PAY"]);
-                this.SetParameters("INVOICE_TYPE", dic["INVOICE_TYPE"]);
-                this.SetParameters("INVOICE_NO", dic["INVOICE_NO"]);
-                this.SetParameters("INVOICE_ERR", invErrArray[cnt]);
-                this.SetParameters("SHIP_ARR_REMARK", shipRemarkArray[cnt]);
-                this.SetParameters("SHIP_ARR_CNT", shipArrCnt[cnt]);
-                this.SetParameters("UPD_USER", dic["Account"]);
-
-                if (dic["FORCE_CLOSE"] == "true")
-                {
-                    sqlStr += @"UPDATE PUDU
-                                SET 強制結案 = 1, 結案 = 1
-                                WHERE 序號 = @SEQ";
-                }
-
-                Execute(sqlStr);
+                sqlStr += @"UPDATE PUDU
+                            SET 強制結案 = 1, 結案 = 1
+                            WHERE 序號 = @SEQ";
             }
 
-            //後續還有語法，額外紀錄LOG
-            //Log.InsertLog(context, context.Session["Account"], sqlStr, parmStr);
-
-            //根據寫入到貨數量 一次更新結案狀態
-            sqlStr = @"UPDATE pudu
-                        SET 結案 = 1
-                        FROM pudu P
-                        WHERE P.序號 IN (SELECT pudu.序號 
-                                            FROM pudu 
-                                            JOIN recu R on pudu.序號 = R.PUDU_SEQ
-                                            GROUP BY pudu.序號, pudu.工作類別, pudu.採購數量, pudu.台幣單價, pudu.美元單價, pudu.外幣單價, pudu.結案
-                                            HAVING CASE WHEN pudu.工作類別 LIKE '%詢%' THEN ISNULL(台幣單價,0) + ISNULL(美元單價,0) + ISNULL(外幣單價,0)
-                                                        ELSE 1 END <> 0
-                                            AND SUM(ISNULL(R.到貨數量,0)) >= pudu.採購數量
-                                            AND ISNULL(pudu.結案,0) != 1    )";
-            Execute(sqlStr);
-
-            this.TranCommit();
-            return res;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
@@ -208,11 +195,10 @@ namespace Ivan_Dal
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public int UpdateRecu(Dictionary<string, string> dic)
+		public IDalBase UpdateRecu(Dictionary<string, string> dic)
         {
             string sql = "";
             string sqlStr = "";
-            this.ClearParameter();
             sqlStr = @" UPDATE [dbo].[RECU]
                         SET [更新人員] = @UPD_USER
                             ,[更新日期] = GETDATE()
@@ -239,32 +225,24 @@ namespace Ivan_Dal
             }
 
             sqlStr = string.Format(sqlStr, sql);
-
-            this.SetTran();
-            int res = Execute(sqlStr);
-            this.TranCommit();
-
-            return res;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
         /// 刪除RECU 單筆
         /// </summary>
         /// <returns></returns>
-        public int DeleteRecu(Dictionary<string, string> dic)
+        public IDalBase DeleteRecu(Dictionary<string, string> dic)
         {
-            int res = 0;
             string sqlStr = @"      DELETE FROM RECU
                                     WHERE [序號] = @SEQ
                                      ";
 
             this.SetParameters("SEQ", dic["SEQ"]);
             this.SetParameters("UPD_USER", dic["Account"]);
-
-            this.SetTran();
-            res = Execute(sqlStr);
-            this.TranCommit();
-            return res;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
@@ -272,11 +250,9 @@ namespace Ivan_Dal
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public DataTable SampleShippingReport(Dictionary<string, string> dic)
+		public IDalBase SampleShippingReport(Dictionary<string, string> dic)
         {
-            DataTable dt = new DataTable();
             string sqlStr = "";
-
             sqlStr = @" SELECT P.廠商簡稱
                               ,R.出貨日期
                               ,R.發票號碼
@@ -319,8 +295,8 @@ namespace Ivan_Dal
             }
 
             sqlStr += " GROUP BY P.廠商簡稱,R.出貨日期,R.發票號碼,R.到貨備註, R.發票樣式, 發票異常, P.廠商編號";
-            dt = GetDataTable(sqlStr);
-            return dt;
+            this.SetSqlText(sqlStr);
+            return this;
         }
     }
 }

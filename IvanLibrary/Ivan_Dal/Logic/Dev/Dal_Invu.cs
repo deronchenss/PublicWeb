@@ -4,18 +4,16 @@ using System.Web;
 
 namespace Ivan_Dal
 {
-    public class Dal_Invu : DataOperator
+    public class Dal_Invu : Dal_Base
 	{
 		/// <summary>
 		/// 樣品發票 維護 Return DataTable
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public DataTable SearchTable(Dictionary<string, string> dic)
+		public IDalBase SearchTable(Dictionary<string, string> dic)
 		{
-			DataTable dt = new DataTable();
 			string sqlStr = "";
-
 			sqlStr = @" SELECT TOP 500 [序號]
 						  ,[INVOICE]
 						  ,CONVERT(VARCHAR,[出貨日期],23) 出貨日期
@@ -82,9 +80,8 @@ namespace Ivan_Dal
 					}
 				}
 			}
-
-			dt = GetDataTable(sqlStr);
-			return dt;
+			this.SetSqlText(sqlStr);
+			return this;
 		}
 
 		/// <summary>
@@ -92,18 +89,16 @@ namespace Ivan_Dal
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public DataTable SearchIV(Dictionary<string, string> dic)
+		public IDalBase SearchIV(Dictionary<string, string> dic)
 		{
-			DataTable dt = new DataTable();
 			string sqlStr = "";
-
 			sqlStr = @" SELECT 客戶編號, 客戶簡稱
 						FROM invu 
 						WHERE INVOICE = @INVOICE ";
 
 			this.SetParameters("INVOICE", dic["INVOICE"]);
-			dt = GetDataTable(sqlStr);
-			return dt;
+			this.SetSqlText(sqlStr);
+			return this;
 		}
 
 		/// <summary>
@@ -111,7 +106,7 @@ namespace Ivan_Dal
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public string InsertInvu(Dictionary<string, string> dic)
+		public IDalBase InsertInvu(Dictionary<string, string> dic)
 		{
 			string sqlStr = @"      DECLARE @INVOICE_NO nvarchar(20); 
 									SELECT @INVOICE_NO = 字頭 + CONVERT(VARCHAR,年度) + RIGHT(REPLICATE('0', len(號碼長度)) + CONVERT(VARCHAR,號碼 + 1),len(號碼長度))  
@@ -149,15 +144,11 @@ namespace Ivan_Dal
 								   SELECT @INVOICE_NO INVOICE
                                     ";
 
-			this.SetTran();
-			this.ClearParameter();
 			this.SetParameters("CUST_NO", dic["CUST_NO"]);
 			this.SetParameters("CUST_S_NAME", dic["CUST_S_NAME"]);
 			this.SetParameters("UPD_USER", dic["Account"]);
-			DataTable dt = GetDataTable(sqlStr);
-			this.TranCommit();
-
-			return dt.Rows[0]["INVOICE"].ToString();
+			this.SetSqlText(sqlStr);
+			return this;
 		}
 
 		/// <summary>
@@ -165,7 +156,7 @@ namespace Ivan_Dal
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public int UpdateInvu(Dictionary<string, string> dic)
+		public IDalBase UpdateInvu(Dictionary<string, string> dic)
 		{
 			string sqlStr = @"      UPDATE [dbo].[invu]
                                        SET 更新日期 = GETDATE()
@@ -187,14 +178,10 @@ namespace Ivan_Dal
 			}
 
 			sqlStr += " WHERE 序號 = @SEQ ";
-
-			this.SetTran();
 			this.SetParameters("SEQ", dic["SEQ"]);
 			this.SetParameters("UPD_USER", dic["Account"]);
-			int res = Execute(sqlStr);
-			this.TranCommit();
-
-			return res;
+			this.SetSqlText(sqlStr);
+			return this;
 		}
 
 		/// <summary>
@@ -202,11 +189,9 @@ namespace Ivan_Dal
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public DataTable SampleIVReport(Dictionary<string, string> dic)
+		public IDalBase SampleIVReport(Dictionary<string, string> dic)
 		{
-			DataTable dt = new DataTable();
 			string sqlStr = "";
-
 			sqlStr = @" WITH TOT (INVOICE ,樣品號碼,頤坊型號,產品說明,單位,出貨數量,FREE,價格待通知, ATTN,幣別,計算單價)
 						AS
 						(
@@ -263,8 +248,8 @@ namespace Ivan_Dal
 						ORDER BY TOT.頤坊型號 ";
 
 			this.SetParameters("INVOICE_NO", dic["INVOICE_NO"]);
-			dt = GetDataTable(sqlStr);
-			return dt;
+			this.SetSqlText(sqlStr);
+			return this;
 		}
 
 		/// <summary>
@@ -272,11 +257,9 @@ namespace Ivan_Dal
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public DataTable SamplePackingReport(Dictionary<string, string> dic)
+		public IDalBase SamplePackingReport(Dictionary<string, string> dic)
 		{
-			DataTable dt = new DataTable();
 			string sqlStr = "";
-
 			sqlStr = @" WITH TOT (INVOICE ,樣品號碼,頤坊型號,產品說明,單位,箱號,淨重,毛重,出貨數量,FREE,價格待通知, ATTN,幣別,計算單價)
 						AS
 						(
@@ -337,8 +320,8 @@ namespace Ivan_Dal
 							";
 
 			this.SetParameters("INVOICE_NO", dic["INVOICE_NO"]);
-			dt = GetDataTable(sqlStr);
-			return dt;
+			this.SetSqlText(sqlStr);
+			return this;
 		}
 	}
 }

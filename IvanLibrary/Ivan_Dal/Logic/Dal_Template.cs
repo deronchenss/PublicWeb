@@ -7,7 +7,7 @@ using System.Web;
 
 namespace Ivan_Dal
 {
-    public class Dal_Template : DataOperator
+    public class Dal_Template : Dal_Base
     {
 
         #region 查詢區域

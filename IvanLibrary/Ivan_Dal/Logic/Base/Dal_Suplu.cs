@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Web;
 
 namespace Ivan_Dal
 {
-    public class Dal_Suplu : DataOperator 
+    public class Dal_Suplu : Dal_Base 
     {
         /// <summary>
         /// 庫存查詢 查詢 Return DataTable
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTable(Dictionary<string, string> dic)
+        public IDalBase SearchTable(Dictionary<string, string> dic)
         {
-            DataTable dt = new DataTable();
             string sqlStr = "";
-
             sqlStr = @";WITH PUD_CNT 
                         AS
                         (
@@ -186,10 +185,8 @@ namespace Ivan_Dal
             }
 
             sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
-
-            dt = GetDataTable(sqlStr);
-
-            return dt;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
@@ -197,11 +194,9 @@ namespace Ivan_Dal
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTableForReplace(Dictionary<string, string> dic)
+        public IDalBase SearchTableForReplace(Dictionary<string, string> dic)
         {
-            DataTable dt = new DataTable();
             string sqlStr = "";
-
             sqlStr = @" ;WITH S1 
                         AS
                         (
@@ -260,9 +255,8 @@ namespace Ivan_Dal
             
             
             sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
-
-            dt = GetDataTable(sqlStr);
-            return dt;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
@@ -270,11 +264,9 @@ namespace Ivan_Dal
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTableForUpdLoc(Dictionary<string, string> dic)
+        public IDalBase SearchTableForUpdLoc(Dictionary<string, string> dic)
         {
-            DataTable dt = new DataTable();
             string sqlStr = "";
-
             sqlStr = @" ;WITH DIS
                         AS
                         (
@@ -341,9 +333,8 @@ namespace Ivan_Dal
 
 
             sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
-
-            dt = GetDataTable(sqlStr);
-            return dt;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
@@ -351,11 +342,9 @@ namespace Ivan_Dal
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTableForMutiInsert(Dictionary<string, string> dic)
+        public IDalBase SearchTableForMutiInsert(Dictionary<string, string> dic)
         {
-            DataTable dt = new DataTable();
             string sqlStr = "";
-
             sqlStr = @" SELECT  Top 500 S.廠商簡稱
 			                           ,S.頤坊型號
 			                           ,S.銷售型號
@@ -415,9 +404,8 @@ namespace Ivan_Dal
             }
 
             sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
-
-            dt = GetDataTable(sqlStr);
-            return dt;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
@@ -425,11 +413,9 @@ namespace Ivan_Dal
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTableForSample(Dictionary<string, string> dic)
+        public IDalBase SearchTableForSample(Dictionary<string, string> dic)
         {
-            DataTable dt = new DataTable();
             string sqlStr = "";
-
             sqlStr = @"SELECT DISTINCT Top 500 {0} 點收批號 
 					   			      ,A.頤坊型號
 					   			      ,A.產品說明
@@ -514,8 +500,8 @@ namespace Ivan_Dal
                 }
             }
 
-            dt = GetDataTable(sqlStr);
-            return dt;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
@@ -523,11 +509,9 @@ namespace Ivan_Dal
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTableForStore(Dictionary<string, string> dic)
+        public IDalBase SearchTableForStore(Dictionary<string, string> dic)
         {
-            DataTable dt = new DataTable();
             string sqlStr = "";
-
             sqlStr = @" ;WITH STK 
                         AS
                         (
@@ -659,16 +643,16 @@ namespace Ivan_Dal
             }
 
             sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
-            dt = GetDataTable(sqlStr);
-            return dt;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         #region 更新區域
         /// <summary>
-        /// UPDATE Suplu 多筆SEQ 
+        /// UPDATE Suplu 多筆SEQ 同樣變數
         /// </summary>
         /// <returns></returns>
-        public int UpdateSuplu(Dictionary<string, string> dic)
+        public IDalBase UpdateSuplu(Dictionary<string, string> dic, int cnt)
         {
             string sqlStr = @"      UPDATE [dbo].[suplu]
                                        SET 更新日期 = GETDATE()
@@ -677,34 +661,24 @@ namespace Ivan_Dal
 
 
             string[] seqArray = dic["SEQ[]"].Split(',');
-            int res = 0;
-            this.SetTran();
-            for (int cnt = 0; cnt < seqArray.Length; cnt++)
+            foreach (string form in dic.Keys)
             {
-                this.ClearParameter();
-                string otherStr = "";
-                foreach (string form in dic.Keys)
+                if (!string.IsNullOrEmpty(dic[form]) && form != "Account" && form != "SEQ" && !form.Contains("[]"))
                 {
-                    if (!string.IsNullOrEmpty(dic[form]) && form != "Account" && form != "SEQ" && !form.Contains("[]"))
+                    switch (form)
                     {
-                        switch (form)
-                        {
-                            default:
-                                this.SetParameters(form, dic[form]);
-                                otherStr += " ," + form + " = @" + form;
-                                break;
-                        }
+                        default:
+                            this.SetParameters(form, dic[form]);
+                            sqlStr += " ," + form + " = @" + form;
+                            break;
                     }
                 }
-                otherStr += " WHERE [序號] = @SEQ ";
-               
-                this.SetParameters("SEQ", seqArray[cnt]);
-                this.SetParameters("UPD_USER", dic["Account"] ?? "IVAN10");
-                res += Execute(sqlStr + otherStr);
             }
-            this.TranCommit();
-
-            return res;
+            sqlStr += " WHERE [序號] = @SEQ ";
+            this.SetParameters("SEQ", seqArray[cnt]);
+            this.SetParameters("UPD_USER", dic["Account"] ?? "IVAN10");
+            this.SetSqlText(sqlStr);
+            return this;
         }
         #endregion
 

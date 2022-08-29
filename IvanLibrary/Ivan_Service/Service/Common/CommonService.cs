@@ -22,8 +22,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable GetRefData(string code)
         {
-            SetSqlLogModel(dalRefData);
-            return dalRefData.SearchTable(code);
+            return this.GetDataTable(dalRefData.SearchTable(code));
         }
 
         /// <summary>
@@ -32,8 +31,10 @@ namespace Ivan_Service
         /// <returns></returns>
         public string GetNofileNewNo(string code, object user)
         {
-            SetSqlLogModel(dalNoFile);
-            return dalNoFile.SearchTable(code, user);
+            _dataOperator.SetTran();
+            DataTable dt = this.GetDataTable(dalNoFile.SearchTable(code, user));
+            _dataOperator.TranCommit();
+            return dt.Rows[0]["NEW_NO"] == null ? "" : dt.Rows[0]["NEW_NO"].ToString();
         }
     }
 }

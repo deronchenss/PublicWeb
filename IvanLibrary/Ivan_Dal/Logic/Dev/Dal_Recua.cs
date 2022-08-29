@@ -3,15 +3,14 @@ using System.Data;
 
 namespace Ivan_Dal
 {
-    public class Dal_Recua : DataOperator
+    public class Dal_Recua : Dal_Base
     {
         /// <summary>
         /// 樣品點收維護 查詢 Return DataTable
         /// </summary>
         /// <returns></returns>
-        public DataTable SearchTable(Dictionary<string, string> dic)
+        public IDalBase SearchTable(Dictionary<string, string> dic)
         {
-            DataTable dt = new DataTable();
             string sqlStr = "";
             sqlStr = @" SELECT TOP 500 RA.[序號]
                             ,P.[採購單號]
@@ -64,17 +63,17 @@ namespace Ivan_Dal
                     }
                 }
             }
-            dt = GetDataTable(sqlStr);
-            return dt;
+
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
         /// 寫入點收 TABLE 
         /// </summary>
         /// <returns></returns>
-        public int InsertRecua(Dictionary<string, string> dic)
+        public IDalBase InsertRecua(Dictionary<string, string> dic, int cnt)
         {
-            int res = 0;
             string sqlStr = @"      DECLARE @MAX_SEQ int; 
 									Select @MAX_SEQ = IsNull(Max(序號),0)+1 From [recua]
 									INSERT INTO [dbo].[recua]
@@ -209,37 +208,31 @@ namespace Ivan_Dal
             string[] ivanType = dic["IVAN_TYPE[]"].Split(',');
             string[] factNo = dic["FACT_NO[]"].Split(',');
 
-            this.SetTran();
-            for (int cnt = 0; cnt < seqArray.Length; cnt++)
-            {
-                this.ClearParameter();
-                this.SetParameters("SEQ", seqArray[cnt]);
-                this.SetParameters("CHK_CNT", chkCntArr[cnt]);
-                this.SetParameters("CHK_BATCH_NO", dic["CHK_BATCH_NO"]);
-                this.SetParameters("TRANSFER_NO", dic["TRANSFER_NO"]);
-                this.SetParameters("CHK_DATE", dic["CHK_DATE"]);
-                this.SetParameters("TRANSFER_S_NAME", dic["TRANSFER_S_NAME"]);
-                this.SetParameters("UPD_USER", "IVAN10");
-                this.SetParameters("NET_WEI", string.IsNullOrEmpty(netWeiArray[cnt]) ? "0" : netWeiArray[cnt]);
-                this.SetParameters("WEI", string.IsNullOrEmpty(weiArray[cnt]) ? "0" : weiArray[cnt]);
-                this.SetParameters("LEN", string.IsNullOrEmpty(lenArr[cnt]) ? "0" : lenArr[cnt]);
-                this.SetParameters("WIDTH", string.IsNullOrEmpty(widthArray[cnt]) ? "0" : widthArray[cnt]);
-                this.SetParameters("HEIGHT", string.IsNullOrEmpty(heightArr[cnt]) ? "0" : heightArr[cnt]);
-                this.SetParameters("IVAN_TYPE", ivanType[cnt]);
-                this.SetParameters("FACT_NO", factNo[cnt]);
-                Execute(sqlStr);
-            }
-            this.TranCommit();
-            return res;
+            this.SetParameters("SEQ", seqArray[cnt]);
+            this.SetParameters("CHK_CNT", chkCntArr[cnt]);
+            this.SetParameters("CHK_BATCH_NO", dic["CHK_BATCH_NO"]);
+            this.SetParameters("TRANSFER_NO", dic["TRANSFER_NO"]);
+            this.SetParameters("CHK_DATE", dic["CHK_DATE"]);
+            this.SetParameters("TRANSFER_S_NAME", dic["TRANSFER_S_NAME"]);
+            this.SetParameters("UPD_USER", "IVAN10");
+            this.SetParameters("NET_WEI", string.IsNullOrEmpty(netWeiArray[cnt]) ? "0" : netWeiArray[cnt]);
+            this.SetParameters("WEI", string.IsNullOrEmpty(weiArray[cnt]) ? "0" : weiArray[cnt]);
+            this.SetParameters("LEN", string.IsNullOrEmpty(lenArr[cnt]) ? "0" : lenArr[cnt]);
+            this.SetParameters("WIDTH", string.IsNullOrEmpty(widthArray[cnt]) ? "0" : widthArray[cnt]);
+            this.SetParameters("HEIGHT", string.IsNullOrEmpty(heightArr[cnt]) ? "0" : heightArr[cnt]);
+            this.SetParameters("IVAN_TYPE", ivanType[cnt]);
+            this.SetParameters("FACT_NO", factNo[cnt]);
+  
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
         /// 刪除點收 TABLE 
         /// </summary>
         /// <returns></returns>
-        public int DeleteRecua(Dictionary<string, string> dic)
+        public IDalBase DeleteRecua(Dictionary<string, string> dic)
         {
-            int res = 0;
             string sqlStr = @"      DELETE FROM RECUA 
                                     WHERE [序號] = @SEQ
                                     
@@ -263,11 +256,8 @@ namespace Ivan_Dal
 
             this.SetParameters("SEQ", dic["SEQ"]);
             this.SetParameters("UPD_USER", dic["Account"]);
-
-            this.SetTran();
-            Execute(sqlStr);
-            this.TranCommit();
-            return res;
+            this.SetSqlText(sqlStr);
+            return this;
         }
     }
 }

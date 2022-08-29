@@ -4,18 +4,16 @@ using System.Web;
 
 namespace Ivan_Dal
 {
-    public class Dal_Paku2 : DataOperator
+    public class Dal_Paku2 : Dal_Base
 	{
 		/// <summary>
 		/// 樣品備貨 查詢 Return DataTable
 		/// </summary>
 		/// <param name="dic"></param>
 		/// <returns></returns>
-		public DataTable SearchTable(Dictionary<string, string> dic)
+		public IDalBase SearchTable(Dictionary<string, string> dic)
 		{
-			DataTable dt = new DataTable();
 			string sqlStr = "";
-
 			sqlStr = @" WITH TOT (PAKU2_SEQ,出貨數量)
 						AS
 						(
@@ -89,8 +87,8 @@ namespace Ivan_Dal
 					}
 				}
 			}
-			dt = GetDataTable(sqlStr);
-			return dt;
+			this.SetSqlText(sqlStr);
+			return this;
 		}
 
 		/// <summary>
@@ -98,9 +96,8 @@ namespace Ivan_Dal
 		/// </summary>
 		/// <param name="dic"></param>
 		/// <returns></returns>
-		public int InsertPaku2(Dictionary<string, string> dic)
+		public IDalBase InsertPaku2(Dictionary<string, string> dic, int cnt)
 		{
-			int res = 0;
 			string sqlStr = @" DECLARE @MAX_SEQ int; 
 						       Select @MAX_SEQ = IsNull(Max(序號),0)+1 From [paku2]
 						       INSERT INTO [dbo].[paku2]
@@ -219,21 +216,15 @@ namespace Ivan_Dal
 			string[] appCntArray = dic["APP_CNT[]"].Split(',');
 			string[] batchNoArray = dic["BATCH_NO[]"].Split(',');
 
-			this.SetTran();
-			for (int cnt = 0; cnt < seqArray.Length; cnt++)
-			{
-				this.ClearParameter();
-				this.SetParameters("SEQ", seqArray[cnt]);
-				this.SetParameters("APP_CNT", appCntArray[cnt]);
-				this.SetParameters("BATCH_NO", batchNoArray[cnt]);
-				this.SetParameters("CUST_NO", dic["CUST_NO"]);
-				this.SetParameters("CUST_S_NAME", dic["CUST_S_NAME"]);
-				this.SetParameters("USER", dic["Account"]);
-				res = Execute(sqlStr);
-			}
-			this.TranCommit();
+			this.SetParameters("SEQ", seqArray[cnt]);
+			this.SetParameters("APP_CNT", appCntArray[cnt]);
+			this.SetParameters("BATCH_NO", batchNoArray[cnt]);
+			this.SetParameters("CUST_NO", dic["CUST_NO"]);
+			this.SetParameters("CUST_S_NAME", dic["CUST_S_NAME"]);
+			this.SetParameters("USER", dic["Account"]);
 
-			return res;
+			this.SetSqlText(sqlStr);
+			return this;
 		}
 
 		/// <summary>
@@ -241,9 +232,8 @@ namespace Ivan_Dal
 		/// </summary>
 		/// <param name="dic"></param>
 		/// <returns></returns>
-		public int DeletePaku2(Dictionary<string, string> dic)
+		public IDalBase DeletePaku2(Dictionary<string, string> dic, int cnt)
 		{
-			int res = 0;
 			string sqlStr = @"  DECLARE @ENTER_CNT DECIMAL(18,2)
 								SELECT  @ENTER_CNT = ISNULL(備貨數量,0) - SUM(ISNULL(出貨數量,0))
 								FROM paku2 P2 
@@ -339,18 +329,10 @@ namespace Ivan_Dal
 							";
 
 			string[] seqArray = dic["SEQ[]"].Split(',');
-
-			this.SetTran();
-			for (int cnt = 0; cnt < seqArray.Length; cnt++)
-			{
-				this.ClearParameter();
-				this.SetParameters("SEQ", seqArray[cnt]);
-				this.SetParameters("UPD_USER", dic["Account"]);
-				Execute(sqlStr);
-			}
-			this.TranCommit();
-
-			return res;
+			this.SetParameters("SEQ", seqArray[cnt]);
+			this.SetParameters("UPD_USER", dic["Account"]);
+			this.SetSqlText(sqlStr);
+			return this;
 		}
 	}
 }

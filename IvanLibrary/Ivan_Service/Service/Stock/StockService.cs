@@ -17,8 +17,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable ReplaceStockOSearch(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalSup);
-            return dalSup.SearchTableForReplace(dic);
+            return this.GetDataTable(dalSup.SearchTableForReplace(dic));
         }
 
         /// <summary>
@@ -27,8 +26,15 @@ namespace Ivan_Service
         /// <returns></returns>
         public string ReplaceStockOExec(List<StkioFromSuplu> liEntity, object user)
         {
-            SetSqlLogModel(dalStk);
-            return Convert.ToString(dalStk.MutiInsertStkio(liEntity, user));
+            int res = 0;
+            _dataOperator.SetTran();
+            foreach (StkioFromSuplu entity in liEntity)
+            {
+                _dataOperator.ClearParameter();
+                res += this.Execute(dalStk.InsertStkioFromSuplu(entity, user));
+            }
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -37,8 +43,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable StockIOApSearch(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalStk);
-            return dalStk.SearchTableForAp(dic);
+            return this.GetDataTable(dalStk.SearchTableForAp(dic));
         }
 
         /// <summary>
@@ -47,8 +52,16 @@ namespace Ivan_Service
         /// <returns></returns>
         public string StockIOApExec(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalStk);
-            return Convert.ToString(dalStk.ApproveStkio(dic));
+            string[] seqArray = dic["SEQ[]"].Split(',');
+            int res = 0;
+            _dataOperator.SetTran();
+            for (int cnt = 0; cnt < seqArray.Length; cnt++)
+            {
+                _dataOperator.ClearParameter();
+                res += this.Execute(dalStk.ApproveStkio(dic, cnt));
+            }
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -57,8 +70,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable StockIOMTSearch(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalStk);
-            return dalStk.SearchTableForMT(dic);
+            return this.GetDataTable(dalStk.SearchTableForMT(dic));
         }
 
         /// <summary>
@@ -67,8 +79,10 @@ namespace Ivan_Service
         /// <returns></returns>
         public string StockIOMTInsert(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalStk);
-            return Convert.ToString(dalStk.InsertStkio(dic));
+            _dataOperator.SetTran();
+            int res = this.Execute(dalStk.InsertStkio(dic));
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -77,18 +91,22 @@ namespace Ivan_Service
         /// <returns></returns>
         public string StockIOMTUpdate(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalStk);
-            return Convert.ToString(dalStk.UpdateStkio(dic));
+            _dataOperator.SetTran();
+            int res = this.Execute(dalStk.UpdateStkio(dic));
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
-        /// 庫存入出維護 刪除
+        /// 庫存入出維護 單筆刪除
         /// </summary>
         /// <returns></returns>
         public string StockIOMTDelete(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalStk);
-            return Convert.ToString(dalStk.DeleteStkio(dic));
+            _dataOperator.SetTran();
+            int res = this.Execute(dalStk.DeleteStkio(dic));
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -97,8 +115,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable StockIOMMISearch(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalSup);
-            return dalSup.SearchTableForMutiInsert(dic);
+            return this.GetDataTable(dalSup.SearchTableForMutiInsert(dic));
         }
 
         /// <summary>
@@ -107,8 +124,15 @@ namespace Ivan_Service
         /// <returns></returns>
         public string StockIOMMIInsert(List<StkioFromSuplu> liEntity, object user)
         {
-            SetSqlLogModel(dalStk);
-            return Convert.ToString(dalStk.MutiInsertStkio(liEntity, user));
+            int res = 0;
+            _dataOperator.SetTran();
+            foreach (StkioFromSuplu entity in liEntity)
+            {
+                _dataOperator.ClearParameter();
+                res += this.Execute(dalStk.InsertStkioFromSuplu(entity, user));
+            }
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -117,8 +141,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable StockIOSearch(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalStk);
-            return dalStk.SearchTable(dic);
+            return this.GetDataTable(dalStk.SearchTable(dic));
         }
 
         /// <summary>
@@ -127,8 +150,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable StockLocUpdSearch(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalSup);
-            return dalSup.SearchTableForUpdLoc(dic);
+            return this.GetDataTable(dalSup.SearchTableForUpdLoc(dic));
         }
 
         /// <summary>
@@ -137,8 +159,16 @@ namespace Ivan_Service
         /// <returns></returns>
         public string StockLocUpdExec(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalSup);
-            return Convert.ToString(dalSup.UpdateSuplu(dic));
+            string[] seqArray = dic["SEQ[]"].Split(',');
+            int res = 0;
+            _dataOperator.SetTran();
+            for (int cnt = 0; cnt < seqArray.Length; cnt++)
+            {
+                _dataOperator.ClearParameter();
+                res += this.Execute(dalSup.UpdateSuplu(dic, cnt));
+            }
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
 
         /// <summary>
@@ -147,8 +177,7 @@ namespace Ivan_Service
         /// <returns></returns>
         public DataTable StockSearchSearch(Dictionary<string, string> dic)
         {
-            SetSqlLogModel(dalSup);
-            return dalSup.SearchTable(dic);
+            return this.GetDataTable(dalSup.SearchTable(dic));
         }
     }
 }

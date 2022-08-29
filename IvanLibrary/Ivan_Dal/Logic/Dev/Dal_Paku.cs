@@ -3,15 +3,14 @@ using System.Data;
 
 namespace Ivan_Dal
 {
-    public class Dal_Paku : DataOperator
+    public class Dal_Paku : Dal_Base
 	{
 		/// <summary>
 		/// 樣品備貨維護 查詢 Return DataTable
 		/// </summary>
 		/// <returns></returns>
-		public DataTable SearchTable(Dictionary<string, string> dic)
+		public IDalBase SearchTable(Dictionary<string, string> dic)
 		{
-			DataTable dt = new DataTable();
 			string sqlStr = "";
 			sqlStr = @" 
 						WITH TOT (INVOICE ,箱號, 淨重,毛重)
@@ -94,8 +93,8 @@ namespace Ivan_Dal
 					}
 				}
 			}
-			dt = GetDataTable(sqlStr);
-			return dt;
+			this.SetSqlText(sqlStr);
+			return this;
 		}
 
 		/// <summary>
@@ -103,7 +102,7 @@ namespace Ivan_Dal
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public int InsertPaku(Dictionary<string, string> dic)
+		public IDalBase InsertPaku(Dictionary<string, string> dic, int cnt)
 		{
 			int res = 0;
 			string sqlStr = @"   INSERT INTO [dbo].[paku]
@@ -177,63 +176,49 @@ namespace Ivan_Dal
 													  ELSE 0 
 													  END
 									WHERE 序號 = @SEQ
-
+									
+									--更新重量 只更新第一筆
+									UPDATE paku
+									SET 淨重 = 0
+									   ,毛重 = 0
+									WHERE INVOICE = @INVOICE
+									AND 箱號 = @PACK_NO 
+						
+									UPDATE paku 
+									SET 淨重 = @NET_WEIGHT
+									   ,毛重 = @WEIGHT
+									WHERE INVOICE = @INVOICE
+									AND 箱號 = @PACK_NO
+									AND 序號 = (SELECT TOP 1 序號 
+												FROM paku 
+												WHERE INVOICE = @INVOICE
+												AND 箱號 = @PACK_NO
+												Order By CASE When Substring(paku.箱號,1,1)>='A' Then substring(paku.箱號,1,1)+Right(Space(3)+Substring(Rtrim(paku.箱號),2,3),3) Else Right(Space(4)+Rtrim(paku.箱號),4) End,paku.淨重 DESC,paku.頤坊型號)
+									
+									--更新發票
+									UPDATE invu
+									SET 發票匯率 = (SELECT 美元匯率 FROM rate WHERE 日期 = 出貨日期)
+									WHERE INVOICE = @INVOICE
 									";
 
 			string[] seqArray = dic["SEQ[]"].Split(',');
 			string[] freeArr = dic["FREE[]"].Split(',');
 			string[] packCntArr = dic["PACK_CNT[]"].Split(',');
 
-			this.SetTran();
-			for (int cnt = 0; cnt < seqArray.Length; cnt++)
-			{
-				this.ClearParameter();
-				this.SetParameters("SEQ", seqArray[cnt]);
-				this.SetParameters("PACK_CNT", packCntArr[cnt]);
-				this.SetParameters("FREE", freeArr[cnt]);
-				this.SetParameters("INVOICE", dic["INVOICE"]);
-				this.SetParameters("ATTN", dic["ATTN"]);
-				this.SetParameters("PACK_NO", dic["PACK_NO"]);
-				this.SetParameters("SAMPLE_NO", dic["SAMPLE_NO"]);
-				this.SetParameters("UPD_USER", dic["Account"]);
-				Execute(sqlStr);
-			}
-
-			//後續還有語法，額外紀錄LOG
-			//Log.InsertLog(context, context.Session["Account"], sqlStr, parmStr);
-
-			//最後更新重量 只更新第一筆
-			sqlStr = @" UPDATE paku
-						SET 淨重 = 0
-						   ,毛重 = 0
-						WHERE INVOICE = @INVOICE
-						AND 箱號 = @PACK_NO 
-						
-						UPDATE paku 
-						SET 淨重 = @NET_WEIGHT
-						   ,毛重 = @WEIGHT
-						WHERE INVOICE = @INVOICE
-						AND 箱號 = @PACK_NO
-						AND 序號 = (SELECT TOP 1 序號 
-									FROM paku 
-									WHERE INVOICE = @INVOICE
-									AND 箱號 = @PACK_NO
-									Order By CASE When Substring(paku.箱號,1,1)>='A' Then substring(paku.箱號,1,1)+Right(Space(3)+Substring(Rtrim(paku.箱號),2,3),3) Else Right(Space(4)+Rtrim(paku.箱號),4) End,paku.淨重 DESC,paku.頤坊型號) ";
+			this.SetParameters("SEQ", seqArray[cnt]);
+			this.SetParameters("PACK_CNT", packCntArr[cnt]);
+			this.SetParameters("FREE", freeArr[cnt]);
+			this.SetParameters("INVOICE", dic["INVOICE"]);
+			this.SetParameters("ATTN", dic["ATTN"]);
+			this.SetParameters("PACK_NO", dic["PACK_NO"]);
+			this.SetParameters("SAMPLE_NO", dic["SAMPLE_NO"]);
+			this.SetParameters("UPD_USER", dic["Account"]);
 			this.SetParameters("NET_WEIGHT", dic["NET_WEIGHT"]);
 			this.SetParameters("WEIGHT", dic["WEIGHT"]);
-			Execute(sqlStr);
 
-			//更新發票
-			sqlStr = @" UPDATE invu
-						SET 發票匯率 = (SELECT 美元匯率 FROM rate WHERE 日期 = 出貨日期)
-						WHERE INVOICE = @INVOICE
-				     ";
-
-			Execute(sqlStr);
-
-			this.TranCommit();
-
-			return res;
+			//!!後續抽離
+			this.SetSqlText(sqlStr);
+			return this;
 		}
 
 		/// <summary>
@@ -241,7 +226,7 @@ namespace Ivan_Dal
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public int UpdatePaku(Dictionary<string, string> dic)
+		public IDalBase UpdatePaku(Dictionary<string, string> dic)
 		{
 			string sqlStr = @"      UPDATE [dbo].[paku]
                                        SET 更新日期 = GETDATE()
@@ -273,12 +258,11 @@ namespace Ivan_Dal
 											END
 						WHERE 序號 = @PAKU2_SEQ";
 			
-			this.SetTran();
 			this.SetParameters("UPD_USER", dic["Account"]);
-			int res = Execute(sqlStr);
 
+			//!!後續抽離
 			//最後更新重量 只更新第一筆
-			sqlStr = @" UPDATE paku
+			sqlStr += @" UPDATE paku
 						SET 淨重 = 0
 						   ,毛重 = 0
 						WHERE INVOICE = @INVOICE
@@ -294,10 +278,9 @@ namespace Ivan_Dal
 									WHERE INVOICE = @INVOICE
 									AND 箱號 = @箱號
 									Order By CASE When Substring(paku.箱號,1,1)>='A' Then substring(paku.箱號,1,1)+Right(Space(3)+Substring(Rtrim(paku.箱號),2,3),3) Else Right(Space(4)+Rtrim(paku.箱號),4) End,paku.淨重 DESC,paku.頤坊型號) ";
-			Execute(sqlStr);
-			this.TranCommit();
 
-			return res;
+			this.SetSqlText(sqlStr);
+			return this;
 		}
 
 		/// <summary>
@@ -305,7 +288,7 @@ namespace Ivan_Dal
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public int DeletePaku(Dictionary<string, string> dic)
+		public IDalBase DeletePaku(Dictionary<string, string> dic)
 		{
 			int res = 0;
 			string sqlStr = @"   UPDATE paku
@@ -328,11 +311,8 @@ namespace Ivan_Dal
 			this.SetParameters("SEQ", dic["SEQ"]);
 			this.SetParameters("UPD_USER", dic["Account"]);
 
-			this.SetTran();
-			Execute(sqlStr);
-			this.TranCommit();
-
-			return res;
+			this.SetSqlText(sqlStr);
+			return this;
 		}
 	}
 }

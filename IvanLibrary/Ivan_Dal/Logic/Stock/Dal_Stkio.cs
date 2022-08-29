@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Text;
 using System.Web;
 
@@ -10,7 +11,7 @@ namespace Ivan_Dal
     /// <summary>
     /// 核銷數邏輯待stkio 資料都已結案或刪除 剩新資料再調整
     /// </summary>
-    public class Dal_Stkio : DataOperator
+    public class Dal_Stkio : Dal_Base
     {
         #region 查詢區域
         /// <summary>
@@ -18,11 +19,9 @@ namespace Ivan_Dal
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTable(Dictionary<string, string> dic)
+        public IDalBase SearchTable(Dictionary<string, string> dic)
         {
-            DataTable dt = new DataTable();
             string sqlStr = "";
-
             sqlStr = @"SELECT Top 500 CONVERT(VARCHAR,S.更新日期,23) 更新日期
 		                              ,S.廠商簡稱
 			                          ,S.頤坊型號
@@ -109,9 +108,8 @@ namespace Ivan_Dal
             }
 
             sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
-
-            dt = GetDataTable(sqlStr);
-            return dt;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
@@ -119,11 +117,9 @@ namespace Ivan_Dal
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTableForMT(Dictionary<string, string> dic)
+        public IDalBase SearchTableForMT(Dictionary<string, string> dic)
         {
-            DataTable dt = new DataTable();
             string sqlStr = "";
-
             sqlStr = @"SELECT Top 500 S.訂單號碼
 			                          ,S.頤坊型號
                                       ,CONVERT(VARCHAR,S.更新日期,23) 更新日期
@@ -193,9 +189,8 @@ namespace Ivan_Dal
             }
 
             sqlStr += " ORDER BY S.頤坊型號, S.更新日期 ";
-
-            dt = GetDataTable(sqlStr);
-            return dt;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
@@ -203,11 +198,10 @@ namespace Ivan_Dal
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTableStoreAp(Dictionary<string, string> dic)
+        public IDalBase SearchTableStoreAp(Dictionary<string, string> dic)
         {
             DataTable dt = new DataTable();
             string sqlStr = "";
-
             sqlStr = @"SELECT Top 500 S.訂單號碼
 			                          ,S.廠商簡稱
 			                          ,S.頤坊型號
@@ -278,8 +272,8 @@ namespace Ivan_Dal
             }
 
             sqlStr += " ORDER BY S.頤坊型號, S.更新日期 ";
-            dt = GetDataTable(sqlStr);
-            return dt;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
@@ -287,11 +281,9 @@ namespace Ivan_Dal
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTableForAp(Dictionary<string, string> dic)
+        public IDalBase SearchTableForAp(Dictionary<string, string> dic)
         {
-            DataTable dt = new DataTable();
             string sqlStr = "";
-
             sqlStr = @"SELECT Top 500 S.訂單號碼
 			                          ,S.頤坊型號
                                       {扣快取}
@@ -378,11 +370,10 @@ namespace Ivan_Dal
             {
                 sqlStr = sqlStr.Replace("{扣快取}", ",'N' 扣快取");
             }
-
             sqlStr += " ORDER BY S.頤坊型號, S.更新日期 ";
 
-            dt = GetDataTable(sqlStr);
-            return dt;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
@@ -390,11 +381,9 @@ namespace Ivan_Dal
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public DataTable SearchTableForSample(Dictionary<string, string> dic)
+        public IDalBase SearchTableForSample(Dictionary<string, string> dic)
         {
-            DataTable dt = new DataTable();
             string sqlStr = "";
-
             sqlStr = @"SELECT DISTINCT Top 500 {0} 點收批號 
 					   			      ,A.頤坊型號
 					   			      ,A.產品說明
@@ -478,9 +467,8 @@ namespace Ivan_Dal
                     }
                 }
             }
-
-            dt = GetDataTable(sqlStr);
-            return dt;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         #endregion
@@ -491,7 +479,7 @@ namespace Ivan_Dal
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public int InsertStkio(Dictionary<string, string> dic)
+        public IDalBase InsertStkio(Dictionary<string, string> dic)
         {
             Stkio stkioModel = new Stkio();
             var column = new StringBuilder();
@@ -542,12 +530,8 @@ namespace Ivan_Dal
             }
 
             string sqlStr = string.Format($"INSERT INTO stkio ({column.ToString().TrimEnd(',')}) VALUES ({columnVar.ToString().TrimEnd(',')})");
-
-            this.SetTran();
-            int res = Execute(sqlStr);
-            this.TranCommit();
-
-            return res;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
@@ -555,7 +539,7 @@ namespace Ivan_Dal
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public int MutiInsertStkio(List<StkioFromSuplu> liEntity, object account)
+        public IDalBase InsertStkioFromSuplu(StkioFromSuplu entity, object account)
         {
             string sqlStr = @"   INSERT INTO [dbo].[stkio]
                                                ([序號]
@@ -626,36 +610,28 @@ namespace Ivan_Dal
 	                                    WHERE 序號 = @SEQ
 									";
 
-            int res = 0;
-            this.SetTran();
-            foreach (StkioFromSuplu entity in liEntity)
+            foreach (var property in entity.GetType().GetProperties())
             {
-                ClearParameter();
-                foreach (var property in entity.GetType().GetProperties())
+                if ("STOCK_LOC".Equals(property.Name))
                 {
-                    if ("STOCK_LOC".Equals(property.Name))
+                    //庫位沒有傳入 用 庫區 + 庫位寫入
+                    if (string.IsNullOrEmpty(entity.STOCK_LOC))
                     {
-                        //庫位沒有傳入 用 庫區 + 庫位寫入
-                        if (string.IsNullOrEmpty(entity.STOCK_LOC))
-                        {
-                            sqlStr = sqlStr.Replace($"@{property.Name}", entity.STOCK_POS + "庫位");
-                        }
-                        else
-                        {
-                            SetParameters($"@{property.Name}", property.GetValue(entity));
-                        }
+                        sqlStr = sqlStr.Replace($"@{property.Name}", entity.STOCK_POS + "庫位");
                     }
                     else
                     {
                         SetParameters($"@{property.Name}", property.GetValue(entity));
                     }
                 }
-                this.SetParameters("UPD_USER", account ?? "IVAN10");
-                res += Execute(sqlStr);
+                else
+                {
+                    SetParameters($"@{property.Name}", property.GetValue(entity));
+                }
             }
-            //Log一次寫
-            this.TranCommit();
-            return res;
+            this.SetParameters("UPD_USER", account ?? "IVAN10");
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         #endregion
@@ -666,7 +642,7 @@ namespace Ivan_Dal
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public int UpdateStkio(Dictionary<string, string> dic)
+        public IDalBase UpdateStkio(Dictionary<string, string> dic)
         {
             string sqlStr = @"      UPDATE [dbo].[stkio]
                                        SET 更新日期 = GETDATE()
@@ -689,20 +665,16 @@ namespace Ivan_Dal
 
             this.SetParameters("SEQ", dic["SEQ"]);
             sqlStr += " WHERE [序號] = @SEQ ";
-
-            this.SetTran();
             this.SetParameters("UPD_USER", dic["Account"] ?? "IVAN10");
-            int res = Execute(sqlStr);
-            this.TranCommit();
-
-            return res;
+            this.SetSqlText(sqlStr);
+            return this;
         }
 
         /// <summary>
         /// 核銷 Stkio 
         /// </summary>
         /// <returns></returns>
-        public int ApproveStkio(Dictionary<string, string> dic)
+        public IDalBase ApproveStkio(Dictionary<string, string> dic, int cnt)
         {
             string sqlStr = @"      UPDATE [dbo].[stkio]
                                        SET 已結案 = CASE WHEN ISNULL(核銷數,0) + @APPROVE_CNT >= ISNULL(入庫數,0) + ISNULL(出庫數,0) THEN 1 ELSE 0 END 
@@ -800,24 +772,16 @@ namespace Ivan_Dal
             string[] remarkArr = dic["REMARK[]"].Split(',');
             string[] quickTakeArr = dic["QUICK_TAKE[]"].Split(',');
 
-            int res = 0;
-            this.SetTran();
-            for (int cnt = 0; cnt < seqArray.Length; cnt++)
-            {
-                this.ClearParameter();
-                this.SetParameters("SEQ", seqArray[cnt]);
-                this.SetParameters("APPROVE_CNT", Convert.ToDecimal(approveCntArr[cnt]));
-                this.SetParameters("STOCK_LOC", stockLocArr[cnt]);
-                this.SetParameters("REMARK", remarkArr[cnt]);
-                this.SetParameters("QUICK_TAKE", quickTakeArr[cnt]);
-                this.SetParameters("UPD_USER", dic["Account"] ?? "IVAN10");
+            this.SetParameters("SEQ", seqArray[cnt]);
+            this.SetParameters("APPROVE_CNT", Convert.ToDecimal(approveCntArr[cnt]));
+            this.SetParameters("STOCK_LOC", stockLocArr[cnt]);
+            this.SetParameters("REMARK", remarkArr[cnt]);
+            this.SetParameters("QUICK_TAKE", quickTakeArr[cnt]);
+            this.SetParameters("UPD_USER", dic["Account"] ?? "IVAN10");
+            sqlStr = sqlStr.Replace("{庫區}", stockPosArr[cnt]);
+            this.SetSqlText(sqlStr);
 
-                sqlStr = sqlStr.Replace("{庫區}", stockPosArr[cnt]);
-                res += Execute(sqlStr);
-            }
-            this.TranCommit();
-
-            return res;
+            return this;
         }
 
         #endregion
@@ -827,9 +791,8 @@ namespace Ivan_Dal
         /// 刪除RECU 單筆
         /// </summary>
         /// <returns></returns>
-        public int DeleteStkio(Dictionary<string, string> dic)
+        public IDalBase DeleteStkio(Dictionary<string, string> dic)
         {
-            int res = 0;
             string sqlStr = @"      UPDATE stkio
                                     SET 已刪除 = 1
                                        ,更新日期 = GETDATE()
@@ -840,10 +803,8 @@ namespace Ivan_Dal
             this.SetParameters("SEQ", dic["SEQ"]);
             this.SetParameters("UPD_USER", dic["Account"]);
 
-            this.SetTran();
-            res = Execute(sqlStr);
-            this.TranCommit();
-            return res;
+            this.SetSqlText(sqlStr);
+            return this;
         }
         #endregion
     }

@@ -52,10 +52,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataOperator.cs" />
+    <Compile Include="Interface\IDalBase.cs" />
     <Compile Include="Interface\IDataOperator.cs" />
     <Compile Include="Logic\Base\Dal_Suplu.cs" />
     <Compile Include="Logic\Code\Dal_Nofile.cs" />
     <Compile Include="Logic\Code\Dal_Refdata.cs" />
+    <Compile Include="Logic\Dal_Base.cs" />
     <Compile Include="Logic\Dal_Template.cs" />
     <Compile Include="Logic\Dev\Dal_Invu.cs" />
     <Compile Include="Logic\Dev\Dal_Paku.cs" />

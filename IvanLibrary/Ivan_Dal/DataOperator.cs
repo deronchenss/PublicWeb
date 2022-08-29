@@ -1,15 +1,17 @@
 ﻿using Ivan.Models;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
+using System.Linq;
 
 namespace Ivan_Dal
 {
     public class DataOperator : IDataOperator
     {
-        private SqlCommand cmd = new SqlCommand();
+        public SqlCommand cmd = new SqlCommand();
         private SqlConnection conn = new SqlConnection();
         private SqlTransaction trans;
         private SqlDataAdapter da = new SqlDataAdapter();
@@ -23,17 +25,11 @@ namespace Ivan_Dal
         { 
             get 
             {
-                sqlLogModel.SQL_TEXT = sqlStr;
-                sqlLogModel.SQL_PARAMETERS = parmStr;
+                sqlLogModel.SQL_TEXT = cmd.CommandText;
+                sqlLogModel.SQL_PARAMETERS = GetParameters();
                 return sqlLogModel;
             } 
         }
-
-        public string sqlStr => cmd.CommandText;
-
-        //sqlparameters string 
-        public string parmStr => parmStrTmp;
-        public string parmStrTmp = "";
 
         private void SetConnection()
         {
@@ -42,6 +38,15 @@ namespace Ivan_Dal
                 conn.ConnectionString = connStr;
                 cmd.Connection = conn;
                 conn.Open();
+            }
+            else
+            {
+                cmd.Connection = conn;
+            }
+
+            if (isTran)
+            {
+                cmd.Transaction = trans;
             }
         }
 
@@ -68,7 +73,6 @@ namespace Ivan_Dal
         /// </summary>
         public void ClearParameter()
         {
-            parmStrTmp = "";
             cmd.Parameters.Clear();
         }
 
@@ -79,8 +83,17 @@ namespace Ivan_Dal
         /// <param name="value"></param>
         public void SetParameters(string paramName, object value)
         {
-            parmStrTmp += (paramName + ":" + Convert.ToString(value) + ",");
             cmd.Parameters.AddWithValue(paramName, value);
+        }
+
+        public string GetParameters()
+        {
+            string sqlparm = "";
+            foreach (SqlParameter para in cmd.Parameters)
+            {
+                sqlparm += (para.ParameterName + ":" + (string)para.Value); 
+            }
+            return sqlparm;
         }
 
         /// <summary>
@@ -91,7 +104,6 @@ namespace Ivan_Dal
         {
             SetConnection();
             trans = conn.BeginTransaction();
-            cmd.Transaction = trans;
             isTran = true;
         }
 
@@ -144,6 +156,54 @@ namespace Ivan_Dal
             {
                 SetConnection();
                 cmd.CommandText = sqlStr;
+                int res = cmd.ExecuteNonQuery();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                CatchDoThing();
+                throw ex;
+            }
+            finally
+            {
+                CloseConnection();
+            }
+        }
+
+        /// <summary>
+        /// 執行SQL 回傳 DATATABLE
+        /// </summary>
+        /// <returns></returns>
+        public DataTable GetDataTable()
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                SetConnection();
+                da.SelectCommand = cmd;
+                da.Fill(dt);
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                CatchDoThing();
+                throw ex;
+            }
+            finally
+            {
+                CloseConnection();
+            }
+        }
+
+        /// <summary>
+        /// 執行SQL 回傳影響筆數
+        /// </summary>
+        /// <returns></returns>
+        public int Execute()
+        {
+            try
+            {
+                SetConnection();
                 int res = cmd.ExecuteNonQuery();
                 return res;
             }
