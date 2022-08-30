@@ -75,10 +75,10 @@ namespace Ivan_Service
         /// 庫存入出維護 新增
         /// </summary>
         /// <returns></returns>
-        public string StockIOMTInsert(Dictionary<string, string> dic)
+        public string StockIOMTInsert(Stkio entity)
         {
             _dataOperator.SetTran();
-            int res = this.Execute(dalStk.InsertStkio(dic));
+            int res = this.Execute(dalStk.InsertStkio(entity));
             _dataOperator.TranCommit();
             return Convert.ToString(res);
         }

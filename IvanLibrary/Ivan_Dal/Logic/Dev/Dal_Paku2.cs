@@ -222,7 +222,7 @@ namespace Ivan_Dal
 			this.SetParameters("BATCH_NO", batchNoArray[cnt]);
 			this.SetParameters("CUST_NO", dic["CUST_NO"]);
 			this.SetParameters("CUST_S_NAME", dic["CUST_S_NAME"]);
-			this.SetParameters("USER", dic["Account"]);
+			this.SetParameters("USER", dic["UPD_USER"]);
 
 			this.SetSqlText(sqlStr);
 			return this;
@@ -332,7 +332,7 @@ namespace Ivan_Dal
 
 			string[] seqArray = dic["SEQ[]"].Split(',');
 			this.SetParameters("SEQ", seqArray[cnt]);
-			this.SetParameters("UPD_USER", dic["Account"]);
+			this.SetParameters("UPD_USER", dic["UPD_USER"]);
 			this.SetSqlText(sqlStr);
 			return this;
 		}

@@ -295,11 +295,10 @@
             //寫入DB
             function Insert() {
                 var dataReq = {};
-                dataReq['Call_Type'] = 'INSERT';
                 dataReq['已刪除'] = 0;
                 dataReq['SOURCE_TABLE'] = 'stkio';
                 dataReq['SOURCE_SEQ'] = 0;
-                dataReq['UPD_USER'] = "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>";
+                dataReq['更新人員'] = "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>";
 
                 //組json data
                 $('.updColumn').each(function () {
@@ -347,7 +346,10 @@
                 else {
                     $.ajax({
                         url: apiUrl,
-                        data: dataReq,
+                        data: {
+                            "Call_Type": "INSERT",
+                            "EXEC_DATA": JSON.stringify(dataReq)
+                        },
                         cache: false,
                         type: "POST",
                         datatype: "json",
@@ -464,7 +466,7 @@
                         data: {
                             "Call_Type": "DELETE",
                             "SEQ": $('#E_SEQ').val(),
-                            dataReq['UPD_USER'] = "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
+                            "UPD_USER" : "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
                         },
                         cache: false,
                         type: "POST",

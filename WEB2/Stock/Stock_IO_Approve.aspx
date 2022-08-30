@@ -467,7 +467,8 @@
                         "STOCK_POS": liStockPos,
                         "STOCK_LOC": liStockLocArr,
                         "REMARK": liRemark,
-                        "QUICK_TAKE": liQuickTake
+                        "QUICK_TAKE": liQuickTake,
+                        "UPD_USER": "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
                     },
                     cache: false,
                     type: "POST",

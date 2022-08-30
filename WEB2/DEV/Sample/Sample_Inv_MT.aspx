@@ -268,7 +268,8 @@
                         data: {
                             "Call_Type": "INSERT",
                             "CUST_NO": $('#E_CUST_NO').val(),
-                            "CUST_S_NAME": $('#E_CUST_S_NAME').val()
+                            "CUST_S_NAME": $('#E_CUST_S_NAME').val(),
+                            "UPD_USER": "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
                         },
                         cache: false,
                         type: "POST",
@@ -306,6 +307,7 @@
                 var dataReq = {};
                 dataReq['Call_Type'] = 'UPD';
                 dataReq['SEQ'] = $('#E_SEQ').val();
+                dataReq['更新人員'] = "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>";
 
                 //組json data
                 $('.updColumn').each(function () {

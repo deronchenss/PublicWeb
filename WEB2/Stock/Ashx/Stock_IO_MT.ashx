@@ -10,6 +10,7 @@ using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using Ivan_Service;
 using Ivan_Log;
+using Ivan.Models;
 
 public class Stock_IO_MT : IHttpHandler, IRequiresSessionState
 {
@@ -27,7 +28,8 @@ public class Stock_IO_MT : IHttpHandler, IRequiresSessionState
                         result = JsonConvert.SerializeObject(service.StockIOMTSearch(ContextFN.ContextToDictionary(context)));
                         break;
                     case "INSERT":
-                        result = service.StockIOMTInsert(ContextFN.ContextToDictionary(context));
+                        Stkio entity = JsonConvert.DeserializeObject<Stkio>(context.Request["EXEC_DATA"]);
+                        result = service.StockIOMTInsert(entity);
                         break;
                     case "UPDATE":
                         result = service.StockIOMTUpdate(ContextFN.ContextToDictionary(context));

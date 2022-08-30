@@ -279,6 +279,8 @@
                             alert('<%=Resources.MP.Data_Not_Exists_Alert%>');
                             Edit_Mode = "Base";
                             Form_Mode_Change("Base");
+                            $('#Table_Search_Data').DataTable().clear().draw();
+                            $('#Table_Search_Data_Tmp').DataTable().clear().draw();
                         }
                         else {
                             $('#Table_Search_Data_Tmp').DataTable({
@@ -497,8 +499,9 @@
                         "ATTN": $.trim($('#E_ATTN').val()),
                         "PACK_NO": $.trim($('#E_PACK_NO').val()),
                         "SAMPLE_NO": $.trim($('#E_SAMPLE_NO').val()),
-                        "WEIGHT": $.trim($('#E_WEIGHT').val()),
-                        "NET_WEIGHT": $.trim($('#E_NET_WEIGHT').val())
+                        "WEIGHT": $.trim($('#E_WEIGHT').val()) == '' ? 0 : $.trim($('#E_WEIGHT').val()),
+                        "NET_WEIGHT": $.trim($('#E_NET_WEIGHT').val()) == '' ? 0 : $.trim($('#E_NET_WEIGHT').val()),
+                        "UPD_USER": "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
                     },
                     cache: false,
                     type: "POST",
@@ -546,7 +549,8 @@
                     url: apiUrl,
                     data: {
                         "Call_Type": "DELETE",
-                        "SEQ": liSeq
+                        "SEQ": liSeq,
+                        "UPD_USER": "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
                     },
                     cache: false,
                     type: "POST",
@@ -579,7 +583,7 @@
             };         
 
             //檢查INVOICE 帶出客戶編號 簡稱
-            function ChkIV(supluSeq) {
+            function ChkIV() {
                 $.ajax({
                     url: apiUrl,
                     data: {

@@ -146,7 +146,7 @@ namespace Ivan_Dal
 
 			this.SetParameters("CUST_NO", dic["CUST_NO"]);
 			this.SetParameters("CUST_S_NAME", dic["CUST_S_NAME"]);
-			this.SetParameters("UPD_USER", dic["Account"]);
+			this.SetParameters("UPD_USER", dic["UPD_USER"]);
 			this.SetSqlText(sqlStr);
 			return this;
 		}
@@ -160,7 +160,6 @@ namespace Ivan_Dal
 		{
 			string sqlStr = @"      UPDATE [dbo].[invu]
                                        SET 更新日期 = GETDATE()
-										  ,更新人員 = @UPD_USER
                                     ";
 
 			foreach (string form in dic.Keys)
@@ -179,7 +178,6 @@ namespace Ivan_Dal
 
 			sqlStr += " WHERE 序號 = @SEQ ";
 			this.SetParameters("SEQ", dic["SEQ"]);
-			this.SetParameters("UPD_USER", dic["Account"]);
 			this.SetSqlText(sqlStr);
 			return this;
 		}

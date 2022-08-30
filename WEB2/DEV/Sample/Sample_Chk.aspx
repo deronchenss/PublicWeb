@@ -603,7 +603,8 @@
                         "WEIGHT": liWeight,
                         "LEN": liLen,
                         "WIDTH": liWidth,
-                        "HEIGHT": liHeight
+                        "HEIGHT": liHeight,
+                        "UPD_USER": "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
                     },
                     cache: false,
                     type: "POST",

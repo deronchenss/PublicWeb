@@ -459,7 +459,7 @@ namespace Ivan_Dal
             this.SetParameters("PUDU_DATE", dic["PUDU_DATE"]);
             this.SetParameters("PUDU_CNT", dic["PUDU_CNT"]);
             this.SetParameters("PUDU_GIVE_DATE", dic["PUDU_GIVE_DATE"]);
-            this.SetParameters("UPD_USER", "IVAN10");
+            this.SetParameters("UPD_USER", dic["UPD_USER"]);
 
             this.SetSqlText(sqlStr);
             return this;
@@ -561,7 +561,7 @@ namespace Ivan_Dal
             this.SetParameters("PUDU_DATE", dic["PUDU_DATE"]);
             this.SetParameters("PUDU_CNT", dic["PUDU_CNT"]);
             this.SetParameters("PUDU_GIVE_DATE", dic["PUDU_GIVE_DATE"]);
-            this.SetParameters("UPD_USER", dic["Account"]);
+            this.SetParameters("UPD_USER", dic["UPD_USER"]);
 
             this.SetSqlText(sqlStr);
             return this;
@@ -597,14 +597,13 @@ namespace Ivan_Dal
                                     WHERE N.使用者 = @SET_SEQ_USER
                                     AND 單據 LIKE '%' + '開發' +'%'  ";
 
-            this.SetParameters("FORCE_CLOSE", dic["FORCE_CLOSE"]);
             this.SetParameters("UPD_USER", "IVAN");
             this.SetParameters("SAMPLE_NO", dic["SAMPLE_NO"]);
             this.SetParameters("WORK_TYPE", dic["WORK_TYPE"]);
             this.SetParameters("PUDU_GIVE_DATE", dic["PUDU_GIVE_DATE"]);
             //特殊需求 如是以下這些人，先以Nancy 撈取號碼 先註解 等UPD_USER 抓session後使用
-            if (dic["Account"] == "游佩穎" || dic["Account"] == "莊智涵" || dic["Account"] == "智涵"
-                || dic["Account"] == "冠蓉" || dic["Account"] == "陳顥翰" || dic["Account"] == "黃如韻" || dic["Account"] == "許薇萱")
+            if (dic["UPD_USER"] == "游佩穎" || dic["UPD_USER"] == "莊智涵" || dic["UPD_USER"] == "智涵"
+                || dic["UPD_USER"] == "冠蓉" || dic["UPD_USER"] == "陳顥翰" || dic["UPD_USER"] == "黃如韻" || dic["UPD_USER"] == "許薇萱")
             {
                 this.SetParameters("SET_SEQ_USER", "IVAN");
             }
@@ -656,7 +655,7 @@ namespace Ivan_Dal
             this.SetParameters("BIG_REMARK_2", dic["BIG_REMARK_2"]);
             this.SetParameters("BIG_REMARK_3", dic["BIG_REMARK_3"]);
             this.SetParameters("SPEC_REMARK", dic["SPEC_REMARK"]);
-            this.SetParameters("UPD_USER", dic["Account"]);
+            this.SetParameters("UPD_USER", dic["UPD_USER"]);
 
             this.SetSqlText(sqlStr);
             return this;
@@ -670,11 +669,14 @@ namespace Ivan_Dal
         {
             string sqlStr = "";
             sqlStr = @" UPDATE pudu
-                        SET [結案] = @FORCE_CLOSE,
-                            [強制結案] = @FORCE_CLOSE
+                        SET [結案] = @FORCE_CLOSE
+                           ,[強制結案] = @FORCE_CLOSE
+                           ,[更新人員] = @UPD_USER
+                           ,[更新日期] = GETDATE()
                         WHERE 序號 = @SEQ";
             this.SetParameters("SEQ", seq);
             this.SetParameters("FORCE_CLOSE", dic["FORCE_CLOSE"]);
+            this.SetParameters("UPD_USER", dic["UPD_USER"]);
             this.SetSqlText(sqlStr);
             return this;
         }

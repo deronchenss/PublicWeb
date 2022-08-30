@@ -657,7 +657,6 @@ namespace Ivan_Dal
             CleanParameters();
             string sqlStr = @"      UPDATE [dbo].[suplu]
                                        SET 更新日期 = GETDATE()
-										  ,更新人員 = @UPD_USER
                                     ";
 
 
@@ -677,7 +676,6 @@ namespace Ivan_Dal
             }
             sqlStr += " WHERE [序號] = @SEQ ";
             this.SetParameters("SEQ", seqArray[cnt]);
-            this.SetParameters("UPD_USER", dic["Account"] ?? "IVAN10");
             this.SetSqlText(sqlStr);
             return this;
         }

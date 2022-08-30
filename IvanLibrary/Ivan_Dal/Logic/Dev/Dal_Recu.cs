@@ -178,7 +178,7 @@ namespace Ivan_Dal
             this.SetParameters("INVOICE_ERR", invErrArray[cnt]);
             this.SetParameters("SHIP_ARR_REMARK", shipRemarkArray[cnt]);
             this.SetParameters("SHIP_ARR_CNT", shipArrCnt[cnt]);
-            this.SetParameters("UPD_USER", dic["Account"]);
+            this.SetParameters("UPD_USER", dic["UPD_USER"]);
 
             if (dic["FORCE_CLOSE"] == "true")
             {
@@ -207,13 +207,13 @@ namespace Ivan_Dal
                             {0}
                         WHERE [序號] = @SEQ ";
 
-            this.SetParameters("UPD_USER", "IVAN");
+            this.SetParameters("UPD_USER", dic["UPD_USER"]);
             this.SetParameters("SEQ", dic["SEQ"]);
 
             //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
             foreach (string form in dic.Keys)
             {
-                if (form != "Account" && form != "SEQ")
+                if (form != "UPD_USER" && form != "SEQ")
                 {
                     string debug = dic[form];
                     switch (form)
@@ -243,7 +243,7 @@ namespace Ivan_Dal
                                      ";
 
             this.SetParameters("SEQ", dic["SEQ"]);
-            this.SetParameters("UPD_USER", dic["Account"]);
+            this.SetParameters("UPD_USER", dic["UPD_USER"]);
             this.SetSqlText(sqlStr);
             return this;
         }

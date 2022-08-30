@@ -562,7 +562,8 @@
                         "NO_PAY": $('#E_SAMPLE_NO_PAY').is(":checked"),
                         "FORCE_CLOSE": $('#E_FORCE_CLOSE').is(":checked"),
                         "INVOICE_TYPE": $('#E_INVOICE_TYPE').val(),
-                        "INVOICE_NO": $('#E_INVOICE_NO').val()
+                        "INVOICE_NO": $('#E_INVOICE_NO').val(),
+                        "UPD_USER": "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
                     },
                     cache: false,
                     type: "POST",

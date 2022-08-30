@@ -295,7 +295,8 @@
                             "發票異常": $('#E_INVOICE_ERR').is(":checked"),
                             "到貨備註": $('#E_ARR_REMARK').val(),
                             "調整額01": $('#E_ADJ_AMT_01').val() == '' ? 0 : $('#E_ADJ_AMT_01').val(),
-                            "調整額02": $('#E_ADJ_AMT_02').val() == '' ? 0 : $('#E_ADJ_AMT_02').val()
+                            "調整額02": $('#E_ADJ_AMT_02').val() == '' ? 0 : $('#E_ADJ_AMT_02').val(),
+                            "UPD_USER": "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
                         },
                         cache: false,
                         type: "POST",
@@ -331,7 +332,8 @@
                         url: apiUrl,
                         data: {
                             "Call_Type": "DELETE_RECU",
-                            "SEQ": $('#E_SEQ').val()
+                            "SEQ": $('#E_SEQ').val(),
+                            "UPD_USER": "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
                         },
                         cache: false,
                         type: "POST",

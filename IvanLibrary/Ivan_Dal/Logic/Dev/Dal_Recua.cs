@@ -215,7 +215,7 @@ namespace Ivan_Dal
             this.SetParameters("TRANSFER_NO", dic["TRANSFER_NO"]);
             this.SetParameters("CHK_DATE", dic["CHK_DATE"]);
             this.SetParameters("TRANSFER_S_NAME", dic["TRANSFER_S_NAME"]);
-            this.SetParameters("UPD_USER", "IVAN10");
+            this.SetParameters("UPD_USER", dic["UPD_USER"]);
             this.SetParameters("NET_WEI", string.IsNullOrEmpty(netWeiArray[cnt]) ? "0" : netWeiArray[cnt]);
             this.SetParameters("WEI", string.IsNullOrEmpty(weiArray[cnt]) ? "0" : weiArray[cnt]);
             this.SetParameters("LEN", string.IsNullOrEmpty(lenArr[cnt]) ? "0" : lenArr[cnt]);
@@ -256,7 +256,7 @@ namespace Ivan_Dal
                                      ";
 
             this.SetParameters("SEQ", dic["SEQ"]);
-            this.SetParameters("UPD_USER", dic["Account"]);
+            this.SetParameters("UPD_USER", dic["UPD_USER"]);
             this.SetSqlText(sqlStr);
             return this;
         }

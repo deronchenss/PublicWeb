@@ -212,7 +212,7 @@ namespace Ivan_Dal
 			this.SetParameters("ATTN", dic["ATTN"]);
 			this.SetParameters("PACK_NO", dic["PACK_NO"]);
 			this.SetParameters("SAMPLE_NO", dic["SAMPLE_NO"]);
-			this.SetParameters("UPD_USER", dic["Account"]);
+			this.SetParameters("UPD_USER", dic["UPD_USER"]);
 			this.SetParameters("NET_WEIGHT", dic["NET_WEIGHT"]);
 			this.SetParameters("WEIGHT", dic["WEIGHT"]);
 
@@ -228,6 +228,7 @@ namespace Ivan_Dal
 		/// <returns></returns>
 		public IDalBase UpdatePaku(Dictionary<string, string> dic)
 		{
+			CleanParameters();
 			string sqlStr = @"      UPDATE [dbo].[paku]
                                        SET 更新日期 = GETDATE()
 										  ,更新人員 = @UPD_USER
@@ -236,7 +237,7 @@ namespace Ivan_Dal
 			foreach (string form in dic.Keys)
 			{
 				this.SetParameters(form, dic[form]); //因後續還有UPDATE重量語法，故所有變數皆須設定
-				if (!string.IsNullOrEmpty(dic[form]) && form != "Account" && form != "SEQ")
+				if (!string.IsNullOrEmpty(dic[form]) && form != "UPD_USER" && form != "SEQ")
 				{
 					switch (form)
 					{
@@ -257,8 +258,6 @@ namespace Ivan_Dal
 											ELSE 0
 											END
 						WHERE 序號 = @PAKU2_SEQ";
-			
-			this.SetParameters("UPD_USER", dic["Account"]);
 
 			//!!後續抽離
 			//最後更新重量 只更新第一筆
@@ -290,7 +289,7 @@ namespace Ivan_Dal
 		/// <returns></returns>
 		public IDalBase DeletePaku(Dictionary<string, string> dic)
 		{
-			int res = 0;
+			CleanParameters();
 			string sqlStr = @"   UPDATE paku
 								 SET 已刪除 = 1
 									,更新日期 = GETDATE()
@@ -309,7 +308,7 @@ namespace Ivan_Dal
 							";
 
 			this.SetParameters("SEQ", dic["SEQ"]);
-			this.SetParameters("UPD_USER", dic["Account"]);
+			this.SetParameters("UPD_USER", dic["UPD_USER"]);
 
 			this.SetSqlText(sqlStr);
 			return this;

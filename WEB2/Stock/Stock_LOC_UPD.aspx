@@ -415,6 +415,7 @@
                 var dataReq = {};
                 dataReq['Call_Type'] = 'EXEC';
                 dataReq['SEQ'] = liSeq;
+                dataReq['更新人員'] = "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>";
                 dataReq[$('#E_STOCK_POS').val() + "庫位"] = $('#E_STOCK_LOC').val();
 
                 $.ajax({

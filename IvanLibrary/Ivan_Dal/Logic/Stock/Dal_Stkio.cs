@@ -479,9 +479,8 @@ namespace Ivan_Dal
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public IDalBase InsertStkio(Dictionary<string, string> dic)
+        public IDalBase InsertStkio(Stkio stkioModel)
         {
-            Stkio stkioModel = new Stkio();
             var column = new StringBuilder();
             var columnVar = new StringBuilder();
 
@@ -496,7 +495,7 @@ namespace Ivan_Dal
                 else if ("建立人員".Equals(property.Name) || "更新人員".Equals(property.Name))
                 {
                     column.Append($" [{property.Name}],");
-                    columnVar.Append($" '{dic["Account"] ?? "IVAN10"}',");
+                    columnVar.Append($" '{stkioModel.更新人員}',");
                 }
                 else if ("建立日期".Equals(property.Name) || "更新日期".Equals(property.Name))
                 {
@@ -506,26 +505,26 @@ namespace Ivan_Dal
                 else if ("庫位".Equals(property.Name))
                 {
                     //庫位空的抓DEFAULT
-                    if (string.IsNullOrEmpty(dic[property.Name]))
+                    if (string.IsNullOrEmpty(property.Name))
                     {
                         column.Append($" [{property.Name}],");
-                        columnVar.Append($" (SELECT "+ dic["庫區"] + "庫位 FROM suplu WHERE 序號 = @SUPLU_SEQ),");
+                        columnVar.Append($" (SELECT "+ property.GetValue(stkioModel) + "庫位 FROM suplu WHERE 序號 = @SUPLU_SEQ),");
                     }
                     else
                     {
                         column.Append($" [{property.Name}],");
                         columnVar.Append($" @{property.Name},");
-                        SetParameters($"@{property.Name}", dic[property.Name]);
+                        SetParameters($"@{property.Name}", property.GetValue(stkioModel));
                     }
                 }
                 else
                 {
-                    if (string.IsNullOrEmpty(dic[property.Name]))
-                        continue;
-
-                    column.Append($" [{property.Name}],");
-                    columnVar.Append($" @{property.Name},");
-                    SetParameters($"@{property.Name}", dic[property.Name]);
+                    if (property.GetValue(stkioModel, null) != null)
+                    {
+                        column.Append($" [{property.Name}],");
+                        columnVar.Append($" @{property.Name},");
+                        SetParameters($"@{property.Name}", property.GetValue(stkioModel));
+                    }
                 }
             }
 
@@ -739,7 +738,7 @@ namespace Ivan_Dal
 
             foreach (string form in dic.Keys)
             {
-                if (!string.IsNullOrEmpty(dic[form]) && form != "Account" && form != "SEQ")
+                if (!string.IsNullOrEmpty(dic[form]) && form != "UPD_USER" && form != "SEQ")
                 {
                     switch (form)
                     {
@@ -753,7 +752,7 @@ namespace Ivan_Dal
 
             this.SetParameters("SEQ", dic["SEQ"]);
             sqlStr += " WHERE [序號] = @SEQ ";
-            this.SetParameters("UPD_USER", dic["Account"] ?? "IVAN10");
+            this.SetParameters("UPD_USER", dic["UPD_USER"]);
             this.SetSqlText(sqlStr);
             return this;
         }
@@ -845,7 +844,7 @@ namespace Ivan_Dal
                                     UPDATE SUPLU
                                     SET {庫區}庫存數 = ISNULL({庫區}庫存數,0) + (CASE WHEN ISNULL(ST.出庫數,0) > 0 THEN -1 WHEN ISNULL(ST.入庫數,0) > 0 THEN 1 ELSE 0 END * @APPROVE_CNT)
 									   ,{庫區}庫位 = @STOCK_LOC
-                                       ,快取庫存數 = ISNULL(快取庫存數,0) - CASE WHEN @QUICK_TAKE = 'Y' THEN @STOCK_O_CNT ELSE 0 END
+                                       ,快取庫存數 = ISNULL(快取庫存數,0) - CASE WHEN @QUICK_TAKE = 'Y' THEN @APPROVE_CNT ELSE 0 END
 									   ,更新日期 = GETDATE()
                                        ,更新人員 = @UPD_USER
                                     FROM SUPLU S
@@ -866,7 +865,7 @@ namespace Ivan_Dal
             this.SetParameters("STOCK_LOC", stockLocArr[cnt]);
             this.SetParameters("REMARK", remarkArr[cnt]);
             this.SetParameters("QUICK_TAKE", quickTakeArr[cnt]);
-            this.SetParameters("UPD_USER", dic["Account"] ?? "IVAN10");
+            this.SetParameters("UPD_USER", dic["UPD_USER"]);
             sqlStr = sqlStr.Replace("{庫區}", stockPosArr[cnt]);
             this.SetSqlText(sqlStr);
 
@@ -890,7 +889,7 @@ namespace Ivan_Dal
                                      ";
 
             this.SetParameters("SEQ", dic["SEQ"]);
-            this.SetParameters("UPD_USER", dic["Account"]);
+            this.SetParameters("UPD_USER", dic["UPD_USER"]);
 
             this.SetSqlText(sqlStr);
             return this;

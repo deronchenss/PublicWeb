@@ -310,7 +310,8 @@
                         "FACT_NO": $('#Q_FACT_NO').val(),
                         "FACT_S_NAME": $('#Q_FACT_S_NAME').val(),
                         "PROD_DES": $('#Q_PROD_DES').val(),
-                        "WRITE_OFF": $('#Q_WRITEOFF').val()
+                        "WRITE_OFF": $('#Q_WRITEOFF').val(),
+                        "UPD_USER": "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
                     },
                     cache: false,
                     type: "POST",
@@ -473,7 +474,8 @@
                             "Call_Type": "SEQ_PURC_SEQ",
                             "SAMPLE_NO": $('#S_SAMPLE_NO').val(),
                             "WORK_TYPE": $('#S_WORK_TYPE').val(),
-                            "PUDU_GIVE_DATE": $('#S_PUDU_GIVE_DATE').val()
+                            "PUDU_GIVE_DATE": $('#S_PUDU_GIVE_DATE').val(),
+                            "UPD_USER": "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
                         },
                         cache: false,
                         type: "POST",
@@ -482,7 +484,7 @@
                         success: function (response, status) {
                             console.log(status);
                             if (status === 'success') {
-                                alert('編號成功:' + $('#S_SAMPLE_NO').val() + '已新增完成');
+                                alert('編號成功:' + $('#S_SAMPLE_NO').val() + '已編號完成');
                             }
                             else {
                                 alert('編號有誤請通知資訊人員');
@@ -522,10 +524,11 @@
                             "CUST_S_NAME": $('#E_CUST_S_NAME').val(),
                             "GIVE_WAY": $('#E_GIVE_WAY').val(),
                             "PUDU_NO": $('#E_PUDU_NO').val(),
-                            "PUDU_CNT": $('#E_PUDU_CNT').val(),
+                            "PUDU_CNT": $.trim($('#E_PUDU_CNT').val()) == '' ? 0 : $.trim($('#E_PUDU_CNT').val()),
                             "PUDU_DATE": $('#E_PUDU_DATE').val(),
                             "PUDU_GIVE_DATE": $('#E_PUDU_GIVE_DATE').val(),
-                            "UNIT": $('#E_UNIT').val()
+                            "UNIT": $('#E_UNIT').val(),
+                            "UPD_USER": "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
                         },
                         cache: false,
                         type: "POST",
@@ -606,7 +609,8 @@
                             "PRICE_2": $('#E_PRICE_2').val(),
                             "MIN_3": $('#E_MIN_3').val(),
                             "PRICE_3": $('#E_PRICE_3').val(),
-                            "AMT_CHANGE": amtChange
+                            "AMT_CHANGE": amtChange,
+                            "UPD_USER": "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
                         },
                         cache: false,
                         type: "POST",
@@ -653,7 +657,8 @@
                             "BIG_REMARK_1": $('#B_BIG_REMARK_1').val(),
                             "BIG_REMARK_2": $('#B_BIG_REMARK_2').val(),
                             "BIG_REMARK_3": $('#B_BIG_REMARK_3').val(),
-                            "SPEC_REMARK": $('#B_SPEC_REMARK').val()
+                            "SPEC_REMARK": $('#B_SPEC_REMARK').val(),
+                            "UPD_USER": "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
                         },
                         cache: false,
                         type: "POST",
@@ -695,7 +700,8 @@
                         data: {
                             "Call_Type": "UPD_WRITEOFF",
                             "SEQ": liSeq,
-                            "FORCE_CLOSE": type
+                            "FORCE_CLOSE": type,
+                            "UPD_USER": "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
                         },
                         cache: false,
                         type: "POST",

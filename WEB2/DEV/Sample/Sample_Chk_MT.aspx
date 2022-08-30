@@ -260,7 +260,8 @@
                         url: apiUrl,
                         data: {
                             "Call_Type": "DELETE_RECUA",
-                            "SEQ": $('#E_SEQ').val()
+                            "SEQ": $('#E_SEQ').val(),
+                            "UPD_USER": "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
                         },
                         cache: false,
                         type: "POST",

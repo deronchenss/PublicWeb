@@ -461,7 +461,8 @@
                         "BATCH_NO": liBatchNo,
                         //準備出貨
                         "CUST_NO": $('#SG_CUST_NO').val(),
-                        "CUST_S_NAME": $('#SG_CUST_S_NAME').val()
+                        "CUST_S_NAME": $('#SG_CUST_S_NAME').val(),
+                        "UPD_USER": "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
                     },
                     cache: false,
                     type: "POST",

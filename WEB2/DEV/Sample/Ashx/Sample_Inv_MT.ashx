@@ -28,7 +28,7 @@ public class Sample_Inv_MT : IHttpHandler, IRequiresSessionState
                         result = JsonConvert.SerializeObject(service.SampleInvMTSearch(ContextFN.ContextToDictionary(context)));
                         break;
                     case "INSERT":
-                        result = service.SampleInvMTInsert(ContextFN.ContextToDictionary(context));
+                        result = JsonConvert.SerializeObject(service.SampleInvMTInsert(ContextFN.ContextToDictionary(context)));
                         break;
                     case "UPD":
                         result = service.SampleInvMTUpdate(ContextFN.ContextToDictionary(context));
