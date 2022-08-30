@@ -91,7 +91,7 @@ namespace Ivan_Dal
             string sqlparm = "";
             foreach (SqlParameter para in cmd.Parameters)
             {
-                sqlparm += (para.ParameterName + ":" + (string)para.Value); 
+                sqlparm += (para.ParameterName + ":" + Convert.ToString(para.Value) + ";"); 
             }
             return sqlparm;
         }

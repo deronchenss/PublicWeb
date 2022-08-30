@@ -30,7 +30,6 @@ namespace Ivan_Service
             _dataOperator.SetTran();
             foreach (StkioFromSuplu entity in liEntity)
             {
-                _dataOperator.ClearParameter();
                 res += this.Execute(dalStk.InsertStkioFromSuplu(entity, user));
             }
             _dataOperator.TranCommit();
@@ -57,7 +56,6 @@ namespace Ivan_Service
             _dataOperator.SetTran();
             for (int cnt = 0; cnt < seqArray.Length; cnt++)
             {
-                _dataOperator.ClearParameter();
                 res += this.Execute(dalStk.ApproveStkio(dic, cnt));
             }
             _dataOperator.TranCommit();
@@ -128,7 +126,6 @@ namespace Ivan_Service
             _dataOperator.SetTran();
             foreach (StkioFromSuplu entity in liEntity)
             {
-                _dataOperator.ClearParameter();
                 res += this.Execute(dalStk.InsertStkioFromSuplu(entity, user));
             }
             _dataOperator.TranCommit();
@@ -164,7 +161,6 @@ namespace Ivan_Service
             _dataOperator.SetTran();
             for (int cnt = 0; cnt < seqArray.Length; cnt++)
             {
-                _dataOperator.ClearParameter();
                 res += this.Execute(dalSup.UpdateSuplu(dic, cnt));
             }
             _dataOperator.TranCommit();

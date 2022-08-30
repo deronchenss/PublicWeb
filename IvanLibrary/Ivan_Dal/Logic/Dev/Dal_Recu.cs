@@ -85,6 +85,7 @@ namespace Ivan_Dal
         /// <returns></returns>
         public IDalBase InsertRecu(Dictionary<string, string> dic, int cnt)
         {
+            CleanParameters();
             string[] seqArray = dic["SEQ[]"].Split(',');
             string[] invErrArray = dic["INVOICE_ERR[]"].Split(',');
             string[] shipRemarkArray = dic["SHIP_ARR_REMARK[]"].Split(',');
@@ -197,6 +198,7 @@ namespace Ivan_Dal
 		/// <returns></returns>
 		public IDalBase UpdateRecu(Dictionary<string, string> dic)
         {
+            CleanParameters();
             string sql = "";
             string sqlStr = "";
             sqlStr = @" UPDATE [dbo].[RECU]
@@ -235,6 +237,7 @@ namespace Ivan_Dal
         /// <returns></returns>
         public IDalBase DeleteRecu(Dictionary<string, string> dic)
         {
+            CleanParameters();
             string sqlStr = @"      DELETE FROM RECU
                                     WHERE [序號] = @SEQ
                                      ";

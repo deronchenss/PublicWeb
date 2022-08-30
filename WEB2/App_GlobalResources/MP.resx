@@ -960,4 +960,7 @@
   <data name="Write_Off" xml:space="preserve">
     <value>核銷</value>
   </data>
+  <data name="Shipping" xml:space="preserve">
+    <value>出貨</value>
+  </data>
 </root>

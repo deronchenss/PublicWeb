@@ -954,4 +954,7 @@
   <data name="Write_Off" xml:space="preserve">
     <value>Write Off</value>
   </data>
+  <data name="Shipping" xml:space="preserve">
+    <value>Shipping</value>
+  </data>
 </root>

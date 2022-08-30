@@ -22,6 +22,16 @@ namespace Ivan_Dal
         /// </summary>
         /// <param name="paramName"></param>
         /// <param name="value"></param>
+        protected void CleanParameters()
+        {
+            cmd.Parameters.Clear();
+        }
+
+        /// <summary>
+        /// 變數賦予值
+        /// </summary>
+        /// <param name="paramName"></param>
+        /// <param name="value"></param>
         protected void SetParameters(string paramName, object value)
         {
             cmd.Parameters.AddWithValue(paramName, value);

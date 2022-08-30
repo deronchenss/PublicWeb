@@ -104,7 +104,7 @@ namespace Ivan_Dal
 		/// <returns></returns>
 		public IDalBase InsertPaku(Dictionary<string, string> dic, int cnt)
 		{
-			int res = 0;
+			CleanParameters();
 			string sqlStr = @"   INSERT INTO [dbo].[paku]
 										   ([序號]
 										   ,[SUPLU_SEQ]

@@ -12,6 +12,73 @@ namespace Ivan_Dal
     public class Dal_Stock_Sale : Dal_Base
     {
         #region 查詢區域
+        /// <summary>
+        /// 門市庫取出貨 查詢 Return DataTable
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public IDalBase SearchTable(Dictionary<string, string> dic)
+        {
+            string sqlStr = "";
+            sqlStr = @"SELECT Top 500 S.箱號S
+			                          ,S.箱號E
+			                          ,S.內袋
+			                          ,S.pm_no
+			                          ,S.訂單號碼
+			                          ,S.頤坊型號
+			                          ,SU.銷售型號
+			                          ,S.單位
+			                          ,S.出貨數
+			                          ,S.備註
+			                          ,SU.產品說明
+			                          ,S.出區
+			                          ,S.入區
+			                          ,CONVERT(VARCHAR,S.出貨日期,23) AS 備貨日期
+			                          ,SU.產品一階
+			                          ,S.廠商編號
+			                          ,S.廠商簡稱
+			                          ,S.序號
+			                          ,S.更新人員
+			                          ,CONVERT(VARCHAR,S.更新日期,23)  更新日期
+                                      ,ST.SUPLU_SEQ
+                                      ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = ST.SUPLU_SEQ) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
+                                      ,CASE WHEN (S.入區 = '台北' AND ISNULL(SU.台北安全數,0) = 0) 
+                                              OR (S.入區 = '台中' AND ISNULL(SU.台中安全數,0) = 0) 
+                                              OR (S.入區 = '高雄' AND ISNULL(SU.高雄安全數,0) = 0) 
+                                              OR (S.入區 = '其他')   THEN 'Y' 
+                                            ELSE 'N' END 不入庫 
+                        FROM stkio_sale S  
+                        INNER JOIN stkio ST ON S.STKIO_SEQ = ST.序號 --出庫寫入
+                        INNER JOIN suplu SU ON ST.SUPLU_SEQ = SU.序號
+                        LEFT JOIN stkio STI ON S.序號 = STI.SOURCE_SEQ AND STI.SOURCE_TABLE = 'stkio_sale'
+                        WHERE NOT (ISNULL(S.出貨數,0) = ISNULL(S.核銷數,0) --舊邏輯
+                        OR ISNULL(STI.入庫數,0) = ISNULL(S.出貨數,0)) -- 新邏輯
+                        AND ISNULL(S.已刪除,0) = 0
+                        AND ISNULL(S.不入庫,0) = 0 --新邏輯已出貨不寫核銷 不入庫不寫stkio 故改用 不入庫辨別
+                         ";
+
+            //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
+            foreach (string form in dic.Keys)
+            {
+                if (!string.IsNullOrEmpty(dic[form]))
+                {
+                    string debug = dic[form];
+                    switch (form)
+                    {
+                        default:
+                            //PM_NO
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') = @" + form;
+                            this.SetParameters(form, dic[form]);
+                            break;
+                    }
+                }
+            }
+
+            sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
+            this.SetSqlText(sqlStr);
+            return this;
+        }
+
         #endregion
 
         #region 新增區域
@@ -25,6 +92,7 @@ namespace Ivan_Dal
         /// <returns></returns>
         public IDalBase InsertStkioSale(Stkio_SaleFromStkio entity, object account)
         {
+            CleanParameters();
             string sqlStr = @"      INSERT INTO [dbo].[stkioh]
 											([序號]
 											,[SUPLU_SEQ]
@@ -195,6 +263,42 @@ namespace Ivan_Dal
         #endregion
 
         #region 更新區域
+        /// <summary>
+        /// UPDATE Stkio_sale
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public IDalBase UpdateStkioSale(Stkio_Sale entity)
+        {
+            CleanParameters();
+            string sqlStr = @"      UPDATE [dbo].[stkio_sale]
+                                       SET 更新日期 = GETDATE()
+                                    ";
+
+            foreach (var property in entity.GetType().GetProperties())
+            {
+                if (property.GetValue(entity, null) != null)
+                {
+                    switch (property.Name)
+                    {
+                        case "SUPLU_SEQ":
+                            break;
+                        case "序號":
+                            this.SetParameters(property.Name, property.GetValue(entity));
+                            break;
+                        default:
+                            sqlStr += " ," + property.Name + " = @" + property.Name;
+                            this.SetParameters(property.Name, property.GetValue(entity));
+                            break;
+                    }
+                }
+            }
+
+            sqlStr += " WHERE [序號] = @序號 ";
+            this.SetSqlText(sqlStr);
+            return this;
+        }
+
         #endregion
 
         #region 刪除區域

@@ -535,12 +535,13 @@ namespace Ivan_Dal
         }
 
         /// <summary>
-        /// 多筆 Insert Stkio 
+        /// Insert Stkio 
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
         public IDalBase InsertStkioFromSuplu(StkioFromSuplu entity, object account)
         {
+            CleanParameters();
             string sqlStr = @"   INSERT INTO [dbo].[stkio]
                                                ([序號]
                                                ,[SOURCE_SEQ]
@@ -634,6 +635,93 @@ namespace Ivan_Dal
             return this;
         }
 
+        /// <summary>
+        /// Insert Stkio From Stkio_sale
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public IDalBase InsertStkioFromSale(InsertStkioFromSaleModel entity)
+        {
+            CleanParameters();
+            string sqlStr = @"   INSERT INTO [dbo].[stkio]
+                                               ([序號]
+                                               ,[SOURCE_SEQ]
+                                               ,[SOURCE_TABLE]
+                                               ,[SUPLU_SEQ]
+                                               ,[訂單號碼]
+                                               ,[單據編號]
+                                               ,[異動日期]
+                                               ,[帳項]
+                                               ,[帳項原因]
+                                               ,[廠商編號]
+                                               ,[廠商簡稱]
+                                               ,[頤坊型號]
+                                               ,[暫時型號]
+                                               ,[單位]
+                                               ,[庫區]
+                                               ,[入庫數]
+                                               ,[出庫數]
+                                               ,[庫位]
+                                               ,[核銷數]
+                                               ,[異動前庫存]
+                                               ,[客戶編號]
+                                               ,[客戶簡稱]
+                                               ,[完成品型號]
+                                               ,[備註]
+                                               ,[內銷入庫]
+                                               ,[已結案]
+                                               ,[已刪除]
+                                               ,[變更日期]
+                                               ,[建立人員]
+                                               ,[建立日期]
+                                               ,[更新人員]
+                                               ,[更新日期])
+                                         SELECT (Select IsNull(Max(序號),0)+1 From stkio) [序號]
+                                               ,@序號 [SOURCE_SEQ]
+                                               ,'stkio_sale' [SOURCE_TABLE]
+                                               ,@SUPLU_SEQ [SUPLU_SEQ]
+                                               ,S.訂單號碼 [訂單號碼]
+                                               ,S.PM_NO [單據編號]
+                                               ,GETDATE() [異動日期]
+                                               ,'8' [帳項]
+                                               ,NULL [帳項原因]
+                                               ,SU.[廠商編號]
+                                               ,SU.[廠商簡稱]
+                                               ,SU.[頤坊型號]
+                                               ,SU.[暫時型號]
+                                               ,SU.[單位]
+                                               ,S.入區 [庫區]
+                                               ,S.出貨數 [入庫數]
+                                               ,0 [出庫數]
+                                               ,S.庫位 [庫位]
+                                               ,0 [核銷數]
+                                               ,NULL [異動前庫存]
+                                               ,'00001' [客戶編號]
+                                               ,'IVAN' [客戶簡稱]
+                                               ,CASE WHEN SU.[產品一階] = '01' THEN SU.暫時型號 ELSE S.箱號S + '-' + S.箱號E + '(' + S.內袋 + ')' END [完成品型號]
+                                               ,S.備註 [備註]
+                                               ,NULL [內銷入庫]
+                                               ,0 [已結案]
+                                               ,0 [已刪除]
+                                               ,GETDATE() [變更日期]
+                                               ,@更新人員 [建立人員]
+                                               ,GETDATE() [建立日期]
+                                               ,@更新人員 [更新人員]
+                                               ,GETDATE() [更新日期]
+	                                    FROM stkio_sale S
+                                        INNER JOIN stkio ST ON S.STKIO_SEQ = ST.序號
+                                        INNER JOIN SUPLU SU ON ST.SUPLU_SEQ = SU.序號
+	                                    WHERE S.序號 = @序號
+									";
+
+            foreach (var property in entity.GetType().GetProperties())
+            {
+                SetParameters($"@{property.Name}", property.GetValue(entity));
+            }
+            this.SetSqlText(sqlStr);
+            return this;
+        }
+
         #endregion
 
         #region 更新區域
@@ -676,6 +764,7 @@ namespace Ivan_Dal
         /// <returns></returns>
         public IDalBase ApproveStkio(Dictionary<string, string> dic, int cnt)
         {
+            CleanParameters();
             string sqlStr = @"      UPDATE [dbo].[stkio]
                                        SET 已結案 = CASE WHEN ISNULL(核銷數,0) + @APPROVE_CNT >= ISNULL(入庫數,0) + ISNULL(出庫數,0) THEN 1 ELSE 0 END 
                                           ,核銷數 = ISNULL(核銷數,0) + @APPROVE_CNT

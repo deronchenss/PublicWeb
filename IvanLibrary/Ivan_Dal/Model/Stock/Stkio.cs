@@ -96,5 +96,15 @@ namespace Ivan.Models
 		//REMARK
 		public string REMARK { get; set; }
 	}
+
+	/// <summary>
+	/// 寫入 Stkio 從 stkio sale model
+	/// </summary>
+	public class InsertStkioFromSaleModel
+	{
+		public int 序號 { get; set; }
+		public string SUPLU_SEQ { get; set; }
+		public string 更新人員 { get; set; }
+	}
 }
 

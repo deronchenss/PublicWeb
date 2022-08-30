@@ -98,6 +98,7 @@ namespace Ivan_Dal
 		/// <returns></returns>
 		public IDalBase InsertPaku2(Dictionary<string, string> dic, int cnt)
 		{
+			CleanParameters();
 			string sqlStr = @" DECLARE @MAX_SEQ int; 
 						       Select @MAX_SEQ = IsNull(Max(序號),0)+1 From [paku2]
 						       INSERT INTO [dbo].[paku2]
@@ -234,6 +235,7 @@ namespace Ivan_Dal
 		/// <returns></returns>
 		public IDalBase DeletePaku2(Dictionary<string, string> dic, int cnt)
 		{
+			CleanParameters();
 			string sqlStr = @"  DECLARE @ENTER_CNT DECIMAL(18,2)
 								SELECT  @ENTER_CNT = ISNULL(備貨數量,0) - SUM(ISNULL(出貨數量,0))
 								FROM paku2 P2 

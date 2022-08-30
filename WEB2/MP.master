@@ -266,6 +266,7 @@
                                         <li>
                                             <a href="/Store/Store_StockIO_Ins.aspx"><%--門市庫取申請--%><%=Resources.MP.Store%><%=Resources.MP.Stock_Take%><%=Resources.MP.Apply%></a>
                                             <a href="/Store/Store_StockIO_Approve.aspx"><%--門市庫取核銷--%><%=Resources.MP.Store%><%=Resources.MP.Stock_Take%><%=Resources.MP.Write_Off%></a>
+                                            <a href="/Store/Store_StockIO_Shipping.aspx"><%--門市庫取出貨--%><%=Resources.MP.Store%><%=Resources.MP.Stock_Take%><%=Resources.MP.Shipping%></a>
                                         </li>
                                     </ul>
                                 </li>

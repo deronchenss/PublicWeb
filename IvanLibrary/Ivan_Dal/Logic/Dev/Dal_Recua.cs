@@ -74,6 +74,7 @@ namespace Ivan_Dal
         /// <returns></returns>
         public IDalBase InsertRecua(Dictionary<string, string> dic, int cnt)
         {
+            CleanParameters();
             string sqlStr = @"      DECLARE @MAX_SEQ int; 
 									Select @MAX_SEQ = IsNull(Max(序號),0)+1 From [recua]
 									INSERT INTO [dbo].[recua]

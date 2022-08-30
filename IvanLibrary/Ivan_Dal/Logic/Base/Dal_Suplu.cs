@@ -654,6 +654,7 @@ namespace Ivan_Dal
         /// <returns></returns>
         public IDalBase UpdateSuplu(Dictionary<string, string> dic, int cnt)
         {
+            CleanParameters();
             string sqlStr = @"      UPDATE [dbo].[suplu]
                                        SET 更新日期 = GETDATE()
 										  ,更新人員 = @UPD_USER

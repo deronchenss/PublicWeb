@@ -299,6 +299,7 @@
                 dataReq['已刪除'] = 0;
                 dataReq['SOURCE_TABLE'] = 'stkio';
                 dataReq['SOURCE_SEQ'] = 0;
+                dataReq['UPD_USER'] = "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>";
 
                 //組json data
                 $('.updColumn').each(function () {
@@ -376,6 +377,7 @@
                 var dataReq = {};
                 dataReq['Call_Type'] = 'UPDATE';
                 dataReq['SEQ'] = $('#E_SEQ').val();
+                dataReq['UPD_USER'] = "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>";
 
                 //組json data
                 $('.updColumn').each(function () {
@@ -461,7 +463,8 @@
                         url: apiUrl,
                         data: {
                             "Call_Type": "DELETE",
-                            "SEQ": $('#E_SEQ').val()
+                            "SEQ": $('#E_SEQ').val(),
+                            dataReq['UPD_USER'] = "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
                         },
                         cache: false,
                         type: "POST",

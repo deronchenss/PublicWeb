@@ -121,7 +121,6 @@ namespace Ivan_Service
             _dataOperator.SetTran();
             for (int cnt = 0; cnt < seqArray.Length; cnt++)
             {
-                _dataOperator.ClearParameter();
                 res += this.Execute(dalRecu.InsertRecu(dic, cnt));
             }
             _dataOperator.TranCommit();
@@ -190,7 +189,6 @@ namespace Ivan_Service
             _dataOperator.SetTran();
             for (int cnt = 0; cnt < seqArray.Length; cnt++)
             {
-                _dataOperator.ClearParameter();
                 res += this.Execute(dalRecua.InsertRecua(dic, cnt));
             }
             _dataOperator.TranCommit();
@@ -217,7 +215,6 @@ namespace Ivan_Service
             _dataOperator.SetTran();
             for (int cnt = 0; cnt < seqArray.Length; cnt++)
             {
-                _dataOperator.ClearParameter();
                 res += this.Execute(dalPaku2.InsertPaku2(dic, cnt));
             }
             _dataOperator.TranCommit();
@@ -325,7 +322,6 @@ namespace Ivan_Service
             _dataOperator.SetTran();
             for (int cnt = 0; cnt < seqArray.Length; cnt++)
             {
-                _dataOperator.ClearParameter();
                 res += this.Execute(dalPaku.InsertPaku(dic, cnt));
             }
             _dataOperator.TranCommit();
@@ -343,7 +339,6 @@ namespace Ivan_Service
             _dataOperator.SetTran();
             for (int cnt = 0; cnt < seqArray.Length; cnt++)
             {
-                _dataOperator.ClearParameter();
                 res += this.Execute(dalPaku2.DeletePaku2(dic, cnt));
             }
             _dataOperator.TranCommit();
