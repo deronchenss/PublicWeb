@@ -258,6 +258,32 @@
                             $('#Table_EXEC_Data_info').text('Showing ' + $('#Table_EXEC_Data > tbody tr[role=row]').length + ' entries');
                             $('#E_EXEC_TITLE').text('出貨項次，筆數: ' + $('#Table_EXEC_Data > tbody tr[role=row]').length);
                             $('#E_PM_NO').val($('#Q_PM_NO').val());
+
+                            //取得箱數
+                            var bigNo = 1;
+                            var smallNo = 1;
+                            var cnt = 1;
+                            $('#Table_EXEC_Data > tbody tr[role=row]').each(function (index) {
+                                var packSeq = $('#Table_EXEC_Data thead th:contains(箱號)').index() + 1; //箱號INDEX
+                                packNo = $(this).find('td:nth-child(' + packSeq + ')').text();
+                                var numStr = packNo.replace(/[^0-9]/ig, '');
+                                if (isNaN(parseInt(numStr, 10))) {
+                                    numStr = 1;
+                                }
+                                if (cnt == 1) {
+                                    bigNo = parseInt(numStr, 10);
+                                    smallNo = parseInt(numStr, 10);
+                                }
+
+                                if (parseInt(numStr, 10) > bigNo) {
+                                    bigNo = parseInt(numStr, 10);
+                                }
+                                if (parseInt(numStr, 10) < smallNo) {
+                                    smallNo = parseInt(numStr, 10);
+                                }
+                                cnt++;
+                            })
+                            $('#Q_PACK_CNT').val(bigNo - smallNo + 1);
                         }
                     },
                     error: function (ex) {
@@ -404,7 +430,13 @@
                 </td>
             </tr>
             <tr class="trstyle">
-                <td class="tdtstyleRight" colspan="7">
+                <td class="tdhstyle">箱數</td>
+                <td class="tdbstyle">
+                    <input id="Q_PACK_CNT" class="textbox_char" disabled="disabled" />
+                </td>
+            </tr>
+            <tr class="trstyle">
+                <td class="tdtstyleRight" colspan="2">
                     <input type="button" id="BT_Search" class="buttonStyle" value="<%=Resources.MP.Search%>" />
                     <input type="reset" id="BT_Cancel" class="buttonStyle" value="<%=Resources.MP.Cancel%>" style="display: none;" />
                 </td>

@@ -20,9 +20,7 @@ namespace Ivan_Dal
         public IDalBase SearchTable(Dictionary<string, string> dic)
         {
             string sqlStr = "";
-            sqlStr = @"SELECT Top 500 S.箱號S
-			                          ,S.箱號E
-			                          ,S.內袋
+            sqlStr = @"SELECT Top 500 S.箱號
 			                          ,S.pm_no
 			                          ,S.訂單號碼
 			                          ,S.頤坊型號
