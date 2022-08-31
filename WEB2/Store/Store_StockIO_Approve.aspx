@@ -120,6 +120,12 @@
                             
                             break;
                         }
+                    case "CANCEL":
+                        $('.Div_D').css('display', 'none');
+                        $('#Div_CANCEL').css('display', 'flex');
+
+                        V_BT_CHG($('#BT_S_CANCEL_APPROVE'));
+                        break;
                     case "COLOR":
                         $('.Div_D').css('display', 'none');
                         $('#Div_DT_DETAIL').css('display', '');
@@ -484,16 +490,17 @@
                     var seqIndex = $('#Table_EXEC_Data thead th:contains(序號)').index() + 1; //序號INDEX
                     var stockPosOIndex = $('#Table_EXEC_Data thead th:contains(出區)').index() + 1; //出區INDEX
                     var stockPosIIndex = $('#Table_EXEC_Data thead th:contains(單據編號)').index() + 1; //單據編號INDEX 此單據編號放入區
-                    object['SEQ'] = $(this).find('td:nth-child(' + seqIndex + ')').text();
-                    object['STOCK_O_CNT'] = stockOCnt;
-                    object['QUICK_TAKE'] = $(this).find('#E_QUICK_TAKE').is(":checked") ? 'Y' : 'N';
+                    object['序號'] = $(this).find('td:nth-child(' + seqIndex + ')').text();
+                    object['出貨數'] = stockOCnt;
+                    object['核銷數'] = stockOCnt;
+                    object['實扣快取數'] = $(this).find('#E_QUICK_TAKE').is(":checked") ? stockOCnt : 0;
                     object['PM_NO'] = $('#E_PM_NO').val();
-                    object['STOCK_POS_O'] = $(this).find('td:nth-child(' + stockPosOIndex + ')').text();
-                    object['STOCK_POS_I'] = $(this).find('td:nth-child(' + stockPosIIndex + ')').text();
-                    object['PACK_NO_S'] = $('#E_PACK_NO_S').val(); 
-                    object['PACK_NO_E'] = $('#E_PACK_NO_E').val(); 
-                    object['IN_BAG'] = $('#E_IN_BAG').val(); 
-                    object['REMARK'] = $(this).find('#E_REMARK').val();
+                    object['出區'] = $(this).find('td:nth-child(' + stockPosOIndex + ')').text();
+                    object['入區'] = $(this).find('td:nth-child(' + stockPosIIndex + ')').text();
+                    object['庫區'] = $(this).find('td:nth-child(' + stockPosOIndex + ')').text(); //寫入 stkioh 庫區
+                    object['箱號'] = $('#E_PACK_NO').val(); 
+                    object['備註'] = $(this).find('#E_REMARK').val();
+                    object['更新人員'] = "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>";
                     execData.push(object);
                 })
 
@@ -532,6 +539,52 @@
                     error: function (ex) {
                         console.log(ex.responseText);
                         alert('核銷有誤請通知資訊人員');
+                        return;
+                    }
+                });
+            };         
+
+            //取消核銷
+            function CancelApprove() {
+                if ($.trim($('#C_PM_NO').val()) == '') {
+                    alert('PM_NO不可為空!');
+                    return;
+                }
+                if ($.trim($('#C_PACK_NO').val()) == '') {
+                    alert('箱號不可為空!');
+                    return;
+                }
+
+                var execData = [];
+                var object = {};
+                object['PM_NO'] = $('#C_PM_NO').val();
+                object['箱號'] = $('#C_PACK_NO').val();
+                object['更新人員'] = "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>";
+                execData.push(object);
+
+                $.ajax({
+                    url: apiUrl,
+                    data: {
+                        "Call_Type": "CANCEL",
+                        "EXEC_DATA": JSON.stringify(execData)
+                    },
+                    cache: false,
+                    type: "POST",
+                    datatype: "json",
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    success: function (response, status) {
+                        console.log(status);
+                        if (response == 0) {
+                            alert('取消核銷 0 筆 請確認 PM NO 及箱號!');
+                            return;
+                        }
+                        else {
+                            alert('已取消核銷，筆數:' + response);
+                        }
+                    },
+                    error: function (ex) {
+                        console.log(ex.responseText);
+                        alert('取消核銷有誤請通知資訊人員');
                         return;
                     }
                 });
@@ -612,6 +665,11 @@
                 }
             });
 
+            //BUTTON CLICK EVENT 取消核銷頁
+            $('#BT_CANCEL_AP').on('click', function () {
+                CancelApprove();
+            });
+
             //功能選單
             $('#BT_S_CHS').on('click', function () {
                 Edit_Mode = "Base";
@@ -626,6 +684,9 @@
             $('#BT_S_EXEC').on('click', function () {
                 Edit_Mode = "EXEC";
                 Form_Mode_Change("EXEC");
+            });
+            $('#BT_S_CANCEL_APPROVE').on('click', function () {
+                Form_Mode_Change("CANCEL");
             });
             $('#BT_S_COLOR').on('click', function () {
                 Form_Mode_Change("COLOR");
@@ -689,6 +750,7 @@
             &nbsp;
             <input type="button" id="BT_S_CHS" class="V_BT" value="選擇"  disabled="disabled" />
             <input type="button" id="BT_S_EXEC" class="V_BT" value="核銷" />
+            <input type="button" id="BT_S_CANCEL_APPROVE" class="V_BT" value="取消核銷" />
             <input type="button" id="BT_S_COLOR" class="V_BT" value="圖例" />
             <input type="button" id="BT_S_EX_IMG" class="V_BT" value="圖型" />
         </div>
@@ -759,14 +821,7 @@
                         <tr >
                             <td class="tdhstyle">箱號</td>
                             <td class="tdbstyle">
-                                <input id="E_PACK_NO_S"  class="textbox_char" maxlength="4" style="width:20%" /> -
-                                <input id="E_PACK_NO_E" class="textbox_char" maxlength="4" style="width:20%" />
-                            </td>
-                        </tr>
-                        <tr >
-                            <td class="tdhstyle">內袋</td>
-                            <td class="tdbstyle">
-                                <input id="E_IN_BAG"  class="textbox_char"  />
+                                <input id="E_PACK_NO"  class="textbox_char" maxlength="4" />
                             </td>
                         </tr>
                     </table>
@@ -848,6 +903,33 @@
                             <img id="I_IMG" src="#" style="max-width:100%; max-height:100%;display:none" />
                             <span id="I_NO_IMG" >查無圖檔</span>
                         </td>
+                    </tr>
+
+                </table>
+            </div> 
+        </div> 
+         <div id="Div_CANCEL" class=" Div_D" style=" display:flex; align-items:center; justify-content:center;" >
+            <div id="Div_CANCEL_AP" style="width:50%;height:71vh; border-style:solid;border-width:1px; display:flex; align-items:center; justify-content:center ">
+                <table class="search_section_control" style="width:auto">
+                    <tr class="trCenterstyle">
+                        <td class="tdhstyle" style="font-size:20px;">PM NO</td>
+                        <td class="tdbstyle">
+                            <input id="C_PM_NO"  class="textbox_char" />
+                         </td>
+                    </tr>
+                    <tr class="trCenterstyle">
+                        <td class="tdhstyle" style="font-size:20px;">箱號</td>
+                        <td class="tdbstyle">
+                            <input id="C_PACK_NO"  class="textbox_char" />
+                         </td>
+                    </tr>
+                     <tr class="trstyle"> 
+                        <td class="tdbstyle" style="height: 10vh; font-size: smaller;" >&nbsp</td>
+                    </tr>
+                     <tr class="trCenterstyle"> 
+                         <td colspan="2" style="text-align:center" >
+                            <input type="button" id="BT_CANCEL_AP" style="display:inline-block;font-size:20px" value="取消備貨"  />
+                         </td>
                     </tr>
 
                 </table>

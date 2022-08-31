@@ -1,4 +1,4 @@
-﻿using Ivan.Models;
+﻿using Ivan_Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -729,7 +729,7 @@ namespace Ivan_Dal
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public IDalBase UpdateStkio(Dictionary<string, string> dic)
+        public IDalBase UpdateStkioOld(Dictionary<string, string> dic)
         {
             string sqlStr = @"      UPDATE [dbo].[stkio]
                                        SET 更新日期 = GETDATE()
@@ -753,6 +753,46 @@ namespace Ivan_Dal
             this.SetParameters("SEQ", dic["SEQ"]);
             sqlStr += " WHERE [序號] = @SEQ ";
             this.SetParameters("UPD_USER", dic["UPD_USER"]);
+            this.SetSqlText(sqlStr);
+            return this;
+        }
+
+        /// <summary>
+        /// UPDATE Stkio 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public IDalBase UpdateStkio(Stkio stkio)
+        {
+            this.CleanParameters();
+            string sqlStr = @"      UPDATE [dbo].[stkio]
+                                       SET 更新日期 = GETDATE() ";
+
+            foreach (var property in stkio.GetType().GetProperties())
+            {
+                if (property.GetValue(stkio, null) != null)
+                {
+                    switch (property.Name)
+                    {
+                        case "SUPLU_SEQ":
+                            break;
+                        case "序號":
+                            this.SetParameters(property.Name, property.GetValue(stkio));
+                            break;
+                        case "核銷數":
+                            sqlStr += " ," + property.Name + " = ISNULL(核銷數,0) + @核銷數";
+                            sqlStr += " , 已結案 = CASE WHEN ISNULL(核銷數,0) + @核銷數 >= ISNULL(入庫數,0) + ISNULL(出庫數,0) THEN 1 ELSE 0 END ";
+                            this.SetParameters(property.Name, property.GetValue(stkio));
+                            break;
+                        default:
+                            sqlStr += " ," + property.Name + " = @" + property.Name;
+                            this.SetParameters(property.Name, property.GetValue(stkio));
+                            break;
+                    }
+                }
+            }
+
+            sqlStr += " WHERE [序號] = @序號 ";
             this.SetSqlText(sqlStr);
             return this;
         }

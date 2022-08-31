@@ -1,4 +1,4 @@
-﻿using Ivan.Models;
+﻿using Ivan_Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -49,8 +49,8 @@ namespace Ivan_Dal
                                             ELSE 'N' END 不入庫 
                         FROM stkio_sale S  
                         INNER JOIN stkio ST ON S.STKIO_SEQ = ST.序號 --出庫寫入
-                        INNER JOIN suplu SU ON ST.SUPLU_SEQ = SU.序號
-                        LEFT JOIN stkio STI ON S.序號 = STI.SOURCE_SEQ AND STI.SOURCE_TABLE = 'stkio_sale'
+                        INNER JOIN suplu SU ON ST.SUPLU_SEQ = SU.序號 
+                        LEFT JOIN stkio STI ON S.序號 = STI.SOURCE_SEQ AND STI.SOURCE_TABLE = 'stkio_sale' AND ISNULL(STI.已刪除,0) = 0
                         WHERE NOT (ISNULL(S.出貨數,0) = ISNULL(S.核銷數,0) --舊邏輯
                         OR ISNULL(STI.入庫數,0) = ISNULL(S.出貨數,0)) -- 新邏輯
                         AND ISNULL(S.已刪除,0) = 0
@@ -83,11 +83,7 @@ namespace Ivan_Dal
 
         #region 新增區域
         /// <summary>
-        /// 門市庫取核銷 
-        /// Step1: INSERT stkioh
-        /// Step2: UPDATE stkio 核銷數
-        /// Step3: UPDATE suplu 庫存數
-        /// Step4: INSERT stkio_sale
+        /// INSERT stkio_sale From stkio 
         /// </summary>
         /// <returns></returns>
         public IDalBase InsertStkioSale(Stkio_SaleFromStkio entity, object account)
@@ -197,9 +193,7 @@ namespace Ivan_Dal
                                                ,[庫位]
                                                ,[核銷數]
                                                ,[備註]
-                                               ,[箱號S]
-                                               ,[箱號E]
-                                               ,[內袋]
+                                               ,[箱號]
                                                ,[產品一階]
                                                ,[皮革型號]
                                                ,[不入庫]
@@ -226,9 +220,7 @@ namespace Ivan_Dal
                                                ,S.[庫位] 庫位
                                                ,0 [核銷數]
                                                ,@REMARK [備註]
-                                               ,@PACK_NO_S [箱號S]
-                                               ,@PACK_NO_E [箱號E]
-                                               ,@IN_BAG [內袋]
+                                               ,@PACK_NO [箱號]
                                                ,SU.[產品一階] 產品一階
                                                ,NULL [皮革型號]
                                                ,0 [不入庫]
@@ -260,11 +252,89 @@ namespace Ivan_Dal
             this.SetSqlText(sqlStr);
             return this;
         }
+
+        /// <summary>
+        /// INSERT stkio_sale From stkio 
+        /// </summary>
+        /// <returns></returns>
+        public IDalBase InsertStkioSaleFromStkio(Stkio_Sale stkioSale)
+        {
+            CleanParameters();
+            string sqlStr = @"      INSERT INTO [dbo].[stkio_sale]
+                                               ([序號]
+                                               ,[STKIO_SEQ]
+                                               ,[pm_no]
+                                               ,[訂單號碼]
+                                               ,[出貨日期]
+                                               ,[廠商編號]
+                                               ,[廠商簡稱]
+                                               ,[頤坊型號]
+                                               ,[銷售型號]
+                                               ,[單位]
+                                               ,[出區]
+                                               ,[入區]
+                                               ,[出貨數]
+                                               ,[庫位]
+                                               ,[核銷數]
+                                               ,[備註]
+                                               ,[箱號]
+                                               ,[產品一階]
+                                               ,[皮革型號]
+                                               ,[不入庫]
+                                               ,[已結案]
+                                               ,[已刪除]
+                                               ,[變更日期]
+                                               ,[建立人員]
+                                               ,[建立日期]
+                                               ,[更新人員]
+                                               ,[更新日期])
+                                         SELECT (Select IsNull(Max(序號),0)+1 From stkio_sale) [序號]
+                                               ,@序號 [STKIO_SEQ]
+                                               ,@PM_NO [pm_no]
+                                               ,S.[訂單號碼] 訂單號碼
+                                               ,GETDATE() [出貨日期]
+                                               ,SU.[廠商編號]
+                                               ,SU.[廠商簡稱]
+                                               ,SU.[頤坊型號]
+                                               ,SU.[銷售型號]
+                                               ,SU.[單位]
+                                               ,@出區 [出區]
+                                               ,@入區 [入區]
+                                               ,@出貨數 [出貨數]
+                                               ,S.[庫位] 庫位
+                                               ,0 [核銷數]
+                                               ,@備註 [備註]
+                                               ,@箱號 [箱號]
+                                               ,SU.[產品一階] 產品一階
+                                               ,NULL [皮革型號]
+                                               ,0 [不入庫]
+                                               ,0 [已結案]
+                                               ,0 [已刪除]
+                                               ,GETDATE() [變更日期]
+                                               ,@更新人員 [建立人員]
+                                               ,GETDATE() [建立日期]
+                                               ,@更新人員 [更新人員]
+                                               ,GETDATE() [更新日期]
+	                                    FROM stkio S
+                                        INNER JOIN suplu SU ON S.SUPLU_SEQ = SU.序號
+	                                    WHERE S.序號 = @序號
+									";
+
+            foreach (var property in stkioSale.GetType().GetProperties())
+            {
+                if (property.GetValue(stkioSale, null) != null)
+                {
+                    SetParameters($"@{property.Name}", property.GetValue(stkioSale));
+                }
+            }
+            this.SetSqlText(sqlStr);
+            return this;
+        }
         #endregion
 
         #region 更新區域
         /// <summary>
-        /// UPDATE Stkio_sale
+        /// UPDATE Stkio_sale By 序號
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
@@ -281,8 +351,6 @@ namespace Ivan_Dal
                 {
                     switch (property.Name)
                     {
-                        case "SUPLU_SEQ":
-                            break;
                         case "序號":
                             this.SetParameters(property.Name, property.GetValue(entity));
                             break;
@@ -298,10 +366,29 @@ namespace Ivan_Dal
             this.SetSqlText(sqlStr);
             return this;
         }
-
         #endregion
 
         #region 刪除區域
+        /// <summary>
+		/// 刪除STKIOH 單筆
+		/// </summary>
+		/// <returns></returns>
+		public IDalBase DeleteStkioSale(Stkio_Sale stkioSale)
+        {
+            this.CleanParameters();
+            string sqlStr = @"      UPDATE stkio_sale
+                                    SET 已刪除 = 1
+                                       ,更新日期 = GETDATE()
+									   ,更新人員 = @更新人員
+                                    WHERE [序號] = @序號
+                                     ";
+
+            this.SetParameters("序號", stkioSale.序號);
+            this.SetParameters("更新人員", stkioSale.更新人員);
+            this.SetSqlText(sqlStr);
+            return this;
+        }
+
         #endregion
     }
 }

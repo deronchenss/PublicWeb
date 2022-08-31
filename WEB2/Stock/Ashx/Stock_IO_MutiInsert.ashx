@@ -7,7 +7,7 @@ using System.Data.SqlClient;
 using System.Data;
 using Newtonsoft.Json;
 using Ivan_Service;
-using Ivan.Models;
+using Ivan_Models;
 using Ivan_Log;
 
 public class Stock_IO_MutiInsert : IHttpHandler, IRequiresSessionState

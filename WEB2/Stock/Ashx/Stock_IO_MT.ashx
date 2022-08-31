@@ -10,7 +10,7 @@ using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using Ivan_Service;
 using Ivan_Log;
-using Ivan.Models;
+using Ivan_Models;
 
 public class Stock_IO_MT : IHttpHandler, IRequiresSessionState
 {

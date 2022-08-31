@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ivan_Models;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -679,6 +680,36 @@ namespace Ivan_Dal
             this.SetSqlText(sqlStr);
             return this;
         }
+
+        /// <summary>
+        /// UPDATE Suplu From Stkio Seq
+        /// </summary>
+        /// <returns></returns>
+        public IDalBase UpdateSupluFromStkio(Stkio stkio, object quickTakeCnt)
+        {
+            CleanParameters();
+            string sqlStr = @"      UPDATE SUPLU
+                                    SET {庫區}庫存數 = ISNULL({庫區}庫存數,0) + (CASE WHEN ST.出庫數 > 0 THEN -1 ELSE 1 END * @核銷數)
+									   ,{庫區}庫位 = ST.庫位
+                                       ,快取庫存數 = ISNULL(快取庫存數,0) - @快取庫存數 
+									   ,更新日期 = GETDATE()
+                                       ,更新人員 = @更新人員
+                                    FROM SUPLU S
+                                    JOIN stkio ST ON S.序號 = ST.SUPLU_SEQ
+                                    WHERE ST.序號 = @序號
+                                    ";
+
+            //需要自己擴充 沒有 DEFAULT
+            sqlStr = sqlStr.Replace("{庫區}", stkio.庫區);
+            this.SetParameters("快取庫存數", quickTakeCnt);
+            this.SetParameters("更新人員", stkio.更新人員);
+            this.SetParameters("序號", stkio.序號);
+            this.SetParameters("核銷數", stkio.核銷數); //出庫數用減的
+
+            this.SetSqlText(sqlStr);
+            return this;
+        }
+
         #endregion
 
     }

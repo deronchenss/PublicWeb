@@ -1,4 +1,4 @@
-﻿using Ivan.Models;
+﻿using Ivan_Models;
 using Ivan_Dal;
 using System;
 using System.Collections.Generic;
@@ -90,7 +90,7 @@ namespace Ivan_Service
         public string StockIOMTUpdate(Dictionary<string, string> dic)
         {
             _dataOperator.SetTran();
-            int res = this.Execute(dalStk.UpdateStkio(dic));
+            int res = this.Execute(dalStk.UpdateStkioOld(dic));
             _dataOperator.TranCommit();
             return Convert.ToString(res);
         }

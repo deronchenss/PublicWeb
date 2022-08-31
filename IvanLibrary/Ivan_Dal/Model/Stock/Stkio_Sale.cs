@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ivan.Models
+namespace Ivan_Models
 {
 	public class Stkio_Sale
 	{
@@ -32,11 +32,10 @@ namespace Ivan.Models
 
 		public string 備註 { get; set; }
 
-		public string 箱號S { get; set; }
+		public string 箱號 { get; set; }
 
-		public string 箱號E { get; set; }
-
-		public string 內袋 { get; set; }
+		//保留舊資料 後續不使用
+		public string 箱號E { get; set; } 
 
 		public string 產品一階 { get; set; }
 
@@ -77,12 +76,8 @@ namespace Ivan.Models
 		public string STOCK_POS_O { get; set; }
 		//庫存入區
 		public string STOCK_POS_I { get; set; }
-		//箱號S
-		public string PACK_NO_S { get; set; }
-		//箱號E
-		public string PACK_NO_E { get; set; }
-		//內袋
-		public string IN_BAG { get; set; }
+		//箱號
+		public string PACK_NO { get; set; }
 		//REMARK
 		public string REMARK { get; set; }
 	}

@@ -67,7 +67,10 @@
     <Compile Include="Logic\Dev\Dal_Recua.cs" />
     <Compile Include="Logic\Stock\Dal_Stkio.cs" />
     <Compile Include="Logic\Stock\Dal_Stock_Sale.cs" />
+    <Compile Include="Logic\Stock\Dal_Stkioh.cs" />
+    <Compile Include="Model\Base\Suplu.cs" />
     <Compile Include="Model\Log\SqlLogModel.cs" />
+    <Compile Include="Model\Stock\Stkioh.cs" />
     <Compile Include="Model\Stock\Stkio.cs" />
     <Compile Include="Model\Stock\Stkio_Sale.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

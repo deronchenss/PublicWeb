@@ -1,8 +1,9 @@
-﻿using Ivan.Models;
+﻿using Ivan_Models;
 using Ivan_Dal;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace Ivan_Service
 {
@@ -10,6 +11,7 @@ namespace Ivan_Service
     {
         Dal_Suplu dalSup = new Dal_Suplu();
         Dal_Stkio dalStk = new Dal_Stkio();
+        Dal_Stkioh dalStkH = new Dal_Stkioh();
         Dal_Stock_Sale dalStkSale = new Dal_Stock_Sale();
 
         /// <summary>
@@ -48,17 +50,69 @@ namespace Ivan_Service
 
         /// <summary>
         /// 門市庫取核銷 執行
+        /// Step1: INSERT stkioh
+        /// Step2: UPDATE suplu 庫存數
+        /// Step3: INSERT stkio_sale
+        /// Step4: UPDATE stkio 核銷數
         /// </summary>
         /// <returns></returns>
-        public string StoreStockApExec(List<Stkio_SaleFromStkio> liEntity, object user)
+        public string StoreStockApExec(List<Stkio> liStkio, List<Stkioh> liStkioh,  List<Stkio_Sale> liStkioSale)
         {
             int res = 0;
             _dataOperator.SetTran();
-            foreach (Stkio_SaleFromStkio entity in liEntity)
+            //序號同為stkio 序號
+            foreach (Stkio stkio in liStkio)
             {
-                res += this.Execute(dalStkSale.InsertStkioSale(entity, user));
+                var stkioh = liStkioh.Find(x => x.序號 == stkio.序號);
+                var stkioSale = liStkioSale.Find(x => x.序號 == stkio.序號);
+
+                res += this.Execute(dalStkH.InsertStkiohFromStkio(stkioh));
+                res += this.Execute(dalSup.UpdateSupluFromStkio(stkio, stkioh.實扣快取數));
+                res += this.Execute(dalStkSale.InsertStkioSaleFromStkio(stkioSale));
+                stkio.備註 = null; //備註不需UPDATE
+                res += this.Execute(dalStk.UpdateStkio(stkio));
             }
             _dataOperator.TranCommit();
+            return Convert.ToString(res);
+        }
+
+        /// <summary>
+        /// 門市庫取 取消 核銷
+        /// Step1: DELETE stkioh
+        /// Step2: UPDATE suplu 庫存數 加回
+        /// Step3: DELETE stkio_sale 
+        /// Step4: UPDATE stkio 核銷數 扣回
+        /// </summary>
+        /// <returns></returns>
+        public string StoreStockApCancel(Stkio_Sale stkioSale)
+        {
+            int res = 0;
+            //PM NO 箱號
+            DataTable dt = this.GetDataTable(dalStkH.GetDataFromSale(stkioSale));
+            if(dt != null && dt.Rows.Count > 0)
+            {
+                _dataOperator.SetTran();
+                List<Stkioh> liStkioh = DataTableHelper.ConvertDataTable<Stkioh>(dt);
+                stkioSale.序號 = Convert.ToInt32(dt.Rows[0]["SALE_SEQ"]);
+                foreach (Stkioh stkioh in liStkioh)
+                {
+                    stkioh.更新人員 = stkioSale.更新人員;
+
+                    Stkio stkio = new Stkio();
+                    stkio.序號 = Convert.ToInt32(stkioh.SOURCE_SEQ);
+                    stkio.核銷數 = -1 * (stkioh.入庫數 != null && stkioh.入庫數 > 0 ? stkioh.入庫數 : stkioh.出庫數); //核銷數扣回
+                    stkio.更新人員 = stkioSale.更新人員;
+                    stkio.庫區 = stkioh.庫區;
+
+                    //筆數只需要紀錄更新項目筆數
+                    this.Execute(dalStkH.DeleteStkioh(stkioh)); 
+                    this.Execute(dalSup.UpdateSupluFromStkio(stkio, stkioh.實扣快取數 * -1)); 
+                    this.Execute(dalStkSale.DeleteStkioSale(stkioSale));
+                    res += this.Execute(dalStk.UpdateStkio(stkio));
+                }
+                _dataOperator.TranCommit();
+            }
+           
             return Convert.ToString(res);
         }
 

@@ -9,7 +9,7 @@ using System.Configuration;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using Ivan_Service;
-using Ivan.Models;
+using Ivan_Models;
 using Ivan_Log;
 
 public class Replace_Stock_O : IHttpHandler, IRequiresSessionState

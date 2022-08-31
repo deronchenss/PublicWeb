@@ -9,7 +9,7 @@ using System.Configuration;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using Ivan_Service;
-using Ivan.Models;
+using Ivan_Models;
 using Ivan_Log;
 
 public class Store_StockIO_Approve : IHttpHandler, IRequiresSessionState
@@ -28,8 +28,14 @@ public class Store_StockIO_Approve : IHttpHandler, IRequiresSessionState
                         result = JsonConvert.SerializeObject(service.StoreStockApSearch(ContextFN.ContextToDictionary(context)));
                         break;
                     case "EXEC":
-                        List<Stkio_SaleFromStkio> liEntity = JsonConvert.DeserializeObject<List<Stkio_SaleFromStkio>>(context.Request["EXEC_DATA"]);
-                        result = service.StoreStockApExec(liEntity, context.Session["Account"]);
+                        List<Stkio> liStkio = JsonConvert.DeserializeObject<List<Stkio>>(context.Request["EXEC_DATA"]);
+                        List<Stkioh> liStkioh = JsonConvert.DeserializeObject<List<Stkioh>>(context.Request["EXEC_DATA"]);
+                        List<Stkio_Sale> liStkioSale = JsonConvert.DeserializeObject<List<Stkio_Sale>>(context.Request["EXEC_DATA"]);
+                        result = service.StoreStockApExec(liStkio, liStkioh, liStkioSale);
+                        break;
+                    case "CANCEL":
+                        List<Stkio_Sale> entity = JsonConvert.DeserializeObject<List<Stkio_Sale>>(context.Request["EXEC_DATA"]);
+                        result = service.StoreStockApCancel(entity[0]);
                         break;
                 }
 

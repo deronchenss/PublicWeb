@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ivan.Models
+namespace Ivan_Models
 {
     public class SqlLogModel
     {

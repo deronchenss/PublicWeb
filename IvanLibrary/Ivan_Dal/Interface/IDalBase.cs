@@ -1,4 +1,4 @@
-﻿using Ivan.Models;
+﻿using Ivan_Models;
 using System.Data.SqlClient;
 
 namespace Ivan_Dal

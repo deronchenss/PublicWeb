@@ -1,4 +1,4 @@
-﻿using Ivan.Models;
+﻿using Ivan_Models;
 
 namespace Ivan_Dal
 {

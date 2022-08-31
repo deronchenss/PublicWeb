@@ -1,4 +1,4 @@
-﻿using Ivan.Models;
+﻿using Ivan_Models;
 using Ivan_Dal;
 using System.Data;
 using System.Data.SqlClient;

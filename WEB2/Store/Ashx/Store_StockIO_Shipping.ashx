@@ -10,7 +10,7 @@ using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using Ivan_Log;
 using Ivan_Service;
-using Ivan.Models;
+using Ivan_Models;
 
 public class Store_StockIO_Shipping : IHttpHandler, IRequiresSessionState
 {
