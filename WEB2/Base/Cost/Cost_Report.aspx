@@ -131,6 +131,8 @@
                                         a.attr('download', '簡易型錄2D.pdf');
                                         break;
                                 }
+                            case "V_BT_Report_Package":
+                                a.attr('download', '申請國際條碼.pdf');
                                 break;
                         }
                         a.attr('href', link);
@@ -694,6 +696,7 @@
         <input id="V_BT_Report_1" type="button" class="V_BT Exist_Select V_Report For_Cost" style="display:none;" value="成本分析" />
         <input id="V_BT_Report_2" type="button" class="V_BT Exist_Select V_Report For_Cost" style="display:none;" value="簡易型錄" />
         <input id="V_BT_Report_3" type="button" class="V_BT Exist_Select V_Report For_Price" style="display:none;" value="簡易型錄2" />
+        <input id="V_BT_Report_Package" type="button" class="V_BT Exist_Select V_Report For_Cost" style="display:none;" value="國際條碼" />
         <%--<input type="button" class="V_BT" value="<%=Resources.MP.Sample%>" onclick="$('.Div_D').css('display','none');$('#Div_More').css('display','');" />--%>
     </div>
     <div>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -858,6 +861,13 @@
                             <label for="R3_RSC_CB_UP">單價</label>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="search_section_control" control_by="V_BT_Report_Package" style="display: none;">
+                <div style="position: relative; border: 1px solid #111111; padding: 20px; box-sizing: border-box; margin: 30px auto; width: 80%;">
+                    <span style="position: absolute; top: -1em; left: 10%; line-height: 2em; padding: 0 1em; background-color: #fff;">報表類型</span>
+                    <input type="radio" value="申請國際條碼" checked />
+                    <span>申請國際條碼</span>
                 </div>
             </div>
             <br />

@@ -372,7 +372,7 @@ public class New_Cost_Search : IHttpHandler, IRequiresSessionState
                             cmd.Parameters.AddWithValue("R3_RSC_CB_SaleM", context.Request["R3_RSC_CB_SaleM"]);
                             cmd.Parameters.AddWithValue("R3_RSC_CB_BS", context.Request["R3_RSC_CB_BS"]);
                             cmd.Parameters.AddWithValue("R3_RSC_CB_UP", context.Request["R3_RSC_CB_UP"]);
-                                
+
                             switch (context.Request["R3_Type"])
                             {
                                 case "R3_RB_Report_TypeC":
@@ -384,6 +384,18 @@ public class New_Cost_Search : IHttpHandler, IRequiresSessionState
                                     SP = 2;
                                     break;
                             }
+                            break;
+                        case "V_BT_Report_Package":
+                            RPT_File = "~/Base/Cost/Rpt/Cost_Report_Package.rpt";
+                            SQL_Str = @" SELECT 
+                                         	C.[序號], C.[頤坊型號], C.[廠商編號], C.[廠商簡稱], C.[銷售型號], C.[產品說明], C.[單位], C.[單位淨重] [淨重], C.[單位毛重] [毛重], 
+                                         	C.[產品長度] [長], C.[產品寬度] [寬], C.[產品高度] [高], C.[包裝長度] [包裝長], C.[包裝寬度] [包裝寬], C.[包裝高度] [包裝高],
+                                         	C.[寄送袋子] [袋子], C.[寄送吊卡] [吊卡], C.[CP65], C.[年齡], C.[特殊包裝],
+                                         	IIF(C.[自有條碼] = 0 OR C.[自有條碼] IS NULL,'','Y') [自有條碼],
+                                         	IIF(C.[國際條碼] = '' OR C.[國際條碼] IS NULL,'' ,'Y') [國際條碼],
+	                                        ISNULL((SELECT X.[圖檔] FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = C.[序號]),'') [產品圖片]
+                                         FROM Dc2..suplu C
+                                         WHERE C.[序號] IN ({0}) ";
                             break;
                     }
 
@@ -408,7 +420,7 @@ public class New_Cost_Search : IHttpHandler, IRequiresSessionState
                     {
                         for (int i = 0; i < dt.Rows.Count; i++)
                         {
-                            if (dt.Rows[i]["圖檔"] != System.DBNull.Value && SP > 1)
+                            if (dt.Columns.Contains("圖檔") && dt.Rows[i]["圖檔"] != System.DBNull.Value && SP > 1)
                             {
                                 System.Drawing.Image oImage = System.Drawing.Image.FromStream(new MemoryStream((byte[])dt.Rows[i]["圖檔"]));
 

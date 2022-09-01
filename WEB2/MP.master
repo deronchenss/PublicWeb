@@ -100,127 +100,307 @@
                             <ul class="site-menu main-menu js-clone-nav mr-auto d-none d-lg-block">
                                 <%--<li><a href="#home-section" class="nav-link">Home</a></li>--%>
                                 <li class="has-children">
-                                    <a href="#" class="nav-link" style="vertical-align:sub;" IVM_PERMISSIONS="1"><%=Resources.MP.Base%><%--基本檔--%></a>
+                                    <a href="#" class="nav-link" style="vertical-align:sub;" IVM_P="1"><%=Resources.MP.Base%></a>
                                     <ul class="dropdown">
-                                        <li><a href="/Base/Model_Search.aspx" IVM_PERMISSIONS="37"><%=Resources.MP.Model_Search%>
-                                        </a></li>
                                         <li class="has-children">
-                                            <a href="#" IVM_PERMISSIONS="23"><%--廠商--%><%=Resources.MP.Supplier%>
-                                            </a>
+                                            <a href="#" IVM_P="11" class="nav-link"><%=Resources.MP.Supplier%></a>
                                             <ul class="dropdown">
-                                                <li><a href="/Base/Supplier/Supplier1.aspx" IVM_PERMISSIONS="24"><%--廠商查詢--%><%=Resources.MP.Supplier%><%=Resources.MP.Speace%><%=Resources.MP.Search%>
-                                                    </a></li>
-                                                <li><a href="/Base/Supplier/Supplier_MT.aspx" IVM_PERMISSIONS="25"><%--廠商維護--%><%=Resources.MP.Supplier%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
-                                                    </a></li>
+                                                <li>
+                                                    <a href="/Base/Supplier/Supplier1.aspx" IVM_P="34"><%=Resources.MP.Supplier + Resources.MP.Speace + Resources.MP.Search%></a>
+                                                    <a href="/Base/Supplier/Supplier_MT.aspx" IVM_P="35"><%=Resources.MP.Supplier + Resources.MP.Speace + Resources.MP.Maintenance%></a>
+                                                </li>
                                             </ul>
                                         </li>
                                         <li class="has-children">
-                                            <a href="#" IVM_PERMISSIONS="22"><%--客戶--%><%=Resources.MP.Customer%>
-                                            </a>
+                                            <a href="#" IVM_P="12" class="nav-link"><%=Resources.MP.Customer%></a>
                                             <ul class="dropdown">
-                                                <li><a href="/Base/Customer/Customer1.aspx" IVM_PERMISSIONS="27"><%--客戶查詢--%><%=Resources.MP.Customer%><%=Resources.MP.Speace%><%=Resources.MP.Search%>
-                                                    </a></li>
-                                                <li><a href="/Base/Customer/Customer_MT.aspx" IVM_PERMISSIONS="28"><%--客戶維護--%><%=Resources.MP.Customer%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
-                                                    </a></li>
+                                                <li>
+                                                    <a href="/Base/Customer/Customer1.aspx" IVM_P="36"><%=Resources.MP.Customer + Resources.MP.Speace + Resources.MP.Search%></a>
+                                                    <a href="/Base/Customer/Customer_MT.aspx" IVM_P="37"><%=Resources.MP.Customer + Resources.MP.Speace + Resources.MP.Maintenance%></a>
+                                                </li>
                                             </ul>
                                         </li>
                                         <li class="has-children">
-                                            <a href="#" IVM_PERMISSIONS="29"><%=Resources.MP.Product%>
-                                            </a>
+                                            <a href="#" IVM_P="13" class="nav-link">Cost</a>
                                             <ul class="dropdown">
-                                                <li><a href="/Base/Cost/Cost_MT.aspx" IVM_PERMISSIONS="30"><%=Resources.MP.Product%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
-                                                    </a></li>
-                                                <li><a href="/Base/Cost/Cost_Multiple_MT.aspx" IVM_PERMISSIONS="0"><%=Resources.MP.Product%><%=Resources.MP.Speace%><%=Resources.MP.Multiple%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
-                                                    </a></li>
-                                                <li><a href="/Base/Cost/Cost_Class.aspx" IVM_PERMISSIONS="26"><%=Resources.MP.Cost_Class%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
-                                                    </a></li>
-                                                <li><a href="/Base/Cost/Cost_Apply.aspx" IVM_PERMISSIONS="33"><%=Resources.MP.Product%><%=Resources.MP.Speace%><%=Resources.MP.Applyopen%>
-                                                    </a></li>
-                                                <li><a href="/Base/Cost/Cost_Approve.aspx" IVM_PERMISSIONS="34"><%=Resources.MP.Product%><%=Resources.MP.Speace%><%=Resources.MP.Approve%>
-                                                    </a></li>
-                                                <li><a href="/Base/Cost/Fist_CAA_Approve.aspx" IVM_PERMISSIONS="54"><%=Resources.MP.CAC_Approve%>
-                                                    </a></li>
-                                                <li><a href="/Base/Cost/Cost_Report.aspx" IVM_PERMISSIONS="55">Cost<%=Resources.MP.Speace%><%=Resources.MP.Report%>
-                                                    </a></li>
+                                                <li>
+                                                    <a href="/Base/Cost/Cost_MT.aspx" IVM_P="38">Cost<%=Resources.MP.Speace + Resources.MP.Search + Resources.MP.Speace + Resources.MP.Maintenance%></a>
+                                                    <a href="/Base/Cost/Cost_Multiple_MT.aspx" IVM_P="39">Cost<%=Resources.MP.Speace + Resources.MP.Multiple + Resources.MP.Speace + Resources.MP.Maintenance%></a>
+                                                    <a href="/Base/Cost/Cost_Class.aspx" IVM_P="40"><%=Resources.MP.Cost_Class + Resources.MP.Speace + Resources.MP.Maintenance%></a>
+                                                    <a href="/Base/Cost/Cost_Apply.aspx" IVM_P="41">Cost<%=Resources.MP.Speace + Resources.MP.Applyopen%></a>
+                                                    <a href="/Base/Cost/Cost_Approve.aspx" IVM_P="42">Cost<%=Resources.MP.Speace + Resources.MP.Approve%></a>
+                                                    <a href="/Base/Cost/Fist_CAA_Approve.aspx" IVM_P="43">Cost<%=Resources.MP.CAC_Approve%></a>
+                                                    <a href="/Base/Cost/Cost_Report.aspx" IVM_P="44">Cost<%=Resources.MP.Speace + Resources.MP.Report%></a>
+                                                </li>
                                             </ul>
                                         </li>
                                         <li class="has-children">
-                                            <a href="#" IVM_PERMISSIONS="35">Price
-                                            </a>
+                                            <a href="#" IVM_P="14" class="nav-link">Price</a>
                                             <ul class="dropdown">
-                                                <li><a href="/Base/Price/Price_MT.aspx" IVM_PERMISSIONS="36">Price<%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>
-                                                    </a></li>
-                                                <li><a href="/Base/Price/Price_Multiple_Copy.aspx" IVM_PERMISSIONS="">Price<%=Resources.MP.Speace%><%=Resources.MP.Multiple%><%=Resources.MP.Speace%><%=Resources.MP.Copy%>
-                                                    </a></li>
+                                                <li>
+                                                    <a href="/Base/Price/Price_MT.aspx" IVM_P="45">Price<%=Resources.MP.Speace + Resources.MP.Search + Resources.MP.Speace + Resources.MP.Maintenance%></a>
+                                                    <a href="/Base/Price/Price_Multiple_Copy.aspx" IVM_P="46">Price<%=Resources.MP.Speace + Resources.MP.Multiple + Resources.MP.Speace + Resources.MP.Copy%></a>
+                                                </li>
                                             </ul>
                                         </li>
                                         <li class="has-children">
-                                            <a href="#" IVM_PERMISSIONS="31">BOM
-                                            </a>
+                                            <a href="#" IVM_P="15" class="nav-link">BOM</a>
                                             <ul class="dropdown">
-                                                <li><a href="/Base/BOM/BOM_MT.aspx" IVM_PERMISSIONS="32">BOM<%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>(成品變更)
-                                                    </a></li>
-                                                <li><a href="/Base/BOM/BOM_Multiple_MT.aspx" IVM_PERMISSIONS="0">BOM<%=Resources.MP.Speace%><%=Resources.MP.Multiple%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%>(材料變更)
-                                                    </a></li>
+                                                <li>
+                                                    <a href="/Base/BOM/BOM_MT.aspx" style="font-size:smaller;" IVM_P="47">BOM<%=Resources.MP.Speace + Resources.MP.Search + Resources.MP.Speace + Resources.MP.Maintenance + "(" + Resources.MP.End_Product + Resources.MP.Speace + Resources.MP.Change + ")"%></a>
+                                                    <a href="/Base/BOM/BOM_Multiple_MT.aspx" style="font-size:smaller;" IVM_P="48">BOM<%=Resources.MP.Speace + Resources.MP.Multiple + Resources.MP.Speace + Resources.MP.Maintenance + "(" + Resources.MP.Material + Resources.MP.Speace + Resources.MP.Change + ")"%></a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="has-children">
+                                            <a href="#" IVM_P="16" class="nav-link">條碼作業(x)</a>
+                                            <ul class="dropdown">
+                                                <li>
+                                                    <a href="#" IVM_P="">條碼列印</a>
+                                                    <a href="#" IVM_P="">內銷條碼列印</a>
+                                                    <a href="#" IVM_P="">條碼列印明細維護</a>
+                                                    <a href="#" IVM_P="">條碼列印基本資料維護</a>
+                                                    <a href="#" IVM_P="">條碼點收與寄送</a>
+                                                    <a href="#" IVM_P="">條碼綜合查詢</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="has-children">
+                                            <a href="#" IVM_P="17" class="nav-link">型錄專案(x)</a>
+                                            <ul class="dropdown">
+                                                <li>
+                                                    <a href="#" IVM_P="">型錄專案-年度</a>
+                                                    <a href="#" IVM_P="">專案整合-MSRP</a>
+                                                    <a href="#" IVM_P="">SHOPIFY上傳與下載</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li><a href="/Base/Model_Search.aspx" IVM_P="49"><%=Resources.MP.Model_Search%></a></li>
+                                    </ul>
+                                </li>
+                                <li class="has-children">
+                                    <a href="#about-section" class="nav-link" style="vertical-align:sub;" IVM_P="2"><%=Resources.MP.Purchase%>(x)</a>
+                                    <ul class="dropdown">
+                                        <li class="has-children">
+                                            <a href="#" IVM_P="18" class="nav-link">採購作業(x)</a>
+                                            <ul class="dropdown">
+                                                <li>
+                                                    <a href="#" IVM_P="">採購維護</a>
+                                                    <a href="#" IVM_P="">採購報表</a>
+                                                    <a href="#" IVM_P="">採購轉採購</a>
+                                                    <a href="#" IVM_P="">採購大備註維護</a>
+                                                    <a href="#" IVM_P="">採購綜合查詢</a>
+                                                    <a href="#" IVM_P="">大貨安全數維護</a>
+                                                    <a href="#" IVM_P="">傳送汐止表單</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="has-children">
+                                            <a href="#" IVM_P="19" class="nav-link">點收作業(x)</a>
+                                            <ul class="dropdown">
+                                                <li>
+                                                    <a href="#" IVM_P="">點收建立</a>
+                                                    <a href="#" IVM_P="">點收轉入庫</a>
+                                                    <a href="#" IVM_P="">每日點收查詢</a>
+                                                    <a href="#" IVM_P="">點收明細維護</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="has-children">
+                                            <a href="#" IVM_P="20" class="nav-link">到貨作業(x)</a>
+                                            <ul class="dropdown">
+                                                <li>
+                                                    <a href="#" IVM_P="">到貨核銷</a>
+                                                    <a href="#" IVM_P="">每日到貨查詢</a>
+                                                    <a href="#" IVM_P="">到貨報表</a>
+                                                </li>
                                             </ul>
                                         </li>
                                     </ul>
                                 </li>
                                 <li class="has-children">
-                                    <a href="#about-section" class="nav-link" style="vertical-align:sub;" IVM_PERMISSIONS="2"><%--訂單--%><%=Resources.MP.Order%>(x)</a>
+                                    <a href="#about-section" class="nav-link" style="vertical-align:sub;" IVM_P="3"><%=Resources.MP.Order%>(x)</a>
                                     <ul class="dropdown">
                                         <li class="has-children">
-                                            <a href="#"><%--訂單處理--%><%=Resources.MP.Order%></a>
+                                            <a href="#" IVM_P="21" class="nav-link">訂單作業(x)</a>
                                             <ul class="dropdown">
-                                                <li><a href="#"><%--訂單主檔維護--%><%=Resources.MP.Order%><%=Resources.MP.Speace%><%=Resources.MP.Master%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%></a></li>
-                                                <li><a href="#"><%--訂單明細新增--%><%=Resources.MP.Order%><%=Resources.MP.Speace%><%=Resources.MP.Detail%><%=Resources.MP.Speace%><%=Resources.MP.Add%></a></li>
-                                                <li><a href="#"><%--訂單明細維護--%><%=Resources.MP.Order%><%=Resources.MP.Speace%><%=Resources.MP.Detail%><%=Resources.MP.Speace%><%=Resources.MP.Maintenance%></a></li>
+                                                <li>
+                                                    <a href="#" IVM_P="">訂單主檔維護</a>
+                                                    <a href="#" IVM_P="">訂單明細新增</a>
+                                                    <a href="#" IVM_P="">訂單明細維護</a>
+                                                    <a href="#" IVM_P="">訂單轉採購</a>
+                                                    <a href="#" IVM_P="">訂單報表</a>
+                                                    <a href="#" IVM_P="">取消訂單尾數</a>
+                                                    <a href="#" IVM_P="">TLF_PI交期管理</a>
+                                                    <a href="#" IVM_P="">匯率維護</a>
+                                                    <a href="#" IVM_P="">出貨核准</a>
+                                                    <a href="#" IVM_P="">預定交期-訂單</a>
+                                                </li>
                                             </ul>
                                         </li>
                                         <li class="has-children">
-                                            <a href="#">SHOPIFY</a>
+                                            <a href="#" IVM_P="22" class="nav-link">SHOPIFY(x)</a>
                                             <ul class="dropdown">
-                                                <li><a href="#">ISP明細維護</a></li>
-                                                <li><a href="#">ISP備貨與申請</a></li>
-                                                <li><a href="#">ISP放行作業</a></li>
+                                                <li>
+                                                    <a href="#" IVM_P="">SHOPIFY訂單匯入</a>
+                                                    <a href="#" IVM_P="">ISP轉檔</a>
+                                                    <a href="#" IVM_P="">ISP主檔維護</a>
+                                                    <a href="#" IVM_P="">ISP產品設定</a>
+                                                    <a href="#" IVM_P="">ISP備貨與申請</a>
+                                                    <a href="#" IVM_P="">ISP放行作業</a>
+                                                    <a href="#" IVM_P="">ISP出貨作業</a>
+                                                    <a href="#" IVM_P="">ISP出貨查詢</a>
+                                                    <a href="#" IVM_P="">ISP綜合查詢</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="has-children">
+                                            <a href="#" IVM_P="23" class="nav-link">CD客戶退貨(x)</a>
+                                            <ul class="dropdown">
+                                                <li>
+                                                    <a href="#" IVM_P="">~</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="has-children">
+                                            <a href="#" IVM_P="24" class="nav-link">應收帳款(x)</a>
+                                            <ul class="dropdown">
+                                                <li>
+                                                    <a href="#" IVM_P="">應收帳款查詢</a>
+                                                    <a href="#" IVM_P="">入金核銷</a>
+                                                    <a href="#" IVM_P="">每日入金查詢</a>
+                                                    <a href="#" IVM_P="">訂單綜合查詢</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="has-children">
+                                            <a href="#" IVM_P="25" class="nav-link"><%--內銷--%><%=Resources.MP.Store_Sale%>(x)</a>
+                                            <ul class="dropdown">
+                                                <li>
+                                                    <a href="#" IVM_P="">內銷客戶維護</a>
+                                                    <a href="#" IVM_P="">內銷客戶查詢</a>
+                                                    <a href="#" IVM_P="">營業日報</a>
+                                                    <a href="#" IVM_P="">企劃主檔維護</a>
+                                                    <a href="#" IVM_P="">企劃主檔多筆維護</a>
+                                                    <a href="#" IVM_P="">內銷主檔維護</a>
+                                                    <a href="#" IVM_P="">內銷發票變更</a>
+                                                    <a href="#" IVM_P="">皮革削薄開單</a>
+                                                    <a href="#" IVM_P="">收銀變更作業</a>
+                                                    <a href="#" IVM_P="">POS資料庫匯入</a>
+                                                    <a href="#" IVM_P="">內銷報表</a>
+                                                </li>
                                             </ul>
                                         </li>
                                     </ul>
                                 </li>
                                 <li class="has-children">
-                                    <a href="#about-section" class="nav-link" style="vertical-align:sub;" IVM_PERMISSIONS="3">採購(x)</a>
+                                    <a href="#about-section" style="vertical-align:sub;" IVM_P="4" class="nav-link">出貨(x)</a>
                                     <ul class="dropdown">
                                         <li class="has-children">
-                                            <a href="#">採購作業</a>
+                                            <a href="#" IVM_P="26" class="nav-link">備貨作業(x)</a>
                                             <ul class="dropdown">
-                                                <li><a href="#">採購1</a></li>
-                                                <li><a href="#">採購2</a></li>
-                                                <li><a href="#">採購3</a></li>
+                                                <li>
+                                                    <a href="#" IVM_P="">準備轉備貨</a>
+                                                    <a href="#" IVM_P="">備貨維護</a>
+                                                    <a href="#" IVM_P="">Invoice維護</a>
+                                                    <a href="#" IVM_P="">備貨號碼維護</a>
+                                                </li>
                                             </ul>
                                         </li>
                                         <li class="has-children">
-                                            <a href="#">裝配作業</a>
+                                            <a href="#" IVM_P="27" class="nav-link">出貨作業(x)</a>
                                             <ul class="dropdown">
-                                                <li><a href="#">裝配1</a></li>
-                                                <li><a href="#">裝配2</a></li>
-                                                <li><a href="#">裝配3</a></li>
+                                                <li>
+                                                    <a href="#" IVM_P="">出貨報表</a>
+                                                    <a href="#" IVM_P="">運送指示單維護</a>
+                                                    <a href="#" IVM_P="">放行作業</a>
+                                                    <a href="#" IVM_P="">出貨作業</a>
+                                                    <a href="#" IVM_P="">運輸公司維護</a>
+                                                    <a href="#" IVM_P="">進口稅則號碼維護</a>
+                                                    <a href="#" IVM_P="">客戶稅則號碼維護</a>
+                                                </li>
                                             </ul>
+                                        </li>
+                                        <li><a href="#" IVM_P="">進口英文Cost維護</a></li>
+                                    </ul>
+                                </li>
+                                <li class="has-children">
+                                    <a href="#about-section" class="nav-link" style="vertical-align:sub;"><%--庫存--%><%=Resources.MP.Stock%></a>
+                                    <ul class="dropdown">
+                                        <li class="has-children">
+                                            <a href="#" IVM_P="28" class="nav-link">廠商退貨(x)</a>
+                                            <ul class="dropdown">
+                                                <li>
+                                                    <a href="#" IVM_P="">SD退貨查詢</a>
+                                                    <a href="#" IVM_P="">SD退貨維護</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <a href="/Stock/Stock_Search.aspx"><%--庫存查詢--%><%=Resources.MP.Stock + Resources.MP.Speace + Resources.MP.Search%></a>
+                                            <a href="/Stock/Stock_IO_Search.aspx"><%--庫存入出查詢--%><%=Resources.MP.Stock + Resources.MP.IO + Resources.MP.Search%></a>
+                                            <a href="/Stock/Stock_IO_MutiInsert.aspx"><%--庫存入出多筆新增--%><%=Resources.MP.Stock + Resources.MP.IO + Resources.MP.Multiple%><%=Resources.MP.Insert%></a>
+                                            <a href="/Stock/Stock_IO_MT.aspx"><%--庫存入出維護--%><%=Resources.MP.Stock + Resources.MP.IO + Resources.MP.Maintenance%></a>
+                                            <a href="/Stock/Stock_IO_Approve.aspx"><%--庫存入出核銷--%><%=Resources.MP.Stock + Resources.MP.IO + Resources.MP.Approve%></a>
+                                            <a href="/Stock/Replace_Stock_O.aspx"><%--替代庫存出庫--%><%=Resources.MP.Replace + Resources.MP.Stock + Resources.MP.Stock_O%></a>
+                                            <a href="/Stock/Stock_LOC_UPD.aspx"><%--庫位變更--%><%=Resources.MP.Stock_Loc + Resources.MP.Change%></a>
+
+                                            <a href="/Store/Store_StockIO_Ins.aspx"><%--門市庫取申請--%><%=Resources.MP.Store + Resources.MP.Stock_Take + Resources.MP.Apply%></a>
+                                            <a href="/Store/Store_StockIO_Approve.aspx"><%--門市庫取核銷--%><%=Resources.MP.Store + Resources.MP.Stock_Take + Resources.MP.Write_Off%></a>
+                                            <a href="/Store/Store_StockIO_Shipping.aspx"><%--門市庫取出貨--%><%=Resources.MP.Store + Resources.MP.Stock_Take + Resources.MP.Shipping%></a>
                                         </li>
                                     </ul>
                                 </li>
                                 <li class="has-children">
-                                    <a href="#about-section" class="nav-link" style="vertical-align: sub;" ivm_permissions="4"><%--開發--%><%=Resources.MP.Develop%></a>
+                                    <a href="#about-section" class="nav-link" style="vertical-align: sub;" ivm_p="6">裝配(x)</a>
+                                    <ul class="dropdown">
+                                        <li>
+                                            <a href="#" ivm_p="">裝配品備貨號碼維護</a>
+                                            <a href="#" ivm_p="">裝配品備貨核銷</a>
+                                            <a href="#" ivm_p="">裝配品報表</a>
+                                            <a href="#" ivm_p="">裝配品出貨作業</a>
+                                            <a href="#" ivm_p="">取消裝配品備貨</a>
+                                            <a href="#" ivm_p="">裝配主檔維護</a>
+                                            <a href="#" ivm_p="">每日裝配查詢</a>
+                                            <a href="#" ivm_p="">裝配品綜合查詢</a>
+                                            <a href="#" ivm_p="">裝配歷史查詢</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="has-children">
+                                    <a href="#about-section" class="nav-link" style="vertical-align:sub;" IVM_P="7">樣品</a>
                                     <ul class="dropdown">
                                         <li class="has-children">
-                                            <a href="#"><%--樣品開發--%><%=Resources.MP.Sample_Dev%></a>
+                                            <a href="#" IVM_P="29" class="nav-link"><%--樣品開發--%><%=Resources.MP.Sample_Dev%></a>
                                             <ul class="dropdown">
-                                                <li><a href="/DEV/Sample/Sample_MT.aspx"><%--樣品開發查詢維護--%><%=Resources.MP.Sample_MT%></a></li>
-                                                <li><a href="/DEV/Sample/Sample_Arr.aspx"><%--樣品到貨作業--%><%=Resources.MP.Sample_Arr%></a></li>
-                                                <li><a href="/DEV/Sample/Sample_Arr_MT.aspx"><%--樣品到貨查詢維護--%><%=Resources.MP.Sample_Arr_MT%></a></li>
+                                                <li>
+                                                    <a href="/DEV/Sample/Sample_MT.aspx"><%--樣品開發查詢維護--%><%=Resources.MP.Sample_MT%></a>'
+                                                    <%--整合功能，內含報表--%>
+                                                </li>
                                             </ul>
                                         </li>
                                         <li class="has-children">
-                                            <a href="#"><%--樣品出貨--%><%=Resources.MP.Sample_Ship%></a>
+                                            <a href="#" IVM_P="30" class="nav-link"><%--樣品點收--%><%=Resources.MP.Sample_Chk%></a>
+                                            <ul class="dropdown">
+                                                <li>
+                                                    <a href="/DEV/Sample/Sample_Chk.aspx"><%--樣品點收--%><%=Resources.MP.Sample_Chk%></a>
+                                                    <a href="/DEV/Sample/Sample_Chk_MT.aspx"><%--樣品點收查詢維護--%><%=Resources.MP.Sample_Chk_MT%></a>
+                                                    <a href="/DEV/Sample/Sample_Chk_Dist.aspx"><%--樣品準備作業--%><%=Resources.MP.Sample_Chk_Dist%></a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="has-children">
+                                            <a href="#" IVM_P="31" class="nav-link"><%--樣品到貨_New--%>樣品到貨</a>
+                                            <ul class="dropdown">
+                                                <li>
+                                                    <a href="/DEV/Sample/Sample_Arr.aspx"><%--樣品到貨作業--%><%=Resources.MP.Sample_Arr%></a>
+                                                    <a href="/DEV/Sample/Sample_Arr_MT.aspx"><%--樣品到貨查詢維護--%><%=Resources.MP.Sample_Arr_MT%></a>
+                                                </li>
+                                            </ul>
+                                        </li>
+
+                                        <li class="has-children">
+                                            <a href="#" IVM_P="32" class="nav-link"><%--樣品出貨--%><%=Resources.MP.Sample_Ship%></a>
                                             <ul class="dropdown">
                                                 <li><a href="/DEV/Sample/Sample_Inv_MT.aspx"><%--樣品INVOICE查詢維護--%><%=Resources.MP.Sample_Inv_MT%></a></li>
                                                 <li><a href="/DEV/Sample/Sample_Pack.aspx"><%--樣品備貨作業--%><%=Resources.MP.Sample_Pack%></a></li>
@@ -228,7 +408,7 @@
                                             </ul>
                                         </li>
                                         <li class="has-children">
-                                            <a href="#"><%--報價作業--%><%=Resources.MP.Quote_Base%></a>
+                                            <a href="#" IVM_P="33" class="nav-link"><%--報價作業(ReName>樣品報價)--%><%=Resources.MP.Quote_Base%></a>
                                             <ul class="dropdown">
                                                 <li><a href="/DEV/Quote/Quote_Base.aspx"><%--報價作業--%><%=Resources.MP.Quote_Base%></a></li>
                                                 <li><a href="/DEV/Quote/Quote_MT.aspx"><%--報價作業查詢維護--%><%=Resources.MP.Quote_MT%></a></li>
@@ -237,49 +417,62 @@
                                     </ul>
                                 </li>
                                 <li class="has-children">
-                                    <a href="#about-section" class="nav-link" style="vertical-align: sub;" ivm_permissions="4"><%--理樣--%><%=Resources.MP.Sample_Deal%></a>
-                                    <ul class="dropdown">
-                                        <li >
-                                            <a href="/DEV/Sample/Sample_Chk.aspx"><%--樣品點收--%><%=Resources.MP.Sample_Chk%></a>
-                                            <a href="/DEV/Sample/Sample_Chk_MT.aspx"><%--樣品點收查詢維護--%><%=Resources.MP.Sample_Chk_MT%></a>
-                                            <a href="/DEV/Sample/Sample_Chk_Dist.aspx"><%--樣品準備作業--%><%=Resources.MP.Sample_Chk_Dist%></a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="has-children">
-                                    <a href="#about-section" class="nav-link" style="vertical-align:sub;"><%--庫存--%><%=Resources.MP.Stock%></a>
-                                    <ul class="dropdown">
-                                        <li >
-                                            <a href="/Stock/Stock_Search.aspx"><%--庫存查詢--%><%=Resources.MP.Stock%><%=Resources.MP.Speace%><%=Resources.MP.Search%></a>
-                                            <a href="/Stock/Stock_IO_Search.aspx"><%--庫存入出查詢--%><%=Resources.MP.Stock%><%=Resources.MP.IO%><%=Resources.MP.Search%></a>
-                                            <a href="/Stock/Stock_IO_MutiInsert.aspx"><%--庫存入出多筆新增--%><%=Resources.MP.Stock%><%=Resources.MP.IO%><%=Resources.MP.Multiple%><%=Resources.MP.Insert%></a>
-                                            <a href="/Stock/Stock_IO_MT.aspx"><%--庫存入出維護--%><%=Resources.MP.Stock%><%=Resources.MP.IO%><%=Resources.MP.Maintenance%></a>
-                                            <a href="/Stock/Stock_IO_Approve.aspx"><%--庫存入出核銷--%><%=Resources.MP.Stock%><%=Resources.MP.IO%><%=Resources.MP.Approve%></a>
-                                            <a href="/Stock/Replace_Stock_O.aspx"><%--替代庫存出庫--%><%=Resources.MP.Replace%><%=Resources.MP.Stock%><%=Resources.MP.Stock_O%></a>
-                                            <a href="/Stock/Stock_LOC_UPD.aspx"><%--庫位變更--%><%=Resources.MP.Stock_Loc%><%=Resources.MP.Change%></a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="has-children">
-                                    <a href="#" class="nav-link" style="vertical-align:sub;"><%--內銷--%><%=Resources.MP.Store_Sale%></a>
+                                    <a href="#about-section" style="vertical-align:sub;" class="nav-link" IVM_P="8">理貨(x)</a>
                                     <ul class="dropdown">
                                         <li>
-                                            <a href="/Store/Store_StockIO_Ins.aspx"><%--門市庫取申請--%><%=Resources.MP.Store%><%=Resources.MP.Stock_Take%><%=Resources.MP.Apply%></a>
-                                            <a href="/Store/Store_StockIO_Approve.aspx"><%--門市庫取核銷--%><%=Resources.MP.Store%><%=Resources.MP.Stock_Take%><%=Resources.MP.Write_Off%></a>
-                                            <a href="/Store/Store_StockIO_Shipping.aspx"><%--門市庫取出貨--%><%=Resources.MP.Store%><%=Resources.MP.Stock_Take%><%=Resources.MP.Shipping%></a>
+                                            <a href="#" IVM_P="">訂單退貨轉入庫</a>
+                                            <a href="#" IVM_P="">快取庫存補貨</a>
+                                            <a href="#" IVM_P="">快取補貨查詢</a>
+                                            <a href="#" IVM_P="">快取安全數維護</a>
+                                            <a href="#" IVM_P="">快取盤點作業</a>
+                                            <a href="#" IVM_P="">門市備貨修改</a>
+                                            <a href="#" IVM_P="">門市PM查詢</a>
+                                            <a href="#" IVM_P="">理貨報表</a>
+                                            <a href="#" IVM_P="">傳送表單列印</a>
+                                            <a href="#" IVM_P="">運送指示單列印</a>
+                                            <a href="#" IVM_P="">快遞套印</a>
+                                            <a href="#" IVM_P="">汐止報表</a>
+                                            <a href="#" IVM_P="">每日汐止工單</a>
                                         </li>
                                     </ul>
                                 </li>
                                 <li class="has-children">
-                                    <a href="#"><%=Resources.MP.More%></a>
+                                    <a href="#about-section" style="vertical-align:sub;" class="nav-link" IVM_P="9">會計(x)</a>
+                                    <ul class="dropdown">
+                                        <li>
+                                            <a href="#" IVM_P="">IV費用維護</a>
+                                            <a href="#" IVM_P="">CD客戶退貨核銷</a>
+                                            <%--與訂單模組重複?--%>
+                                            <a href="#" IVM_P="">CD客戶退貨查詢</a>
+                                            <a href="#" IVM_P="">會計報表</a>
+                                            <a href="#" IVM_P="">建立應付-台灣</a>
+                                            <a href="#" IVM_P="">應付主檔維護</a>
+                                            <a href="#" IVM_P="">固定資產查詢</a>
+                                            <a href="#" IVM_P="">固定資產維護</a>
+                                            <a href="#" IVM_P="">進銷維護</a>
+                                            <a href="#" IVM_P="">銷項維護</a>
+                                            <a href="#" IVM_P="">零稅率銷售額維護</a>
+                                            <a href="#" IVM_P="">匯入月結資料</a>
+                                            <a href="#" IVM_P="">匯出作業</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="has-children">
+                                    <a href="#about-section" style="vertical-align:sub;" class="nav-link" IVM_P="10">總帳</a>
+                                    <ul class="dropdown">
+                                        <li>
+                                            <a href="#" IVM_P="">~</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="has-children">
+                                    <a href="#" class="nav-link"><%=Resources.MP.More%></a>
                                     <ul class="dropdown">
                                         <li class="has-children">
-                                            <a href="#"><%=Resources.MP.Language%></a>
+                                            <a href="#" class="nav-link"><%=Resources.MP.Language%></a>
                                             <ul class="dropdown">
                                                 <li>
                                                     <a href="#" onclick="document.cookie='Language=';javascript:location.reload();">中文</a>
-                                                </li>
-                                                <li>
                                                     <a href="#1" onclick="document.cookie='Language=EN';javascript:location.reload();">English</a>
                                                 </li>
                                             </ul>
@@ -317,12 +510,12 @@
                <%-- var Username = '<%= Session["Account"] %>';
                 $('#Session_User').text(" User: " + Username);
 
-                let IVM_PERMISSIONS = String("<%= Session["IVM_PERMISSIONS"] %>");
-                let PERMISSIONS_ALL = IVM_PERMISSIONS.split(',');
-                $('a[IVM_PERMISSIONS]').css('display', 'none');
+                let IVM_P = String("<%= Session["IVM_P"] %>");
+                let PERMISSIONS_ALL = IVM_P.split(',');
+                $('a[IVM_P]').css('display', 'none');
 
                 PERMISSIONS_ALL.forEach(function (j) {
-                    $('a[IVM_PERMISSIONS=' + j.trim() + ']').css('display', '');
+                    $('a[IVM_P=' + j.trim() + ']').css('display', '');
                 });
                 let IVMD_PERMISSIONS = String("<%= Session["IVMD_PERMISSIONS"] %>");
                 let D_PERMISSIONS_ALL = IVMD_PERMISSIONS.split(',');
@@ -336,18 +529,18 @@
                 let Cookie_ALL = document.cookie.split(';');
                 var PERMISSIONS;
                 Cookie_ALL.forEach(function (i) {
-                    if (i.indexOf("IVM_PERMISSIONS=") > 0) {
-                        PERMISSIONS = i.trim().substr("IVM_PERMISSIONS=".length, i.length);
+                    if (i.indexOf("IVM_P=") > 0) {
+                        PERMISSIONS = i.trim().substr("IVM_P=".length, i.length);
                     }
                 });
                 console.warn(PERMISSIONS);
 
                 let PERMISSIONS_ALL = PERMISSIONS.split(',');
-                $('a[IVM_PERMISSIONS]').css('display', 'none');
+                $('a[IVM_P]').css('display', 'none');
 
                 PERMISSIONS_ALL.forEach(function (j) {
                     console.warn(j.trim());
-                    $('a[IVM_PERMISSIONS=' + j.trim() + ']').css('display', '');
+                    $('a[IVM_P=' + j.trim() + ']').css('display', '');
                 })
                 */
 

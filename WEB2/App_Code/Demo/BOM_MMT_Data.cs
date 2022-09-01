@@ -50,7 +50,7 @@ namespace Demo
                                 AND BD.[廠商簡稱] LIKE @M_S_SName + '%'
                                 AND BD.[最後完成者] LIKE @EP_S_No + '%' 
                                 AND BD.[完成者簡稱] LIKE @EP_S_SName + '%' 
-                            ORDER BY [sort] desc, [頤坊型號] asc ";
+                            ORDER BY [sort] desc ";
                         cmd.Parameters.AddWithValue("MM", context.Request["MM"]);
                         cmd.Parameters.AddWithValue("EPM", context.Request["EPM"]);
                         cmd.Parameters.AddWithValue("M_S_No", context.Request["M_S_No"]);

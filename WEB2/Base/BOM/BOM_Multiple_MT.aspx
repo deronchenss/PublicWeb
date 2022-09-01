@@ -18,8 +18,8 @@
             var Supplier_Selector_Type;
             var Click_tr_IDX;
             document.body.style.overflow = 'hidden';
-            Form_Mode_Change("Search");//WD
-            Search_BOM();//WD
+            //Form_Mode_Change("Search");//WD
+            //Search_BOM();//WD
 
             $('#BT_Supplier_Selector_M').on('click', function () {
                 $("#Search_Supplier_Dialog").dialog('open');
