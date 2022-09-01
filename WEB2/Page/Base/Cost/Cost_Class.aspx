@@ -96,7 +96,7 @@
 
             function Search_Cost(Search_Where) {
                 $.ajax({
-                    url: "/Base/Cost/New_Cost_Search.ashx",
+                    url: "/Page/Base/Cost/New_Cost_Search.ashx",
                     data: {
                         "Call_Type": "Cost_Class_Search",
                         "IM": $('#TB_IM').val(),
@@ -230,7 +230,7 @@
                         var IMG_SEL = $(this);
                         var binary = '';
                         $.ajax({
-                            url: "/Base/BOM/BOM_Search.ashx",
+                            url: "/Page/Base/BOM/BOM_Search.ashx",
                             data: {
                                 "Call_Type": "GET_IMG",
                                 "SUPLU_SEQ": $(this).attr('SEQ')//response[i].SEQ
@@ -309,7 +309,7 @@
                                 break;
                         }
                         $.ajax({
-                            url: "/Base/Cost/Cost_Save.ashx",
+                            url: "/Page/Base/Cost/Cost_Save.ashx",
                             data: {
                                 "SEQ": $(this).find('.SEQ').text(),
                                 "PC1": PC1,

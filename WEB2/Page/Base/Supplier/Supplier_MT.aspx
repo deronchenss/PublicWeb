@@ -28,7 +28,7 @@
                 if (confirm("<%=Resources.MP.Save_Alert%>")) {
                     if (Save_Check()) {
                         $.ajax({
-                            url: "/Base/Supplier/Supplier_Save.ashx",
+                            url: "/Page/Base/Supplier/Supplier_Save.ashx",
                             data: {
                                 "S_No": $('#TB_M2_S_No').val(),
                                 "S_SName": $('#TB_M2_S_SName').val(),
@@ -220,7 +220,7 @@
                         Edit_Mode = "Save";
                         //Save
                         $.ajax({
-                            url: "/Base/Supplier/Supplier_Save.ashx",
+                            url: "/Page/Base/Supplier/Supplier_Save.ashx",
                             data: {
                                 "SEQ": $('#TB_M2_SEQ').val(),
                                 "S_No": $('#TB_M2_S_No').val(),
@@ -351,7 +351,7 @@
                 $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
 
                 $.ajax({
-                    url: "/Base/Supplier/Sup_Search.ashx",
+                    url: "/Page/Base/Supplier/Sup_Search.ashx",
                     data: {
                         "S_No": S_No,
                         "Call_Type": "Supplier_MT_Selected"
@@ -423,7 +423,7 @@
             function Search_Supplier(Search_Where) {
                 Click_tr_IDX = null;
                 $.ajax({
-                    url: "/Base/Supplier/Sup_Search.ashx",
+                    url: "/Page/Base/Supplier/Sup_Search.ashx",
                     data: {
                         "S_No": "",//$('#TB_Search_S_No').val(),
                         "Call_Type": "Supplier_MT_Search",

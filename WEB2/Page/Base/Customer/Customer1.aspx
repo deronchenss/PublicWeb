@@ -63,7 +63,7 @@
                         var C_No = $(Click_tr).find('td:nth-child(1)').text().toString().trim();
 
                         $.ajax({
-                            url: "/Base/Customer/Customer_Search.ashx",
+                            url: "/Page/Base/Customer/Customer_Search.ashx",
                             data: {
                                 "C_No": C_No,
                                 "Call_Type": "Table_Selected"
@@ -125,7 +125,7 @@
 
                     function Search_Customer() {
                         $.ajax({
-                            url: "/Base/Customer/Customer_Search.ashx",
+                            url: "/Page/Base/Customer/Customer_Search.ashx",
                             data: {
                                 "C_No": $('#TB_Search_C_No').val(),
                                 "C_Address": $('#TB_Search_C_Address').val(),

@@ -118,7 +118,7 @@
                 if (confirm("<%=Resources.MP.Save_Alert%>")) {
                     if (Save_Check()) {
                         $.ajax({
-                            url: "/Base/Price/Price_Save.ashx",
+                            url: "/Page/Base/Price/Price_Save.ashx",
                             data: {
                                 "DVN": $('#DDL_M2_DVN').val(),
                                 "TM": $('#DDL_M2_TM').val(),
@@ -180,7 +180,7 @@
             function Search_Price(Search_Where) {
                 Click_tr_IDX = null;
                 $.ajax({
-                    url: "/Base/Price/Price_Search.ashx",
+                    url: "/Page/Base/Price/Price_Search.ashx",
                     data: {
                         "Call_Type": "Price_MT_Search",
                         "Search_Where": Search_Where ?? ""
@@ -263,7 +263,7 @@
                 Form_Mode_Change("Search_D");
 
                 $.ajax({
-                    url: "/Base/Price/Price_Search.ashx",
+                    url: "/Page/Base/Price/Price_Search.ashx",
                     data: {
                         "SEQ": Click_tr.find('td:nth-child(1)').text(),
                         "Call_Type": "Price_MT_Selected"
@@ -343,7 +343,7 @@
                 if (confirm("<%=Resources.MP.Edit_Alert%>")) {
                     if (Save_Check()) {
                         $.ajax({
-                            url: "/Base/Price/Price_Save.ashx",
+                            url: "/Page/Base/Price/Price_Save.ashx",
                             data: {
                                 "SEQ": $('#TB_M2_SEQ').val(),
                                 "DVN": $('#DDL_M2_DVN').val(),
@@ -562,7 +562,7 @@
                             if (Copy_Check()) {
                                 $("#Copy_Dialog").dialog('close');
                                 $.ajax({
-                                    url: "/Base/Price/Price_Save.ashx",
+                                    url: "/Page/Base/Price/Price_Save.ashx",
                                     data: {
                                         "Old_SEQ": $('#LB_CD_SEQ').text(),
                                         "CM": $('#TB_CD_CM').val(),

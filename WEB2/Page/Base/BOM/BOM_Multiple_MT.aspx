@@ -73,7 +73,7 @@
                     }
                     if (Update_Check) {
                         $.ajax({
-                            url: "/Base/BOM/BOM_MMT.ashx",
+                            url: "/Page/Base/BOM/BOM_MMT.ashx",
                             data: {
                                 "Call_Type": "BOM_MMT_Update",
                                 "SEQ_Array": Exec_SEQ,
@@ -176,7 +176,7 @@
 
             function Search_BOM() {
                 $.ajax({
-                    url: "/Base/BOM/BOM_MMT.ashx",
+                    url: "/Page/Base/BOM/BOM_MMT.ashx",
                     data: {
                         "Call_Type": "BOM_MMT_Search",
                         "MM": $('#TB_MM').val(),
@@ -287,7 +287,7 @@
                         var IMG_SEL = $(this);
                         var binary = '';
                         $.ajax({
-                            url: "/Base/BOM/BOM_Search.ashx",
+                            url: "/Page/Base/BOM/BOM_Search.ashx",
                             data: {
                                 "Call_Type": "GET_IMG",
                                 "SUPLU_SEQ": $(this).attr('SEQ')

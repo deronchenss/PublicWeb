@@ -205,7 +205,7 @@
 
                         var S_NO = $(Click_tr).find('td:nth-child(1)').text().toString().trim();
                         $.ajax({
-                            url: "/Base/Supplier/Sup_Search.ashx",
+                            url: "/Page/Base/Supplier/Sup_Search.ashx",
                             data: {
                                 "S_NO": S_NO,
                                 "Call_Type": "GV_Selected"
@@ -270,7 +270,7 @@
 
                     function Search_Supplier() {
                         $.ajax({
-                            url: "/Base/Supplier/Sup_Search.ashx",
+                            url: "/Page/Base/Supplier/Sup_Search.ashx",
                             data: {
                                 "S_NO": $('#TB_Search_S_NO').val(),
                                 "S_Tel": $('#TB_Search_S_Tel').val(),

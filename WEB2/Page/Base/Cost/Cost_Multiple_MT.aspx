@@ -63,7 +63,7 @@
                 });
 
                 $.ajax({
-                    url: "/Base/Cost/Ashx/Cost_MMT.ashx",
+                    url: "/Page/Base/Cost/Ashx/Cost_MMT.ashx",
                     data: {
                         "Call_Type": "Cost_MMT_Update",
                         "Exec_Data": JSON.stringify(E_Json)
@@ -219,7 +219,7 @@
                 S_Json.push(Search_Obj);
 
                 $.ajax({
-                    url: "/Base/Cost/Ashx/Cost_MMT.ashx",
+                    url: "/Page/Base/Cost/Ashx/Cost_MMT.ashx",
                     data: {
                         "Call_Type": "Cost_MMT_Search",
                         "Search_Data": JSON.stringify(S_Json)
@@ -414,7 +414,7 @@
                         var IMG_SEL = $(this);
                         var binary = '';
                         $.ajax({
-                            url: "/Base/BOM/BOM_Search.ashx",
+                            url: "/Page/Base/BOM/BOM_Search.ashx",
                             data: {
                                 "Call_Type": "GET_IMG",
                                 "SUPLU_SEQ": $(this).attr('SEQ')

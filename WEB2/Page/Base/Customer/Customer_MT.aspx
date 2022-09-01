@@ -81,7 +81,7 @@
                 if (confirm("<%=Resources.MP.Save_Alert%>")) {
                     if (Save_Check()) {
                         $.ajax({
-                            url: "/Base/Customer/Customer_Save.ashx",
+                            url: "/Page/Base/Customer/Customer_Save.ashx",
                             data: {
                                 "C_No": $('#TB_M2_C_No').val(),
                                 "C_SName": $('#TB_M2_C_SName').val(),
@@ -231,7 +231,7 @@
                 if (confirm("<%=Resources.MP.Edit_Alert%>")) {
                     if (Save_Check()) {
                         $.ajax({
-                            url: "/Base/Customer/Customer_Save.ashx",
+                            url: "/Page/Base/Customer/Customer_Save.ashx",
                             data: {
                                 "SEQ": $('#TB_M2_SEQ').val(),
                                 "C_No": $('#TB_M2_C_No').val(),
@@ -359,7 +359,7 @@
                 //console.warn(C_No);
                 Form_Mode_Change("Search_D");
                 $.ajax({
-                    url: "/Base/Customer/Customer_Search.ashx",
+                    url: "/Page/Base/Customer/Customer_Search.ashx",
                     data: {
                         "C_No": C_No,
                         "Call_Type": "Customer_MT_Selected"
@@ -447,7 +447,7 @@
             function Search_Customer(Search_Where) {
                 Click_tr_IDX = null;
                 $.ajax({
-                    url: "/Base/Customer/Customer_Search.ashx",
+                    url: "/Page/Base/Customer/Customer_Search.ashx",
                     data: {
                         "C_No": "",//$('#TB_Search_C_No').val(),
                         "Call_Type": "Customer_MT_Search",

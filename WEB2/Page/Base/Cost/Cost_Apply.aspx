@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Cost Approve" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Cost_Approve.aspx.cs" Inherits="Cost_Cost_Approve" %>
+﻿<%@ Page Title="Cost Apply" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" %>
 <%@ Register TagPrefix="uc1" TagName="uc1" Src="~/User_Control/Dia_Duo_Datetime_Picker.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
@@ -8,7 +8,7 @@
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
     <script src="/js/jquery.dataTables.min.js"></script>
     <script src="/js/dataTables.bootstrap4.min.js"></script>
-
+    
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
@@ -16,7 +16,7 @@
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
 
-            $('#TB_Date_S').val($.datepicker.formatDate('yy-mm-dd', new Date(new Date().setDate(new Date().getDate() - 14)) ));
+            $('#TB_Date_S').val($.datepicker.formatDate('yy-mm-dd', new Date(new Date().setDate(new Date().getDate() - 14))));
             $('#TB_Date_E').val($.datepicker.formatDate('yy-mm-dd', new Date()));
 
             window.document.body.onbeforeunload = function () {
@@ -28,20 +28,20 @@
                 switch (Form_Mode) {
                     case "Base":
                         $('#BT_Search, .For_S').css('display', '');
-                        $('#BT_Cancel, #Div_DT_View, #Div_Data_Control, #Div_Exec_Data, #BT_Approve').css('display', 'none');
+                        $('#Div_DT_View, #Div_Data_Control, #Div_Exec_Data, #BT_Save, .For_U').css('display', 'none');
                         $('#RB_DV_DIMG').prop('checked', true);
                         $('input[type=radio][name=DIMG]').attr('disabled', 'disabled');
                         break;
                     case "Search":
-                        $('#BT_Cancel, #Div_DT_View, #Div_Data_Control, #Div_Exec_Data').css('display', '');
-                        $('#BT_Approve').css('display', 'none');
+                        $('#Div_DT_View, #Div_Data_Control, #Div_Exec_Data').css('display', '');
+                        $('#BT_Save, .For_U').css('display', 'none');
                         $('#Div_DT_View').css('width', '60%');
                         $('#Div_Exec_Data').css('width', '35%');
                         $('input[type=radio][name=DIMG]').attr('disabled', false);
                         break;
                     case "Review_Data":
-                        $('#BT_Cancel, #Div_DT_View, #Div_Data_Control').css('display', 'none');
-                        $('#BT_Approve').css('display', '');
+                        $('#Div_DT_View, #Div_Data_Control').css('display', 'none');
+                        $('#BT_Save, .For_U').css('display', '');
                         $('#Div_Exec_Data').css('width', '100%');
                         break;
                 }
@@ -58,14 +58,9 @@
                 Form_Mode_Change("Base");
             });
 
-            $('#BT_Re_Select').on('click', function () {
-                Edit_Mode = "Can_Move";
-                Form_Mode_Change("Search");
-            });
-
             function Search_Cost(Search_Where) {
                 $.ajax({
-                    url: "/Base/Cost/Cost_Search.ashx",
+                    url: "/Page/Base/Cost/Cost_Search.ashx",
                     data: {
                         "Call_Type": "Cost_Apply_Search",
                         "IM": $('#TB_IM').val(),
@@ -86,7 +81,6 @@
                             Form_Mode_Change("Base");
                         }
                         else {
-
                             var Table_HTML =
                                 '<thead><tr>'
                                 + '</th><th>' + '<%=Resources.MP.Developing%>'
@@ -97,15 +91,13 @@
                                 + '</th><th>' + '<%=Resources.MP.Product_Status%>'
                                 + '</th><th>' + '<%=Resources.MP.Product_Information%>'
                                 + '</th><th class="DIMG">' + '<%=Resources.MP.Image%>'
-                                + '</th><th>' + '<%=Resources.MP.Apply_Reason%>'
+                                + '</th><th class="For_U" style="display:none;">' + '<%=Resources.MP.Apply_Reason%>'
                                 + '</th><th>' + '<%=Resources.MP.Unit%>'
                                 + '</th><th>' + '<%=Resources.MP.Price_TWD%>'
                                 + '</th><th>' + '<%=Resources.MP.Price_USD%>'
                                 + '</th><th>' + '<%=Resources.MP.Currency%>'
                                 + '</th><th>' + '<%=Resources.MP.Price_Curr%>'
                                 + '</th><th>' + 'MSRP'
-                                + '</th><th>' + 'Cost'
-                                + '</th><th>' + 'GP'
                                 + '</th><th>' + '<%=Resources.MP.Last_Price_Day%>'
                                 + '</th><th>' + '<%=Resources.MP.Supplier_No%>'
                                 + '</th><th>' + '<%=Resources.MP.SEQ%>'
@@ -114,31 +106,53 @@
                                 + '</th></tr></thead><tbody>';
 
                             $(response).each(function (i) {
+                                //var binary = '';
+                                //if (response[i].Has_IMG) {
+                                //    $.ajax({
+                                //        url: "/Page/Base/BOM/BOM_Search.ashx",
+                                //        data: {
+                                //            "Call_Type": "GET_IMG",
+                                //            "SUPLU_SEQ": response[i].SEQ
+                                //        },
+                                //        cache: false,
+                                //        async: false,
+                                //        type: "POST",
+                                //        datatype: "json",
+                                //        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                                //        success: function (RR) {
+                                //            var bytes = new Uint8Array(RR[0].P_IMG);
+                                //            var len = bytes.byteLength;
+                                //            for (var j = 0; j < len; j++) {
+                                //                binary += String.fromCharCode(bytes[j]);
+                                //            }
+                                //        }
+                                //    });
+                                //}
+                                //src = "data:image/png;base64,' + window.btoa(binary) + '"
                                 Table_HTML +=
-                                    '<tr><td>' + String(response[i].DVN ?? "") +
-                                    '</td><td>' + String(response[i].S_SName ?? "") +
-                                    '</td><td>' + String(response[i].IM ?? "") +
-                                    '</td><td>' + String(response[i].SM ?? "") +
-                                    '</td><td>' + String(response[i].SaleM ?? "") +
-                                    '</td><td>' + String(response[i].PS ?? "") +
-                                    '</td><td>' + String(response[i].PI ?? "") +
-                                    (((response[i].Change_Log ?? "").length > 0) ? ('<br /><span style="color:blue;" title="' + (response[i].Change_Log ?? "") + '">移入檢視變更記錄</sapn>') : '') +
-                                    '</td><td class="DIMG" style="text-align:center;">' +
+                                    '<tr><td data-th="<%=Resources.MP.Developing%>">' + String(response[i].DVN ?? "") +
+                                    '</td><td data-th="<%=Resources.MP.Supplier_Short_Name%>">' + String(response[i].S_SName ?? "") +
+                                    '</td><td data-th="<%=Resources.MP.Ivan_Model%>">' + String(response[i].IM ?? "") +
+                                    '</td><td data-th="<%=Resources.MP.Supplier_Model%>">' + String(response[i].SM ?? "") +
+                                    '</td><td data-th="<%=Resources.MP.Sale_Model%>">' + String(response[i].SaleM ?? "") +
+                                    '</td><td data-th="<%=Resources.MP.Product_Status%>">' + String(response[i].PS ?? "") +
+                                    '</td><td data-th="<%=Resources.MP.Product_Information%>">' + String(response[i].PI ?? "") +
+                                        (((response[i].Change_Log ?? "").length > 0) ? ('<br /><span style="color:blue;" title="' + (response[i].Change_Log ?? "") + '">移入檢視變更記錄</sapn>') : '') +
+                                    '</td><td class="DIMG" style="text-align:center;" data-th="<%=Resources.MP.Image%>">' +
                                     ((response[i].Has_IMG) ? ('<img type="Product" SEQ="' + String(response[i].SEQ ?? "") + '" />') : ('<%=Resources.MP.Image_NotExists%>')) +
-                                    '</td><td>' + String(response[i].Apply_Reason ?? "") + 
-                                    '</td><td>' + String(response[i].Unit ?? "") +
-                                    '</td><td style="text-align:right;">' + ((response[i].TWD_P != 0) ? String(response[i].TWD_P ?? "") : "") +
-                                    '</td><td style="text-align:right;">' + ((response[i].USD_P != 0) ? String(response[i].USD_P ?? "") : "")  +
-                                    '</td><td>' + String(response[i].Curr ?? "") +
-                                    '</td><td style="text-align:right;">' + ((response[i].Curr_P != 0) ? String(response[i].Curr_P ?? ""): "")  +
-                                    '</td><td style="text-align:right;">' + ((response[i].MSRP != 0) ? String(response[i].MSRP ?? ""): "")  +
-                                    '</td><td style="text-align:right;">' + ((response[i].Cost != 0) ? String(response[i].Cost ?? ""): "")  +
-                                    '</td><td style="text-align:right;">' + ((response[i].GP != 0) ? String(response[i].GP ?? "") : "") +
-                                    '</td><td>' + String(response[i].LSTP_Day ?? "") +
-                                    '</td><td>' + String(response[i].S_No ?? "") +
-                                    '</td><td class="SEQ">' + String(response[i].SEQ ?? "") +
-                                    '</td><td>' + String(response[i].Update_User ?? "") +
-                                    '</td><td>' + String(response[i].Update_Date ?? "") +
+                                    '</td><td class="For_U" style="display:none;" data-th="<%=Resources.MP.Apply_Reason%>">' +
+                                    '<textarea class="U_Element" style="width:300px;" maxlength="50" title="Max Length 50 words.">' + String(response[i].Apply_Reason ?? "") + '</textarea>' +
+                                    '</td><td data-th="<%=Resources.MP.Unit%>">' + String(response[i].Unit ?? "") +
+                                    '</td><td style="text-align:right;" data-th="<%=Resources.MP.Price_TWD%>">' + ((response[i].TWD_P != 0) ? String(response[i].TWD_P ?? "") : "") +
+                                    '</td><td style="text-align:right;" data-th="<%=Resources.MP.Price_USD%>">' + ((response[i].USD_P != 0) ? String(response[i].USD_P ?? "") : "") +
+                                    '</td><td data-th="<%=Resources.MP.Currency%>">' + String(response[i].Curr ?? "") +
+                                    '</td><td style="text-align:right;" data-th="<%=Resources.MP.Price_Curr%>">' + ((response[i].Curr_P != 0) ? String(response[i].Curr_P ?? "") : "") +
+                                    '</td><td style="text-align:right;" data-th="MSRP">' + ((response[i].MSRP != 0) ? String(response[i].MSRP ?? "") : "") +
+                                    '</td><td data-th="<%=Resources.MP.Last_Price_Day%>">' + String(response[i].LSTP_Day ?? "") +
+                                    '</td><td data-th="<%=Resources.MP.Supplier_No%>">' + String(response[i].S_No ?? "") +
+                                    '</td><td class="SEQ" data-th="<%=Resources.MP.SEQ%>">' + String(response[i].SEQ ?? "") +
+                                    '</td><td data-th="<%=Resources.MP.Update_User%>">' + String(response[i].Update_User ?? "") +
+                                    '</td><td data-th="<%=Resources.MP.Update_Date%>">' + String(response[i].Update_Date ?? "") +
                                     '</td></tr>';
                             });
 
@@ -150,10 +164,6 @@
 
                             $('#Table_Search_Cost').css('white-space', 'nowrap');
                             $('#Table_Search_Cost thead th').css('text-align', 'center');
-
-
-                            //$('#Table_Exec_Data_info').text('');
-                            //$('#Table_Exec_Data').html('');
                         }
                     },
                     error: function (ex) {
@@ -177,18 +187,29 @@
                         Show_IMG = true;
                         $('.DIMG img').css({ 'max-height': '100px', 'max-width': '100px' });
                         break;
+                    case "RB_New":
+                        Show_IMG = true;
+                        $('.DIMG img').css('max-height', '100px');
+
+                        //$('#Table_Exec_Data thead').toggle(false);
+                        //$('#Table_Exec_Data tbody tr').attr('style', 'display: block;border: 1px solid #01977a;margin: 10px 0;border - radius: 5pt;background-color: #fff;');
+                        //$('#Table_Exec_Data tbody td').attr('style', 'display: block;text-align: left;padding: 5px 1rem 5px 2rem;color: black;');
+                        //$('[data-th=廠商型號], [data-th=銷售型號], [data-th=外幣幣別], [data-th=外幣單價]').toggle(false);
+                        
+                        break;
                 }
                 if (Show_IMG && !IMG_Has_Read) {//Need Show And Not Read Data
                     $('img[type=Product]').each(function (i) {
                         var IMG_SEL = $(this);
                         var binary = '';
                         $.ajax({
-                            url: "/Base/BOM/BOM_Search.ashx",
+                            url: "/Page/Base/BOM/BOM_Search.ashx",
                             data: {
                                 "Call_Type": "GET_IMG",
                                 "SUPLU_SEQ": $(this).attr('SEQ')//response[i].SEQ
                             },
                             cache: false,
+                            //async: false,
                             type: "POST",
                             datatype: "json",
                             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -205,21 +226,30 @@
                     });
                     IMG_Has_Read = true;
                 }
+
             });
 
             $('#BT_Next').on('click', function () {
                 Edit_Mode = "Edit";
                 Form_Mode_Change("Review_Data");
             });
+            
+            $('#BT_Fill_Reason').on('click', function () {
+                if (confirm('<%=Resources.MP.Confirm_Fill_Reason%>')) {
+                    $('.U_Element').val($('#TB_ALL_Reason').val());
+                }
+            });
 
-            $('#BT_Approve').on('click', function () {
+            $('#BT_Save').on('click', function () {
                 $('#Table_Exec_Data tbody tr').each(function () {
+                    console.warn('SEQ: ' + $(this).find('.SEQ').text() + ', Reason: ' + $(this).find('.U_Element').val());
                     $.ajax({
-                        url: "/Base/Cost/Cost_Save.ashx",
+                        url: "/Page/Base/Cost/Cost_Save.ashx",
                         data: {
                             "SEQ": $(this).find('.SEQ').text(),
+                            "Reason": $(this).find('.U_Element').val(),
                             "Update_User": "<%=(Session["Account"] == null) ? "Ivan10" : Session["Account"].ToString().Trim() %>",
-                            "Call_Type": "Cost_Approve"
+                            "Call_Type": "Cost_Apply"
                         },
                         cache: false,
                         type: "POST",
@@ -239,7 +269,7 @@
                         }
                     });
                 });
-                alert('核准完成');
+                alert("<%=Resources.MP.Add_Success%>");
             });
 
             function Item_Move(click_tr, ToTable, FromTable, Full) {
@@ -263,11 +293,13 @@
                         });
                     }
                     else {
-                        click_tr.remove();
+                        //if (ToTable.find('.SEQ:contains(' + click_tr.find('.SEQ').text() + ')').length === 0) {
                         if (ToTable.find('.SEQ').filter(function () { return $(this).text() == click_tr.find('.SEQ').text(); }).length === 0) {
                             ToTable.append(click_tr.clone());
                         }
+                        click_tr.remove();
                     }
+
                     if (FromTable.find('tbody tr').length === 0) {
                         FromTable.html('');
                     }
@@ -287,10 +319,26 @@
                 Item_Move($(this), $('#Table_Exec_Data'), $('#Table_Search_Cost'), true);
             });
             $('#BT_ATL').on('click', function () {
-                Item_Move($(this), $('#Table_Search_Cost'), $('#Table_Exec_Data'),  true);
+                Item_Move($(this), $('#Table_Search_Cost'), $('#Table_Exec_Data'), true);
             });
         });
     </script>
+    
+    <%--<style type="text/css">
+        #Table_Exec_Data tbody td::before {
+            color: #01977a;
+            text-indent: -1rem;
+            content: attr(data-th);
+            font-weight: bold;
+            display: block;
+        }
+
+        table thead tr th {
+            background-color: white;
+            position: sticky;
+            top: 0; /* 列首永遠固定於上 */
+        }
+    </style>--%>
 
     <style type="text/css">
         .M_BT {
@@ -323,12 +371,6 @@
         .U_Element:hover {
             opacity: 0.8;
         }
-      
-        table thead tr th {
-            background-color:white;
-            position: sticky;
-            top: 0; /* 列首永遠固定於上 */
-        }
     </style>
     <uc1:uc1 ID="uc1" runat="server" /> 
 
@@ -358,9 +400,9 @@
             </td>
             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Developing%></td>
             <td style="text-align: left; width: 15%;">
-                <select id="DDL_DVN">
-                    <option selected="selected" value="R">申請中</option>
-                    <option value="N">正式</option>
+                <select id="DDL_DVN" style="height:28.5px;">
+                    <option selected="selected" value="Y">開發中</option>
+                    <option value="R">申請中</option>
                     <option>ALL</option>
                 </select>
             </td>
@@ -368,11 +410,10 @@
         <tr>
             <td class="tdtstyleRight" colspan="8">
                 <input type="button" id="BT_Search" class="M_BT" value="<%=Resources.MP.Search%>" />
-                <input type="button" id="BT_Approve" class="M_BT" value="<%=Resources.MP.Approve%>" style="display:none;" />
+                <input type="button" id="BT_Save" class="M_BT" value="<%=Resources.MP.Save%>" style="display:none;" />
             </td>
         </tr>
         <tr>
-            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -391,6 +432,8 @@
         <label for="RB_V_DIMG"><%=Resources.MP.Show_Original_Image%></label>
         <input id="RB_SM_DIMG" type="radio" name="DIMG" disabled="disabled" />
         <label for="RB_SM_DIMG"><%=Resources.MP.Show_Small_Image%></label>
+        <input id="RB_New" type="radio" name="DIMG" disabled="disabled" style="display: none;" />
+        <label for="RB_New" style="display: none;">New_<%=Resources.MP.Show_Small_Image%></label>
     </div>
     <div style="width: 98%; margin: 0 auto;">
         <div id="Div_DT_View" style="width: 60%; height: 75vh; overflow: auto; display: none; float: left;border-style:solid;border-width:1px; ">
@@ -419,14 +462,20 @@
 
         <div id="Div_Exec_Data" style="width: 35%; height: 75vh; overflow: auto; display: none; float: right;border-style:solid;border-width:1px; ">
             <span class="dataTables_info" id="Table_Exec_Data_info" role="status" aria-live="polite"></span>
+            <div class="For_U">
+                <div style="display: flex;align-items: center;">
+                    <textarea id="TB_ALL_Reason" style="width: 300px;"></textarea>
+                    &nbsp;&nbsp;&nbsp;
+                    <input type="button" id="BT_Fill_Reason" value="<%=Resources.MP.Batch_Update_Reason%>" style="height: 54px; background-color: cadetblue; padding: 8px 10px; border-radius: 10px;" />
+                </div>
+            </div>
             <table id="Table_Exec_Data" style="width: 100%;" class="table table-striped table-bordered">
                 <thead></thead>
                 <tbody></tbody>
             </table>
         </div>
     </div>
-    
+
     <br />
     <br />
 </asp:Content>
-

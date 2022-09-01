@@ -82,7 +82,7 @@
                 if (confirm("<%=Resources.MP.Save_Alert%>")) {
                     if (Save_Check()) {
                         $.ajax({
-                            url: "/Base/Cost/Cost_Save.ashx",
+                            url: "/Page/Base/Cost/Cost_Save.ashx",
                             data: {
                                 "IM": $('#TB_M2_IM').val(),
                                 "SM": $('#TB_M2_SM').val(),
@@ -175,7 +175,7 @@
                 if (confirm("<%=Resources.MP.Edit_Alert%>")) {
                     if (Save_Check()) {
                         $.ajax({
-                            url: "/Base/Cost/Cost_Save.ashx",
+                            url: "/Page/Base/Cost/Cost_Save.ashx",
                             data: {
                                 "SEQ": $('#TB_M2_SEQ').val(),
                                 "IM": $('#TB_M2_IM').val(),
@@ -298,7 +298,7 @@
                 }
                 if (Check_Item) {
                     $.ajax({
-                        url: "/Base/Cost/Cost_Search.ashx",
+                        url: "/Page/Base/Cost/Cost_Search.ashx",
                         data: {
                             "IM": $('#TB_CD_IM').val(),
                             "S_No": $('#TB_CD_S_No').val(),
@@ -386,7 +386,7 @@
                 $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
 
                 $.ajax({
-                    url: "/Base/Cost/Cost_Search.ashx",
+                    url: "/Page/Base/Cost/Cost_Search.ashx",
                     data: {
                         "SEQ": SEQ,
                         "Call_Type": "Cost_MT_Selected"
@@ -496,7 +496,7 @@
             function Search_Cost(Search_Where) {
                 Click_tr_IDX = null;
                 $.ajax({
-                    url: "/Base/Cost/Cost_Search.ashx",
+                    url: "/Page/Base/Cost/Cost_Search.ashx",
                     data: {
                         "Call_Type": "Cost_MT_Search",
                         "Search_Where": Search_Where ?? ""
@@ -634,7 +634,7 @@
                             if (Copy_Check()) {
                                 $("#Copy_Dialog").dialog('close');
                                 $.ajax({
-                                    url: "/Base/Cost/Cost_Save.ashx",
+                                    url: "/Page/Base/Cost/Cost_Save.ashx",
                                     data: {
                                         "IM": $('#TB_CD_IM').val(),
                                         "SM": $('#TB_M2_SM').val(),

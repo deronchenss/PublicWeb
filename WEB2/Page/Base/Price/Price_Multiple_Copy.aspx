@@ -98,7 +98,7 @@
                         //console.warn(Exec_Obj);
                     });
                     $.ajax({
-                        url: "/Base/Price/Ashx/Price_MMC.ashx",
+                        url: "/Page/Base/Price/Ashx/Price_MMC.ashx",
                         data: {
                             "Call_Type": "Price_MMC_Copy",
                             "Exec_Data": JSON.stringify(E_Json)
@@ -226,7 +226,7 @@
                 S_Json.push(Search_Obj);
 
                 $.ajax({
-                    url: "/Base/Price/Ashx/Price_MMC.ashx",
+                    url: "/Page/Base/Price/Ashx/Price_MMC.ashx",
                     data: {
                         "Call_Type": "Price_MMC_Search",
                         "Search_Data": JSON.stringify(S_Json)
@@ -348,7 +348,7 @@
                         var IMG_SEL = $(this);
                         var binary = '';
                         $.ajax({
-                            url: "/Base/BOM/BOM_Search.ashx",
+                            url: "/Page/Base/BOM/BOM_Search.ashx",
                             data: {
                                 "Call_Type": "GET_IMG",
                                 "SUPLU_SEQ": $(this).attr('SEQ')

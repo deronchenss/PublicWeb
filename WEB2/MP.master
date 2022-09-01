@@ -106,8 +106,8 @@
                                             <a href="#" IVM_P="11" class="nav-link"><%=Resources.MP.Supplier%></a>
                                             <ul class="dropdown">
                                                 <li>
-                                                    <a href="/Base/Supplier/Supplier1.aspx" IVM_P="34"><%=Resources.MP.Supplier + Resources.MP.Speace + Resources.MP.Search%></a>
-                                                    <a href="/Base/Supplier/Supplier_MT.aspx" IVM_P="35"><%=Resources.MP.Supplier + Resources.MP.Speace + Resources.MP.Maintenance%></a>
+                                                    <a href="/Page/Base/Supplier/Supplier1.aspx" IVM_P="34"><%=Resources.MP.Supplier + Resources.MP.Speace + Resources.MP.Search%></a>
+                                                    <a href="/Page/Base/Supplier/Supplier_MT.aspx" IVM_P="35"><%=Resources.MP.Supplier + Resources.MP.Speace + Resources.MP.Maintenance%></a>
                                                 </li>
                                             </ul>
                                         </li>
@@ -115,8 +115,8 @@
                                             <a href="#" IVM_P="12" class="nav-link"><%=Resources.MP.Customer%></a>
                                             <ul class="dropdown">
                                                 <li>
-                                                    <a href="/Base/Customer/Customer1.aspx" IVM_P="36"><%=Resources.MP.Customer + Resources.MP.Speace + Resources.MP.Search%></a>
-                                                    <a href="/Base/Customer/Customer_MT.aspx" IVM_P="37"><%=Resources.MP.Customer + Resources.MP.Speace + Resources.MP.Maintenance%></a>
+                                                    <a href="/Page/Base/Customer/Customer1.aspx" IVM_P="36"><%=Resources.MP.Customer + Resources.MP.Speace + Resources.MP.Search%></a>
+                                                    <a href="/Page/Base/Customer/Customer_MT.aspx" IVM_P="37"><%=Resources.MP.Customer + Resources.MP.Speace + Resources.MP.Maintenance%></a>
                                                 </li>
                                             </ul>
                                         </li>
@@ -124,13 +124,13 @@
                                             <a href="#" IVM_P="13" class="nav-link">Cost</a>
                                             <ul class="dropdown">
                                                 <li>
-                                                    <a href="/Base/Cost/Cost_MT.aspx" IVM_P="38">Cost<%=Resources.MP.Speace + Resources.MP.Search + Resources.MP.Speace + Resources.MP.Maintenance%></a>
-                                                    <a href="/Base/Cost/Cost_Multiple_MT.aspx" IVM_P="39">Cost<%=Resources.MP.Speace + Resources.MP.Multiple + Resources.MP.Speace + Resources.MP.Maintenance%></a>
-                                                    <a href="/Base/Cost/Cost_Class.aspx" IVM_P="40"><%=Resources.MP.Cost_Class + Resources.MP.Speace + Resources.MP.Maintenance%></a>
-                                                    <a href="/Base/Cost/Cost_Apply.aspx" IVM_P="41">Cost<%=Resources.MP.Speace + Resources.MP.Applyopen%></a>
-                                                    <a href="/Base/Cost/Cost_Approve.aspx" IVM_P="42">Cost<%=Resources.MP.Speace + Resources.MP.Approve%></a>
-                                                    <a href="/Base/Cost/Fist_CAA_Approve.aspx" IVM_P="43">Cost<%=Resources.MP.CAC_Approve%></a>
-                                                    <a href="/Base/Cost/Cost_Report.aspx" IVM_P="44">Cost<%=Resources.MP.Speace + Resources.MP.Report%></a>
+                                                    <a href="/Page/Base/Cost/Cost_MT.aspx" IVM_P="38">Cost<%=Resources.MP.Speace + Resources.MP.Search + Resources.MP.Speace + Resources.MP.Maintenance%></a>
+                                                    <a href="/Page/Base/Cost/Cost_Multiple_MT.aspx" IVM_P="39">Cost<%=Resources.MP.Speace + Resources.MP.Multiple + Resources.MP.Speace + Resources.MP.Maintenance%></a>
+                                                    <a href="/Page/Base/Cost/Cost_Class.aspx" IVM_P="40"><%=Resources.MP.Cost_Class + Resources.MP.Speace + Resources.MP.Maintenance%></a>
+                                                    <a href="/Page/Base/Cost/Cost_Apply.aspx" IVM_P="41">Cost<%=Resources.MP.Speace + Resources.MP.Applyopen%></a>
+                                                    <a href="/Page/Base/Cost/Cost_Approve.aspx" IVM_P="42">Cost<%=Resources.MP.Speace + Resources.MP.Approve%></a>
+                                                    <a href="/Page/Base/Cost/Fist_CAA_Approve.aspx" IVM_P="43">Cost<%=Resources.MP.CAC_Approve%></a>
+                                                    <a href="/Page/Base/Cost/Cost_Report.aspx" IVM_P="44">Cost<%=Resources.MP.Speace + Resources.MP.Report%></a>
                                                 </li>
                                             </ul>
                                         </li>
@@ -138,8 +138,8 @@
                                             <a href="#" IVM_P="14" class="nav-link">Price</a>
                                             <ul class="dropdown">
                                                 <li>
-                                                    <a href="/Base/Price/Price_MT.aspx" IVM_P="45">Price<%=Resources.MP.Speace + Resources.MP.Search + Resources.MP.Speace + Resources.MP.Maintenance%></a>
-                                                    <a href="/Base/Price/Price_Multiple_Copy.aspx" IVM_P="46">Price<%=Resources.MP.Speace + Resources.MP.Multiple + Resources.MP.Speace + Resources.MP.Copy%></a>
+                                                    <a href="/Page/Base/Price/Price_MT.aspx" IVM_P="45">Price<%=Resources.MP.Speace + Resources.MP.Search + Resources.MP.Speace + Resources.MP.Maintenance%></a>
+                                                    <a href="/Page/Base/Price/Price_Multiple_Copy.aspx" IVM_P="46">Price<%=Resources.MP.Speace + Resources.MP.Multiple + Resources.MP.Speace + Resources.MP.Copy%></a>
                                                 </li>
                                             </ul>
                                         </li>
@@ -147,8 +147,8 @@
                                             <a href="#" IVM_P="15" class="nav-link">BOM</a>
                                             <ul class="dropdown">
                                                 <li>
-                                                    <a href="/Base/BOM/BOM_MT.aspx" style="font-size:smaller;" IVM_P="47">BOM<%=Resources.MP.Speace + Resources.MP.Search + Resources.MP.Speace + Resources.MP.Maintenance + "(" + Resources.MP.End_Product + Resources.MP.Speace + Resources.MP.Change + ")"%></a>
-                                                    <a href="/Base/BOM/BOM_Multiple_MT.aspx" style="font-size:smaller;" IVM_P="48">BOM<%=Resources.MP.Speace + Resources.MP.Multiple + Resources.MP.Speace + Resources.MP.Maintenance + "(" + Resources.MP.Material + Resources.MP.Speace + Resources.MP.Change + ")"%></a>
+                                                    <a href="/Page/Base/BOM/BOM_MT.aspx" style="font-size:smaller;" IVM_P="47">BOM<%=Resources.MP.Speace + Resources.MP.Search + Resources.MP.Speace + Resources.MP.Maintenance + "(" + Resources.MP.End_Product + Resources.MP.Speace + Resources.MP.Change + ")"%></a>
+                                                    <a href="/Page/Base/BOM/BOM_Multiple_MT.aspx" style="font-size:smaller;" IVM_P="48">BOM<%=Resources.MP.Speace + Resources.MP.Multiple + Resources.MP.Speace + Resources.MP.Maintenance + "(" + Resources.MP.Material + Resources.MP.Speace + Resources.MP.Change + ")"%></a>
                                                 </li>
                                             </ul>
                                         </li>
@@ -175,7 +175,7 @@
                                                 </li>
                                             </ul>
                                         </li>
-                                        <li><a href="/Base/Model_Search.aspx" IVM_P="49"><%=Resources.MP.Model_Search%></a></li>
+                                        <li><a href="/Page/Base/Model_Search.aspx" IVM_P="49"><%=Resources.MP.Model_Search%></a></li>
                                     </ul>
                                 </li>
                                 <li class="has-children">

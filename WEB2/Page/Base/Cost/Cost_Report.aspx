@@ -64,7 +64,7 @@
                 });
                 console.warn(Exec_SEQ);
                 $.ajax({
-                    url: "/Base/Cost/New_Cost_Search.ashx",
+                    url: "/Page/Base/Cost/New_Cost_Search.ashx",
                     data: {
                         "Call_Type": "Cost_Report_Print",
                         "Report_Type": $('.V_Report[disabled]').prop('id'),
@@ -245,7 +245,7 @@
 
             function Search_Cost() {
                 $.ajax({
-                    url: "/Base/Cost/New_Cost_Search.ashx",
+                    url: "/Page/Base/Cost/New_Cost_Search.ashx",
                     data: {
                         "Call_Type": "Cost_Report_C_Search",
                         "IM": $('#TB_IM').val(),
@@ -334,7 +334,7 @@
             };
             function Search_Price() {
                 $.ajax({
-                    url: "/Base/Cost/New_Cost_Search.ashx",
+                    url: "/Page/Base/Cost/New_Cost_Search.ashx",
                     data: {
                         "Call_Type": "Cost_Report_P_Search",
                         "IM": $('#TB_IM').val(),
@@ -438,7 +438,7 @@
                         var IMG_SEL = $(this);
                         var binary = '';
                         $.ajax({
-                            url: "/Base/BOM/BOM_Search.ashx",
+                            url: "/Page/Base/BOM/BOM_Search.ashx",
                             data: {
                                 "Call_Type": "GET_IMG",
                                 "SUPLU_SEQ": $(this).attr('SEQ')

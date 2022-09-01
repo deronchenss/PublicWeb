@@ -105,7 +105,7 @@
                 if (confirm("<%=Resources.MP.Save_Alert%>")) {
                     if (New_Save_Check()) {
                         $.ajax({
-                            url: "/Base/BOM/BOM_Save.ashx",
+                            url: "/Page/Base/BOM/BOM_Save.ashx",
                             data: {
                                 "SUPLU_SEQ": $('#HDN_M2_SUPLU_SEQ').val(),
                                 "IM": $('#TB_M2_IM').val(),
@@ -164,7 +164,7 @@
             function Search_BOM_M(Search_Where) {
                 Click_tr_IDX = null;
                 $.ajax({
-                    url: "/Base/BOM/BOM_Search.ashx",
+                    url: "/Page/Base/BOM/BOM_Search.ashx",
                     data: {
                         "Call_Type": "BOM_MT_Search",
                         "Search_Where": Search_Where ?? ""
@@ -224,7 +224,7 @@
                     //BOM_M_Save
                     var SUPLU_SEQ = $('#TB_M2_SUPLU_SEQ').val();
                     $.ajax({
-                        url: "/Base/BOM/BOM_Save.ashx",
+                        url: "/Page/Base/BOM/BOM_Save.ashx",
                         data: {
                             "SUPLU_SEQ": SUPLU_SEQ,
                             "Remark": $('#TB_M2_Remark').val(),
@@ -249,7 +249,7 @@
                                         //console.warn(D_SEQ);
 
                                         $.ajax({
-                                            url: "/Base/BOM/BOM_Save.ashx",
+                                            url: "/Page/Base/BOM/BOM_Save.ashx",
                                             data: {
                                                 "D_SEQ": D_SEQ,
                                                 "M_Amount": M_Amount,
@@ -314,7 +314,7 @@
                             }
                             if (Copy_Check) {
                                 $.ajax({
-                                    url: "/Base/BOM/BOM_Save.ashx",
+                                    url: "/Page/Base/BOM/BOM_Save.ashx",
                                     data: {
                                         "Old_SUPLU_SEQ": Old_SUPLU_SEQ,
                                         "New_SUPLU_SEQ": New_SUPLU_SEQ,
@@ -402,7 +402,7 @@
             function Search_BOM_D(SUPLU_SEQ, Type) {
                 $.ajax({
                     //async: false,
-                    url: "/Base/BOM/BOM_Search.ashx",
+                    url: "/Page/Base/BOM/BOM_Search.ashx",
                     data: {
                         "SUPLU_SEQ": SUPLU_SEQ,
                         "Call_Type": "BOM_MT_Selected"
@@ -450,7 +450,7 @@
 
                             if (response[i].HASIMG) {
                                 $.ajax({
-                                    url: "/Base/BOM/BOM_Search.ashx",
+                                    url: "/Page/Base/BOM/BOM_Search.ashx",
                                     data: {
                                         "Call_Type": "GET_IMG",
                                         "SUPLU_SEQ": response[i].D_SUPLU_SEQ
@@ -589,7 +589,7 @@
                                         }
                                         if (Detail_Add_Check) {
                                             $.ajax({
-                                                url: "/Base/BOM/BOM_Save.ashx",
+                                                url: "/Page/Base/BOM/BOM_Save.ashx",
                                                 data: {
                                                     "Parent_SEQ": Parent_SEQ,
                                                     "SUPLU_SEQ": SUPLU_SEQ,
@@ -689,7 +689,7 @@
                     if (Delete_Other_Check) {
                         $(this).parent().parent().parent().remove();
                         $.ajax({
-                            url: "/Base/BOM/BOM_Delete.ashx",
+                            url: "/Page/Base/BOM/BOM_Delete.ashx",
                             data: {
                                 "D_SEQ": D_SEQ,
                                 "SUPLU_SEQ": SUPLU_SEQ,

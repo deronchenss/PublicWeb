@@ -26,7 +26,7 @@
                 switch ($('#DDL_Data_Souce').val()) {
                     case "Cost":
                         $.ajax({
-                            url: "/Base/Base_Search.ashx",
+                            url: "/Page/Base/Base_Search.ashx",
                             data: {
                                 "IM": $('#TB_IM').val(),
                                 "SampleM": $('#TB_Sample_Model').val(),
@@ -92,7 +92,7 @@
                         break;
                     case "Price":
                         $.ajax({
-                            url: "/Base/Base_Search.ashx",
+                            url: "/Page/Base/Base_Search.ashx",
                             data: {
                                 "IM": $('#TB_IM').val(),
                                 "PC": $('#DDL_PC').val(),
@@ -206,7 +206,7 @@
                 $('#BT_ED_Save, #BT_ED_Cancel').css('display', 'none');
 
                 $.ajax({
-                    url: "/Base/BOM/BOM_Search.ashx",
+                    url: "/Page/Base/BOM/BOM_Search.ashx",
                     data: {
                         "SUPLU_SEQ": SEQ,
                         "Call_Type": "GET_IMG"
