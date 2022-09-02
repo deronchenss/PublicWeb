@@ -312,10 +312,13 @@
                     var object = {};
                     var seqIndex = $('#Table_EXEC_Data thead th:contains(序號)').index() + 1; //序號INDEX
                     var noEnterStockIndex = $('#Table_EXEC_Data thead th:contains(不入庫)').index() + 1; //不入庫INDEX
+                    var shippingCntIndex = $('#Table_EXEC_Data thead th:contains(出貨數)').index() + 1; //出貨數INDEX
                     var supluSeqIndex = $('#Table_EXEC_Data thead th:contains(SUPLU_SEQ)').index() + 1; //SUPLU_SEQINDEX
                     object['序號'] = $(this).find('td:nth-child(' + seqIndex + ')').text();
                     object['不入庫'] = ($(this).find('td:nth-child(' + noEnterStockIndex + ')').text() == 'Y' ? 1 : 0);
                     object['出貨日期'] = $('#E_SHIPPING_DATE').val();
+                    object['核銷數'] = $(this).find('td:nth-child(' + shippingCntIndex + ')').text();
+                    object['已結案'] = 1;
                     object['SUPLU_SEQ'] = $(this).find('td:nth-child(' + supluSeqIndex + ')').text();
                     object['更新人員'] = "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>";
                     execData.push(object);

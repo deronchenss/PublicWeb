@@ -431,7 +431,7 @@
                                 "columns": columnsOnlyTitle,
                                 "columnDefs": [
                                     {
-                                        className: 'text-right', targets: [4,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21]  
+                                        className: 'text-right', targets: [5,6,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]  
                                     }
                                 ],
                                 "order": [1, "asc"], //根據 頤坊型號 排序
@@ -456,7 +456,7 @@
                                 },
                                 "columnDefs": [
                                     {
-                                        className: 'text-right', targets: [4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
+                                        className: 'text-right', targets: [5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
                                     }
                                 ],
                                 "columns": columnsOnlyTitle,
@@ -482,7 +482,7 @@
                                 "columns": columnsOnlyTitle,
                                 "columnDefs": [
                                     {
-                                        className: 'text-right', targets: [4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+                                        className: 'text-right', targets: [5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
                                     }
                                 ],
                                 "order": [1, "asc"], //根據 頤坊型號 排序

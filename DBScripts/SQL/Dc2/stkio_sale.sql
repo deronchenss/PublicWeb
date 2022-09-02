@@ -6,6 +6,7 @@ DROP TABLE [dbo].[stkio_sale]
 CREATE TABLE [dbo].[stkio_sale](
 	[序號] [int] NOT NULL,
 	[STKIO_SEQ] [int] NULL,
+	[SUPLU_SEQ] [int] NULL, --因有可能分兩次核銷 抓stkio會重複 SUPLU_SEQ需自行保留
 	[pm_no] [varchar](12) NULL,
 	[訂單號碼] [varchar](20) NULL,
 	[出貨日期] [datetime] NULL,
@@ -38,6 +39,7 @@ CREATE TABLE [dbo].[stkio_sale](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 90) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+CREATE INDEX stkio_sale_IDX_SUPLU_SEQ ON [stkio_sale]([SUPLU_SEQ]);
 CREATE NONCLUSTERED INDEX [IX_stkio_sale] ON [dbo].[stkio_sale]
 ([更新日期] ASC)
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 90) ON [PRIMARY]
@@ -54,6 +56,7 @@ GO
 INSERT INTO Dc2..stkio_sale with(tablock)
 SELECT [序號],
 	   RTRIM([出庫序號]),
+	   (SELECT [序號] FROM Bc2..suplu2 C WHERE C.廠商編號 = S.廠商編號 AND C.頤坊型號 = S.頤坊型號) [SUPLU_SEQ],
 	   RTRIM([pm_no]),
 	   RTRIM([訂單號碼]),
 	   RTRIM([出貨日期]),

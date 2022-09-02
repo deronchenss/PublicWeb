@@ -697,7 +697,7 @@ namespace Ivan_Dal
                                                ,NULL [異動前庫存]
                                                ,'00001' [客戶編號]
                                                ,'IVAN' [客戶簡稱]
-                                               ,CASE WHEN SU.[產品一階] = '01' THEN SU.暫時型號 ELSE S.箱號S + '-' + S.箱號E + '(' + S.內袋 + ')' END [完成品型號]
+                                               ,CASE WHEN SU.[產品一階] = '01' THEN SU.暫時型號 ELSE S.箱號 END [完成品型號]
                                                ,S.備註 [備註]
                                                ,NULL [內銷入庫]
                                                ,0 [已結案]

@@ -539,6 +539,7 @@ namespace Ivan_Dal
                         SELECT  Top 500 S.廠商簡稱
 			                           ,S.頤坊型號
 			                           ,S.銷售型號
+                                       ,S.產品狀態
 			                           ,S.單位
 			                           ,IIF(S.{庫區}庫存數 = 0, NULL, S.{庫區}庫存數) AS {庫區}庫存數
 			                           ,IIF(ISNULL(總庫存,0) - 大貨庫存數 = 0, NULL, ISNULL(總庫存,0) - 大貨庫存數) AS 替代庫存

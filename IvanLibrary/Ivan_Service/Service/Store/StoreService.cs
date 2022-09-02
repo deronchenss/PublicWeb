@@ -148,5 +148,14 @@ namespace Ivan_Service
             _dataOperator.TranCommit();
             return Convert.ToString(res);
         }
+
+        /// <summary>
+        /// 門市PM 查詢
+        /// </summary>
+        /// <returns></returns>
+        public DataTable StockPMSearch(Dictionary<string, string> dic)
+        {
+            return this.GetDataTable(dalStkSale.SearchPMTable(dic));
+        }
     }
 }

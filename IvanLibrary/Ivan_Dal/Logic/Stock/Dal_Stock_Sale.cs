@@ -1,11 +1,5 @@
 ﻿using Ivan_Models;
-using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Data;
-using System.Data.SqlClient;
-using System.Text;
-using System.Web;
 
 namespace Ivan_Dal
 {
@@ -38,16 +32,15 @@ namespace Ivan_Dal
 			                          ,S.序號
 			                          ,S.更新人員
 			                          ,CONVERT(VARCHAR,S.更新日期,23)  更新日期
-                                      ,ST.SUPLU_SEQ
-                                      ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = ST.SUPLU_SEQ) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
+                                      ,S.SUPLU_SEQ
+                                      ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = S.SUPLU_SEQ) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
                                       ,CASE WHEN (S.入區 = '台北' AND ISNULL(SU.台北安全數,0) = 0) 
                                               OR (S.入區 = '台中' AND ISNULL(SU.台中安全數,0) = 0) 
                                               OR (S.入區 = '高雄' AND ISNULL(SU.高雄安全數,0) = 0) 
                                               OR (S.入區 = '其他')   THEN 'Y' 
                                             ELSE 'N' END 不入庫 
                         FROM stkio_sale S  
-                        INNER JOIN stkio ST ON S.STKIO_SEQ = ST.序號 --出庫寫入
-                        INNER JOIN suplu SU ON ST.SUPLU_SEQ = SU.序號 
+                        INNER JOIN suplu SU ON S.SUPLU_SEQ = SU.序號 
                         LEFT JOIN stkio STI ON S.序號 = STI.SOURCE_SEQ AND STI.SOURCE_TABLE = 'stkio_sale' AND ISNULL(STI.已刪除,0) = 0
                         WHERE NOT (ISNULL(S.出貨數,0) = ISNULL(S.核銷數,0) --舊邏輯
                         OR ISNULL(STI.入庫數,0) = ISNULL(S.出貨數,0)) -- 新邏輯
@@ -73,6 +66,109 @@ namespace Ivan_Dal
             }
 
             sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
+            this.SetSqlText(sqlStr);
+            return this;
+        }
+
+        /// <summary>
+        /// 門市PM查詢 查詢 Return DataTable
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public IDalBase SearchPMTable(Dictionary<string, string> dic)
+        {
+            string sqlStr = "";
+            sqlStr = @" 
+                        SELECT TOP 500 S.PM_NO
+			                  ,CASE WHEN IsNull(S.核銷數,0) = 0 THEN '備貨' 
+			                        ELSE '出貨' END AS 狀態
+			                  ,CONVERT(VARCHAR,S.出貨日期,23) As 日期
+			                  ,S.訂單號碼
+			                  ,SU.頤坊型號
+			                  ,SU.銷售型號
+			                  ,S.單位
+			                  ,ISNULL(S.出貨數,0)-ISNULL(S.核銷數,0) AS 備貨數 --舊邏輯 如後續資料有清乾淨才調整為從 stkio取
+			                  ,ISNULL(S.核銷數,0) AS 出貨數 --舊邏輯 如後續資料有清乾淨才調整為從 stkio取
+			                  ,ISNULL(S.門市到貨,0) AS 門市到貨 
+			                  ,S.備註
+			                  ,BYR.簡短說明 產品說明
+			                  ,S.出區
+			                  ,S.入區
+			                  ,S.箱號
+			                  ,S.庫位
+			                  ,SU.產品一階
+			                  ,CASE WHEN CONVERT(CHAR(10),S.出貨日期,111) < CONVERT(CHAR(10),GETDATE(),111) THEN DATEDIFF(DAY,S.出貨日期,GETDATE()) 
+			  	                    ELSE 0 END AS 入庫逾期
+			                  ,SU.廠商簡稱
+			                  ,SU.廠商編號
+			                  ,S.序號
+			                  ,S.更新人員
+			                  ,CONVERT(VARCHAR,S.更新日期,23) 更新日期
+                              ,S.SUPLU_SEQ
+                              ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = S.SUPLU_SEQ) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
+                        FROM ( SELECT (SELECT Sum(入庫數) 
+	                           FROM StkioH A 
+	                           WHERE A.SUPLU_SEQ=T1.SUPLU_SEQ 
+	                           AND A.單據編號=T1.PM_NO 
+	                           AND A.訂單號碼=T1.訂單號碼 
+	                           AND ISNULL(A.已刪除,0)=0) AS 門市到貨
+	                           ,(SELECT Sum(核銷數) 
+	                           FROM Stkio_Sale A 
+	                           WHERE A.SUPLU_SEQ=T1.SUPLU_SEQ 
+	                           AND A.PM_NO=T1.PM_NO 
+	                           AND A.訂單號碼=T1.訂單號碼 
+	                           AND ISNULL(A.已刪除,0)=0) AS 出貨小計
+	                           , T1.* FROM Stkio_Sale T1 WHERE ISNULL(T1.已刪除,0)=0 ) As S 
+                        INNER JOIN SUPLU SU ON S.SUPLU_SEQ = SU.序號
+                        LEFT JOIN BYRLU_RT BYR ON SU.序號 = BYR.SUPLU_SEQ
+                        WHERE 1=1 
+                         ";
+
+            //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
+            foreach (string form in dic.Keys)
+            {
+                if (!string.IsNullOrEmpty(dic[form]))
+                {
+                    string debug = dic[form];
+                    switch (form)
+                    {
+                        case "出貨日期_S":
+                            sqlStr += " AND CONVERT(DATE,S.[出貨日期]) >= @出貨日期_S";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "出貨日期_E":
+                            sqlStr += " AND CONVERT(DATE,S.[出貨日期]) <= @出貨日期_E";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "出貨狀態":
+                            switch (dic[form])
+                            {
+                                case "備貨":
+                                    sqlStr += " AND ISNULL(S.核銷數,0) = 0 ";
+                                    break;
+                                case "出貨":
+                                    sqlStr += " AND ISNULL(S.核銷數,0) > 0 ";
+                                    break;
+                                case "未入門市":
+                                    sqlStr += @" AND ISNULL(S.核銷數,0) > 0 
+                                                 AND ISNULL(S.門市到貨,0) = 0 ";
+                                    break;
+                                case "數量異常":
+                                    sqlStr += @" AND ISNULL(S.出貨小計,0) != ISNULL(S.門市到貨,0) --同一筆 SEQ 分兩次 核銷
+                                                 AND ISNULL(S.核銷數,0) != ISNULL(S.門市到貨,0) --同一筆PM 同一筆SUPLU_SEQ 兩筆核銷
+                                                 AND ISNULL(S.門市到貨,0) > 0 ";
+                                    break;
+                            }
+                            break;
+                        default:
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE @" + form + " + '%'";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                    }
+                }
+            }
+
+            sqlStr += " ORDER BY S.pm_no,S.更新日期 DESC ";
             this.SetSqlText(sqlStr);
             return this;
         }
