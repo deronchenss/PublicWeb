@@ -403,16 +403,16 @@
                                         <li class="has-children">
                                             <a href="#" IVM_P="32" class="nav-link"><%--樣品出貨--%><%=Resources.MP.Sample_Ship%></a>
                                             <ul class="dropdown">
-                                                <li><a href="Page/DEV/Sample/Sample_Inv_MT.aspx"><%--樣品INVOICE查詢維護--%><%=Resources.MP.Sample_Inv_MT%></a></li>
-                                                <li><a href="Page/DEV/Sample/Sample_Pack.aspx"><%--樣品備貨作業--%><%=Resources.MP.Sample_Pack%></a></li>
-                                                <li><a href="Page/DEV/Sample/Sample_Pack_MT.aspx"><%--樣品備貨查詢維護--%><%=Resources.MP.Sample_Pack_MT%></a></li>
+                                                <li><a href="/Page/DEV/Sample/Sample_Inv_MT.aspx"><%--樣品INVOICE查詢維護--%><%=Resources.MP.Sample_Inv_MT%></a></li>
+                                                <li><a href="/Page/DEV/Sample/Sample_Pack.aspx"><%--樣品備貨作業--%><%=Resources.MP.Sample_Pack%></a></li>
+                                                <li><a href="/Page/DEV/Sample/Sample_Pack_MT.aspx"><%--樣品備貨查詢維護--%><%=Resources.MP.Sample_Pack_MT%></a></li>
                                             </ul>
                                         </li>
                                         <li class="has-children">
                                             <a href="#" IVM_P="33" class="nav-link"><%--報價作業(ReName>樣品報價)--%><%=Resources.MP.Quote_Base%></a>
                                             <ul class="dropdown">
-                                                <li><a href="Page/DEV/Quote/Quote_Base.aspx"><%--報價作業--%><%=Resources.MP.Quote_Base%></a></li>
-                                                <li><a href="Page/DEV/Quote/Quote_MT.aspx"><%--報價作業查詢維護--%><%=Resources.MP.Quote_MT%></a></li>
+                                                <li><a href="/Page/DEV/Quote/Quote_Base.aspx"><%--報價作業--%><%=Resources.MP.Quote_Base%></a></li>
+                                                <li><a href="/Page/DEV/Quote/Quote_MT.aspx"><%--報價作業查詢維護--%><%=Resources.MP.Quote_MT%></a></li>
                                             </ul>
                                         </li>
                                     </ul>

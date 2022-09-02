@@ -43,26 +43,26 @@ public class Sample_MT : IHttpHandler, IRequiresSessionState
                         result = service.SampleMTUpdateWriteOff(ContextFN.ContextToDictionary(context));
                         break;
                     case "PRINT_RPT":
-                        string rptDir = "~/DEV/Sample/Rpt/Sample_Dev.rpt";
+                        string rptDir = "~/Page/DEV/Sample/Rpt/Sample_Dev.rpt";
                         DataTable dt = new DataTable();
                         if(context.Request["WORK_TYPE"] != "3")
                         {
                             switch (context.Request["WORK_TYPE"])
                             {
                                 case "0":
-                                    rptDir = "~/DEV/Sample/Rpt/Sample_Dev.rpt";
+                                    rptDir = "~/Page/DEV/Sample/Rpt/Sample_Dev.rpt";
                                     break;
                                 case "1":
-                                    rptDir = "~/DEV/Sample/Rpt/Sample_Ask.rpt";
+                                    rptDir = "~/Page/DEV/Sample/Rpt/Sample_Ask.rpt";
                                     break;
                                 case "2":
-                                    rptDir = "~/DEV/Sample/Rpt/Sample_Get.rpt";
+                                    rptDir = "~/Page/DEV/Sample/Rpt/Sample_Get.rpt";
                                     break;
                             }
                         }
                         else
                         {
-                            rptDir = "~/DEV/Sample/Rpt/Sample_Chk.rpt";
+                            rptDir = "~/Page/DEV/Sample/Rpt/Sample_Chk.rpt";
                         }
 
                         //報表型別不同自行處理

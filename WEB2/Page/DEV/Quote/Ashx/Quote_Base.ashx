@@ -117,7 +117,9 @@ public class Quote_Base : IHttpHandler, IRequiresSessionState
 			                                           ,B.客戶名稱
 			                                           ,B.連絡人樣品
 			                                           ,@DELV_DAYS 交貨天數
-			                                           ,RTRIM(B.價格條件) + CASE Q.S_FROM WHEN '1' THEN ' TAIWAN' WHEN '2' THEN ' HONG KONG' WHEN '3' THEN ' CHINA' ELSE '' END 價格條件
+			                                           ,CASE WHEN RTRIM(B.價格條件) LIKE '%C&F%' OR RTRIM(B.價格條件) LIKE '%CIF%' THEN RTRIM(B.價格條件) + ' ' + B.港口
+                                                             ELSE RTRIM(B.價格條件) + CASE Q.S_FROM WHEN '1' THEN ' TAIWAN' WHEN '2' THEN ' HONG KONG' WHEN '3' THEN ' CHINA' ELSE '' END
+                                                             END 價格條件
                                                        ,CASE Q.S_FROM WHEN '1' THEN ' *** SHIPPING FROM TAIWAN ***' WHEN '2' THEN '*** SHIPPING FROM HONG KONG ***' WHEN '3' THEN ' *** SHIPPING FROM CHINA ***' ELSE '*** SHIPPING FROM ***' END ShipFrom
                                                        ,TMP.列印單價
 			                                           ,CASE WHEN Q.美元單價 > 0 THEN 'USD'
@@ -177,10 +179,10 @@ public class Quote_Base : IHttpHandler, IRequiresSessionState
                                     switch (context.Request["RPT_TYPE"])
                                     {
                                         case "0":
-                                            rptDir = "~/DEV/Quote/Rpt/Quote_BASE.rpt";
+                                            rptDir = "~/Page/DEV/Quote/Rpt/Quote_BASE.rpt";
                                             break;
                                         case "1":
-                                            rptDir = "~/DEV/Quote/Rpt/Quote_IMG.rpt";
+                                            rptDir = "~/Page/DEV/Quote/Rpt/Quote_IMG.rpt";
                                             break;
 
                                     }

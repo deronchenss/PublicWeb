@@ -35,11 +35,11 @@ public class Sample_Arr_MT : IHttpHandler, IRequiresSessionState
                         break;
                     case "PRINT_RPT":
                         DataTable dt = new DataTable();
-                        string rptDir = "~/DEV/Sample/Rpt/Invoice_Tot_Amt.rpt";
+                        string rptDir = "~/Page/DEV/Sample/Rpt/Invoice_Tot_Amt.rpt";
                         switch (context.Request["RPT_TYPE"])
                         {
                             case "0":
-                                rptDir = "~/DEV/Sample/Rpt/Invoice_Tot_Amt.rpt";
+                                rptDir = "~/Page/DEV/Sample/Rpt/Invoice_Tot_Amt.rpt";
                                 dt = service.SampleArrMTReport(ContextFN.ContextToDictionary(context));
                                 break;
                         }

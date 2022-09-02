@@ -39,11 +39,11 @@ public class Sample_Inv_MT : IHttpHandler, IRequiresSessionState
                         switch(context.Request["RPT_TYPE"])
                         {
                             case "0":
-                                rptDir = "~/DEV/Sample/Rpt/Sample_Invoice.rpt";
+                                rptDir = "~/Page/DEV/Sample/Rpt/Sample_Invoice.rpt";
                                 dt = service.SampleInvMTReportIV(ContextFN.ContextToDictionary(context));
                                 break;
                             case "1":
-                                rptDir = "~/DEV/Sample/Rpt/Sample_IV_Packing.rpt";
+                                rptDir = "~/Page/DEV/Sample/Rpt/Sample_IV_Packing.rpt";
                                 dt = service.SampleInvMTReportPacking(ContextFN.ContextToDictionary(context));
                                 break;
                         }
