@@ -10,7 +10,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
-            var apiUrl = "/DEV/Sample/Ashx/Sample_Inv_MT.ashx";
+            var apiUrl = "/Page/DEV/Sample/Ashx/Sample_Inv_MT.ashx";
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
 

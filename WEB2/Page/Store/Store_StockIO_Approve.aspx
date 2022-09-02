@@ -1,4 +1,4 @@
-﻿<%@ Page Title="庫位變更" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Stock_LOC_UPD.aspx.cs" Inherits="Stock_LOC_UPD" %>
+﻿<%@ Page Title="門市庫取核銷" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Store_StockIO_Approve.aspx.cs" Inherits="Store_StockIO_Approve" %>
 <%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_ALL.ascx" %>
 <%@ Register TagPrefix="uc3" TagName="uc3" Src="~/User_Control/Dia_Duo_Datetime_Picker.ascx" %>
 
@@ -9,10 +9,10 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
-            var Exec_Mode;
-            var apiUrl = "/Stock/Ashx/Stock_LOC_UPD.ashx";
+            var storeOrder = { '台北': 'WR1-', '台中': 'WR2-', '高雄': 'WR3-', '其他': 'WR-' };
+            var apiUrl = "/Page/Store/Ashx/Store_StockIO_Approve.ashx";
             //隱藏滾動卷軸
-            //document.body.style.overflow = 'hidden';
+            document.body.style.overflow = 'hidden';
 
             //上下移功能 根據每個頁面客製
             $(document).keydown(function (event) {
@@ -76,6 +76,7 @@
                         $('.Div_D').css('display', 'none');
                         $('.V_BT').attr('disabled', false);
                         $('#BT_Cancel').css('display', 'none');
+                        $('#Q_ORDER_NO').val(storeOrder[$('#Q_STORE').val()]);
 
                         V_BT_CHG($('#BT_S_CHS'));
                         break;
@@ -105,6 +106,7 @@
                             $('.Div_D').css('display', 'none');
                             $('#Div_DT_DETAIL').css('display', '');
                             $('#Div_IMG_DETAIL').css('display', 'none');
+                            $('#Div_COLOR').css('display', 'none');
                             $('#Table_EXEC_Data').DataTable().clear().rows.add($('#Table_CHS_Data').find('tbody tr[role=row]').clone()).draw(); //將選擇後TABLE 複製至第二面
                             $('#Table_EXEC_info').text('Showing ' + $('#Table_EXEC_Data > tbody tr[role=row]').length + ' entries'); //顯示TABLE 列數
 
@@ -112,17 +114,37 @@
                             $('#Div_PRE_DEL').css('display', 'none');
                             V_BT_CHG($('#BT_S_EXEC'));
 
-                            $('#E_EXEC_TITLE').text('變更項次，筆數: ' + $('#Table_EXEC_Data > tbody tr[role=row]').length);
+                            $('#E_EXEC_TITLE').text('核銷項次，筆數: ' + $('#Table_EXEC_Data > tbody tr[role=row]').length);
                             var $inputObj = $('#Table_EXEC_Data .tableInput');
                             $inputObj.attr('disabled', false);
                             
                             break;
                         }
+                    case "CANCEL":
+                        $('.Div_D').css('display', 'none');
+                        $('#Div_CANCEL').css('display', 'flex');
+
+                        V_BT_CHG($('#BT_S_CANCEL_APPROVE'));
+                        break;
+                    case "COLOR":
+                        $('.Div_D').css('display', 'none');
+                        $('#Div_DT_DETAIL').css('display', '');
+                        $('#Div_Exec_Section').css('display', 'none');
+                        $('#Div_PRE_DEL').css('display', 'none');
+                        $('#Div_COLOR').css('display', '');
+                        $('#Div_IMG_DETAIL').css('display', 'none');
+                        if ($('#Table_CHS_Data > tbody tr[role=row]').length > 0 && Edit_Mode != 'EXEC') {
+                            $('#Table_EXEC_Data').DataTable().clear().rows.add($('#Table_CHS_Data').find('tbody tr[role=row]').clone()).draw(); //將選擇後TABLE 複製至第二面
+                        }
+
+                        V_BT_CHG($('#BT_S_COLOR'));
+                        break;
                     case "IMG":
                         $('.Div_D').css('display', 'none');
                         $('#Div_DT_DETAIL').css('display', '');
                         $('#Div_Exec_Section').css('display', 'none');
                         $('#Div_PRE_DEL').css('display', 'none');
+                        $('#Div_COLOR').css('display', 'none');
                         $('#Div_IMG_DETAIL').css('display', '');
                         V_BT_CHG($('#BT_S_EX_IMG'));
 
@@ -138,6 +160,35 @@
                         break;
                 }
             }
+
+            function GetNewNo() {
+                $.ajax({
+                    url: "/CommonAshx/Common.ashx",
+                    data: {
+                        "Call_Type": "GET_NO_FROM_NOFILE",
+                        "CODE": "內銷裝箱明細"
+                    },
+                    cache: false,
+                    async: false,
+                    type: "POST",
+                    datatype: "json",
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    success: function (RR) {
+                        if (RR == "") {
+                            alert('號碼檔尚未定義!');
+                            return;
+                        }
+                        else {
+                            $('#E_PM_NO').val(RR);
+                        }
+                    },
+                    error: function (ex) {
+                        console.log(ex.responseText);
+                        alert('取得新號碼有誤，請通知資訊人員');
+                        return;
+                    }
+                });
+            };
 
             function Search_IMG(supluSeq) {
                 $.ajax({
@@ -207,10 +258,10 @@
                 //組json data
                 $("[DT_Query_Name]").each(function () {
                     if ($(this).attr('type') == 'checkbox') {
-                        dataReq[$(this).attr('DT_Query_Name')] = ($(this).is(':checked') ? '1' : '0');
+                        dataReq[$(this).attr('DT_Query_Name')] = ($(this).is(':checked') ? '1' : '');
                     }
                     else {
-                        dataReq[$(this).attr('DT_Query_Name')] = $(this).val();
+                        dataReq[$(this).attr('DT_Query_Name')] = $.trim($(this).val());
                     }
                 });
 
@@ -222,7 +273,6 @@
                     datatype: "json",
                     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                     success: function (response, status) {
-                        console.log(response);
                         if (response.length === 0) {
                             alert('<%=Resources.MP.Data_Not_Exists_Alert%>');
                             Edit_Mode = "Base";
@@ -264,33 +314,42 @@
                                 "autoWidth": false //欄位小於VIEW 長度，自動擴展
                             });
 
+                            //0 輸出空白
+                            $('#Table_Search_Data_Tmp tbody td').filter(function () { return parseFloat($(this).text()) === 0; }).text('');
+
                             //顏色設定
                             var ivanIndex = $('#Table_Search_Data_Tmp').find('thead th:contains(頤坊型號)').index() + 1;
-                            var approveIndex = $('#Table_Search_Data_Tmp').find('thead th:contains(本次核銷數量)').index() + 1;
-                            var stockLocIndex = $('#Table_Search_Data_Tmp').find('thead th:contains(本次庫位)').index() + 1;
-                            var remarkIndex = $('#Table_Search_Data_Tmp').find('thead th:contains(備註)').index() + 1;
+                            var stockOIndex = $('#Table_Search_Data_Tmp').find('thead th:contains(本次核銷)').index() + 1;
                             var quickTakeIndex = $('#Table_Search_Data_Tmp').find('thead th:contains(扣快取)').index() + 1;
+                            var remarkIndex = $('#Table_Search_Data_Tmp').find('thead th:contains(備註)').index() + 1;
                             $('#Table_Search_Data_Tmp').find('tbody tr[role=row]').each(function () {
                                 var rowData = $('#Table_Search_Data_Tmp').DataTable().row($(this)).data();
                                 var $columnIvan = $(this).find('td:nth-child(' + ivanIndex + ')');
-                                var $approvecolumn = $(this).find('td:nth-child(' + approveIndex + ')');
-                                var $stockLoccolumn = $(this).find('td:nth-child(' + stockLocIndex + ')');
-                                var $remarkIvan = $(this).find('td:nth-child(' + remarkIndex + ')');
+                                var $stockOcolumn = $(this).find('td:nth-child(' + stockOIndex + ')');
                                 var $quickTakeIvan = $(this).find('td:nth-child(' + quickTakeIndex + ')');
+                                var $remarkIvan = $(this).find('td:nth-child(' + remarkIndex + ')');
+
+                                var index = $('#Table_Search_Data_Tmp').find('thead th:contains(產品一階)').index() + 1;
+                                var $column = $(this).find('td:nth-child(' + index + ')');
+                                if ($.trim(rowData["產品一階"]) == '') {
+                                    $column.css("background-color", "LightPink");
+                                }
+                                index = $('#Table_Search_Data_Tmp').find('thead th:contains(預定數量)').index() + 1;
+                                $column = $(this).find('td:nth-child(' + index + ')');
+                                if ($.trim(rowData["預定數量"]) != '' && $.trim(rowData["本次核銷"]) != '' && parseInt(rowData["預定數量"]) > parseInt(rowData["本次核銷"])) {
+                                    $column.css("background-color", "DarkOrange");
+                                }
 
                                 //可修改欄位
-                                var style = '<input type="number" id="E_APPROVE" class="tableInput" style="width:80px;text-align: right;" disabled="disabled" value="' + rowData.本次核銷數量 + '" />';
-                                $approvecolumn.html(style);
-                                style = '<input id="E_STOCK_LOC" class="tableInput fillStockLoc" style="width:80px;text-align: right;" disabled="disabled" value="' + rowData.本次庫位 + '" />';
-                                $stockLoccolumn.html(style);
+                                var style = '<input type="number" id="E_STOCK_O_CNT" class="tableInput" style="width:80px;text-align: right;" disabled="disabled" value="' + rowData.本次核銷 + '" />';
+                                $stockOcolumn.html(style);
+                                style = '<input type="checkbox" id="E_QUICK_TAKE"  style="text-align:center" class="tableInput tbChkBox" disabled="disabled" checked />';
+                                $quickTakeIvan.html((rowData.扣快取 == 'Y') ? style : '');
                                 style = '<input id="E_REMARK" class="tableInput fillRemark" style="text-align: right;" disabled="disabled" value="' + rowData.備註 + '" />';
                                 $remarkIvan.html(style);
 
-                                style = '<input type="checkbox" id="E_QUICK_TAKE"  style="text-align:center" class="tableInput tbChkBox" disabled="disabled" checked />';
-                                $quickTakeIvan.html((rowData.扣快取 == 'Y') ? style: '');
-
                                 //button
-                                var ivanStyle = '<input class="Call_Product_Tool" SUPLU_SEQ = "' + (rowData.序號 ?? "")
+                                var ivanStyle = '<input class="Call_Product_Tool" SUPLU_SEQ = "' + (rowData.SUPLU_SEQ ?? "")
                                     + '" type="button" value="' + (rowData.頤坊型號 ?? "")
                                     + '" style="text-align:left;width:100%;z-index:1000;' + ((rowData.Has_IMG == 'Y') ? 'background: #90ee90;' : '') + '" />';
                                 $columnIvan.html(ivanStyle);
@@ -309,8 +368,11 @@
                                 "columns": columnsOnlyTitle,
                                 "columnDefs": [
                                     {
-                                        className: 'text-right', targets: [5, 7]
-                                    }
+                                        className: 'text-center', targets: [3]  //checkbox
+                                    },
+                                    {
+                                        className: 'text-right', targets: [5, 7, 8]  //number
+                                    },
                                 ],
                                 "order": [1, "asc"], //根據 頤坊型號 排序
                                 "scrollX": true,
@@ -334,8 +396,11 @@
                                 },
                                 "columnDefs": [
                                     {
-                                        className: 'text-right', targets: [5, 7]
-                                    }
+                                        className: 'text-center', targets: [3]  //checkbox
+                                    },
+                                    {
+                                        className: 'text-right', targets: [5, 7, 8]  //number
+                                    },
                                 ],
                                 "columns": columnsOnlyTitle,
                                 "order": [1, "asc"], //根據 頤坊型號 排序
@@ -360,8 +425,11 @@
                                 "columns": columnsOnlyTitle,
                                 "columnDefs": [
                                     {
-                                        className: 'text-right', targets: [5, 7]
-                                    }
+                                        className: 'text-center', targets: [3]  //checkbox
+                                    },
+                                    {
+                                        className: 'text-right', targets: [5, 7, 8]  //number
+                                    },
                                 ],
                                 "order": [1, "asc"], //根據 頤坊型號 排序
                                 "scrollX": true,
@@ -390,9 +458,6 @@
                             $('#Table_CHS_Data_info').text('Showing ' + $('#Table_CHS_Data > tbody tr[role=row]').length + ' entries');
                             $('#Table_Search_Data_info').text('Showing ' + $('#Table_Search_Data > tbody tr[role=row]').length + ' entries');
                             $('#Table_EXEC_Data').DataTable().draw();
-
-                            //紀錄查詢庫區 供UPDATE使用
-                            $('#E_STOCK_POS').val($('#Q_STOCK_POS').val());
                         }
                     },
                     error: function (ex) {
@@ -404,23 +469,51 @@
             };          
  
             //寫入 TABLE
-            function Update() {
-                var liSeq = [];
+            function Exec() {
+                if ($.trim($('#E_PM_NO').val()) == '') {
+                    alert('PM_NO不可為空!');
+                    return;
+                }
+
+                var execData = [];
                 var execCnt = $('#Table_EXEC_Data > tbody tr[role=row]').length;
+                var err = false;
                 $('#Table_EXEC_Data > tbody tr[role=row]').each(function (index) {
+                    var stockOCnt = $(this).find('#E_STOCK_O_CNT').val();
+                    if (stockOCnt == 0 || stockOCnt == '') {
+                        alert('第' + (index + 1) + '筆，庫取數不可為 0!');
+                        err = true;
+                        return err;
+                    }
+
+                    var object = {};
                     var seqIndex = $('#Table_EXEC_Data thead th:contains(序號)').index() + 1; //序號INDEX
-                    liSeq.push($(this).find('td:nth-child(' + seqIndex + ')').text());
+                    var stockPosOIndex = $('#Table_EXEC_Data thead th:contains(出區)').index() + 1; //出區INDEX
+                    var stockPosIIndex = $('#Table_EXEC_Data thead th:contains(單據編號)').index() + 1; //單據編號INDEX 此單據編號放入區
+                    object['序號'] = $(this).find('td:nth-child(' + seqIndex + ')').text();
+                    object['出貨數'] = stockOCnt;
+                    object['核銷數'] = stockOCnt;
+                    object['實扣快取數'] = $(this).find('#E_QUICK_TAKE').is(":checked") ? stockOCnt : 0;
+                    object['PM_NO'] = $('#E_PM_NO').val();
+                    object['出區'] = $(this).find('td:nth-child(' + stockPosOIndex + ')').text();
+                    object['入區'] = $(this).find('td:nth-child(' + stockPosIIndex + ')').text();
+                    object['庫區'] = $(this).find('td:nth-child(' + stockPosOIndex + ')').text(); //寫入 stkioh 庫區
+                    object['箱號'] = $('#E_PACK_NO').val(); 
+                    object['備註'] = $(this).find('#E_REMARK').val();
+                    object['更新人員'] = "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>";
+                    execData.push(object);
                 })
 
-                var dataReq = {};
-                dataReq['Call_Type'] = 'EXEC';
-                dataReq['SEQ'] = liSeq;
-                dataReq['更新人員'] = "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>";
-                dataReq[$('#E_STOCK_POS').val() + "庫位"] = $('#E_STOCK_LOC').val();
+                if (err) {
+                    return;
+                }
 
                 $.ajax({
                     url: apiUrl,
-                    data: dataReq,
+                    data: {
+                        "Call_Type": "EXEC",
+                        "EXEC_DATA": JSON.stringify(execData)
+                    },
                     cache: false,
                     type: "POST",
                     datatype: "json",
@@ -429,11 +522,11 @@
                         console.log(status);
                         if (status != "success") {
                             console.log(response);
-                            alert('更新有誤請通知資訊人員');
+                            alert('核銷有誤請通知資訊人員');
                             return;
                         }
                         else {
-                            alert('已更新，筆數:' + execCnt);
+                            alert('已核銷，筆數:' + execCnt);
                             $('#Table_EXEC_Data').DataTable().rows().remove().draw();
                             $('#Table_CHS_Data').DataTable().rows().remove().draw();
 
@@ -445,7 +538,53 @@
                     },
                     error: function (ex) {
                         console.log(ex.responseText);
-                        alert('更新有誤請通知資訊人員');
+                        alert('核銷有誤請通知資訊人員');
+                        return;
+                    }
+                });
+            };         
+
+            //取消核銷
+            function CancelApprove() {
+                if ($.trim($('#C_PM_NO').val()) == '') {
+                    alert('PM_NO不可為空!');
+                    return;
+                }
+                if ($.trim($('#C_PACK_NO').val()) == '') {
+                    alert('箱號不可為空!');
+                    return;
+                }
+
+                var execData = [];
+                var object = {};
+                object['PM_NO'] = $('#C_PM_NO').val();
+                object['箱號'] = $('#C_PACK_NO').val();
+                object['更新人員'] = "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>";
+                execData.push(object);
+
+                $.ajax({
+                    url: apiUrl,
+                    data: {
+                        "Call_Type": "CANCEL",
+                        "EXEC_DATA": JSON.stringify(execData)
+                    },
+                    cache: false,
+                    type: "POST",
+                    datatype: "json",
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    success: function (response, status) {
+                        console.log(status);
+                        if (response == 0) {
+                            alert('取消核銷 0 筆 請確認 PM NO 及箱號!');
+                            return;
+                        }
+                        else {
+                            alert('已取消核銷，筆數:' + response);
+                        }
+                    },
+                    error: function (ex) {
+                        console.log(ex.responseText);
+                        alert('取消核銷有誤請通知資訊人員');
                         return;
                     }
                 });
@@ -470,11 +609,20 @@
             });
             
             //BUTTON CLICK EVENT BASE 頁
+            $('#Q_STORE').on('change', function () {
+                $('#Q_ORDER_NO').val(storeOrder[$('#Q_STORE').val()]);
+            });
+
             $('#BT_Search').on('click', function () {
-                if ($('#Table_CHS_Data > tbody tr[role=row]').length != 0 && $('#E_STOCK_POS').val() != $('#Q_STOCK_POS').val()) {
-                    alert('一次只能更新一種庫區!');
+                if ($.trim($('#Q_ORDER_NO').val()) == '') {
+                    alert('訂單號碼不可為空!');
                     return;
                 }
+                else if (!$.trim($('#Q_ORDER_NO').val()).startsWith(storeOrder[$('#Q_STORE').val()])) {
+                    alert($('#Q_STORE').val() + '訂單號碼 需為' + storeOrder[$('#Q_STORE').val()] + '開頭');
+                    return;
+                }
+
                 Edit_Mode = "Base";
                 Form_Mode_Change("Search");
                 SearchData();
@@ -494,11 +642,11 @@
             //BUTTON CLICK EVENT 執行頁
             $('#BT_EXECUTE').on('click', function () {
                 if ($('#Table_EXEC_Data > tbody tr[role=row]').length == 0) {
-                    alert('請選擇欲變更資料!');
+                    alert('請選擇欲執行資料!');
                     return;
                 }
 
-                Update();
+                Exec();
             });
 
             $('#Table_EXEC_Data').on('click', 'tbody tr', function () {
@@ -510,12 +658,16 @@
                 Form_Mode_Change("Search");
             });
 
-            $('#E_ALL_STOCK_LOC_CHK').on('click', function () {
-                $('.fillStockLoc').val($('#E_ALL_STOCK_LOC').val());
+            $('#E_GET_NEW_NO').on('click', function () {
+                var Confirm_Check = confirm("確定要取得新號碼?");
+                if (Confirm_Check) {
+                    GetNewNo();
+                }
             });
 
-            $('#E_ALL_REMARK_CHK').on('click', function () {
-                $('.fillRemark').val($('#E_ALL_REMARK').val());
+            //BUTTON CLICK EVENT 取消核銷頁
+            $('#BT_CANCEL_AP').on('click', function () {
+                CancelApprove();
             });
 
             //功能選單
@@ -533,9 +685,15 @@
                 Edit_Mode = "EXEC";
                 Form_Mode_Change("EXEC");
             });
+            $('#BT_S_CANCEL_APPROVE').on('click', function () {
+                Form_Mode_Change("CANCEL");
+            });
+            $('#BT_S_COLOR').on('click', function () {
+                Form_Mode_Change("COLOR");
+            });
             $('#BT_S_EX_IMG').on('click', function () {
                 Form_Mode_Change("IMG");
-            });
+            }); 
         });
     </script>
 </asp:Content>
@@ -550,52 +708,35 @@
                 <td class="tdbstyle">
                     <input id="Q_IVAN_TYPE" DT_Query_Name="頤坊型號" class="textbox_char" />
                 </td>
-                 <td class="tdhstyle">暫時型號</td>
-                <td class="tdbstyle">
-                    <input id="Q_TMP_TYPE" DT_Query_Name="暫時型號" class="textbox_char" />
-                </td>
-                <td class="tdhstyle">銷售型號</td>
-                <td class="tdbstyle">
-                    <input id="Q_SALE_TYPE" DT_Query_Name="銷售型號" class="textbox_char" />
-                </td>
-            </tr>
-             <tr class="trstyle">
-                <td class="tdhstyle">廠商編號</td>
-                <td class="tdbstyle"> 
-                    <input id="Q_FACT_NO" DT_Query_Name="廠商編號" class="textbox_char" />
-                </td>
-                <td class="tdhstyle">廠商簡稱</td>
-                <td class="tdbstyle">
-                    <input id="Q_FACT_S_NAME" DT_Query_Name="廠商簡稱" class="textbox_char" />
-                </td>
-                  <td class="tdhstyle">庫位</td>
-                <td class="tdbstyle">
-                    <input id="Q_STOCK_LOC" DT_Query_Name="庫位" class="textbox_char" />
-                </td>
-            </tr>
-            <tr class="trstyle">
-                <td class="tdhstyle">庫區</td>
+                 <td class="tdhstyle">庫區</td>
                 <td class="tdbstyle">
                         <select id="Q_STOCK_POS" DT_Query_Name="庫區" >
                         <option selected="selected" value="大貨">大貨</option>
-                        <option value="快取">快取</option>
                         <option value="內湖">內湖</option>
-                        <option value="樣品">樣品</option>
-                        <option value="展場">展場</option>
-                        <option value="託管">託管</option>
-                        <option value="留底">留底</option>
-                        <option value="展示">展示</option>
-                        <option value="設計">設計</option>
-                        <option value="廠商">廠商</option>
-                        <option value="台北">台北</option>
-                        <option value="台中">台中</option>
-                        <option value="高雄">高雄</option>
                     </select>
                 </td>
-                 <td class="tdhstyle">限有庫存</td>
-                 <td class="tdbstyle">
-                    <input id="Q_HAS_STOCK" type="checkbox" DT_Query_Name="限有庫存" class="textbox_char" />
+                
+                 <td class="tdhstyle">訂單號碼</td>
+                <td class="tdbstyle">
+                    <input id="Q_ORDER_NO" DT_Query_Name="訂單號碼" class="textbox_char" />
                 </td>
+            </tr>
+             <tr class="trstyle">
+                <td class="tdhstyle">門市</td>
+                <td class="tdbstyle">
+                    <select id="Q_STORE" DT_Query_Name="單據編號" > <%--stkio單據編號存門市--%>
+                        <option selected="selected" value="台北">台北</option>
+                        <option value="台中">台中</option>
+                        <option value="高雄">高雄</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </td>
+                  <td class="tdhstyle">更新日期</td>
+                <td class="tdbstyle">
+                    <input id="Q_UPD_DATE_S" type="date" DT_Query_Name="更新日期_S" class="date_S_style TB_DS" /><input id="Q_UPD_DATE_E" DT_Query_Name="更新日期_E" type="date" class="date_E_style TB_DE" />
+                    <input id="BT_Duo_Datetime_Picker" type="button" value="…" onclick="$('#Duo_Datetime_Picker_Dialog').dialog('open');" />
+                </td>
+                 
             </tr>
             <tr class="trstyle">
                 <td class="tdtstyleRight" colspan="7">
@@ -608,7 +749,9 @@
         <div class="button_change_section">
             &nbsp;
             <input type="button" id="BT_S_CHS" class="V_BT" value="選擇"  disabled="disabled" />
-            <input type="button" id="BT_S_EXEC" class="V_BT" value="變更內容" />
+            <input type="button" id="BT_S_EXEC" class="V_BT" value="核銷" />
+            <input type="button" id="BT_S_CANCEL_APPROVE" class="V_BT" value="取消核銷" />
+            <input type="button" id="BT_S_COLOR" class="V_BT" value="圖例" />
             <input type="button" id="BT_S_EX_IMG" class="V_BT" value="圖型" />
         </div>
 
@@ -661,33 +804,68 @@
     
             <div id="Div_Exec_Section" style="width:28%;height:71vh; border-style:solid;border-width:1px; float:right;">
                 <div class="search_section_control">
-                    <div style="height: 2vh; font-size: smaller;" >&nbsp</div>
                     <table style="margin:0 auto">
                         <tr style="font-size:20px">
-                            <td colspan="2" >大貨庫存</td>
+                            <td colspan="2"  id="E_EXEC_TITLE" >核銷項次:</td>
                         </tr>
-                        <tr style="font-size:20px">
-                            <td colspan="2"  id="E_EXEC_TITLE" >變更項次:</td>
-                        </tr>
-                        <tr >
-                            <td>
-                                <div style="height: 10vh; font-size: smaller;" >&nbsp</div>
+                    </table>
+                    <div style="height: 10vh; font-size: smaller;" >&nbsp</div>
+                    <table style="margin:0 auto">
+                         <tr >
+                            <td class="tdhstyle">PM_NO</td>
+                            <td class="tdbstyle">
+                                <input id="E_PM_NO"  class="textbox_char" maxlength="30" />
+                                <input id="E_GET_NEW_NO" type="button" value="New No" />
                             </td>
                         </tr>
                         <tr >
-                            <td class="tdhstyle">新庫位</td>
+                            <td class="tdhstyle">箱號</td>
                             <td class="tdbstyle">
-                                <input id="E_STOCK_POS"  type="hidden"  class="textbox_char" />
-                                <input id="E_STOCK_LOC"  class="textbox_char" maxlength="12" />
+                                <input id="E_PACK_NO"  class="textbox_char" maxlength="4" />
                             </td>
                         </tr>
                     </table>
                 </div>
-                <div style="height: 10vh; font-size: smaller;" >&nbsp</div>
+                <div style="height: 5vh; font-size: smaller;" >&nbsp</div>
                 <div style="text-align:center">
                      <input id="BT_EXECUTE" style="font-size:20px" type="button" value="執行"  />
                     <input id="BT_EXECUTE_CANCEL" style="font-size:20px" type="button" value="返回" />
                 </div>
+            </div> 
+            <div id="Div_COLOR" style="width:28%;height:71vh; border-style:solid;border-width:1px; float:right; overflow:auto ">
+                <table class="edit_section_control" style="width:70%">
+                     <tr class="trstyle"> 
+                        <td class="tdbstyle" style="height: 10vh; font-size: smaller;" >&nbsp</td>
+                    </tr>
+                    <tr class="trstyle">
+                        <td style="background-color:#90ee90;width:10%"></td>
+                        <td>有圖檔</td>
+                        <td style="background-color:LightPink;width:10%"></td>
+                        <td>無內銷大類</td>
+                    </tr>
+                    <tr class="trstyle">
+                        <td style="background-color:DarkOrange;width:10%"></td>
+                        <td>預定數量不足</td>
+                    </tr>
+                    <tr class="trstyle"> 
+                        <td class="tdbstyle" style="height: 5vh; font-size: smaller;" >&nbsp</td>
+                    </tr>
+                    <tr> 
+                        <td colspan="4">
+                            <div style="position: relative; border: 1px solid #111111; padding: 20px; box-sizing: border-box; margin: 30px auto; width: 100%;">
+                                <span style="position: absolute; top: -1em; left: 10%; line-height: 2em; padding: 0 1em; background-color: #fff;">說明</span>
+                                <table style="margin:0 auto">
+                                    <tr class="trstyle">
+                                        <td colspan="4">註1:備貨單位選擇[其他],如參展商品須PACKING LIST</td>
+                                    </tr>
+                                    <tr class="trstyle">
+                                        <td colspan="4">註2:備貨數量等錯誤,使用備貨修改</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             </div> 
             <div id="Div_IMG_DETAIL" style="width:28%;height:71vh; border-style:solid;border-width:1px; float:right; overflow:auto ">
                 <table class="edit_section_control">
@@ -725,6 +903,33 @@
                             <img id="I_IMG" src="#" style="max-width:100%; max-height:100%;display:none" />
                             <span id="I_NO_IMG" >查無圖檔</span>
                         </td>
+                    </tr>
+
+                </table>
+            </div> 
+        </div> 
+         <div id="Div_CANCEL" class=" Div_D" style=" display:flex; align-items:center; justify-content:center;" >
+            <div id="Div_CANCEL_AP" style="width:50%;height:71vh; border-style:solid;border-width:1px; display:flex; align-items:center; justify-content:center ">
+                <table class="search_section_control" style="width:auto">
+                    <tr class="trCenterstyle">
+                        <td class="tdhstyle" style="font-size:20px;">PM NO</td>
+                        <td class="tdbstyle">
+                            <input id="C_PM_NO"  class="textbox_char" />
+                         </td>
+                    </tr>
+                    <tr class="trCenterstyle">
+                        <td class="tdhstyle" style="font-size:20px;">箱號</td>
+                        <td class="tdbstyle">
+                            <input id="C_PACK_NO"  class="textbox_char" />
+                         </td>
+                    </tr>
+                     <tr class="trstyle"> 
+                        <td class="tdbstyle" style="height: 10vh; font-size: smaller;" >&nbsp</td>
+                    </tr>
+                     <tr class="trCenterstyle"> 
+                         <td colspan="2" style="text-align:center" >
+                            <input type="button" id="BT_CANCEL_AP" style="display:inline-block;font-size:20px" value="取消備貨"  />
+                         </td>
                     </tr>
 
                 </table>

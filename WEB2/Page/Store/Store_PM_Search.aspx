@@ -9,7 +9,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode = "Base";
-            var apiUrl = "/Store/Ashx/Store_PM_Search.ashx";
+            var apiUrl = "/Page/Store/Ashx/Store_PM_Search.ashx";
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
 

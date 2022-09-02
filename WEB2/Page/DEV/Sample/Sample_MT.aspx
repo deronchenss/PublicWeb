@@ -12,7 +12,7 @@
         $(document).ready(function () {
             var Edit_Mode;
             var amtChange = 0;
-            var apiUrl = "/DEV/Sample/Ashx/Sample_MT.ashx";
+            var apiUrl = "/Page/DEV/Sample/Ashx/Sample_MT.ashx";
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
 

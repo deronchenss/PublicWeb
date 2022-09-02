@@ -1,5 +1,4 @@
-﻿<%@ Page Title="樣品準備作業" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Chk_Dist.aspx.cs" Inherits="Sample_Chk_Dist" %>
-<%@ Register TagPrefix="uc" TagName="uc1" Src="~/User_Control/Dia_Customer_Selector.ascx" %>
+﻿<%@ Page Title="樣品備貨作業" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Sample_Pack.aspx.cs" Inherits="Sample_Pack" %>
 <%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_ALL.ascx" %>
 <%@ Register TagPrefix="uc3" TagName="uc3" Src="~/User_Control/Dia_Duo_Datetime_Picker.ascx" %>
 
@@ -7,71 +6,19 @@
     <link href="/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
     <script src="/js/jquery.dataTables.min.js"></script>
     <script src="/js/dataTables.bootstrap4.min.js"></script>
+    <style type="text/css">
+       .tableClick {
+            color: white;
+            background-color: rgb(90, 20, 0) !important;
+        }
+    </style>
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
             var Exec_Mode;
-            var Data_Source = 'recua';
-            var apiUrl = "/DEV/Sample/Ashx/Sample_Chk_Dist.ashx";
+            var apiUrl = "/Page/DEV/Sample/Ashx/Sample_Pack.ashx";
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
-
-            window.document.body.onbeforeunload = function () {
-                if (Edit_Mode === "Edit") {
-                    return '您尚未將編輯過的表單資料送出，請問您確定要離開網頁嗎？';
-                }
-            }
-
-            //init CONTROLER
-            Form_Mode_Change("Base");
-            $('.onlyStkio').toggle(false);
-            $('.onlyRecua').toggle(true);
-
-            $('#Table_EXEC_Data').DataTable({
-                "destroy": true,
-                "drawCallback": function (settings) {
-                    Re_Bind_Inner_JS();
-                },
-                "columns": [
-                    { title: "批號" },
-                    { title: "頤坊型號" },
-                    { title: "產品說明" },
-                    { title: "單位" },
-                    { title: "內湖庫存數" },
-                    { title: "備貨數量" },
-                    { title: "內湖庫位" },
-                    { title: "到貨處理" },
-                    { title: "廠商編號" },
-                    { title: "廠商簡稱" },
-                    { title: "暫時型號" },
-                    { title: "採購單號" },
-                    { title: "<%=Resources.MP.Update_User%>" },
-                    { title: "<%=Resources.MP.Update_Date%>" },
-                    { title: "序號" }
-                ],
-                "columnDefs": [
-                    {
-                        className: 'text-right', targets: [4] //數字靠右
-                    },
-                ],
-                "order": [[0, "asc"]], //根據 採購單號 排序
-                "scrollX": true,
-                "scrollY": "62vh",
-                "searching": false,
-                "paging": false,
-                "bInfo": false //顯示幾筆隱藏
-            });   
-
-            //Dialog
-            $('#SG_BT_CUST_CHS').on('click', function () {
-                $("#Search_Customer_Dialog").dialog('open');
-            });
-
-            $('#SCD_Table_Customer').on('click', '.CUST_SEL', function () {
-                $('#SG_CUST_NO').val($(this).parent().parent().find('td:nth(2)').text());
-                $('#SG_CUST_S_NAME').val($(this).parent().parent().find('td:nth(3)').text());
-                $("#Search_Customer_Dialog").dialog('close');
-            });
 
             //上下移功能 根據每個頁面客製
             $(document).keydown(function (event) {
@@ -91,6 +38,15 @@
                 }
             });
 
+            function Re_Bind_Inner_JS() {
+                $('.Call_Product_Tool').off('click');
+                $('.Call_Product_Tool').on('click', function (e) {
+                    e.stopPropagation();
+                    $('#PAD_HDN_SUPLU_SEQ').val($(this).attr('SUPLU_SEQ'));
+                    $("#Product_ALL_Dialog").dialog('open');
+                });
+            };
+
             function ClickAddClass($click) {
                 //點擊賦予顏色
                 $('#Table_EXEC_Data > tbody tr').removeClass("tableClick");
@@ -106,11 +62,62 @@
                 $('#I_FACT_S_NAME').val(clickData[index]);
                 index = $('#Table_EXEC_Data thead th:contains(產品說明)').index();
                 $('#I_PROD_DESC').val(clickData[index]);
-                index = $('#Table_EXEC_Data thead th:contains(序號)').index();
+                index = $('#Table_EXEC_Data thead th:contains(SUPLU_SEQ)').index();
                 $('#I_SUPLU_SEQ').val(clickData[index]);
                 Search_IMG($('#I_SUPLU_SEQ').val());
             }
 
+            //init CONTROLER
+            Form_Mode_Change("Base");
+            $('#E_CHK_DATE').val($.datepicker.formatDate('yy-mm-dd', new Date()));
+
+            $('#Table_EXEC_Data').DataTable({
+                "destroy": true,
+                "preDrawCallback": function (settings) {
+                    pageScrollPos = $('div.dataTables_scrollBody').scrollTop();
+                },
+                "drawCallback": function (settings) {
+                    $('div.dataTables_scrollBody').scrollTop(pageScrollPos);
+                    Re_Bind_Inner_JS();
+                },
+                "columns": [
+                    { title: "客戶簡稱" },
+                    { title: "備貨日期" },
+                    { title: "頤坊型號" },
+                    { title: "單位" },
+                    { title: "備貨數量" },
+                    { title: "本次備貨數" },
+                    { title: "Free" },
+                    { title: "狀態" },
+                    { title: "廠商簡稱" },
+                    { title: "產品說明" },
+                    { title: "客戶型號" },
+                    { title: "廠商編號" },
+                    { title: "客戶編號" },
+                    { title: "序號" },
+                    { title: "<%=Resources.MP.Update_User%>" },
+                    { title: "<%=Resources.MP.Update_Date%>" },
+                    { title: "SUPLU_SEQ" },
+                    { title: "BYRLU_SEQ" }
+                ],
+                "columnDefs": [
+                    {
+                        className: 'text-right', targets: [4] //數字靠右
+                    },
+                ],
+                "order": [[0, "asc"]], //根據 採購單號 排序
+                "scrollX": true,
+                "scrollY": "62vh",
+                "searching": false,
+                "paging": false,
+                "bInfo": false //顯示幾筆隱藏
+            });
+
+            window.document.body.onbeforeunload = function () {
+                if (Edit_Mode === "Edit") {
+                    return '您尚未將編輯過的表單資料送出，請問您確定要離開網頁嗎？';
+                }
+            }
             //function region
             function Form_Mode_Change(Form_Mode) {
                 switch (Form_Mode) {
@@ -126,8 +133,6 @@
                         $('#Div_DT_Search').css('display', '');
                         $('#BT_Cancel').css('display', '');
 
-                        $('#Table_Search_Data_info').text('Showing ' + $('#Table_Search_Data > tbody tr[role=row]').length + ' entries');
-                        $('#Table_CHS_Data_info').text('Showing ' + $('#Table_CHS_Data > tbody tr[role=row]').length + ' entries');
                         V_BT_CHG($('#BT_S_CHS'));
                         break;
                     case "EXEC":
@@ -140,6 +145,7 @@
                         if ($('#Table_CHS_Data > tbody tr[role=row]').length === 0) {
                             alert('請至少選擇1筆');
                             Edit_Mode = "Base";
+
                             Form_Mode_Change("Search");
                             V_BT_CHG($('#BT_S_CHS'));
                             return;
@@ -148,40 +154,41 @@
                             $('.Div_D').css('display', 'none');
                             $('#Div_DT_DETAIL').css('display', '');
                             $('#Div_IMG_DETAIL').css('display', 'none');
-                            $('.ExecSection').css('display', 'none');
-                            V_BT_CHG($('#BT_S_SHIP_GO'));
-
-                            $('#Div_Exec_Ship_Go_Section').css('display', '');
                             $('#Table_EXEC_Data').DataTable().clear().rows.add($('#Table_CHS_Data').find('tbody tr[role=row]').clone()).draw(); //將選擇後TABLE 複製至第二面
                             $('#Table_EXEC_info').text('Showing ' + $('#Table_EXEC_Data > tbody tr[role=row]').length + ' entries'); //顯示TABLE 列數
-                            var $inputObj = $('#Table_EXEC_Data .tableInput');
-                            $inputObj.attr('disabled', false);
 
+                            if (Exec_Mode == 'DEL') {
+                                $('#Div_Exec_Section').css('display', 'none');
+                                $('#Div_PRE_DEL').css('display', '');
+                                V_BT_CHG($('#BT_S_PRE_DEL'));    
+                            }
+                            else {
+                                $('#Div_Exec_Section').css('display', '');
+                                $('#Div_PRE_DEL').css('display', 'none');
+                                V_BT_CHG($('#BT_S_PACK'));    
+
+                                $('#E_PACK_TITLE').text('備貨項次，筆數: ' + $('#Table_EXEC_Data > tbody tr[role=row]').length);
+                                var $inputObj = $('#Table_EXEC_Data .tableInput');
+                                $inputObj.attr('disabled', false);
+                            }
                             break;
                         }
                     case "IMG":
                         $('.Div_D').css('display', 'none');
                         $('#Div_DT_DETAIL').css('display', '');
-                        $('.ExecSection').css('display', 'none');
+                        $('#Div_Exec_Section').css('display', 'none');
+                        $('#Div_PRE_DEL').css('display', 'none');
                         $('#Div_IMG_DETAIL').css('display', '');
-
-                        $('#Table_EXEC_Data').DataTable().clear().rows.add($('#Table_CHS_Data').find('tbody tr[role=row]').clone()).draw(); //將選擇後TABLE 複製至第二面
-                        $('#Table_EXEC_info').text('Showing ' + $('#Table_EXEC_Data > tbody tr[role=row]').length + ' entries'); //顯示TABLE 列數
-                        $('#E_CNT').text('到貨筆數: ' + $('#Table_EXEC_Data > tbody tr[role=row]').length); 
-
                         V_BT_CHG($('#BT_S_EX_IMG'));
+
+                        if ($('#Table_CHS_Data > tbody tr[role=row]').length > 0) {
+                            $('#Table_EXEC_Data').DataTable().clear().rows.add($('#Table_CHS_Data').find('tbody tr[role=row]').clone()).draw(); //將選擇後TABLE 複製至第二面
+                            return;
+                        }
+
                         break;
                 }
             }
-
-            function Re_Bind_Inner_JS() {
-                $('.Call_Product_Tool').off('click');
-                $('.Call_Product_Tool').on('click', function (e) {
-                    e.stopPropagation();
-                    $('#PAD_HDN_SUPLU_SEQ').val($(this).attr('SUPLU_SEQ'));
-                    $("#Product_ALL_Dialog").dialog('open');
-                });
-            };
 
             function Search_IMG(supluSeq) {
                 $.ajax({
@@ -238,28 +245,26 @@
                 $('#Table_Search_Data_info').text('Showing ' + $('#Table_Search_Data > tbody tr[role=row]').length + ' entries');
                 $('#BT_Next').toggle(Boolean($('#Table_CHS_Data').find('tbody tr').length > 0));
             }
-           
+
             function V_BT_CHG(buttonChs) {
                 $('.V_BT').attr('disabled', false);
                 buttonChs.attr('disabled', 'disabled');
             }
-            //ajax function
-            function Search_Recua() {
-                Data_Source = $('#Q_DATA_SOURCE').val();
 
+            //ajax function
+            function Search_Data() {
                 $.ajax({
                     url: apiUrl,
                     data:{
                         "Call_Type": "SEARCH",    
-                        "DATA_SOURCE": $('#Q_DATA_SOURCE').val(),
-                        "點收批號": $('#Q_CHK_BATCH_NO').val(),
-                        "採購單號": $('#Q_PUDU_NO').val(),
+                        "客戶編號": $('#Q_CUST_NO').val(),
+                        "客戶簡稱": $('#Q_CUST_S_NAME').val(),
                         "頤坊型號": $('#Q_IVAN_TYPE').val(),
-                        "點收日期_S": $('#Q_CHK_DATE_S').val(),
-                        "點收日期_E": $('#Q_CHK_DATE_E').val(),
+                        "暫時型號": $('#Q_TMP_TYPE').val(),
+                        "備貨日期_S": $('#Q_PACK_DATE_S').val(),
+                        "備貨日期_E": $('#Q_PACK_DATE_E').val(),
                         "廠商編號": $('#Q_FACT_NO').val(),
-                        "廠商簡稱": $('#Q_FACT_S_NAME').val(),
-                        "訂單號碼": $('#Q_ORDER_NO').val()
+                        "廠商簡稱": $('#Q_FACT_S_NAME').val()
                     },
                     cache: false,
                     type: "POST",
@@ -274,46 +279,59 @@
                             alert('<%=Resources.MP.Data_Not_Exists_Alert%>');
                             Edit_Mode = "Base";
                             Form_Mode_Change("Base");
+                            $('#Table_Search_Data').DataTable().clear().draw();
+                            $('#Table_Search_Data_Tmp').DataTable().clear().draw();
                         }
                         else {
-                            $('#Table_Search_Tmp').DataTable({
+                            $('#Table_Search_Data_Tmp').DataTable({
                                 "data": response,
                                 "destroy": true,
+                                //維持scroll bar 位置
+                                "preDrawCallback": function (settings) {
+                                    pageScrollPos = $('div.dataTables_scrollBody').scrollTop();
+                                },
+                                "drawCallback": function (settings) {
+                                    $('div.dataTables_scrollBody').scrollTop(pageScrollPos);
+                                },
                                 "columns": [
-                                    { data: "點收批號", title: "批號" },
+                                    { data: "客戶簡稱", title: "客戶簡稱" },
+                                    { data: "備貨日期", title: "備貨日期" },
                                     {
                                         data: "頤坊型號", title: "頤坊型號",
                                         render: function (data, type, row) {
-                                            return '<input class="Call_Product_Tool" SUPLU_SEQ = "' + (row.序號 ?? "")
+                                            return '<input class="Call_Product_Tool" SUPLU_SEQ = "' + (row.SUPLU_SEQ ?? "")
                                                 + '" type="button" value="' + (data ?? "")
                                                 + '" style="text-align:left;width:100%;z-index:1000;' + ((row.Has_IMG) ? 'background: #90ee90;' : '') + '" />'
                                         },
                                         orderable: false
                                     },
-                                    { data: "產品說明", title: "產品說明" },
                                     { data: "單位", title: "單位" },
-                                    { data: "內湖庫存數", title: "內湖庫存數" },
+                                    { data: "備貨數量", title: "備貨數量" },
                                     {
-                                        data: "備貨數量", title: "備貨數量",
+                                        data: "備貨數量", title: "本次備貨數",
                                         render: function (data, type, row) {
-                                            return '<input type="number" id="E_APP_CNT" class="tableInput" disabled="disabled" style="width:80px;text-align: right;" value = "' + data + '"  />'
+                                            return '<input type="number" id="E_PACK_CNT" class="tableInput" disabled="disabled" style="width:80px;text-align: right;" value = "' + data + '"  />'
                                         },
-                                        orderable: false
                                     },
-                                    { data: "內湖庫位", title: "內湖庫位" },
-                                    { data: "到貨處理", title: "到貨處理" },
-                                    { data: "廠商編號", title: "廠商編號" },
+                                    {
+                                        data: null, title: 'Free',
+                                        render: function (data, type, row) {
+                                            return '<input type="checkbox" id="E_FREE"  style="text-align:center" class="tableInput tbChkBox" disabled="disabled" />'
+                                        },
+                                        orderable: false },
+                                    { data: "狀態", title: "狀態" },
                                     { data: "廠商簡稱", title: "廠商簡稱" },
-                                    { data: "暫時型號", title: "暫時型號" },
-                                    { data: "採購單號", title: "採購單號" },
-                                    { data: "更新人員", title: "<%=Resources.MP.Update_User%>" },
-                                    { data: "更新日期", title: "<%=Resources.MP.Update_Date%>" },
-                                    { data: "序號", title: "序號" }
+                                    { data: "產品說明", title: "產品說明" },
+                                    { data: "客戶型號", title: "客戶型號" },
+                                    { data: "廠商編號", title: "廠商編號" },
+                                    { data: "客戶編號", title: "客戶編號" },
+                                    { data: "序號", title: "序號" },
+                                    { data: "<%=Resources.MP.Update_User%>", title: "<%=Resources.MP.Update_User%>" },
+                                    { data: "<%=Resources.MP.Update_Date%>", title: "<%=Resources.MP.Update_Date%>" },
+                                    { data: "SUPLU_SEQ", title: "SUPLU_SEQ" },
+                                    { data: "BYRLU_SEQ", title: "BYRLU_SEQ" }
                                 ],
-                                columnDefs: [{
-                                    className: "text-center",// 新增class
-                                }],
-                                "order": [[0, "asc"]], //根據 點收批號 排序
+                                "order": [[0, "asc"]], //根據 採購單號 排序
                                 "scrollX": true,
                                 "scrollY": "62vh",
                                 "searching": false,
@@ -324,28 +342,73 @@
                             $('#Table_Search_Data').DataTable({
                                 "destroy": true,
                                 "preDrawCallback": function (settings) {
-                                    searchPageScroll = $('#Table_Search_Data_wrapper div.dataTables_scrollBody').scrollTop();
+                                    pageScrollPudu = $('#Table_Search_Data_wrapper div.dataTables_scrollBody').scrollTop();
                                 },
                                 "drawCallback": function (settings) {
-                                    $('#Table_Search_Data_wrapper div.dataTables_scrollBody').scrollTop(searchPageScroll);
+                                    $('#Table_Search_Data_wrapper div.dataTables_scrollBody').scrollTop(pageScrollPudu);
                                     Re_Bind_Inner_JS();
                                 },
                                 "columns": [
-                                    { title: "批號" },
+                                    { title: "客戶簡稱" },
+                                    { title: "備貨日期" },
                                     { title: "頤坊型號" },
-                                    { title: "產品說明" },
                                     { title: "單位" },
-                                    { title: "內湖庫存數" },
                                     { title: "備貨數量" },
-                                    { title: "內湖庫位" },
-                                    { title: "到貨處理" },
-                                    { title: "廠商編號" },
+                                    { title: "本次備貨數" },
+                                    { title: "Free" },
+                                    { title: "狀態" },
                                     { title: "廠商簡稱" },
-                                    { title: "暫時型號" },
-                                    { title: "採購單號" },
+                                    { title: "產品說明" },
+                                    { title: "客戶型號" },
+                                    { title: "廠商編號" },
+                                    { title: "客戶編號" },
+                                    { title: "序號" },
                                     { title: "<%=Resources.MP.Update_User%>" },
                                     { title: "<%=Resources.MP.Update_Date%>" },
-                                    { title: "序號" }
+                                    { title: "SUPLU_SEQ" },
+                                    { title: "BYRLU_SEQ" }
+                                ],
+                               "columnDefs": [
+                                    {
+                                        className: 'text-right', targets: [4] //數字靠右
+                                    },
+                                ],
+                               "order": [[0, "asc"]], //根據 採購單號 排序
+                               "scrollX": true,
+                               "scrollY": "62vh",
+                               "searching": false,
+                               "paging": false,
+                               "bInfo": false //顯示幾筆隱藏
+                           });
+
+                            $('#Table_CHS_Data').DataTable({
+                               "destroy": true,
+                               "preDrawCallback": function (settings) {
+                                   pageScrollPos = $('#Table_CHS_Data_wrapper div.dataTables_scrollBody').scrollTop();
+                               },
+                               "drawCallback": function (settings) {
+                                   $('#Table_CHS_Data_wrapper div.dataTables_scrollBody').scrollTop(pageScrollPos);
+                                   Re_Bind_Inner_JS();
+                               },
+                                "columns": [
+                                    { title: "客戶簡稱" },
+                                    { title: "備貨日期" },
+                                    { title: "頤坊型號" },
+                                    { title: "單位" },
+                                    { title: "備貨數量" },
+                                    { title: "本次備貨數" },
+                                    { title: "Free" },
+                                    { title: "狀態" },
+                                    { title: "廠商簡稱" },
+                                    { title: "產品說明" },
+                                    { title: "客戶型號" },
+                                    { title: "廠商編號" },
+                                    { title: "客戶編號" },
+                                    { title: "序號" },
+                                    { title: "<%=Resources.MP.Update_User%>" },
+                                    { title: "<%=Resources.MP.Update_Date%>" },
+                                    { title: "SUPLU_SEQ" },
+                                    { title: "BYRLU_SEQ" }
                                 ],
                                 "columnDefs": [
                                     {
@@ -360,49 +423,10 @@
                                "bInfo": false //顯示幾筆隱藏
                            });
 
-                           $('#Table_CHS_Data').DataTable({
-                               "destroy": true,
-                               "preDrawCallback": function (settings) {
-                                   chsPageScroll = $('Table_CHS_Data_wrapper div.dataTables_scrollBody').scrollTop();
-                               },
-                               "drawCallback": function (settings) {
-                                   $('Table_CHS_Data_wrapper div.dataTables_scrollBody').scrollTop(chsPageScroll);
-                                   Re_Bind_Inner_JS();
-                               },
-                                "columns": [
-                                    { title: "批號" },
-                                    { title: "頤坊型號" },
-                                    { title: "產品說明" },
-                                    { title: "單位" },
-                                    { title: "內湖庫存數" },
-                                    { title: "備貨數量" },
-                                    { title: "內湖庫位" },
-                                    { title: "到貨處理" },
-                                    { title: "廠商編號" },
-                                    { title: "廠商簡稱" },
-                                    { title: "暫時型號" },
-                                    { title: "採購單號" },
-                                    { title: "<%=Resources.MP.Update_User%>" },
-                                    { title: "<%=Resources.MP.Update_Date%>" },
-                                    { title: "序號" }
-                               ],
-                               "columnDefs": [
-                                   {
-                                       className: 'text-right', targets: [4] //數字靠右
-                                   },
-                               ],
-                               "order": [[0, "asc"]], //根據 點收批號 排序
-                               "scrollX": true,
-                               "scrollY": "62vh",
-                               "searching": false,
-                               "paging": false,
-                               "bInfo": false //顯示幾筆隱藏
-                           });
-
                             //input 欄位 Undefind 問題 調整為 先存TMP TABLE 再將 VALUE 複製到正式 table 
-                            $('#Table_Search_Tmp').DataTable().draw();
+                            $('#Table_Search_Data_Tmp').DataTable().draw();
                             $('#Table_Search_Data').DataTable().draw();
-                            $('#Table_Search_Data').DataTable().clear().rows.add($('#Table_Search_Tmp').find('tbody tr[role=row]').clone()).draw();
+                            $('#Table_Search_Data').DataTable().clear().rows.add($('#Table_Search_Data_Tmp').find('tbody tr[role=row]').clone()).draw();
 
                             $('#Table_CHS_Data').DataTable().draw();
                             $('#Table_CHS_Data_info').text('Showing ' + $('#Table_CHS_Data > tbody tr[role=row]').length + ' entries');
@@ -416,52 +440,67 @@
                     }
                 });
             };          
-
-            function INSERT(callType) {
+ 
+            //寫入備貨 TABLE
+            function INSERT_DATA() {
                 var liSeq = [];
-                var liAppCnt = [];
-                var liBatchNo = []; //含點收批號，訂單號碼
+                var liFree = [];
+                var liPack = [];
                 var execCnt = $('#Table_EXEC_Data > tbody tr[role=row]').length;
+                var custNo = $.trim($('#E_CUST_NO').val());
 
                 for (var tableCnt = 1; tableCnt <= execCnt; tableCnt++) {
                     var $tableRow = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')');
 
-                    var index = $('#Table_EXEC_Data thead th:contains(序號)').index() + 1; //序號INDEX
-                    var seq = $tableRow.find('td:nth-child(' + index + ')').text();
-                    index = $('#Table_EXEC_Data thead th:contains(批號)').index() + 1; //批號INDEX
-                    var batchNo = $tableRow.find('td:nth-child(' + index + ')').text();
-                    index = $('#Table_EXEC_Data thead th:contains(內湖庫存數)').index() + 1; //內湖庫存數INDEX
-                    var stockCnt = $tableRow.find('td:nth-child(' + index + ')').text() == '' ? 0 : $tableRow.find('td:nth-child(' + index + ')').text();
-                    var appCnt = $tableRow.find('#E_APP_CNT').val() == '' ? 0 : $tableRow.find('#E_APP_CNT').val();
+                    var packCnt = $tableRow.find('#E_PACK_CNT').val();
+                    if (packCnt == '' || packCnt == 0) {
+                        alert('第' + tableCnt + '筆，本次備貨數不可為 0!');
+                        return;
+                    }
 
-                    if (stockCnt == 0) {
-                        alert('第' + tableCnt + '筆，庫存數為 0，請重新確認!');
+                    var packCntIndex = $('#Table_EXEC_Data thead th:contains(備貨數量)').index() + 1; //備貨數量INDEX
+                    var oriPackCnt = $tableRow.find('td:nth-child(' + packCntIndex + ')').text();
+                    if (packCnt > parseFloat(oriPackCnt)) {
+                        alert('第' + tableCnt + '筆，本次備貨數 大於 備貨數量!');
                         return;
                     }
-                    if (appCnt > stockCnt && stockCnt != 0) {
-                        alert('第' + tableCnt + '筆，備貨數量 > 庫存數，請重新確認!');
+
+                    var custNoIndex = $('#Table_EXEC_Data thead th:contains(客戶編號)').index() + 1; //客戶編號INDEX
+                    var rowCustNo = $tableRow.find('td:nth-child(' + custNoIndex + ')').text();
+                    if (custNo != rowCustNo) {
+                        alert('第' + tableCnt + '筆，客戶編號與Sample IV 設定不同，請確認!');
                         return;
                     }
-                    if (appCnt == 0) {
-                        alert('第' + tableCnt + '筆，備貨數量為 0，請重新確認!');
+
+                    var statusIndex = $('#Table_EXEC_Data thead th:contains(狀態)').index() + 1; //狀態INDEX
+                    var status = $tableRow.find('td:nth-child(' + statusIndex + ')').text();
+                    if (status != 'OK') {
+                        alert('第' + tableCnt + '筆，狀態不為OK，請確認!');
                         return;
                     }
+
+                    var seqIndex = $('#Table_EXEC_Data thead th:contains(序號)').index() + 1; //序號INDEX
+                    var seq = $tableRow.find('td:nth-child(' + seqIndex + ')').text();
+                    var free = $tableRow.find('#E_FREE').is(":checked");
+
                     liSeq.push(seq);
-                    liAppCnt.push(appCnt);
-                    liBatchNo.push(batchNo);
+                    liPack.push(packCnt);
+                    liFree.push(free);
                 }
 
                 $.ajax({
                     url: apiUrl,
                     data: {
-                        "Call_Type": callType,
-                        "DATA_SOURCE": Data_Source,
+                        "Call_Type": "INSERT",
                         "SEQ": liSeq,
-                        "APP_CNT": liAppCnt,
-                        "BATCH_NO": liBatchNo,
-                        //準備出貨
-                        "CUST_NO": $('#SG_CUST_NO').val(),
-                        "CUST_S_NAME": $('#SG_CUST_S_NAME').val(),
+                        "FREE": liFree,
+                        "PACK_CNT": liPack,
+                        "INVOICE": $.trim($('#E_INVOICE').val()),
+                        "ATTN": $.trim($('#E_ATTN').val()),
+                        "PACK_NO": $.trim($('#E_PACK_NO').val()),
+                        "SAMPLE_NO": $.trim($('#E_SAMPLE_NO').val()),
+                        "WEIGHT": $.trim($('#E_WEIGHT').val()) == '' ? 0 : $.trim($('#E_WEIGHT').val()),
+                        "NET_WEIGHT": $.trim($('#E_NET_WEIGHT').val()) == '' ? 0 : $.trim($('#E_NET_WEIGHT').val()),
                         "UPD_USER": "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
                     },
                     cache: false,
@@ -472,44 +511,102 @@
                         console.log(status);
                         if (status != "success") {
                             console.log(response);
-                            alert('執行有誤請通知資訊人員');
+                            alert('寫入有誤請通知資訊人員');
                             return;
                         }
                         else {
+                            alert('已寫入備貨檔，筆數:' + execCnt);
                             $('#Table_EXEC_Data').DataTable().rows().remove().draw();
                             $('#Table_CHS_Data').DataTable().rows().remove().draw();
-                            alert('執行完成，並扣除庫存，筆數:' + execCnt);
 
                             //回到第一頁
-                            Edit_Mode = "Base";
+                            Search_Data();
+                            Edit_Mode = "Search";
                             Form_Mode_Change("Search");
                         }
                     },
                     error: function (ex) {
                         console.log(ex.responseText);
-                        alert('執行有誤請通知資訊人員');
+                        alert('寫入有誤請通知資訊人員');
                         return;
                     }
                 });
-            }
+            };         
 
-            $('#Q_DATA_SOURCE').on('change', function () {
-                switch (this.value) {
-                    case 'recua':
-                        $('.onlyStkio').toggle(false);
-                        $('.onlyRecua').toggle(true);
-                        $('#Q_ORDER_NO').val('');
-                        break;
-                    case 'suplu':
-                        $('.onlyStkio').toggle(true);
-                        $('.onlyRecua').toggle(false);
-                        $('#Q_CHK_BATCH_NO').val('');
-                        $('#Q_PUDU_NO').val('');
-                        $('#Q_CHK_DATE_S').val('');
-                        $('#Q_CHK_DATE_E').val('');
-                        break;
+            //寫入備貨 TABLE
+            function DELETE_DATA() {
+                var liSeq = [];
+                var execCnt = $('#Table_EXEC_Data > tbody tr[role=row]').length;
+
+                for (var tableCnt = 1; tableCnt <= execCnt; tableCnt++) {
+                    var $tableRow = $('#Table_EXEC_Data > tbody tr:nth-child(' + tableCnt + ')');
+                    var seqIndex = $('#Table_EXEC_Data thead th:contains(序號)').index() + 1; //序號INDEX
+                    var seq = $tableRow.find('td:nth-child(' + seqIndex + ')').text();
+                    liSeq.push(seq);
                 }
-            });
+
+                $.ajax({
+                    url: apiUrl,
+                    data: {
+                        "Call_Type": "DELETE",
+                        "SEQ": liSeq,
+                        "UPD_USER": "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>"
+                    },
+                    cache: false,
+                    type: "POST",
+                    datatype: "json",
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    success: function (response, status) {
+                        console.log(status);
+                        if (status != "success") {
+                            console.log(response);
+                            alert('刪除有誤請通知資訊人員');
+                            return;
+                        }
+                        else {
+                            alert('已刪除準備檔並將剩餘備貨數寫回庫存，筆數:' + execCnt);
+                            $('#Table_EXEC_Data').DataTable().rows().remove().draw();
+                            $('#Table_CHS_Data').DataTable().rows().remove().draw();
+
+                            //回到第一頁
+                            Search_Data();
+                            Edit_Mode = "Search";
+                            Form_Mode_Change("Search");
+                        }
+                    },
+                    error: function (ex) {
+                        console.log(ex.responseText);
+                        alert('寫入有誤請通知資訊人員');
+                        return;
+                    }
+                });
+            };         
+
+            //檢查INVOICE 帶出客戶編號 簡稱
+            function ChkIV() {
+                $.ajax({
+                    url: apiUrl,
+                    data: {
+                        "Call_Type": "ChkIV",
+                        "INVOICE": $.trim($('#E_INVOICE').val())
+                    },
+                    cache: false,
+                    async: false,
+                    type: "POST",
+                    datatype: "json",
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    success: function (RR) {
+                        console.log(RR);
+                        if (RR != null && RR.length > 0) {
+                            $('#E_CUST_NO').val(RR[0].客戶編號);
+                            $('#E_CUST_S_NAME').val(RR[0].客戶簡稱);
+                        }
+                        else {
+                            alert('查無Sample IV，請檢查!');
+                        }
+                    }
+                });
+            };       
 
             //TABLE 功能設定
             $('#Table_Search_Data').on('click', 'tbody tr', function () {   
@@ -533,7 +630,7 @@
             $('#BT_Search').on('click', function () {
                 Edit_Mode = "Base";
                 Form_Mode_Change("Search");
-                Search_Recua();
+                Search_Data();
             });
 
             $('#BT_Cancel').on('click', function () {
@@ -548,21 +645,54 @@
             });
 
             //BUTTON CLICK EVENT 執行頁
-            $('#Table_EXEC_Data').on('click', 'tbody tr', function () {
-                ClickAddClass($(this));
-            });     
-
-            //出貨頁
-            $('#SG_BT_EXECUTE').on('click', function () {
-                if ($('#SG_CUST_NO').val() == '') {
-                    alert('請選擇客戶編號!');
+            $('#BT_EXECUTE').on('click', function () {
+                if ($('#Table_EXEC_Data > tbody tr[role=row]').length == 0) {
+                    alert('請選擇備貨資料!');
+                    return;
+                }
+                if ($.trim($('#E_INVOICE').val()) === '') {
+                    alert('Sample IV不可為空白');
+                    return;
+                }  
+                if ($.trim($('#E_CUST_NO').val()) === '') {
+                    alert('請填入正確Sample IV');
+                    return;
+                }
+                if ($.trim($('#E_PACK_NO').val()) === '') {
+                    alert('箱號不可為空白');
                     return;
                 }
 
-                INSERT("INSERT_PAKU2");
+                INSERT_DATA();
             });
 
-            $('#SG_BT_EXECUTE_CANCEL').on('click', function () {
+            $('#E_INVOICE_CHK').on('click', function () {
+                ChkIV();
+            });
+
+            $('#Table_EXEC_Data').on('click', 'tbody tr', function () {
+                ClickAddClass($(this));
+            });
+
+            $('#BT_EXECUTE_CANCEL').on('click', function () {
+                Edit_Mode = "Base";
+                Form_Mode_Change("Search");
+            });
+
+            //BUTTON CLICK EVENT 執行頁
+            $('#BT_DELETE').on('click', function () {
+                if ($('#Table_EXEC_Data > tbody tr[role=row]').length == 0) {
+                    alert('請選擇欲刪除資料!');
+                    return;
+                }
+
+                var Confirm_Check = confirm("刪除將會寫回庫存量，確認刪除嗎? ");
+                if (Confirm_Check) {
+                    DELETE_DATA();
+                }
+            });
+
+            $('#BT_DELETE_CANCEL').on('click', function () {
                 Edit_Mode = "Base";
                 Form_Mode_Change("Search");
             });
@@ -579,12 +709,17 @@
                 }
             });
 
-            $('#BT_S_SHIP_GO').on('click', function () {
+            $('#BT_S_PACK').on('click', function () {
                 Edit_Mode = "EXEC";
-                Exec_Mode = "SHIP_GO";
+                Exec_Mode = "PACK";
                 Form_Mode_Change("EXEC");
-                V_BT_CHG($('#BT_S_SHIP_GO'));
-            });                 
+            });          
+
+            $('#BT_S_PRE_DEL').on('click', function () {
+                Edit_Mode = "EXEC";
+                Exec_Mode = "DEL";
+                Form_Mode_Change("EXEC");
+            });      
 
             $('#BT_S_EX_IMG').on('click', function () {
                 Form_Mode_Change("IMG");
@@ -593,59 +728,52 @@
     </script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
-    <uc:uc1 ID="uc1" runat="server" /> 
     <uc2:uc2 ID="uc2" runat="server" /> 
     <uc3:uc3 ID="uc3" runat="server" /> 
     <div style="width:98%;margin:0 auto; ">
         <div class="search_section_all">
             <table class="search_section_control">
             <tr class="trstyle"> 
-                <td style="height: 5px; font-size: smaller;" colspan="8">&nbsp</td>
+                <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
             </tr>
             <tr class="trstyle">
-                <td class="tdhstyle">來源</td>
+                <td class="tdhstyle">客戶編號</td>
                 <td class="tdbstyle">
-                    <select id="Q_DATA_SOURCE" >
-                        <option selected="selected" value="recua">從點收選擇</option>
-                        <option value="suplu">從型號選擇</option>
-                    </select>
+                    <input id="Q_CUST_NO"  class="textbox_char" />
                 </td>
-                <td class="tdhstyle onlyRecua">點收批號</td>
-                <td class="tdbstyle onlyRecua">
-                    <input id="Q_CHK_BATCH_NO" class="textbox_char" />
+                <td class="tdhstyle">客戶簡稱</td>
+                <td class="tdbstyle">
+                    <input id="Q_CUST_S_NAME" class="textbox_char" />
                 </td>
-                <td class="tdhstyle onlyRecua">採購單號</td>
-                <td class="tdbstyle onlyRecua">
-                    <input id="Q_PUDU_NO"  class="textbox_char" />
+                <td class="tdhstyle">備貨日期</td>
+                <td class="tdbstyle">
+                    <input id="Q_PACK_DATE_S" type="date" class="date_S_style TB_DS" /><input id="Q_PACK_DATE_E" type="date" class="date_E_style TB_DE" />
+                    <input id="BT_Duo_Datetime_Picker" type="button" value="…" onclick="$('#Duo_Datetime_Picker_Dialog').dialog('open');" />
                 </td>
             </tr>
-            <tr class="trstyle">
-                <td class="tdhstyle">頤坊型號</td>
+             <tr class="trstyle">
+                 <td class="tdhstyle">頤坊型號</td>
                 <td class="tdbstyle">
                     <input id="Q_IVAN_TYPE"  class="textbox_char" />
                 </td>
+                <td class="tdhstyle">暫時型號</td>
+                <td class="tdbstyle">
+                    <input id="Q_TMP_TYPE"  class="textbox_char" />
+                </td>
+                
+            </tr>
+            <tr class="trstyle">
                 <td class="tdhstyle">廠商編號</td>
                 <td class="tdbstyle">
                     <input id="Q_FACT_NO"  class="textbox_char" />
                 </td>
-                <td class="tdhstyle onlyRecua">點收日期</td>
-                <td class="tdbstyle onlyRecua">
-                    <input id="Q_CHK_DATE_S" type="date" class="date_S_style TB_DS" /><input id="Q_CHK_DATE_E" type="date" class="date_E_style TB_DE" />
-                    <input id="BT_Duo_Datetime_Picker" type="button" value="…" onclick="$('#Duo_Datetime_Picker_Dialog').dialog('open');" />
-                </td>
-            </tr>      
-                <tr class="trstyle">
-                <td class="tdhstyle onlyStkio">訂單號碼</td>
-                <td class="tdbstyle onlyStkio">
-                    <input id="Q_ORDER_NO"  class="textbox_char" />
-                </td>
-                    <td class="tdhstyle">廠商簡稱</td>
+                <td class="tdhstyle">廠商簡稱</td>
                 <td class="tdbstyle">
                     <input id="Q_FACT_S_NAME" class="textbox_char" />
                 </td>
-            </tr>      
+            </tr>
             <tr class="trstyle">
-                <td class="tdtstyleRight" colspan="8">
+                <td class="tdtstyleRight" colspan="6">
                     <input type="button" id="BT_Search" class="buttonStyle" value="<%=Resources.MP.Search%>" />
                     <input type="button" id="BT_Cancel" class="buttonStyle" value="<%=Resources.MP.Cancel%>" style="display: none;" />
                 </td>
@@ -655,7 +783,8 @@
         <div class="button_change_section">
             &nbsp;
             <input type="button" id="BT_S_CHS" class="V_BT" value="選擇"  disabled="disabled" />
-            <input type="button" id="BT_S_SHIP_GO" class="V_BT" value="準備出貨" />
+            <input type="button" id="BT_S_PACK" class="V_BT" value="備貨" />
+            <input type="button" id="BT_S_PRE_DEL" class="V_BT" value="樣品準備刪除" />
             <input type="button" id="BT_S_EX_IMG" class="V_BT" value="圖型" />
         </div>
 
@@ -663,7 +792,7 @@
             <div id="Div_DT_View" style=" width:70%;height:71vh; border-style:solid;border-width:1px; float:left;">
                 <div class="dataTables_info" id="Table_Search_Data_info" role="status" aria-live="polite"></div>
                 <div style="display:none">
-                    <table id="Table_Search_Tmp" class="Table_Search table table-striped table-bordered" >
+                    <table id="Table_Search_Data_Tmp" class="Table_Search table table-striped table-bordered" >
                         <thead style="white-space:nowrap"></thead>
                         <tbody style="white-space:nowrap"></tbody>
                     </table>
@@ -706,37 +835,96 @@
                     </table>
             </div>
     
-            <div id="Div_Exec_Ship_Go_Section" class="ExecSection" style="width:28%;height:71vh; border-style:solid;border-width:1px; float:right;">
-                <table class="edit_section_control" style="width:auto">
+            <div id="Div_Exec_Section" style="width:28%;height:71vh; border-style:solid;border-width:1px; float:right;">
+                <table class="search_section_control" style="width:auto">
                     <tr> 
                         <td style="height: 2vh; font-size: smaller;" >&nbsp</td>
                     </tr>
-                    <tr class="trCenterstyle" >
-                        <td colspan="2"  id="SG_TITLE" style="font-size:20px" >準備出貨項次</td>
+                    <tr class="trCenterstyle" style="font-size:20px">
+                        <td colspan="2"  id="E_PACK_TITLE" >備貨項次:</td>
                     </tr>
                     <tr> 
                         <td style="height: 10vh; font-size: smaller;" >&nbsp</td>
                     </tr>
                     <tr class="trCenterstyle">
-                        <td class="tdhstyle" style="font-size:20px">客戶編號</td>
-                        <td class="tdbstyle">
-                            <input id="SG_CUST_NO"  class="textbox_char" disabled="disabled" />
-                            <input id="SG_BT_CUST_CHS" style="font-size:15px" type="button" value="..." />
+                        <td class="tdhstyle">Sample IV</td>
+                        <td class="tdbstyle" >
+                           <input id="E_INVOICE"  class="textbox_char" />
+                           <input id="E_INVOICE_CHK" type="button" value="..." />
                         </td>
                     </tr>
                     <tr class="trCenterstyle">
-                        <td class="tdhstyle" style="font-size:20px">客戶簡稱</td>
+                        <td class="tdhstyle">客戶編號</td>
                         <td class="tdbstyle">
-                            <input id="SG_CUST_S_NAME"  class="textbox_char" disabled="disabled" />
+                            <input id="E_CUST_NO"  class="textbox_char" disabled="disabled" />
                         </td>
+                    </tr>
+                    <tr class="trCenterstyle">
+                        <td class="tdhstyle">客戶簡稱</td>
+                        <td class="tdbstyle">
+                             <input id="E_CUST_S_NAME"  class="textbox_char" disabled="disabled" />
+                        </td>
+                    </tr>
+                    <tr class="trCenterstyle">
+                        <td class="tdhstyle">樣品號碼</td>
+                        <td class="tdbstyle" >
+                           <input id="E_SAMPLE_NO"  class="textbox_char" />
+                        </td>
+                    </tr>
+                    <tr class="trCenterstyle">
+                        <td class="tdhstyle">ATTN</td>
+                        <td class="tdbstyle" >
+                           <input id="E_ATTN"  class="textbox_char" maxlength="2" />
+                        </td>
+                    </tr>
+                    <tr class="trCenterstyle">
+                        <td class="tdhstyle">箱號</td>
+                        <td class="tdbstyle" >
+                           <input id="E_PACK_NO"  class="textbox_char" />
+                        </td>
+                    </tr>
+                    <tr class="trCenterstyle">
+                        <td class="tdhstyle">淨重</td>
+                        <td class="tdbstyle" >
+                           <input id="E_NET_WEIGHT" type="number"  class="textbox_char" />
+                        </td>
+                    </tr>
+                    <tr class="trCenterstyle">
+                        <td class="tdhstyle">毛重</td>
+                        <td class="tdbstyle" >
+                           <input id="E_WEIGHT" type="number"  class="textbox_char" />
+                        </td>
+                    </tr>
+                    <tr class="trstyle"> 
+                        <td class="tdbstyle" style="height: 10vh; font-size: smaller;" >&nbsp</td>
+                    </tr>
+                    <tr class="trCenterstyle">
+                        <td colspan="2">
+                            <input id="BT_EXECUTE" style="font-size:20px" type="button" value="執行"  />
+                            <input id="BT_EXECUTE_CANCEL" style="font-size:20px" type="button" value="返回" />
+                        </td>
+                    </tr>
+                </table>
+            </div> 
+
+            <div id="Div_PRE_DEL" style="width:28%;height:71vh; border-style:solid;border-width:1px; float:right;">
+                <table class="search_section_control">
+                    <tr> 
+                        <td style="height: 2vh; font-size: smaller;" >&nbsp</td>
+                    </tr>
+                    <tr class="trCenterstyle" style="font-size:20px">
+                        <td colspan="2"  id="D_DEL_TITLE" >樣品準備刪除</td>
+                    </tr>
+                    <tr> 
+                        <td style="height: 15vh; font-size: smaller;" >&nbsp</td>
                     </tr>
                     <tr class="trstyle"> 
                         <td class="tdbstyle" style="height: 15vh; font-size: smaller;" >&nbsp</td>
                     </tr>
                     <tr class="trCenterstyle">
                         <td colspan="2">
-                            <input id="SG_BT_EXECUTE" style="font-size:20px" type="button" value="執行"  />
-                            <input id="SG_BT_EXECUTE_CANCEL" style="font-size:20px" type="button" value="返回" />
+                            <input id="BT_DELETE" style="font-size:20px" type="button" value="刪除"  />
+                            <input id="BT_DELETE_CANCEL" style="font-size:20px" type="button" value="返回" />
                         </td>
                     </tr>
                 </table>
@@ -750,8 +938,8 @@
                     <tr class="trstyle">
                         <td class="tdEditstyle">頤坊型號</td>
                         <td class="tdbstyle">
-                            <input id="I_SUPLU_SEQ" type="hidden" class="textbox_char"  style="width:100%"/>
-                            <input id="I_IVAN_TYPE" class="textbox_char" disabled="disabled" />
+                            <input id="I_IVAN_TYPE" class="textbox_char" disabled="disabled" style="width:100%"   />
+                            <input id="I_SUPLU_SEQ" class="textbox_char" type="hidden"   />
                         </td>
                         <td class="tdEditstyle">廠商編號</td>
                         <td class="tdbstyle">
@@ -779,6 +967,7 @@
                             <span id="I_NO_IMG" >查無圖檔</span>
                         </td>
                     </tr>
+
                 </table>
             </div> 
         </div> 

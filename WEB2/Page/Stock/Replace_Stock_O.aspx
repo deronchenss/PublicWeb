@@ -9,7 +9,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
-            var apiUrl = "/Stock/Ashx/Replace_Stock_O.ashx";
+            var apiUrl = "/Page/Stock/Ashx/Replace_Stock_O.ashx";
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
 

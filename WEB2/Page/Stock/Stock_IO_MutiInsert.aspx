@@ -11,7 +11,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode;
-            var apiUrl = "/Stock/Ashx/Stock_IO_MutiInsert.ashx";
+            var apiUrl = "/Page/Stock/Ashx/Stock_IO_MutiInsert.ashx";
             //隱藏滾動卷軸
             //document.body.style.overflow = 'hidden';
 
