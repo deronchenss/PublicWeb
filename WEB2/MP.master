@@ -344,7 +344,7 @@
                                             <a href="/Page/Stock/Stock_IO_Approve.aspx"><%--庫存入出核銷--%><%=Resources.MP.Stock + Resources.MP.IO + Resources.MP.Approve%></a>
                                             <a href="/Page/Stock/Replace_Stock_O.aspx"><%--替代庫存出庫--%><%=Resources.MP.Replace + Resources.MP.Stock + Resources.MP.Stock_O%></a>
                                             <a href="/Page/Stock/Stock_LOC_UPD.aspx"><%--庫位變更--%><%=Resources.MP.Stock_Loc + Resources.MP.Change%></a>
-
+                                            <a href="/Page/Stock/Stock_IO_Rpt.aspx"><%--庫存入出報表--%><%=Resources.MP.Stock + Resources.MP.IO + Resources.MP.Report%></a>
                                             <a href="/Page/Store/Store_StockIO_Ins.aspx"><%--門市庫取申請--%><%=Resources.MP.Store + Resources.MP.Stock_Take + Resources.MP.Apply%></a>
                                             <a href="/Page/Store/Store_StockIO_Approve.aspx"><%--門市庫取核銷--%><%=Resources.MP.Store + Resources.MP.Stock_Take + Resources.MP.Write_Off%></a>
                                             <a href="/Page/Store/Store_StockIO_Shipping.aspx"><%--門市庫取出貨--%><%=Resources.MP.Store + Resources.MP.Stock_Take + Resources.MP.Shipping%></a>
