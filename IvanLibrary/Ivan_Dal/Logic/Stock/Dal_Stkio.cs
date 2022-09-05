@@ -344,24 +344,12 @@ namespace Ivan_Dal
         public IDalBase GetStickerRptData(Dictionary<string, string> dic)
         {
             string sqlStr = "";
-            sqlStr = @"SELECT Top 500 CONVERT(VARCHAR,S.更新日期,23) 更新日期
-		                              ,SU.廠商簡稱
+            sqlStr = @"SELECT Top 500 S.訂單號碼
 			                          ,SU.頤坊型號
-                                      ,SU.銷售型號
-			                          ,S.訂單號碼
-			                          ,S.單據編號
-                                      ,S.庫區
-			                          ,S.庫位
-			                          ,ISNULL(S.入庫數,0) - ISNULL(S.核銷數,0) 入庫數
+                                      ,(SELECT TOP 1 單位 FROM ORD WHERE SU.序號 = ORD.SUPLU_SEQ AND ORD.訂單號碼 = S.訂單號碼) 單位
 			                          ,ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) 出庫數
-			                          ,S.備註
-			                          ,S.帳項
-			                          ,S.客戶編號
-			                          ,S.客戶簡稱
-			                          ,S.更新人員
-			                          ,S.序號
-			                          ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = S.SUPLU_SEQ) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
-			                          ,S.SUPLU_SEQ
+                                      ,(SELECT TOP 1 客戶型號 FROM ORD WHERE SU.序號 = ORD.SUPLU_SEQ AND ORD.訂單號碼 = S.訂單號碼) 客戶型號
+                                      ,SU.頤坊型號 列印頤坊型號
                         FROM {0} S
                         JOIN suplu SU ON S.SUPLU_SEQ = SU.序號
                         WHERE ISNULL(S.已刪除,0) != 1
@@ -372,11 +360,14 @@ namespace Ivan_Dal
             //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
             foreach (string form in dic.Keys)
             {
-                if (!string.IsNullOrEmpty(dic[form]) && form != "RPT_TYPE" && !form.Contains("排序方式"))
+                if (!string.IsNullOrEmpty(dic[form]) && form != "RPT_TYPE" && form != "SORT")
                 {
                     string debug = dic[form];
                     switch (form)
                     {
+                        case "UPD_USER":
+                            this.SetParameters(form, dic[form]);
+                            break;
                         case "備註":
                             sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE '%' + @" + form + " + '%' ";
                             this.SetParameters(form, dic[form]);
@@ -402,7 +393,7 @@ namespace Ivan_Dal
                         case "DATA_SOURCE":
                             if ("0".Equals(dic[form]))
                             {
-                                sqlStr = string.Format(sqlStr, "stkio", " AND ISNULL(S.已結案,0) != 1 AND ISNULL(S.已刪除,0) != 1 ");
+                                sqlStr = string.Format(sqlStr, "stkio", " AND ISNULL(S.已結案,0) != 1 ");
 
                             }
                             else if ("1".Equals(dic[form]))
@@ -418,7 +409,25 @@ namespace Ivan_Dal
                 }
             }
 
-            sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
+            switch (dic["SORT"])
+            {
+                case "大貨庫位":
+                    sqlStr += " ORDER BY S.庫位, S.頤坊型號, S.訂單號碼 ";
+                    break;
+                case "快取庫位":
+                    sqlStr += " ORDER BY S.庫位, S.頤坊型號, S.訂單號碼 ";
+                    break;
+                case "訂單號碼":
+                    sqlStr += " ORDER BY S.訂單號碼, S.頤坊型號, S.庫位 ";
+                    break;
+                case "銷售型號":
+                    sqlStr += " ORDER BY S.訂單號碼, S.客戶型號, S.庫位 ";
+                    break;
+                default:
+                    sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
+                    break;
+            }
+
             this.SetSqlText(sqlStr);
             return this;
         }

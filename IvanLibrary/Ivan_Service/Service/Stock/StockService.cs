@@ -29,7 +29,7 @@ namespace Ivan_Service
         {
             DataTable dt = new DataTable();
             //貼紙
-            if (dic.ContainsKey("RPT_TYPE") && "STICKER".Equals(dic["RPT_TYPE"]))
+            if (dic.ContainsKey("RPT_TYPE") && "外包裝貼紙".Equals(dic["RPT_TYPE"]))
             {
                 dt = this.GetDataTable(dalStk.GetStickerRptData(dic));
             }

@@ -156,7 +156,7 @@
                     }
                     else if ($(this).attr('type') == 'radio') {
                         //radio 只有一個check
-                        if (!($(this).attr('DT_Query_Name') in dataReq)) {
+                        if (!($(this).attr('DT_Query_Name') in dataReq) || dataReq[$(this).attr('DT_Query_Name')] == '') {
                             dataReq[$(this).attr('DT_Query_Name')] = ($(this).is(':checked') ? $.trim($(this).val()) : '');
                         }
                     }
