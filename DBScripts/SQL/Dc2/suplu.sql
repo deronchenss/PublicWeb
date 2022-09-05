@@ -88,6 +88,7 @@ SELECT
 	c.[自有條碼], c.[自有標籤], c.[寄送袋子], c.[寄送吊卡], c.[自備袋子], c.[自備吊卡], c.[特殊包裝], 
 	c.[條碼印價], c.[CP65], c.[年齡], 
 	d.[英文說明] [條碼英文一], d.[英文說明二] [條碼英文二], 
+	------20220902----Will Update?
 	c.[英文ISP], c.[中文ITW], c.[英文單位], e.[產品分類], e.[台幣單價_1], e.[台幣單價_2], e.[台幣單價_3],
 	e.[皮革材數], e.[皮革單價], d.[參考號碼],
 	d.[MSRP啟用], d.[MSRP到期], d.[MSRP], d.[MSRPV2], d.[MSRP_2021], d.[MSRP_2022], d.[MSRP_ITW_手動], a.[設計人員], a.[設計圖號], a.[圖型啟用],
@@ -95,9 +96,10 @@ SELECT
 FROM Bc2.dbo.suplu2 a
 	INNER JOIN Bc2.dbo.suplu3 b ON a.[廠商編號] = b.[廠商編號] AND a.[頤坊型號] = b.[頤坊型號]
 	INNER JOIN Bc2.dbo.suplu4 c ON a.[廠商編號] = c.[廠商編號] AND a.[頤坊型號] = c.[頤坊型號]
-	LEFT JOIN Bc2.dbo.suplu_ean d ON a.[廠商編號] = d.[廠商編號] AND a.[頤坊型號] = d.[頤坊型號] AND ISNULL(已刪除,0) <> '1'
-	LEFT JOIN Bc2.dbo.byrlu_RT e ON a.[廠商編號] = e.[廠商編號] AND a.[頤坊型號]= e.[頤坊型號] AND (e.[停用日期] <= GETDATE() OR e.[停用日期] IS NULL)
+	LEFT JOIN Bc2.dbo.suplu_ean d ON a.[廠商編號] = d.[廠商編號] AND a.[頤坊型號] = d.[頤坊型號] AND d.[已刪除] <> '1'
+	LEFT JOIN Bc2.dbo.byrlu_RT e ON a.[廠商編號] = e.[廠商編號] AND a.[頤坊型號]= e.[頤坊型號] AND (e.[停用日期] <= GETDATE() OR e.[停用日期] IS NULL) AND e.[已刪除] <> '1'
 	LEFT JOIN Bc2..Spec f ON a.[廠商編號] = f.[廠商編號] AND a.[頤坊型號] = f.[頤坊型號]
+	--WHERE SUPLU3..已刪除?
 GO
 USE Dc2;	
 GO

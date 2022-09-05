@@ -10,7 +10,7 @@
             autoOpen: false,
             modal: true,
             title: "<%=Resources.MP.Search_Confition%>",
-            width: screen.width * 0.3,
+            width: "50vw",
             overlay: 0.5,
             position: { my: "center", at: "top" },
             focus: true,

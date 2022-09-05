@@ -364,3 +364,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /WEB2/Page/Base/Test.aspx
+/WEB2/Page/Base/TB.ashx

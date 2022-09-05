@@ -156,7 +156,7 @@
                                             <a href="#" IVM_P="16" class="nav-link">條碼作業(x)</a>
                                             <ul class="dropdown">
                                                 <li>
-                                                    <a href="#" IVM_P="">條碼列印</a>
+                                                    <a href="/Page/Base/Barcode/Barcode_Print.aspx" IVM_P="">條碼列印</a>
                                                     <a href="#" IVM_P="">內銷條碼列印</a>
                                                     <a href="#" IVM_P="">條碼列印明細維護</a>
                                                     <a href="#" IVM_P="">條碼列印基本資料維護</a>

@@ -6,7 +6,7 @@
             autoOpen: false,
             modal: true,
             title: "<%=Resources.MP.Customer%><%=Resources.MP.Speace%><%=Resources.MP.Select%>",
-            width: screen.width * 0.8,
+            width: "80vw",
             overlay: 0.5,
             position: { my: "center", at: "top" },
             focus: true,

@@ -15,7 +15,7 @@
             },
             modal: true,
             title: "Product ALL",
-            width: screen.width * 0.8,
+            width: "80vw",
             height: screen.height * 0.8,
             overlay: 0.5,
             position: { my: "center", at: "top" },
