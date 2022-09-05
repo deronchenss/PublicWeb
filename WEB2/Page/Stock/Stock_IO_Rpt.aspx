@@ -184,7 +184,8 @@
                             alert('<%=Resources.MP.Data_Not_Exists_Alert%>');
                             Edit_Mode = "Base";
                             Form_Mode_Change("Base");
-                            $('#Table_EXEC_Data').DataTable().clear().draw();
+                            $('#Table_Search_Data_Tmp').empty();
+                            $('#Table_EXEC_Data').empty();
                         }
                         else {
                             var columns = [];

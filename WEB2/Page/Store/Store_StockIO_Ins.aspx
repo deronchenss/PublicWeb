@@ -284,7 +284,10 @@
                             alert('<%=Resources.MP.Data_Not_Exists_Alert%>');
                             Edit_Mode = "Base";
                             Form_Mode_Change("Base");
-                            $('#Table_Search_Data').DataTable().clear().draw();
+                            $('#Table_Search_Data_Tmp').empty();
+                            $('#Table_Search_Data').empty();
+                            $('#Table_CHS_Data').empty();
+                            $('#Table_EXEC_Data').empty();
                         }
                         else {
                             var columns = [];

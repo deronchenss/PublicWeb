@@ -142,17 +142,25 @@ namespace Ivan_Dal
                         JOIN suplu SU ON S.SUPLU_SEQ = SU.序號
                         WHERE ISNULL(S.已刪除,0) != 1
                         {1}
-                        AND (ISNULL(S.入庫數,0) + ISNUll(S.出庫數,0)) != 0
                          ";
 
             //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
             foreach (string form in dic.Keys)
             {
-                if (!string.IsNullOrEmpty(dic[form]) && form != "RPT_TYPE" && form != "SORT")
+                if (!string.IsNullOrEmpty(dic[form]) && form != "SORT")
                 {
-                    string debug = dic[form];
                     switch (form)
                     {
+                        case "RPT_TYPE":
+                            if(dic[form].Equals("外包裝貼紙"))
+                            {
+                                sqlStr += " AND ISNUll(S.出庫數,0) != 0";
+                            }
+                            else
+                            {
+                                sqlStr += " AND (ISNULL(S.入庫數,0) + ISNUll(S.出庫數,0)) != 0";
+                            }
+                            break;
                         case "UPD_USER":
                             break;
                         case "備註":
@@ -354,7 +362,7 @@ namespace Ivan_Dal
                         JOIN suplu SU ON S.SUPLU_SEQ = SU.序號
                         WHERE ISNULL(S.已刪除,0) != 1
                         {1}
-                        AND (ISNULL(S.入庫數,0) + ISNUll(S.出庫數,0)) != 0
+                        AND ISNUll(S.出庫數,0) != 0
                          ";
 
             //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 

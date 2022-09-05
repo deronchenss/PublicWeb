@@ -173,6 +173,7 @@
                             alert('<%=Resources.MP.Data_Not_Exists_Alert%>');
                             Edit_Mode = "Base";
                             Form_Mode_Change("Base");
+                            $('#Table_Search_Data').empty();
                         }
                         else {
                             var columns = [];
