@@ -113,6 +113,317 @@ namespace Ivan_Dal
         }
 
         /// <summary>
+        /// 庫存入出報表 查詢 Return DataTable
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public IDalBase SearchTableForRpt(Dictionary<string, string> dic)
+        {
+            string sqlStr = "";
+            sqlStr = @"SELECT Top 500 CONVERT(VARCHAR,S.更新日期,23) 更新日期
+		                              ,SU.廠商簡稱
+			                          ,SU.頤坊型號
+                                      ,SU.銷售型號
+			                          ,S.訂單號碼
+			                          ,S.單據編號
+                                      ,S.庫區
+			                          ,S.庫位
+			                          ,ISNULL(S.入庫數,0) - ISNULL(S.核銷數,0) 入庫數
+			                          ,ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) 出庫數
+			                          ,S.備註
+			                          ,S.帳項
+			                          ,S.客戶編號
+			                          ,S.客戶簡稱
+			                          ,S.更新人員
+			                          ,S.序號
+			                          ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = S.SUPLU_SEQ) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
+			                          ,S.SUPLU_SEQ
+                        FROM {0} S
+                        JOIN suplu SU ON S.SUPLU_SEQ = SU.序號
+                        WHERE ISNULL(S.已刪除,0) != 1
+                        {1}
+                        AND (ISNULL(S.入庫數,0) + ISNUll(S.出庫數,0)) != 0
+                         ";
+
+            //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
+            foreach (string form in dic.Keys)
+            {
+                if (!string.IsNullOrEmpty(dic[form]) && form != "RPT_TYPE" && form != "SORT")
+                {
+                    string debug = dic[form];
+                    switch (form)
+                    {
+                        case "UPD_USER":
+                            break;
+                        case "備註":
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE '%' + @" + form + " + '%' ";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "更新日期_S":
+                            sqlStr += " AND CONVERT(DATE,S.[更新日期]) >= @更新日期_S";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "更新日期_E":
+                            sqlStr += " AND CONVERT(DATE,S.[更新日期]) <= @更新日期_E";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "入出庫":
+                            if ("入庫".Equals(dic[form]))
+                            {
+                                sqlStr += " AND ISNULL(S.入庫數,0) - ISNULL(S.核銷數,0) <> 0";
+                            }
+                            else if ("出庫".Equals(dic[form]))
+                            {
+                                sqlStr += " AND ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) <> 0";
+                            }
+                            break;
+                        case "DATA_SOURCE":
+                            if ("0".Equals(dic[form]))
+                            {
+                                sqlStr = string.Format(sqlStr, "stkio", " AND ISNULL(S.已結案,0) != 1 ");
+
+                            }
+                            else if ("1".Equals(dic[form]))
+                            {
+                                sqlStr = string.Format(sqlStr, "stkioh", "");
+                            }
+                            break;
+                        default:
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE @" + form + " + '%'";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                    }
+                }
+            }
+
+            sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
+            this.SetSqlText(sqlStr);
+            return this;
+        }
+
+        /// <summary>
+        /// 庫存入出報表  待入出庫輸入核對表-圖
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public IDalBase GetImgRptData(Dictionary<string, string> dic)
+        {
+            string sqlStr = "";
+            sqlStr = @"SELECT Top 500 CONVERT(VARCHAR,S.更新日期,23) 異動日期
+		                              ,SU.廠商簡稱
+			                          ,SU.頤坊型號
+                                      ,SU.單位
+                                      ,S.庫區
+			                          ,ISNULL(S.入庫數,0) - ISNULL(S.核銷數,0) 入庫數
+			                          ,ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) 出庫數
+			                          ,S.客戶編號
+			                          ,S.客戶簡稱
+			                          ,S.備註
+                                      ,SU.產品說明
+                                      ,CASE WHEN S.庫區 = '大貨' THEN SU.快取庫位
+                                            ELSE ''
+                                            END 快取庫位
+                                      ,CASE WHEN S.庫區 = '大貨' AND ISNULL(S.庫位,'') = '' THEN SU.大貨庫位
+                                            WHEN S.庫區 = '大貨' AND ISNULL(S.庫位,'') != '' THEN S.庫位
+                                            WHEN S.庫區 = '樣品' THEN SU.樣品庫位
+                                            WHEN S.庫區 = '內湖' THEN SU.內湖庫位
+                                            WHEN S.庫區 = '留底' THEN SU.留底庫位
+                                            WHEN S.庫區 = '展示' THEN SU.展示庫位
+                                            WHEN S.庫區 = '台北' THEN SU.台北庫位
+                                            WHEN S.庫區 = '台中' THEN SU.台中庫位
+                                            WHEN S.庫區 = '高雄' THEN SU.高雄庫位
+                                            WHEN S.庫區 = '展場' THEN SU.展場庫位
+                                            ELSE '???'
+                                            END 列印庫位
+                                      ,CASE WHEN S.庫區 = '大貨' THEN ISNULL(SU.大貨庫存數,0)
+                                            WHEN S.庫區 = '樣品' THEN ISNULL(SU.樣品庫存數,0)
+                                            WHEN S.庫區 = '內湖' THEN ISNULL(SU.內湖庫存數,0)
+                                            WHEN S.庫區 = '留底' THEN ISNULL(SU.留底庫存數,0)
+                                            WHEN S.庫區 = '展示' THEN ISNULL(SU.展示庫存數,0)
+                                            WHEN S.庫區 = '台北' THEN ISNULL(SU.台北庫存數,0)
+                                            WHEN S.庫區 = '台中' THEN ISNULL(SU.台中庫存數,0)
+                                            WHEN S.庫區 = '高雄' THEN ISNULL(SU.高雄庫存數,0)
+                                            WHEN S.庫區 = '展場' THEN ISNULL(SU.展場庫存數,0)
+                                            ELSE 0
+                                            END 目前庫存
+                                      ,@UPD_USER 使用者代碼
+                                      ,SU.備註給倉庫 
+                                      ,'建檔日期 : ' + @更新日期_S + ' - ' +  @更新日期_E 列印條件
+                                      ,(SELECT TOP 1 客戶型號 FROM BYRLU WHERE SU.序號 = BYRLU.SUPLU_SEQ) 客戶型號
+                                      ,CASE WHEN S.客戶編號 = '1505A' THEN (SELECT TOP 1 寄送袋子 FROM BARCODE WHERE 頤坊型號 = SU.頤坊型號 AND 客戶編號 = '1505A')
+                                            ELSE SU.寄送袋子 END 寄送袋子
+                                      ,CASE WHEN S.客戶編號 = '1505A' THEN (SELECT TOP 1 寄送吊卡 FROM BARCODE WHERE 頤坊型號 = SU.頤坊型號 AND 客戶編號 = '1505A')
+                                            ELSE SU.寄送吊卡 END 寄送吊卡
+			                          ,(SELECT TOP 1 國名 FROM SUP WHERE 廠商編號 = SU.廠商編號) 列印產地
+			                          ,S.訂單號碼 + ' ' + S.庫區 群組一 
+                                      ,CASE WHEN S.訂單號碼 LIKE 'WS-%' THEN '網購客戶 : ' + (SELECT TOP 1 寄送袋子 FROM orm_rt WHERE 訂單號碼 = S.訂單號碼)
+                                            ELSE '單據編號 : ' + S.單據編號 END 抬頭一
+                                      ,(SELECT TOP 1 X.[圖檔] FROM [192.168.1.135].Pic.dbo.xpic X WHERE X.SUPLU_SEQ = SU.序號) 圖檔
+                                      ,'Y' 列印圖檔區段
+                        FROM {0} S
+                        JOIN suplu SU ON S.SUPLU_SEQ = SU.序號
+                        WHERE ISNULL(S.已刪除,0) != 1
+                        {1}
+                        AND (ISNULL(S.入庫數,0) + ISNUll(S.出庫數,0)) != 0
+                         ";
+
+            //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
+            foreach (string form in dic.Keys)
+            {
+                if (!string.IsNullOrEmpty(dic[form]) && form != "RPT_TYPE" && form != "SORT")
+                {
+                    string debug = dic[form];
+                    switch (form)
+                    {
+                        case "UPD_USER":
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "備註":
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE '%' + @" + form + " + '%' ";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "更新日期_S":
+                            sqlStr += " AND CONVERT(DATE,S.[更新日期]) >= @更新日期_S";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "更新日期_E":
+                            sqlStr += " AND CONVERT(DATE,S.[更新日期]) <= @更新日期_E";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "入出庫":
+                            if ("入庫".Equals(dic[form]))
+                            {
+                                sqlStr += " AND ISNULL(S.入庫數,0) - ISNULL(S.核銷數,0) <> 0";
+                            }
+                            else if ("出庫".Equals(dic[form]))
+                            {
+                                sqlStr += " AND ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) <> 0";
+                            }
+                            break;
+                        case "DATA_SOURCE":
+                            if ("0".Equals(dic[form]))
+                            {
+                                sqlStr = string.Format(sqlStr, "stkio", " AND ISNULL(S.已結案,0) != 1 ");
+
+                            }
+                            else if ("1".Equals(dic[form]))
+                            {
+                                sqlStr = string.Format(sqlStr, "stkioh", "");
+                            }
+                            break;
+                        default:
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE @" + form + " + '%'";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                    }
+                }
+            }
+
+            switch (dic["SORT"])
+            {
+                case "訂單號碼":
+                    sqlStr += " ORDER BY S.訂單號碼, S.頤坊型號 ";
+                    break;
+                case "庫位":
+                    sqlStr += " ORDER BY S.庫位, S.廠商編號, S.頤坊型號, S.訂單號碼 ";
+                    break;
+                default:
+                    sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
+                    break;
+            }
+
+            this.SetSqlText(sqlStr);
+            return this;
+        }
+
+        /// <summary>
+        /// 庫存入出報表 貼紙
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public IDalBase GetStickerRptData(Dictionary<string, string> dic)
+        {
+            string sqlStr = "";
+            sqlStr = @"SELECT Top 500 CONVERT(VARCHAR,S.更新日期,23) 更新日期
+		                              ,SU.廠商簡稱
+			                          ,SU.頤坊型號
+                                      ,SU.銷售型號
+			                          ,S.訂單號碼
+			                          ,S.單據編號
+                                      ,S.庫區
+			                          ,S.庫位
+			                          ,ISNULL(S.入庫數,0) - ISNULL(S.核銷數,0) 入庫數
+			                          ,ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) 出庫數
+			                          ,S.備註
+			                          ,S.帳項
+			                          ,S.客戶編號
+			                          ,S.客戶簡稱
+			                          ,S.更新人員
+			                          ,S.序號
+			                          ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = S.SUPLU_SEQ) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
+			                          ,S.SUPLU_SEQ
+                        FROM {0} S
+                        JOIN suplu SU ON S.SUPLU_SEQ = SU.序號
+                        WHERE ISNULL(S.已刪除,0) != 1
+                        {1}
+                        AND (ISNULL(S.入庫數,0) + ISNUll(S.出庫數,0)) != 0
+                         ";
+
+            //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
+            foreach (string form in dic.Keys)
+            {
+                if (!string.IsNullOrEmpty(dic[form]) && form != "RPT_TYPE" && !form.Contains("排序方式"))
+                {
+                    string debug = dic[form];
+                    switch (form)
+                    {
+                        case "備註":
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE '%' + @" + form + " + '%' ";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "更新日期_S":
+                            sqlStr += " AND CONVERT(DATE,S.[更新日期]) >= @更新日期_S";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "更新日期_E":
+                            sqlStr += " AND CONVERT(DATE,S.[更新日期]) <= @更新日期_E";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "入出庫":
+                            if ("入庫".Equals(dic[form]))
+                            {
+                                sqlStr += " AND ISNULL(S.入庫數,0) - ISNULL(S.核銷數,0) <> 0";
+                            }
+                            else if ("出庫".Equals(dic[form]))
+                            {
+                                sqlStr += " AND ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) <> 0";
+                            }
+                            break;
+                        case "DATA_SOURCE":
+                            if ("0".Equals(dic[form]))
+                            {
+                                sqlStr = string.Format(sqlStr, "stkio", " AND ISNULL(S.已結案,0) != 1 AND ISNULL(S.已刪除,0) != 1 ");
+
+                            }
+                            else if ("1".Equals(dic[form]))
+                            {
+                                sqlStr = string.Format(sqlStr, "stkioh", "");
+                            }
+                            break;
+                        default:
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE @" + form + " + '%'";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                    }
+                }
+            }
+
+            sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
+            this.SetSqlText(sqlStr);
+            return this;
+        }
+
+        /// <summary>
         /// 庫存入出維護 查詢 Return DataTable
         /// </summary>
         /// <param name="context"></param>

@@ -10,6 +10,36 @@ namespace Ivan_Service
     {
         Dal_Suplu dalSup = new Dal_Suplu();
         Dal_Stkio dalStk = new Dal_Stkio();
+        Dal_Stkioh dalStkH = new Dal_Stkioh();
+
+        /// <summary>
+        /// 庫存待入出報表 查詢
+        /// </summary>
+        /// <returns></returns>
+        public DataTable StockIORptSearch(Dictionary<string, string> dic)
+        {
+            return this.GetDataTable(dalStk.SearchTableForRpt(dic));
+        }
+
+        /// <summary>
+        /// 庫存待入出報表 列印
+        /// </summary>
+        /// <returns></returns>
+        public DataTable StockIORptPrint(Dictionary<string, string> dic)
+        {
+            DataTable dt = new DataTable();
+            //貼紙
+            if (dic.ContainsKey("RPT_TYPE") && "STICKER".Equals(dic["RPT_TYPE"]))
+            {
+                dt = this.GetDataTable(dalStk.GetStickerRptData(dic));
+            }
+            //預設 待入出庫輸入核對表-圖
+            else
+            {
+                dt = this.GetDataTable(dalStk.GetImgRptData(dic));
+            }
+            return dt;
+        }
 
         /// <summary>
         /// 替代庫存 查詢

@@ -18,7 +18,7 @@ namespace Ivan_Dal
 			                          ,S.pm_no
 			                          ,S.訂單號碼
 			                          ,S.頤坊型號
-			                          ,SU.銷售型號
+			                          ,ISNULL(SU.銷售型號,'') 銷售型號
 			                          ,S.單位
 			                          ,S.出貨數
 			                          ,S.備註
