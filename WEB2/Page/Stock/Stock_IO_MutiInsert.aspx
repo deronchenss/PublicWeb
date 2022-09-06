@@ -516,6 +516,7 @@
                         object['CUST_NO'] = $('#E_CUST_NO').val();
                         object['CUST_S_NAME'] = $('#E_CUST_S_NAME').val();
                         object['REMARK'] = $('#E_REMARK').val();
+                        object['UPD_USER'] = "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>";
                         execData.push(object);
                     })
                     if (err) {

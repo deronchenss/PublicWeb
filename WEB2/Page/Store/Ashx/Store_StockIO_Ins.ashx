@@ -29,7 +29,7 @@ public class Store_StockIO_Ins : IHttpHandler, IRequiresSessionState
                         break;
                     case "EXEC":
                         List<StkioFromSuplu> liEntity = JsonConvert.DeserializeObject<List<StkioFromSuplu>>(context.Request["EXEC_DATA"]);
-                        result = service.StoreStockInsExec(liEntity, context.Session["Account"]);
+                        result = service.StoreStockInsExec(liEntity);
                         break;
                 }
 

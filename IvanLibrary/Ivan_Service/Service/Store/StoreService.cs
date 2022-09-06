@@ -27,13 +27,13 @@ namespace Ivan_Service
         /// 門市庫取申請 執行
         /// </summary>
         /// <returns></returns>
-        public string StoreStockInsExec(List<StkioFromSuplu> liEntity, object user)
+        public string StoreStockInsExec(List<StkioFromSuplu> liEntity)
         {
             int res = 0;
             _dataOperator.SetTran();
             foreach (StkioFromSuplu entity in liEntity)
             {
-                res += this.Execute(dalStk.InsertStkioFromSuplu(entity, user));
+                res += this.Execute(dalStk.InsertStkioFromSuplu(entity));
             }
             _dataOperator.TranCommit();
             return Convert.ToString(res);
@@ -156,6 +156,47 @@ namespace Ivan_Service
         public DataTable StockPMSearch(Dictionary<string, string> dic)
         {
             return this.GetDataTable(dalStkSale.SearchPMTable(dic));
+        }
+
+        /// <summary>
+        /// 門市調撥申請 查詢
+        /// </summary>
+        /// <returns></returns>
+        public DataTable StoreTransferSearch(Dictionary<string, string> dic)
+        {
+            return this.GetDataTable(dalSup.SearchTableForStoreTransfer(dic));
+        }
+
+        /// <summary>
+        /// 門市調撥申請 執行
+        /// </summary>
+        /// <returns></returns>
+        public string StoreTransferExec(List<StkioFromSuplu> liEntity)
+        {
+            int res = 0;
+            _dataOperator.SetTran();
+            foreach (StkioFromSuplu entity in liEntity)
+            {
+                res += this.Execute(dalStk.InsertStkioFromSuplu(entity));
+            }
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
+        }
+
+        /// <summary>
+        /// 門市調撥申請 取消申請
+        /// </summary>
+        /// <returns></returns>
+        public string StoreTransferCancel(List<Stkio> liStkio)
+        {
+            int res = 0;
+            _dataOperator.SetTran();
+            foreach (Stkio stkio in liStkio)
+            {
+                res = this.Execute(dalStk.DeleteStkio(stkio));
+            }
+            _dataOperator.TranCommit();
+            return Convert.ToString(res);
         }
     }
 }

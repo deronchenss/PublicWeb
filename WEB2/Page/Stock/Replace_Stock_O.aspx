@@ -290,6 +290,7 @@
                     objectO['CUST_NO'] = '';
                     objectO['CUST_S_NAME'] = '';
                     objectO['REMARK'] = $('#E_REMARK').val();
+                    objectO['UPD_USER'] = "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>";
                     execData.push(objectO);
 
                     //待入庫
@@ -305,6 +306,7 @@
                     objectI['CUST_NO'] = '';
                     objectI['CUST_S_NAME'] = '';
                     objectI['REMARK'] = $('#E_REMARK').val();
+                    objectI['UPD_USER'] = "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>";
                     execData.push(objectI);
 
                     var dataReq = {};

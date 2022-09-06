@@ -54,13 +54,13 @@ namespace Ivan_Service
         /// 替代庫存 執行
         /// </summary>
         /// <returns></returns>
-        public string ReplaceStockOExec(List<StkioFromSuplu> liEntity, object user)
+        public string ReplaceStockOExec(List<StkioFromSuplu> liEntity)
         {
             int res = 0;
             _dataOperator.SetTran();
             foreach (StkioFromSuplu entity in liEntity)
             {
-                res += this.Execute(dalStk.InsertStkioFromSuplu(entity, user));
+                res += this.Execute(dalStk.InsertStkioFromSuplu(entity));
             }
             _dataOperator.TranCommit();
             return Convert.ToString(res);
@@ -132,7 +132,7 @@ namespace Ivan_Service
         public string StockIOMTDelete(Dictionary<string, string> dic)
         {
             _dataOperator.SetTran();
-            int res = this.Execute(dalStk.DeleteStkio(dic));
+            int res = this.Execute(dalStk.DeleteStkioSingle(dic));
             _dataOperator.TranCommit();
             return Convert.ToString(res);
         }
@@ -150,13 +150,13 @@ namespace Ivan_Service
         /// 庫存入出多筆新增 新增
         /// </summary>
         /// <returns></returns>
-        public string StockIOMMIInsert(List<StkioFromSuplu> liEntity, object user)
+        public string StockIOMMIInsert(List<StkioFromSuplu> liEntity)
         {
             int res = 0;
             _dataOperator.SetTran();
             foreach (StkioFromSuplu entity in liEntity)
             {
-                res += this.Execute(dalStk.InsertStkioFromSuplu(entity, user));
+                res += this.Execute(dalStk.InsertStkioFromSuplu(entity));
             }
             _dataOperator.TranCommit();
             return Convert.ToString(res);

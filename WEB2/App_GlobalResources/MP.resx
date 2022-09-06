@@ -963,4 +963,7 @@
   <data name="Shipping" xml:space="preserve">
     <value>出貨</value>
   </data>
+  <data name="Transfer" xml:space="preserve">
+    <value>調撥</value>
+  </data>
 </root>

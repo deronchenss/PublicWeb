@@ -29,7 +29,7 @@ public class Replace_Stock_O : IHttpHandler, IRequiresSessionState
                         break;
                     case "EXEC":
                         List<StkioFromSuplu> entity = JsonConvert.DeserializeObject<List<StkioFromSuplu>>(context.Request["EXEC_DATA"]);
-                        result = service.ReplaceStockOExec(entity, context.Session["Account"]);
+                        result = service.ReplaceStockOExec(entity);
                         break;
                 }
 

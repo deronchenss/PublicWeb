@@ -301,6 +301,7 @@
                 var obj = JSON.parse($('#E_QUERY_CONDITION').val());
                 obj['Call_Type'] = 'RPT';
 
+                $("body").loading(); // 遮罩開始
                 $.ajax({
                     url: apiUrl,
                     data: obj,

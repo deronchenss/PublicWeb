@@ -1,20 +1,22 @@
-﻿<%@ WebHandler Language="C#" Class="Stock_IO_MutiInsert" %>
+﻿<%@ WebHandler Language="C#" Class="Store_Transfer_Apply" %>
 
 using System.Collections.Generic;
 using System.Web;
 using System.Web.SessionState;
 using System.Data.SqlClient;
 using System.Data;
+using System.Configuration;
+using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using Ivan_Service;
 using Ivan_Models;
 using Ivan_Log;
 
-public class Stock_IO_MutiInsert : IHttpHandler, IRequiresSessionState
+public class Store_Transfer_Apply : IHttpHandler, IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
     {
-        StockService service = new StockService();
+        StoreService service = new StoreService();
         string result = "";
         if (!string.IsNullOrEmpty(context.Request["Call_Type"]))
         {
@@ -23,11 +25,15 @@ public class Stock_IO_MutiInsert : IHttpHandler, IRequiresSessionState
                 switch (context.Request["Call_Type"])
                 {
                     case "SEARCH":
-                        result = JsonConvert.SerializeObject(ContextFN.ContextToDictionary(context));
+                        result = JsonConvert.SerializeObject(service.StoreTransferSearch(ContextFN.ContextToDictionary(context)));
                         break;
-                    case "MUTI_INSERT":
-                        List<StkioFromSuplu> entity = JsonConvert.DeserializeObject<List<StkioFromSuplu>>(context.Request["EXEC_DATA"]);
-                        result = service.StockIOMMIInsert(entity);
+                    case "EXEC":
+                        List<StkioFromSuplu> liStkio = JsonConvert.DeserializeObject<List<StkioFromSuplu>>(context.Request["EXEC_DATA"]);
+                        result = service.StoreTransferExec(liStkio);
+                        break;
+                    case "CANCEL":
+                        List<Stkio> liEntity = JsonConvert.DeserializeObject<List<Stkio>>(context.Request["EXEC_DATA"]);
+                        result = service.StoreTransferCancel(liEntity);
                         break;
                 }
 
@@ -53,6 +59,4 @@ public class Stock_IO_MutiInsert : IHttpHandler, IRequiresSessionState
         }
     }
 }
-
-
 

@@ -363,6 +363,7 @@ namespace Ivan_Dal
                         WHERE ISNULL(S.已刪除,0) != 1
                         {1}
                         AND ISNUll(S.出庫數,0) != 0
+                        AND S.庫區 != '準備' --舊邏輯 新架構沒有準備 直接寫入庫區
                          ";
 
             //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
@@ -429,7 +430,7 @@ namespace Ivan_Dal
                     sqlStr += " ORDER BY S.訂單號碼, S.頤坊型號, S.庫位 ";
                     break;
                 case "銷售型號":
-                    sqlStr += " ORDER BY S.訂單號碼, S.客戶型號, S.庫位 ";
+                    sqlStr += " ORDER BY S.訂單號碼, 客戶型號, S.庫位 ";
                     break;
                 default:
                     sqlStr += " ORDER BY S.頤坊型號, S.廠商編號 ";
@@ -866,7 +867,7 @@ namespace Ivan_Dal
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public IDalBase InsertStkioFromSuplu(StkioFromSuplu entity, object account)
+        public IDalBase InsertStkioFromSuplu(StkioFromSuplu entity)
         {
             CleanParameters();
             string sqlStr = @"   INSERT INTO [dbo].[stkio]
@@ -957,7 +958,6 @@ namespace Ivan_Dal
                     SetParameters($"@{property.Name}", property.GetValue(entity));
                 }
             }
-            this.SetParameters("UPD_USER", account ?? "IVAN10");
             this.SetSqlText(sqlStr);
             return this;
         }
@@ -1244,10 +1244,10 @@ namespace Ivan_Dal
 
         #region 刪除區域
         /// <summary>
-        /// 刪除RECU 單筆
+        /// 刪除 單筆
         /// </summary>
         /// <returns></returns>
-        public IDalBase DeleteStkio(Dictionary<string, string> dic)
+        public IDalBase DeleteStkioSingle(Dictionary<string, string> dic)
         {
             string sqlStr = @"      UPDATE stkio
                                     SET 已刪除 = 1
@@ -1258,6 +1258,48 @@ namespace Ivan_Dal
 
             this.SetParameters("SEQ", dic["SEQ"]);
             this.SetParameters("UPD_USER", dic["UPD_USER"]);
+
+            this.SetSqlText(sqlStr);
+            return this;
+        }
+
+        /// <summary>
+        /// 刪除 stkio by 條件
+        /// </summary>
+        /// <returns></returns>
+        public IDalBase DeleteStkio(Stkio stkio)
+        {
+            string sqlStr = @"      UPDATE stkio
+                                    SET 已刪除 = 1
+                                       ,更新日期 = GETDATE()
+									   ,更新人員 = @更新人員
+                                    WHERE ISNULL(已刪除,0)=0
+                                    AND ISNULL(已結案,0)=0 --結案不能刪
+                                     ";
+
+            foreach (var property in stkio.GetType().GetProperties())
+            {
+                if (property.GetValue(stkio, null) != null)
+                {
+                    switch (property.Name)
+                    {
+                        case "序號":
+                            //0為沒有傳入
+                            if(!0.Equals(property.GetValue(stkio)))
+                            {
+                                this.SetParameters(property.Name, property.GetValue(stkio));
+                            }
+                            break;
+                        case "更新人員":
+                            this.SetParameters(property.Name, property.GetValue(stkio));
+                            break;
+                        default:
+                            sqlStr += " AND " + property.Name + " = @" + property.Name;
+                            this.SetParameters(property.Name, property.GetValue(stkio));
+                            break;
+                    }
+                }
+            }
 
             this.SetSqlText(sqlStr);
             return this;

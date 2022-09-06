@@ -261,6 +261,55 @@ namespace Ivan_Dal
         }
 
         /// <summary>
+        /// 門市調撥申請 查詢 Return DataTable
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public IDalBase SearchTableForStoreTransfer(Dictionary<string, string> dic)
+        {
+            string sqlStr = "";
+            sqlStr = @" SELECT  Top 500 S.頤坊型號
+			                           ,S.銷售型號
+                                       ,S.產品狀態
+                                       ,0 本次申請
+			                           ,S.台北庫存數
+			                           ,S.台中庫存數
+			                           ,S.高雄庫存數
+			                           ,S.產品說明
+			                           ,S.廠商型號
+			                           ,S.序號
+			                           ,S.更新人員
+			                           ,CONVERT(VARCHAR,S.更新日期,23) 更新日期 
+                                       ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = S.序號) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
+                        FROM suplu S
+                        WHERE 1=1 
+                         ";
+
+            //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
+            foreach (string form in dic.Keys)
+            {
+                if (!string.IsNullOrEmpty(dic[form]) && form != "Account")
+                {
+                    string debug = dic[form];
+                    switch (form)
+                    {
+                        case "門市庫存":
+                            sqlStr += $" AND ISNULL(S.{dic[form]}庫存數,0) > 0";
+                            break;
+                        default:
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE @" + form + " + '%'";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                    }
+                }
+            }
+
+            sqlStr += " ORDER BY S.銷售型號, S.廠商編號 ";
+            this.SetSqlText(sqlStr);
+            return this;
+        }
+
+        /// <summary>
         /// 庫位變更 查詢 Return DataTable
         /// </summary>
         /// <param name="context"></param>

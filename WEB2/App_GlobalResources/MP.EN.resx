@@ -957,4 +957,7 @@
   <data name="Shipping" xml:space="preserve">
     <value>Shipping</value>
   </data>
+  <data name="Transfer" xml:space="preserve">
+    <value>Transfer</value>
+  </data>
 </root>
