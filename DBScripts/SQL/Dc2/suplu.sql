@@ -96,8 +96,8 @@ SELECT
 FROM Bc2.dbo.suplu2 a
 	INNER JOIN Bc2.dbo.suplu3 b ON a.[廠商編號] = b.[廠商編號] AND a.[頤坊型號] = b.[頤坊型號]
 	INNER JOIN Bc2.dbo.suplu4 c ON a.[廠商編號] = c.[廠商編號] AND a.[頤坊型號] = c.[頤坊型號]
-	LEFT JOIN Bc2.dbo.suplu_ean d ON a.[廠商編號] = d.[廠商編號] AND a.[頤坊型號] = d.[頤坊型號] AND d.[已刪除] <> '1'
-	LEFT JOIN Bc2.dbo.byrlu_RT e ON a.[廠商編號] = e.[廠商編號] AND a.[頤坊型號]= e.[頤坊型號] AND (e.[停用日期] <= GETDATE() OR e.[停用日期] IS NULL) AND e.[已刪除] <> '1'
+	LEFT JOIN Bc2.dbo.suplu_ean d ON a.[廠商編號] = d.[廠商編號] AND a.[頤坊型號] = d.[頤坊型號] --AND d.[已刪除] <> '1'
+	LEFT JOIN Bc2.dbo.byrlu_RT e ON a.[廠商編號] = e.[廠商編號] AND a.[頤坊型號]= e.[頤坊型號] AND (e.[停用日期] <= GETDATE() OR e.[停用日期] IS NULL) --AND e.[已刪除] <> '1'
 	LEFT JOIN Bc2..Spec f ON a.[廠商編號] = f.[廠商編號] AND a.[頤坊型號] = f.[頤坊型號]
 	--WHERE SUPLU3..已刪除?
 GO

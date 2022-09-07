@@ -39,8 +39,8 @@ namespace Demo
                             	BD.[轉入單位], C.[產品說明], BD.[廠商編號], BD.[最後完成者], BD.[序號], BD.[階層],
                                 BD.SUPLU_SEQ, BD.D_SUPLU_SEQ, BD.[更新人員],
                             	LEFT(RTRIM(CONVERT(VARCHAR(20),BD.[更新日期],20)),16) [更新日期],
-                                CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = BD.[SUPLU_SEQ]),0) AS BIT) [Has_IMG], 
-                                CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = BD.[D_SUPLU_SEQ]),0) AS BIT) [D_Has_IMG],
+                                (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = BD.[SUPLU_SEQ]) [Has_IMG], 
+                                (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = BD.[D_SUPLU_SEQ]) [D_Has_IMG],
                                 BD.[更新日期] [sort]
                             FROM Dc2..bomsub BD
                             	INNER JOIN Dc2..suplu C ON C.[序號] = BD.D_SUPLU_SEQ

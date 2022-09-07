@@ -1030,9 +1030,7 @@
     <uc:uc1 ID="uc1" runat="server" /> 
 
     <table class="table_th" style="text-align:left;">
-        <tr>
-            <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
-        </tr>
+        <tr><td style="height:5px;"></td></tr>
         <tr>
             <td style="width: 10%;"></td>
             <td style="width:10%;">

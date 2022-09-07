@@ -837,7 +837,6 @@
     
     <div id="Copy_Dialog" style="display:none;">
         <table style="font-size: 15px; border-collapse: separate; border-spacing: 0px 0px;" id="CD_Table">
-
             <tr style="background-color:lightgray;">
                 <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Old%><%=Resources.MP.SEQ%></td>
                 <td style="text-align: left; width: 15%;">
@@ -922,9 +921,7 @@
     </div>
 
     <table class="table_th" style="text-align:left;">
-        <tr>
-            <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
-        </tr>
+        <tr><td style="height:5px;"></td></tr>
         <tr>
             <td style="width: 10%;"></td>
             <td style="width:10%;">

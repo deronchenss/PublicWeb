@@ -153,15 +153,15 @@
                                             </ul>
                                         </li>
                                         <li class="has-children">
-                                            <a href="#" IVM_P="16" class="nav-link">條碼作業(x)</a>
+                                            <a href="#" IVM_P="16" class="nav-link">條碼作業</a>
                                             <ul class="dropdown">
                                                 <li>
-                                                    <a href="/Page/Base/Barcode/Barcode_Print.aspx" IVM_P="">條碼列印</a>
-                                                    <a href="#" IVM_P="">內銷條碼列印</a>
-                                                    <a href="#" IVM_P="">條碼列印明細維護</a>
-                                                    <a href="#" IVM_P="">條碼列印基本資料維護</a>
-                                                    <a href="#" IVM_P="">條碼點收與寄送</a>
-                                                    <a href="#" IVM_P="">條碼綜合查詢</a>
+                                                    <a href="#" IVM_P="">條碼列印(預計整合?)</a>
+                                                    <a href="/Page/Base/Barcode/Barcode_Print.aspx" IVM_P="">內銷條碼列印</a>
+                                                    <a href="#" IVM_P="">條碼列印明細維護(x)</a>
+                                                    <a href="#" IVM_P="">條碼列印基本資料維護(x)</a>
+                                                    <a href="#" IVM_P="">條碼點收與寄送(x)</a>
+                                                    <a href="#" IVM_P="">條碼綜合查詢(x)</a>
                                                 </li>
                                             </ul>
                                         </li>

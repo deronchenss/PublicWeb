@@ -114,15 +114,14 @@ public class Dialog_DataBind : System.Web.Services.WebService
         conn.ConnectionString = ConfigurationManager.ConnectionStrings["LocalBC2"].ConnectionString;
         cmd.CommandText = @" SELECT P.[開發中], P.[客戶簡稱], P.[頤坊型號], P.[客戶型號], C.[產品狀態], C.[銷售型號], P.[單位], P.[外幣幣別], 
                                 P.[產品說明], P.[廠商簡稱], P.[廠商編號], P.[客戶編號], P.[序號], P.[更新人員],
-                                IIF(P.[MIN_1] = 0,'', REPLACE(CONVERT(VARCHAR,CAST(P.[MIN_1] AS MONEY),1),'.00','')) [MIN_1],
-                                IIF(P.[美元單價] = 0,'', REPLACE(CONVERT(VARCHAR,CAST(P.[美元單價] AS MONEY),1),'.00','')) [美元單價],
-                                IIF(P.[台幣單價] = 0,'', REPLACE(CONVERT(VARCHAR,CAST(P.[台幣單價] AS MONEY),1),'.00','')) [台幣單價],
-                                IIF(P.[外幣單價] = 0,'', REPLACE(CONVERT(VARCHAR,CAST(P.[外幣單價] AS MONEY),1),'.00','')) [外幣單價],
+                                P.[MIN_1], P.[美元單價], P.[台幣單價], P.[外幣單價],
                                 CONVERT(VARCHAR(20),P.[最後單價日],23) [最後單價日],
-                                LEFT(RTRIM(CONVERT(VARCHAR(20),P.[更新日期],20)),16) [更新日期]
+                                LEFT(RTRIM(CONVERT(VARCHAR(20),P.[更新日期],20)),16) [更新日期], 
+                                P.[更新日期] [sort]
                              FROM Dc2..byrlu P
 	                            INNER JOIN Dc2..suplu C on C.[序號] = P.SUPLU_SEQ
-                             WHERE P.[SUPLU_SEQ] = @SUPLU_SEQ ";
+                             WHERE P.[SUPLU_SEQ] = @SUPLU_SEQ
+                             ORDER BY [sort] desc ";
         cmd.Parameters.AddWithValue("SUPLU_SEQ", SUPLU_SEQ);
         cmd.Connection = conn;
         conn.Open();

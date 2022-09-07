@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommonFN\DataTableHelper.cs" />
+    <Compile Include="FN\Base\Barcode.cs" />
     <Compile Include="FN\Base\Price.cs" />
     <Compile Include="CommonFN\ContextFN.cs" />
     <Compile Include="FN\Base\Cost.cs" />

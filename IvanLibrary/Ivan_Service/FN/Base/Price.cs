@@ -15,7 +15,7 @@ namespace Ivan_Service.FN.Base
             SQL_STR = @" 
                 SELECT TOP 500 P.[開發中], P.[客戶簡稱], P.[頤坊型號], C.[銷售型號], C.[產品狀態], P.[美元單價], P.[台幣單價], P.[產品說明], P.[單位], P.[客戶型號], 
                 	P.[MIN_1], P.[單價_2], P.[廠商編號], P.[廠商簡稱], P.[客戶編號], P.[序號], P.[更新人員], P.[SUPLU_SEQ],
-                    CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = P.[SUPLU_SEQ]),0) AS BIT) [Has_IMG],
+                    (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = P.[SUPLU_SEQ]) [Has_IMG],
                 	LEFT(RTRIM(CONVERT(VARCHAR(20),P.[更新日期],20)),16) [更新日期], P.[更新日期] [sort]
                 FROM Dc2..Byrlu P
                     INNER JOIN Dc2..suplu C ON C.[序號] = P.[SUPLU_SEQ]

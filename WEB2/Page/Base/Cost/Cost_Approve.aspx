@@ -333,9 +333,7 @@
     <uc1:uc1 ID="uc1" runat="server" /> 
 
     <table class="table_th" style="text-align: left;">
-        <tr>
-            <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
-        </tr>
+        <tr><td style="height:5px;"></td></tr>
         <tr class="For_S">
             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Ivan_Model%></td>
             <td style="text-align: left; width: 15%;">

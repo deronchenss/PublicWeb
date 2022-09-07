@@ -506,6 +506,7 @@
     <uc3:uc3 ID="uc3" runat="server" /> 
 
     <table class="table_th" style="text-align: left;">
+        <tr><td style="height:5px;"></td></tr>
         <tr>
             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Material_Model%></td>
             <td style="text-align: left; width: 15%;">

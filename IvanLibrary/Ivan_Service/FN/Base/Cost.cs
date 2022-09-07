@@ -16,7 +16,7 @@ namespace Ivan_Service.FN.Base
                                C.[台幣單價], C.[美元單價], C.[單價_2], C.[單價_3], C.[MIN_1], C.[MIN_2], C.[MIN_3],
                                C.[產品說明], C.[暫時型號], C.[備註給開發], C.[備註給採購], C.[UnActive], C.[廠商編號],
                 	           C.[圖型啟用], C.[序號], C.[更新人員],
-                               CAST(ISNULL((SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = C.[序號]),0) AS BIT) [Has_IMG],
+                               (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = C.[序號]) [Has_IMG],
                                CONVERT(VARCHAR(20),C.[最後點收日],23) [最後點收日],
                                CONVERT(VARCHAR(20),C.[最後單價日],23) [最後單價日],
                                LEFT(RTRIM(CONVERT(VARCHAR(20),C.[新增日期],20)),16) [新增日期],

@@ -121,11 +121,11 @@
                                     <td>' + String(R[i].產品狀態 ?? "") + '</td>\
                                     <td>' + String(R[i].銷售型號 ?? "") + '</td>\
                                     <td>' + String(R[i].單位 ?? "") + '</td>\
-                                    <td style="text-align:right;">' + String(R[i].美元單價 ?? "") + '</td>\
-                                    <td style="text-align:right;">' + String(R[i].台幣單價 ?? "") + '</td>\
+                                    <td style="text-align:right;">' + String(R[i].美元單價 ?? "").replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",") + '</td>\
+                                    <td style="text-align:right;">' + String(R[i].台幣單價 ?? "").replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",") + '</td>\
                                     <td>' + String(R[i].外幣幣別 ?? "") + '</td>\
-                                    <td style="text-align:right;">' + String(R[i].外幣單價 ?? "") + '</td>\
-                                    <td style="text-align:right;">' + String(R[i].MIN_1 ?? "") + '</td>\
+                                    <td style="text-align:right;">' + String(R[i].外幣單價 ?? "").replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",") + '</td>\
+                                    <td style="text-align:right;">' + String(R[i].MIN_1 ?? "").replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",") + '</td>\
                                     <td>' + String(R[i].最後單價日 ?? "") + '</td>\
                                     <td>' + String(R[i].產品說明 ?? "") + '</td>\
                                     <td>' + String(R[i].廠商簡稱 ?? "") + '</td>\
@@ -147,6 +147,7 @@
                                 'top': '0'
                             });
                             $('#PAD_DP_Table tbody td').css('vertical-align', 'middle');
+                            $('#PAD_DP_Table tbody td').filter(function () { return $(this).text() === "0"; }).text('');
                         }
                         else {
                             $('#PAD_DP_Table').html('<span style="text-align:center;">無Price</span>');

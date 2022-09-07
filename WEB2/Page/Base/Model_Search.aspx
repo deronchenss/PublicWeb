@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Model Search" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Model_Search.aspx.cs" Inherits="Base_Model_Search" %>
+﻿<%@ Page Title="Model Search" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
 </asp:Content>
@@ -355,9 +355,7 @@
     </style>
 
     <table class="table_th" style="width:98%">
-        <tr>
-            <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
-        </tr>
+        <tr><td style="height:5px;"></td></tr>
         <tr>
             <td rowspan="3" style="width:5%">
                 <span>Data Source</span>

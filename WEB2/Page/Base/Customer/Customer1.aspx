@@ -9,9 +9,7 @@
     <script src="/js/dataTables.bootstrap4.min.js"></script>
 
     <table class="table_th" style="width:98%">
-        <tr>
-            <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
-        </tr>
+        <tr><td style="height:5px;"></td></tr>
         <tr>
             <td style="text-align: right; text-wrap: none; width: 10%;"><%=Resources.MP.Customer_No%></td>
             <td style="text-align: left; width: 15%;">
