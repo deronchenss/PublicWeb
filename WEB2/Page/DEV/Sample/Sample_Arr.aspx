@@ -690,7 +690,7 @@
         <div class="search_section_all">
             <table class="search_section_control">
             <tr class="trstyle"> 
-                <td style="height: 10px; font-size: smaller;" colspan="8">&nbsp</td>
+                <td style="height: 5px;"  colspan="8"></td>
             </tr>
             <tr class="trstyle">
                 <td class="tdhstyle">點收批號</td>
