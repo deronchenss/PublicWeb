@@ -113,6 +113,186 @@ namespace Ivan_Dal
         }
 
         /// <summary>
+        /// 門市庫取跟催查詢 查詢 Return DataTable
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public IDalBase StockSearchTable(Dictionary<string, string> dic)
+        {
+            string sqlStr = "";
+            sqlStr = @" SELECT Top 500 * FROM (
+                            SELECT MAX(S.訂單號碼) 訂單號碼
+                                          ,CASE WHEN MAX(ISNULL(S.核銷數,0)) = 0 AND SUM(ISNULL(S.入庫數,0)) = 0 THEN '建檔' --庫取申請
+                                                WHEN SUM(ISNULL(S.入庫數,0)) > 0 THEN '待核' --庫取出貨
+                                                ELSE '其他'
+                                                END 狀態
+                                          ,CONVERT(VARCHAR,MAX(S.更新日期),23) 開單日期
+                                          ,COUNT(*) 筆數
+			                              ,DATEDIFF(DAY,MAX(S.更新日期),GETDATE()) As 日數
+			                              ,@庫區 門市
+                            FROM stkio S
+                            INNER JOIN SUPLU SU ON S.SUPLU_SEQ = SU.序號
+                            WHERE ISNULL(S.已刪除,0) != 1
+                            AND ISNULL(S.已結案,0) != 1 
+                            AND (ISNULL(S.入庫數,0) + ISNUll(S.出庫數,0)) != 0
+                            {0}
+                            GROUP BY S.訂單號碼
+                            UNION ALL
+                            SELECT MAX(S.訂單號碼) 訂單號碼
+                                          ,'備貨' 狀態 --庫取核銷
+                                          ,CONVERT(VARCHAR,MAX(S.更新日期),23) 開單日期
+                                          ,COUNT(*) 筆數
+			                              ,DATEDIFF(DAY,MAX(S.更新日期),GETDATE()) As 日數
+			                              ,@庫區 門市
+                            FROM stkio_sale S
+                            INNER JOIN SUPLU SU ON S.SUPLU_SEQ = SU.序號
+                            WHERE ISNULL(S.已刪除,0) != 1
+                            AND ISNULL(S.出貨數,0) != ISNULL(S.核銷數,0)
+                            AND S.入區 != '其他'
+                            {0}
+                            GROUP BY S.訂單號碼 ) S
+                            WHERE 1 = 1
+                            
+                         ";
+
+            string sqlWhere = "";
+            //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
+            foreach (string form in dic.Keys)
+            {
+                if (!string.IsNullOrEmpty(dic[form]) && form != "Account")
+                {
+                    string debug = dic[form];
+                    switch (form)
+                    {
+                        case "產品說明":
+                        case "廠商簡稱":
+                            sqlWhere += " AND ISNULL(S.[" + form + "],'') LIKE '%' + @" + form + " + '%' ";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "更新日期_S":
+                            sqlWhere += " AND CONVERT(DATE,S.[更新日期]) >= @更新日期_S";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "更新日期_E":
+                            sqlWhere += " AND CONVERT(DATE,S.[更新日期]) <= @更新日期_E";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "庫取狀態":
+                            break;
+                        case "庫區":
+                            switch (dic[form])
+                            {
+                                case "台北":
+                                    sqlStr += " AND (S.訂單號碼 LIKE 'WR1-%' OR S.訂單號碼 LIKE 'WR-%' OR S.訂單號碼 LIKE 'WR9-%') ";
+                                    break;
+                                case "台中":
+                                    sqlStr += " AND S.訂單號碼 LIKE 'WR2-%' ";
+                                    break;
+                                case "高雄":
+                                    sqlStr += " AND S.訂單號碼 LIKE 'WR3-%' ";
+                                    break;
+                            }
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        default:
+                            sqlWhere += " AND ISNULL(S.[" + form + "],'') LIKE @" + form + " + '%'";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                    }
+                }
+            }
+
+            sqlStr = string.Format(sqlStr, sqlWhere);
+
+            if (dic.ContainsKey("庫取狀態") && !string.IsNullOrEmpty(dic["庫取狀態"]))
+            {
+                sqlStr += " AND 狀態 = '" + dic["庫取狀態"] + "'";
+            }
+
+            sqlStr += @" ORDER BY S.訂單號碼 ";
+            this.SetSqlText(sqlStr);
+            return this;
+        }
+
+        /// <summary>
+        /// 門市庫取跟催查詢 點擊 GridView Return DataTable
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public IDalBase StockDetailSearchTable(Dictionary<string, string> dic)
+        {
+            string sqlStr = "";
+            if("備貨".Equals(dic["狀態"]))
+            {
+                sqlStr = @" 
+                        --備貨狀態
+                        SELECT S.訂單號碼
+                              ,@狀態 As 狀態
+                              ,SU.頤坊型號
+                              ,SU.銷售型號
+                              ,SU.單位
+                              ,0  AS 入庫數
+                              ,ISNULL(S.出貨數,0)  AS 出庫數
+                              ,IIF(SU.大貨庫存數 = 0, NULL, SU.大貨庫存數) AS 大貨庫存數
+			                  ,(SELECT SUM(ISNULL(INS.出庫數,0) - ISNULL(核銷數,0)) FROM stkio INS WHERE ISNULL(INS.已刪除,0) != 1 AND ISNULL(INS.已結案,0) != 1 AND INS.SUPLU_SEQ = S.SUPLU_SEQ) AS 分配庫存數
+                              ,Rtrim(S.備註) AS 備註
+                              ,SU.產品說明
+                              ,SU.廠商編號
+                              ,SU.廠商簡稱
+                              ,S.出區 + '->' + S.入區 庫區
+                              ,S.序號
+                              ,S.更新人員
+                              ,CONVERT(VARCHAR,S.更新日期,23) 更新日期 
+                              ,S.SUPLU_SEQ
+                              ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = S.SUPLU_SEQ) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
+                        From Stkio_Sale S 
+                        INNER JOIN SUPLU SU ON SU.序號=S.SUPLU_SEQ 
+                        WHERE ISNULL(S.已刪除,0) != 1
+                        AND ISNULL(S.出貨數,0) != ISNULL(S.核銷數,0)
+                        AND S.入區 != '其他'
+                        AND S.訂單號碼 = @訂單號碼
+                         ";
+            }
+            else
+            {
+                sqlStr = @" --建檔 + 待核
+                        SELECT S.訂單號碼
+                              ,@狀態 As 狀態
+                              ,SU.頤坊型號
+                              ,SU.銷售型號
+                              ,SU.單位
+                              ,ISNULL(S.入庫數,0)-ISNULL(S.核銷數,0)  AS 入庫數
+                              ,ISNULL(S.出庫數,0)  AS 出庫數
+                              ,IIF(SU.大貨庫存數 = 0, NULL, SU.大貨庫存數) AS 大貨庫存數
+			                  ,(SELECT SUM(ISNULL(出庫數,0) - ISNULL(核銷數,0)) FROM stkio INS WHERE ISNULL(INS.已刪除,0) != 1 AND ISNULL(INS.已結案,0) != 1 AND INS.SUPLU_SEQ = S.SUPLU_SEQ) AS 分配庫存數
+                              ,Rtrim(S.備註) AS 備註
+                              ,SU.產品說明
+                              ,SU.廠商編號
+                              ,SU.廠商簡稱
+                              ,S.庫區
+                              ,S.序號
+                              ,S.更新人員
+                              ,CONVERT(VARCHAR,S.更新日期,23) 更新日期 
+                              ,S.SUPLU_SEQ
+                              ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = S.SUPLU_SEQ) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
+                        From Stkio S 
+                        INNER JOIN SUPLU SU ON SU.序號=S.SUPLU_SEQ 
+                        WHERE ISNULL(S.已刪除,0) != 1
+                        AND ISNULL(S.已結案,0) != 1  
+                        AND ISNULL(S.出庫數,0) + ISNULL(S.入庫數,0) != 0
+                        AND S.訂單號碼 = @訂單號碼
+                         ";
+            }
+
+            this.SetParameters("狀態", dic["狀態"]);
+            this.SetParameters("訂單號碼", dic["訂單號碼"]);
+
+            sqlStr += @" ORDER BY SU.頤坊型號 ";
+            this.SetSqlText(sqlStr);
+            return this;
+        }
+
+        /// <summary>
         /// 庫存入出報表 查詢 Return DataTable
         /// </summary>
         /// <param name="context"></param>

@@ -159,6 +159,24 @@ namespace Ivan_Service
         }
 
         /// <summary>
+        /// 門市庫取跟催查詢 查詢
+        /// </summary>
+        /// <returns></returns>
+        public DataTable StockIOSearch(Dictionary<string, string> dic)
+        {
+            return this.GetDataTable(dalStk.StockSearchTable(dic));
+        }
+
+        /// <summary>
+        /// 門市庫取跟催查詢 點擊GridView
+        /// </summary>
+        /// <returns></returns>
+        public DataTable StockIODetailSearch(Dictionary<string, string> dic)
+        {
+            return this.GetDataTable(dalStk.StockDetailSearchTable(dic));
+        }
+
+        /// <summary>
         /// 門市調撥申請 查詢
         /// </summary>
         /// <returns></returns>

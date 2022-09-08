@@ -966,4 +966,7 @@
   <data name="Transfer" xml:space="preserve">
     <value>調撥</value>
   </data>
+  <data name="Follow_Up" xml:space="preserve">
+    <value>跟催</value>
+  </data>
 </root>

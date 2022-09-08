@@ -348,6 +348,7 @@
                                             <a href="/Page/Store/Store_StockIO_Ins.aspx"><%--門市庫取申請--%><%=Resources.MP.Store + Resources.MP.Stock_Take + Resources.MP.Apply%></a>
                                             <a href="/Page/Store/Store_StockIO_Approve.aspx"><%--門市庫取核銷--%><%=Resources.MP.Store + Resources.MP.Stock_Take + Resources.MP.Write_Off%></a>
                                             <a href="/Page/Store/Store_StockIO_Shipping.aspx"><%--門市庫取出貨--%><%=Resources.MP.Store + Resources.MP.Stock_Take + Resources.MP.Shipping%></a>
+                                            <a href="/Page/Store/Store_StockIO_Search.aspx"><%--門市庫取跟催查詢--%><%=Resources.MP.Store + Resources.MP.Stock_Take + Resources.MP.Follow_Up + Resources.MP.Search%></a>
                                             <a href="/Page/Store/Store_PM_Search.aspx"><%--門市PM查詢--%><%=Resources.MP.Store + Resources.MP.Speace%>PM<%=Resources.MP.Speace + Resources.MP.Search%></a>
                                             <a href="/Page/Store/Store_Transfer_Apply.aspx"><%--門市調撥申請--%><%=Resources.MP.Store + Resources.MP.Transfer + Resources.MP.Apply%></a>
                                         </li>

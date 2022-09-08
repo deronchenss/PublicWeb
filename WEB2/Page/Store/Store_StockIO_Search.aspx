@@ -1,4 +1,4 @@
-﻿<%@ Page Title="門市PM查詢" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Store_PM_Search.aspx.cs" Inherits="Store_PM_Search" %>
+﻿<%@ Page Title="門市庫取跟催查詢" Language="C#" MasterPageFile="~/MP.master" AutoEventWireup="true" CodeFile="Store_StockIO_Search.aspx.cs" Inherits="Store_StockIO_Search" %>
 <%@ Register TagPrefix="uc1" TagName="uc1" Src="~/User_Control/Dia_Duo_Datetime_Picker.ascx" %>
 <%@ Register TagPrefix="uc2" TagName="uc2" Src="~/User_Control/Dia_Product_ALL.ascx" %>
 
@@ -9,7 +9,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var Edit_Mode = "Base";
-            var apiUrl = "/Page/Store/Ashx/Store_PM_Search.ashx";
+            var apiUrl = "/Page/Store/Ashx/Store_StockIO_Search.ashx";
             //隱藏滾動卷軸
             document.body.style.overflow = 'hidden';
 
@@ -29,13 +29,13 @@
                 if (key == '40') {
                     if (clickIndex < $('#Table_Search_Data tbody tr').length - 1) {
                         clickIndex++;
-                        ClickToEdit($('#Table_Search_Data > tbody > tr:nth(' + clickIndex + ')'));
+                        ClickToDetailEdit($('#Table_Search_Data > tbody > tr:nth(' + clickIndex + ')'));
                     }
                 }
                 else if (key == '38') {
                     if (clickIndex > 0) {
                         clickIndex--;
-                        ClickToEdit($('#Table_Search_Data > tbody > tr:nth(' + clickIndex + ')'));
+                        ClickToDetailEdit($('#Table_Search_Data > tbody > tr:nth(' + clickIndex + ')'));
                     }
                 }
             });
@@ -46,17 +46,19 @@
                     case "Base":
                         $('.Div_D').css('display', 'none');
                         $('#Div_DT_View').css('display', 'none');
+                        $('#Div_Detail_View').css('display', 'none');
                         $('#BT_Cancel').css('display', 'none');
                         $('#BT_Search').css('display', '');
-                        $('#BT_Update').css('display', 'none');
 
                         V_BT_CHG($('#BT_S_BASE'));
                         break;
                     case "Search":
                         $('.Div_D').css('display', 'none');
-                        $('#Div_DT_View').css('width', '100%');
+                        $('#Div_DT_View').css('width', '35%');
                         $('#Div_DT_View').css('display', '');
 
+                        $('#Div_Detail_View').css('display', '');
+                        $('#Div_Detail_View').css('float', 'right');
                         $('#BT_Cancel').css('display', '');
                         $('#BT_E_CANCEL').css('display', 'none');
 
@@ -64,20 +66,24 @@
                         break;
                     case "IMG":
                         $('.Div_D').css('display', 'none');
-                        $('#Div_DT_View').css('width', '60%');
+                        $('#Div_DT_View').css('display', 'none');
+                        $('#Div_Detail_View').css('display', '');
+                        $('#Div_Detail_View').css('float', 'left');
                         $('#Div_IMG_DETAIL').css('display', '');
 
                         //設定DEFAULT Click
-                        if ($('#Table_Search_Data > tbody tr[role=row]').length != 0 && $('#Table_Search_Data > tbody tr.tableClick').length == 0) {
-                            ClickToEdit($('#Table_Search_Data > tbody > tr:nth(0)'));
+                        if ($('#Table_Search_Detail_Data > tbody tr[role=row]').length != 0 && $('#Table_Search_Detail_Data > tbody tr.tableClick').length == 0) {
+                            ClickToEdit($('#Table_Search_Detail_Data > tbody > tr:nth(0)'));
                         }
 
                         V_BT_CHG($('#BT_S_IMG'));
                         break;
                     case "COLOR":
                         $('.Div_D').css('display', 'none');
-                        $('#Div_DT_View').css('width', '60%');
+                        $('#Div_DT_View').css('display', 'none');
                         $('#Div_COLOR').css('display', '');
+                        $('#Div_Detail_View').css('display', '');
+                        $('#Div_Detail_View').css('float', 'left');
 
                         V_BT_CHG($('#BT_S_COLOR'));
                         break;
@@ -93,18 +99,27 @@
                 });
             };
 
-            function ClickToEdit(click_tr) {
+            function ClickToDetailEdit(click_tr) {
                 //點擊賦予顏色
                 $('#Table_Search_Data > tbody tr').removeClass("tableClick");
                 click_tr.addClass("tableClick");
                 var clickData = $('#Table_Search_Data').DataTable().row(click_tr).data();
+
+                //Search Detail
+                SearchDetailData(clickData['訂單號碼'], clickData['狀態']);
+            }
+
+            function ClickToEdit(click_tr) {
+                //點擊賦予顏色
+                $('#Table_Search_Detail_Data > tbody tr').removeClass("tableClick");
+                click_tr.addClass("tableClick");
+                var clickData = $('#Table_Search_Detail_Data').DataTable().row(click_tr).data();
 
                 //IMG page
                 $('#I_IVAN_TYPE').val(clickData['頤坊型號']);
                 $('#I_FACT_NO').val(clickData['廠商編號']);
                 $('#I_FACT_S_NAME').val(clickData['廠商簡稱']);
                 $('#I_PROD_DESC').val(clickData['產品說明']);
-                $('#I_RPT_REMARK').val(clickData['大備註']);
                 Search_IMG(clickData['SUPLU_SEQ']);
             }
 
@@ -160,21 +175,19 @@
                                 },
                                 "drawCallback": function (settings) {
                                     $('div.dataTables_scrollBody').scrollTop(pageScrollPos);
-                                    Re_Bind_Inner_JS();
                                 },
                                "columns": columns,
                                "columnDefs": [
                                    {
-                                       className: 'text-right', targets: [7, 8, 9, 18] //數字靠右
+                                       className: 'text-right', targets: [4,5] //數字靠右
                                    },
                                ],
-                                "order": [1, "asc"], //根據 頤坊型號 排序
+                                "order": [0, "asc"], //根據 訂單號碼 排序
                                 "scrollX": true,
                                 "scrollY": "62vh",
                                 "searching": false,
                                 "paging": false,
                                 "bInfo": false, //顯示幾筆隱藏
-                                "autoWidth": false //欄位小於VIEW 長度，自動擴展
                             });
 
                             //0 輸出空白
@@ -191,53 +204,140 @@
                             $('#Table_Search_Data').find('tbody tr[role=row]').each(function () {
                                 var rowData = $('#Table_Search_Data').DataTable().row($(this)).data();
                                 var $columnIvan = $(this).find('td:nth-child(' + ivanIndex + ')');
-                                var stockDelayDate = ($.trim(rowData['入庫逾期']) == '' ? 0 : parseInt($.trim(rowData['入庫逾期'])));
-                                var shippingCnt = ($.trim(rowData['出貨數']) == '' ? 0 : parseInt($.trim(rowData['出貨數'])));
-                                var storeArrCnt = ($.trim(rowData['門市到貨']) == '' ? 0 : parseInt($.trim(rowData['門市到貨'])));
-
-                                //無內銷大類
-                                var index = $('#Table_Search_Data').find('thead th:contains(入區)').index() + 1;
-                                var $column = $(this).find('td:nth-child(' + index + ')');
-                                if ($.trim(rowData['產品一階']) == '') {
-                                    $column.css("background-color", "LightPink");
-                                }
-
-                                //入庫數量異常
-                                index = $('#Table_Search_Data').find('thead th:contains(門市到貨)').index() + 1;
+                                var delayDate = ($.trim(rowData['日數']) == '' ? 0 : parseInt($.trim(rowData['日數'])));
+                                
+                                //日數
+                                index = $('#Table_Search_Data').find('thead th:contains(日數)').index() + 1;
                                 $column = $(this).find('td:nth-child(' + index + ')');
-                                if (storeArrCnt != 0 && storeArrCnt != shippingCnt) {
-                                    $column.css("background-color", "RosyBrown");
+                                if (delayDate >= 30) {
+                                    $column.css("background-color", "Red");
+                                }
+                                else if (delayDate >= 20) {
+                                    $column.css("background-color", "DeepPink");
+                                }
+                                else if (delayDate >= 7) {
+                                    $column.css("background-color", "Salmon");
                                 }
 
-                                //門市調撥
-                                index = $('#Table_Search_Data').find('thead th:contains(銷售型號)').index() + 1;
-                                $column = $(this).find('td:nth-child(' + index + ')');
-                                if ($.trim(rowData['PM_NO']).startsWith('PN')) {
-                                    $column.css("background-color", "DarkTurquoise");
-                                }
-
-                                //備貨中
+                                //狀態
                                 index = $('#Table_Search_Data').find('thead th:contains(狀態)').index() + 1;
                                 $column = $(this).find('td:nth-child(' + index + ')');
-                                if ($.trim(rowData['狀態']) == '備貨') {
-                                    $column.css("background-color", "Gold");
+                                if ($.trim(rowData['狀態']) == '建檔') {
+                                    $column.css("background-color", "MistyRose");
+                                }
+                                else if ($.trim(rowData['狀態']) == '備貨') {
+                                    $column.css("background-color", "MintCream");
+                                }
+                                else if ($.trim(rowData['狀態']) == '待核') {
+                                    $column.css("background-color", "PaleGreen");
+                                }
+                                else if ($.trim(rowData['狀態']) == '其他') {
+                                    $column.css("background-color", "Thistle");
+                                }
+                            });
+
+                            $('#Table_Search_Data').DataTable().draw();
+                            $('#Table_Search_Data_info').text('Showing ' + $('#Table_Search_Data > tbody tr[role=row]').length + ' entries');
+
+                            //設定DEFAULT Click
+                            ClickToDetailEdit($('#Table_Search_Data > tbody > tr:nth(0)'));
+                        }
+                    },
+                    error: function (ex) {
+                        console.log(ex.responseText);
+                        alert('查詢有誤請通知資訊人員');
+                    }
+                });
+            };        
+
+            function SearchDetailData(orderNo, status) {
+                var dataReq = {};
+                dataReq['Call_Type'] = 'SEARCH_DETAIL';
+                dataReq['訂單號碼'] = orderNo;
+                dataReq['狀態'] = status;
+
+                $.ajax({
+                    url: apiUrl,
+                    data: dataReq,
+                    cache: false,
+                    type: "POST",
+                    datatype: "json",
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    success: function (response) {
+                        if (response.length === 0) {
+                            alert('查無明細');
+                            $('#Table_Search_Detail_Data').empty();
+                        }
+                        else {
+                            var columns = [];
+                            columnNames = Object.keys(response[0]);
+                            for (var i in columnNames) {
+                                columns.push({
+                                    data: columnNames[i],
+                                    title: columnNames[i]
+                                });
+                            }
+                            $('#Table_Search_Detail_Data').DataTable({
+                                "data": response,
+                                "destroy": true,
+                                //維持scroll bar 位置
+                                "preDrawCallback": function (settings) {
+                                    pageScrollPos = $('div.dataTables_scrollBody').scrollTop();
+                                },
+                                "drawCallback": function (settings) {
+                                    $('div.dataTables_scrollBody').scrollTop(pageScrollPos);
+                                    Re_Bind_Inner_JS();
+                                },
+                                "columns": columns,
+                                "columnDefs": [
+                                    {
+                                        className: 'text-right', targets: [4, 5] //數字靠右
+                                    },
+                                ],
+                                "order": [0, "asc"], //根據 訂單號碼 排序
+                                "scrollX": true,
+                                "scrollY": "62vh",
+                                "searching": false,
+                                "paging": false,
+                                "bInfo": false, //顯示幾筆隱藏
+                                "autoWidth": false //欄位小於VIEW 長度，自動擴展
+                            });
+
+                            //0 輸出空白
+                            $('#Table_Search_Detail_Data tbody td').filter(function () { return parseFloat($(this).text()) === 0; }).text('');
+
+                            //顏色設定
+                            var ivanIndex = $('#Table_Search_Detail_Data').find('thead th:contains(頤坊型號)').index() + 1;
+                            $('#Table_Search_Detail_Data').find('tbody tr[role=row]').each(function () {
+                                var rowData = $('#Table_Search_Detail_Data').DataTable().row($(this)).data();
+                                var $columnIvan = $(this).find('td:nth-child(' + ivanIndex + ')');
+                                var stockCnt = ($.trim(rowData['大貨庫存數']) == '' ? 0 : parseInt($.trim(rowData['大貨庫存數'])));
+                                var distributeCnt = ($.trim(rowData['分配庫存數']) == '' ? 0 : parseInt($.trim(rowData['分配庫存數'])));
+
+                                //狀態
+                                index = $('#Table_Search_Detail_Data').find('thead th:contains(狀態)').index() + 1;
+                                $column = $(this).find('td:nth-child(' + index + ')');
+                                if ($.trim(rowData['狀態']) == '建檔') {
+                                    $column.css("background-color", "MistyRose");
+                                }
+                                else if ($.trim(rowData['狀態']) == '備貨') {
+                                    $column.css("background-color", "MintCream");
+                                }
+                                else if ($.trim(rowData['狀態']) == '待核') {
+                                    $column.css("background-color", "PaleGreen");
+                                }
+                                else if ($.trim(rowData['狀態']) == '其他') {
+                                    $column.css("background-color", "Thistle");
                                 }
 
-                                //未入門市
-                                index = $('#Table_Search_Data').find('thead th:contains(出貨數)').index() + 1;
+                                //庫存狀態
+                                index = $('#Table_Search_Detail_Data').find('thead th:contains(分配庫存數)').index() + 1;
                                 $column = $(this).find('td:nth-child(' + index + ')');
-                                
-                                if ($.trim(rowData['產品一階']) != '' && shippingCnt > storeArrCnt) {
-                                    $column.css("background-color", "SandyBrown");
+                                if (stockCnt < distributeCnt && $.trim(rowData['庫區']) == '大貨') {
+                                    $column.css("background-color", "PaleTurquoise");
                                 }
-
-                                //逾期
-                                index = $('#Table_Search_Data').find('thead th:contains(日期)').index() + 1;
-                                $column = $(this).find('td:nth-child(' + index + ')');
-                                console.log(stockDelayDate);
-                                if ($.trim(rowData['產品一階']) != '' && storeArrCnt == 0 && stockDelayDate > 5) {
-                                    console.log(1);
-                                    $column.css("background-color", "Red");
+                                else if (stockCnt >= distributeCnt && $.trim(rowData['庫區']) == '大貨'){
+                                    $column.css("background-color", "Moccasin");
                                 }
 
                                 //button
@@ -247,13 +347,13 @@
                                 $columnIvan.html(ivanStyle);
                             });
 
-                            $('#Table_Search_Data').DataTable().draw();
-                            $('#Table_Search_Data_info').text('Showing ' + $('#Table_Search_Data > tbody tr[role=row]').length + ' entries');
+                            $('#Table_Search_Detail_Data').DataTable().draw();
+                            $('#Table_Search_Detail_Data_info').text('Showing ' + $('#Table_Search_Detail_Data > tbody tr[role=row]').length + ' entries');
                         }
                     },
                     error: function (ex) {
                         console.log(ex.responseText);
-                        alert('查詢有誤請通知資訊人員');
+                        alert('查詢明細有誤請通知資訊人員');
                     }
                 });
             };        
@@ -288,6 +388,10 @@
 
             //TABLE 功能設定
             $('#Table_Search_Data').on('click', 'tbody tr', function () {
+                ClickToDetailEdit($(this));
+            });
+
+            $('#Table_Search_Detail_Data').on('click', 'tbody tr', function () {
                 ClickToEdit($(this));
             });
 
@@ -345,13 +449,13 @@
                 <td style="height: 5px;"  colspan="8"></td>
             </tr>
             <tr class="trstyle">
-                <td class="tdhstyle">PM_NO</td>
+                <td class="tdhstyle">訂單號碼</td>
                 <td class="tdbstyle">
-                    <input id="Q_PM_NO" DT_Query_Name="PM_NO" class="textbox_char" />
+                    <input id="Q_ORDER_NO" DT_Query_Name="訂單號碼" class="textbox_char" />
                 </td>
-                 <td class="tdhstyle">出貨日期</td>
+                 <td class="tdhstyle">開單日期</td>
                 <td class="tdbstyle">
-                    <input id="Q_SHIPPING_DATE_S" type="date" DT_Query_Name="出貨日期_S" class="date_S_style TB_DS" /><input id="Q_UPD_DATE_E" DT_Query_Name="出貨日期_E" type="date" class="date_E_style TB_DE" />
+                    <input id="Q_UPD_DATE_S" type="date" DT_Query_Name="更新日期_S" class="date_S_style TB_DS" /><input id="Q_UPD_DATE_E" DT_Query_Name="更新日期_E" type="date" class="date_E_style TB_DE" />
                     <input id="BT_Duo_Datetime_Picker" type="button" value="…" onclick="$('#Duo_Datetime_Picker_Dialog').dialog('open');" />
                 </td>
                 <td class="tdhstyle">頤坊型號</td>
@@ -360,36 +464,20 @@
                 </td>
                 
             </tr>
-             <tr class="trstyle">
-                <td class="tdhstyle">銷售型號</td>
-                <td class="tdbstyle"> 
-                    <input id="Q_SALE_TYPE" DT_Query_Name="銷售型號" class="textbox_char" />
-                </td>
-                <td class="tdhstyle">訂單號碼</td>
-                <td class="tdbstyle">
-                    <input id="Q_ORDER_NO" DT_Query_Name="訂單號碼" class="textbox_char" />
-                </td>
-                 <td class="tdhstyle">箱號</td>
-                <td class="tdbstyle"> 
-                    <input id="Q_PACK_NO" DT_Query_Name="箱號" class="textbox_char" />
-                </td>
-            </tr>
             <tr class="trstyle">
-                <td class="tdhstyle">出貨狀態</td>
+                <td class="tdhstyle">庫取狀態</td>
                 <td class="tdbstyle">
-                    <select id="Q_SHIIPING_STATUS" DT_Query_Name="出貨狀態" > 
-                        <option selected="selected" value="備貨">備貨</option>
-                        <option value="出貨">出貨</option>
-                        <option value="未入門市">未入門市</option>
-                        <option value="數量異常">數量異常</option>
-                        <option value="">全部</option>
+                    <select id="Q_STOCKIO_STATUS" DT_Query_Name="庫取狀態" > 
+                        <option selected="selected" value="">全部</option>
+                        <option value="建檔">建檔</option>
+                        <option value="備貨">備貨</option>
+                        <option value="待核">待核</option>
                     </select>
                 </td>
                 <td class="tdhstyle">入區</td>
                 <td class="tdbstyle">
-                    <select id="Q_STORE" DT_Query_Name="入區" > 
-                        <option selected="selected" value="">全部</option>
-                        <option value="台北">台北</option>
+                    <select id="Q_STORE" DT_Query_Name="庫區" > 
+                        <option selected="selected" value="台北">台北</option>
                         <option value="台中">台中</option>
                         <option value="高雄">高雄</option>
                     </select>
@@ -411,9 +499,16 @@
         </div>
 
         <div id="Div_DT">
-            <div id="Div_DT_View" style=" width:60%;height:71vh; border-style:solid;border-width:1px; float:left;">
+            <div id="Div_DT_View" style=" width:35%;height:71vh; border-style:solid;border-width:1px; float:left;">
                 <div class="dataTables_info" id="Table_Search_Data_info" role="status" aria-live="polite"></div>
                 <table id="Table_Search_Data" class="Table_Search table table-striped table-bordered">
+                    <thead style="white-space:nowrap"></thead>
+                    <tbody style="white-space:nowrap"></tbody>
+                </table>
+            </div>
+            <div id="Div_Detail_View" style=" width:60%;height:71vh; border-style:solid;border-width:1px; float:right;">
+                <div class="dataTables_info" id="Table_Search_Detail_Data_info" role="status" aria-live="polite"></div>
+                <table id="Table_Search_Detail_Data" class="Table_Search table table-striped table-bordered">
                     <thead style="white-space:nowrap"></thead>
                     <tbody style="white-space:nowrap"></tbody>
                 </table>
@@ -465,24 +560,32 @@
                     <tr class="trstyle">
                         <td style="background-color:#90ee90;width:10%"></td>
                         <td>有圖檔</td>
-                        <td style="background-color:LightPink;width:10%"></td>
-                        <td>無內銷大類</td>
+                        <td style="background-color:Salmon;width:10%"></td>
+                        <td>逾期7天</td>
                     </tr>
                     <tr class="trstyle">
-                        <td style="background-color:Gold;width:10%"></td>
-                        <td>備貨中</td>
-                        <td style="background-color:SandyBrown;width:10%"></td>
-                        <td>未入門市</td>
-                    </tr>
-                    <tr class="trstyle">
-                        <td style="background-color:RosyBrown;width:10%"></td>
-                        <td>入庫數量異常</td>
-                        <td style="background-color:DarkTurquoise;width:10%"></td>
-                        <td>門市調撥</td>
-                    </tr>
-                    <tr class="trstyle">
+                        <td style="background-color:DeepPink;width:10%"></td>
+                        <td>逾期20天</td>
                         <td style="background-color:Red;width:10%"></td>
-                        <td>逾期天數 > 5</td>
+                        <td>逾期30天</td>
+                    </tr>
+                    <tr class="trstyle">
+                        <td style="background-color:Moccasin;width:10%"></td>
+                        <td>庫存足夠</td>
+                        <td style="background-color:MistyRose;width:10%"></td>
+                        <td>建檔</td>
+                    </tr>
+                   <tr class="trstyle">
+                        <td style="background-color:MintCream;width:10%"></td>
+                        <td>備貨</td>
+                        <td style="background-color:PaleGreen;width:10%"></td>
+                        <td>待核</td>
+                    </tr>
+                    <tr class="trstyle">
+                        <td style="background-color:Thistle;width:10%"></td>
+                        <td>其他</td>
+                        <td style="background-color:PaleTurquoise;width:10%"></td>
+                        <td>分配庫存不足</td>
                     </tr>
                 </table>
             </div> 

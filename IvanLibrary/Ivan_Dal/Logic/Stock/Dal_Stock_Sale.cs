@@ -357,6 +357,7 @@ namespace Ivan_Dal
             string sqlStr = @"      INSERT INTO [dbo].[stkio_sale]
                                                ([序號]
                                                ,[STKIO_SEQ]
+                                               ,[SUPLU_SEQ]
                                                ,[pm_no]
                                                ,[訂單號碼]
                                                ,[出貨日期]
@@ -384,6 +385,7 @@ namespace Ivan_Dal
                                                ,[更新日期])
                                          SELECT (Select IsNull(Max(序號),0)+1 From stkio_sale) [序號]
                                                ,@序號 [STKIO_SEQ]
+                                               ,S.[SUPLU_SEQ]
                                                ,@PM_NO [pm_no]
                                                ,S.[訂單號碼] 訂單號碼
                                                ,GETDATE() [出貨日期]
