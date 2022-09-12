@@ -390,7 +390,7 @@
                 </td>
             </tr>
             <tr class="trstyle">
-                <td class="tdtstyleRight" colspan="7">
+                <td class="tdtstyleRight" colspan="5">
                     <input type="button" id="BT_Search" class="buttonStyle" value="<%=Resources.MP.Search%>" />
                     <input type="reset" id="BT_Cancel" class="buttonStyle" value="<%=Resources.MP.Cancel%>" style="display: none;" />
                 </td>

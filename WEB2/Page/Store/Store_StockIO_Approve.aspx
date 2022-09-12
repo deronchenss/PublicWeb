@@ -48,8 +48,7 @@
 
                 //IMG page
                 var clickData = $('#Table_EXEC_Data').DataTable().row($click).data();
-                var index = $('#Table_EXEC_Data thead th:contains(頤坊型號)').index();
-                $('#I_IVAN_TYPE').val(clickData[index]);
+                $('#I_IVAN_TYPE').val($click.find('.Call_Product_Tool').val());
                 index = $('#Table_EXEC_Data thead th:contains(廠商編號)').index();
                 $('#I_FACT_NO').val(clickData[index]);
                 index = $('#Table_EXEC_Data thead th:contains(廠商簡稱)').index();

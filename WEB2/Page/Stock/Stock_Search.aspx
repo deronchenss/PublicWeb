@@ -88,7 +88,7 @@
                         V_BT_CHG($('#BT_S_BASE'));
                         break;
                     case "IMG":
-                        if ($('#Table_Search_Data > tbody tr.tableClick').length == 0) {
+                        if ($('#Table_Search_Data > tbody tr[role=row]').length == 0) {
                             alert('請先查詢!');
                             return;
                         }

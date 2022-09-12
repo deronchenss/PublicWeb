@@ -48,8 +48,7 @@
 
                 //IMG page
                 var clickData = $('#Table_EXEC_Data').DataTable().row($click).data();
-                var index = $('#Table_EXEC_Data thead th:contains(頤坊型號)').index();
-                $('#I_IVAN_TYPE').val(clickData[index]);
+                $('#I_IVAN_TYPE').val($click.find('.Call_Product_Tool').val());
                 index = $('#Table_EXEC_Data thead th:contains(廠商編號)').index();
                 $('#I_FACT_NO').val(clickData[index]);
                 index = $('#Table_EXEC_Data thead th:contains(廠商簡稱)').index();
@@ -222,7 +221,6 @@
                     datatype: "json",
                     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                     success: function (response, status) {
-                        console.log(response);
                         if (response.length === 0) {
                             alert('<%=Resources.MP.Data_Not_Exists_Alert%>');
                             Edit_Mode = "Base";

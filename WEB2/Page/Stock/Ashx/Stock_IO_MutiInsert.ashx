@@ -23,7 +23,7 @@ public class Stock_IO_MutiInsert : IHttpHandler, IRequiresSessionState
                 switch (context.Request["Call_Type"])
                 {
                     case "SEARCH":
-                        result = JsonConvert.SerializeObject(ContextFN.ContextToDictionary(context));
+                        result = JsonConvert.SerializeObject(service.StockIOMMISearch(ContextFN.ContextToDictionary(context)));
                         break;
                     case "MUTI_INSERT":
                         List<StkioFromSuplu> entity = JsonConvert.DeserializeObject<List<StkioFromSuplu>>(context.Request["EXEC_DATA"]);
