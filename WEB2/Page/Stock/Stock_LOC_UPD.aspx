@@ -55,7 +55,7 @@
                 $('#I_FACT_S_NAME').val(clickData[index]);
                 index = $('#Table_EXEC_Data thead th:contains(產品說明)').index();
                 $('#I_PROD_DESC').val(clickData[index]);
-                index = $('#Table_EXEC_Data thead th:contains(SUPLU_SEQ)').index();
+                index = $('#Table_EXEC_Data thead th:contains(序號)').index();
                 $('#I_SUPLU_SEQ').val(clickData[index]);
                 Search_IMG($('#I_SUPLU_SEQ').val());
             }

@@ -611,13 +611,13 @@ namespace Ivan_Dal
 			                           ,IIF(STK.高雄待入 = 0, NULL, STK.高雄待入) 高待
 			                           ,IIF(STK.高雄逾期 = 0, NULL, STK.高雄逾期) 高逾
                                        ,'' 備註
-			                           ,CASE WHEN ISNULL(B.台幣單價_1,0)=0 THEN '???' ELSE '' END AS 單價
+			                           ,CASE WHEN ISNULL(S.台幣單價_1,0)=0 THEN '???' ELSE '' END AS 單價
 			                           ,CASE WHEN ISNULL(S.寄送袋子,'')='' THEN '???' ELSE S.寄送袋子 END AS 袋子
 			                           ,CASE WHEN ISNULL(S.產地,'')='' THEN '???' ELSE S.產地 END AS 產地
 			                           ,RTRIM(S.簡短說明) As 簡短說明
 			                           ,S.大貨庫位 AS 庫位
 			                           ,S.產品一階
-			                           ,B.產品分類
+			                           ,S.產品分類
 			                           ,S.廠商編號
 			                           ,S.開發中
 			                           ,CONVERT(VARCHAR,S.停用日期,23) 停用日期
@@ -630,8 +630,7 @@ namespace Ivan_Dal
                         FROM SUPLU S 
                         LEFT JOIN STK ON S.序號 = STK.SUPLU_SEQ 
                         INNER JOIN TOT ON S.頤坊型號 = TOT.頤坊型號 AND S.產品二階 = TOT.產品二階
-                        INNER JOIN BYRLU_RT B ON S.序號 = B.SUPLU_SEQ
-                        WHERE B.停用日期 IS NULL  
+                        WHERE S.停用日期 IS NULL  
                          ";
 
             //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 

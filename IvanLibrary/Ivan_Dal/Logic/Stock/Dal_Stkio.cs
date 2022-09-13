@@ -293,6 +293,169 @@ namespace Ivan_Dal
         }
 
         /// <summary>
+        /// 庫取跟催查詢 查詢 Return DataTable
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public IDalBase StockTraceSearchTable(Dictionary<string, string> dic)
+        {
+            string sqlStr = "";
+            sqlStr = @" SELECT  S.訂單號碼 
+	                           ,COUNT(*) AS 筆數
+	                           ,SUM(SU.單位淨重*(S.出庫數-S.核銷數)/1000) AS KG 
+	                           ,DATEDIFF(DAY,MIN(S.更新日期),GETDATE()) AS 日數
+	                           ,MAX(S.客戶簡稱) AS 客戶簡稱
+	                           ,CASE WHEN (SELECT 備貨數 FROM ( SELECT SUM(備貨數量) AS 備貨數 
+	   								                            FROM PAK  A 
+	   								                            WHERE A.客戶編號 =MAX(S.客戶編號) 
+	   								                            AND ISNULL(A.已刪除,0)=0 
+	   								                            AND A.客戶編號 NOT IN ( SELECT A.客戶編號 FROM PAK2 A WHERE A.客戶編號 =MAX(S.客戶編號)  AND ISNULL(A.已刪除,0)=0 ) 
+	   								                            GROUP BY A.客戶編號 
+	   								                            UNION ALL 
+	   								                            SELECT SUM(備貨數量) AS 備貨數 
+	   								                            FROM PAK2 A 
+	   								                            WHERE A.客戶編號 =MAX(S.客戶編號) 
+	   								                            AND ISNULL(A.已刪除,0)=0 GROUP BY A.客戶編號) TOT ) > 0 THEN '備' ELSE '' END AS P
+	                           ,MAX(CONVERT(VARCHAR,O.訂單交期, 23)) AS 訂單交期
+	                           ,CASE WHEN CONVERT(CHAR(10),MAX(O.訂單交期),111) < CONVERT(CHAR(10),GETDATE(),111) THEN DATEDIFF(DAY,MAX(O.訂單交期),GETDATE()) 
+	   	                          ELSE 0 END AS 逾期
+	                           ,MIN(CONVERT(VARCHAR,P.通知日期,23)) AS 通知日期
+	                           ,MAX(P.通知次數) AS 通知次數
+	                           ,MAX(O.客戶編號) AS 客戶編號
+	                           ,MAX(CONVERT(VARCHAR,S.更新日期,23)) AS 更新日期 
+                        FROM Stkio S
+                        JOIN suplu SU ON S.SUPLU_SEQ = SU.序號
+                        LEFT JOIN ORM O ON S.訂單號碼 = O.訂單號碼
+                        LEFT JOIN prnm P ON S.訂單號碼 = P.單號
+                        WHERE 1=1 
+                        AND S.庫區='大貨'
+                        AND ISNULL(S.出庫數,0) <> 0 
+                        AND ISNULL(S.已刪除,0)=0  
+                        AND ISNULL(S.已結案,0)=0  
+                        {0}
+                        GROUP BY S.客戶簡稱,S.訂單號碼  
+                            
+                         ";
+
+            string sqlWhere = "";
+            //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
+            foreach (string form in dic.Keys)
+            {
+                if (!string.IsNullOrEmpty(dic[form]) && form != "Account")
+                {
+                    string debug = dic[form];
+                    switch (form)
+                    {
+                        case "客戶簡稱":
+                        case "廠商簡稱":
+                            sqlWhere += " AND ISNULL(S.[" + form + "],'') LIKE '%' + @" + form + " + '%' ";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "通知日期_S":
+                            sqlWhere += " AND CONVERT(DATE,P.[通知日期]) >= @通知日期_S";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "通知日期_E":
+                            sqlWhere += " AND CONVERT(DATE,P.[通知日期]) <= @通知日期_E";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "庫存狀態":
+                            switch (dic[form])
+                            {
+                                case "1": //庫存足夠
+                                    sqlWhere += " AND ISNULL(SU.大貨庫存數,0) > (SELECT SUM(ISNULL(出庫數,0) - ISNULL(核銷數,0)) FROM stkio INS WHERE ISNULL(INS.已刪除,0) != 1 AND ISNULL(INS.已結案,0) != 1 AND INS.SUPLU_SEQ = S.SUPLU_SEQ)  ";
+                                    break;
+                                case "2": //庫存有
+                                    sqlWhere += " AND ISNULL(SU.大貨庫存數,0) > 0 ";
+                                    break;
+                            }
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "訂單類別":
+                            switch (dic[form])
+                            {
+                                case "大貨":
+                                    sqlWhere += " AND S.訂單號碼 NOT LIKE 'WR%' AND  S.訂單號碼 NOT LIKE 'X%' ";
+                                    break;
+                                case "台北":
+                                    sqlWhere += " AND (S.訂單號碼 LIKE 'WR1-%' OR S.訂單號碼 LIKE 'WR-%' OR S.訂單號碼 LIKE 'WR9-%') ";
+                                    break;
+                                case "台中":
+                                    sqlWhere += " AND S.訂單號碼 LIKE 'WR2-%' ";
+                                    break;
+                                case "高雄":
+                                    sqlWhere += " AND S.訂單號碼 LIKE 'WR3-%' ";
+                                    break;
+                                case "其他":
+                                    sqlWhere += " AND S.訂單號碼 LIKE 'X%' ";
+                                    break;
+                            }
+                            break;
+                        default:
+                            sqlWhere += " AND ISNULL(S.[" + form + "],'') LIKE @" + form + " + '%'";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                    }
+                }
+            }
+
+            sqlStr = string.Format(sqlStr, sqlWhere);
+            sqlStr += @" ORDER BY DATEDIFF(DAY,MIN(S.更新日期),GETDATE()) DESC ";
+            this.SetSqlText(sqlStr);
+            return this;
+        }
+
+        /// <summary>
+        /// 庫取跟催查詢 點擊 GridView Return DataTable
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public IDalBase StocTracekDetailSearchTable(Dictionary<string, string> dic)
+        {
+            string sqlStr = "";
+
+            sqlStr = @" 
+                    SELECT S.訂單號碼
+                           ,SU.廠商簡稱
+                           ,SU.頤坊型號
+                           ,SU.單位
+                           ,S.出庫數-S.核銷數 AS 出庫數
+                           ,O.訂單數量-O.準備數量-O.備貨數量-O.出貨數量 AS 訂單餘額
+                           ,S.庫位
+                           ,SU.大貨庫存數 AS 大貨庫存數
+                           ,(SELECT SUM(ISNULL(出庫數,0) - ISNULL(核銷數,0)) FROM stkio INS WHERE ISNULL(INS.已刪除,0) != 1 AND ISNULL(INS.已結案,0) != 1 AND INS.SUPLU_SEQ = S.SUPLU_SEQ) AS 分配庫存數
+                           ,RTRIM(S.備註) AS 備註
+                           ,SU.單位淨重*(S.出庫數-S.核銷數)/1000 AS KG
+                           ,SU.產品說明
+                           ,S.客戶編號
+                           ,S.客戶簡稱
+                           ,SU.廠商編號
+                           ,S.庫區
+                           --,B.圖型啟用
+                           ,S.序號
+                           ,S.更新人員
+                           ,CONVERT(VARCHAR,S.更新日期,23) 更新日期
+                           ,S.SUPLU_SEQ
+                           ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = S.SUPLU_SEQ) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
+                     FROM Stkio S 
+                     INNER JOIN suplu SU ON SU.序號=S.SUPLU_SEQ
+                     LEFT JOIN ord O ON S.訂單號碼=O.訂單號碼 AND O.SUPLU_SEQ=SU.序號
+                     WHERE ISNULL(S.已刪除,0)=0  
+                     AND ISNULL(S.已結案,0)=0  
+                     AND S.庫區='大貨' 
+                     AND ISNULL(S.出庫數,0)<>0  
+                     AND S.訂單號碼=@訂單號碼 
+                            
+                        ";
+
+            this.SetParameters("訂單號碼", dic["訂單號碼"]);
+
+            sqlStr += @" ORDER BY S.頤坊型號  ";
+            this.SetSqlText(sqlStr);
+            return this;
+        }
+
+        /// <summary>
         /// 庫存入出報表 查詢 Return DataTable
         /// </summary>
         /// <param name="context"></param>

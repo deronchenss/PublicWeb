@@ -91,7 +91,7 @@ namespace Ivan_Dal
 			                  ,ISNULL(S.核銷數,0) AS 出貨數 --舊邏輯 如後續資料有清乾淨才調整為從 stkio取
 			                  ,ISNULL(S.門市到貨,0) AS 門市到貨 
 			                  ,S.備註
-			                  ,BYR.簡短說明 產品說明
+			                  ,S.簡短說明 產品說明
 			                  ,S.出區
 			                  ,S.入區
 			                  ,S.箱號
@@ -120,7 +120,6 @@ namespace Ivan_Dal
 	                           AND ISNULL(A.已刪除,0)=0) AS 出貨小計
 	                           , T1.* FROM Stkio_Sale T1 WHERE ISNULL(T1.已刪除,0)=0 ) As S 
                         INNER JOIN SUPLU SU ON S.SUPLU_SEQ = SU.序號
-                        LEFT JOIN BYRLU_RT BYR ON SU.序號 = BYR.SUPLU_SEQ
                         WHERE 1=1 
                          ";
 
