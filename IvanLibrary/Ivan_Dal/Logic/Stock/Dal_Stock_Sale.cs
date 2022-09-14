@@ -91,7 +91,7 @@ namespace Ivan_Dal
 			                  ,ISNULL(S.核銷數,0) AS 出貨數 --舊邏輯 如後續資料有清乾淨才調整為從 stkio取
 			                  ,ISNULL(S.門市到貨,0) AS 門市到貨 
 			                  ,S.備註
-			                  ,S.簡短說明 產品說明
+			                  ,SU.簡短說明 產品說明
 			                  ,S.出區
 			                  ,S.入區
 			                  ,S.箱號
