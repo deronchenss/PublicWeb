@@ -20,6 +20,9 @@
             //Search_Barcode();//WD
             //Form_Mode_Change("Search");//WD
             DDL_DataBind("內銷條碼", $('#DDL_Barcode_Type'));
+            $('#DDL_Barcode_Type').find('option[value^=IV05]').attr('disabled', '');
+            DDL_DataBind("內銷條碼", $('#DPAB_DDL_Barcode_Type'));
+
 
             $('#SSD_Table_Supplier').on('click', '.SUP_SEL', function () {
                 $('#TB_S_No').val($(this).parent().parent().find('td:nth(2)').text());
@@ -47,6 +50,22 @@
 
             function Check() {
                 var Check_Result = true;
+                if ($('#Table_Exec_Data tbody tr .Edit_Data').filter(function () { return ($(this).val().length === 0 || $(this).val() == 0 ) }).length > 0) {
+                    Check_Result = false;
+                    alert("列印數量不為0或空，請檢查送印資料");
+                }
+                switch ($('#DPAB_DDL_Barcode_Type').val()) {
+                    case "IV01":
+                    case "IV05":
+                    case "IV06":
+                    case "IV08":
+                        //若有必要可Show IM值
+                        if ($('#Table_Exec_Data tbody tr .Edit_Data').filter(function () { return $(this).val() % 2 > 0 }).length > 0) {
+                            Check_Result = false;
+                            alert("樣式" + $('#DPAB_DDL_Barcode_Type').val() + "僅能列印2的倍數，請檢查送印資料");
+                        }
+                        break;
+                }
                 //if ($('#DNT_TB_C_No').val().trim().length === 0) {
                 //    Check_Result = false;
                 //    alert("請選擇新客戶");
@@ -176,7 +195,7 @@
                         //    $(this).find('input[type=checkbox]').attr('disabled', false);
                         //    break;
                         case "NUM_INT":
-                            $(this).html('<input type="number" style="text-align:right;width:80px;" min="0" step="1" class="Edit_Data" Column_Name="' + $(this).attr('colDB') + '" value="' + $(this).text().replace(',', '') + '"/>');
+                            $(this).html('<input type="number" style="text-align:right;width:80px;" min="0" max="9999" step="2" class="Edit_Data" Column_Name="' + $(this).attr('colDB') + '" value="' + $(this).text().replace(',', '') + '"/>');
                             break;
                         default:
                             $(this).html('<input class="Edit_Data" Column_Name="' + $(this).attr('colDB') + '" value="' + $(this).text() + '"/>');
@@ -199,6 +218,17 @@
                 $('.V_BT').attr('disabled', false);
                 $('#V_BT_Print').attr('disabled', 'disabled');
                 Form_Mode_Change("Edit_Data");
+                var Print_Type = $('#Table_Exec_Data tbody tr td.Print_Type:eq(0)').text();//row 1
+
+                $('#DPAB_DDL_Barcode_Type').find('option').not('[value^=IV05]').attr('disabled', '');
+                if ($('#Table_Exec_Data tbody tr td.Print_Type').filter(function () { return $(this).text() != Print_Type }).length === 0) {
+                    $('#DPAB_DDL_Barcode_Type').val(Print_Type);
+                    $('#DPAB_DDL_Barcode_Type').find('option[value=' + Print_Type + ']').attr('disabled', false);
+                }
+                else {
+                    $('#DPAB_DDL_Barcode_Type').val("IV05");
+                }
+
                 Print_Count();
                 //Click_tr_IDX = 0;
                 //FN_Tr_Click($('#Table_Exec_Data tbody tr:nth(' + Click_tr_IDX + ')'));
@@ -222,7 +252,7 @@
                 $('.Edit_Data').each(function () {
                     SUM += Number($(this).val());
                 });
-                $('#DPAB_P_C').text('共列印' + SUM + '張');
+                $('#DPAB_P_C').text('共' + SUM + '張');
             };
 
             function Search_Barcode() {
@@ -232,6 +262,7 @@
                     Search_Obj[$(this).attr('Request_Colname')] = $(this).val();
                 });
                 S_Json.push(Search_Obj);
+                //console.warn(S_Json);
 
                 $.ajax({
                     url: "/Page/Base/Barcode/Ashx/Barcode_Print.ashx",
@@ -269,13 +300,13 @@
                                         <th>產地</th>\
                                         <th>條碼印價</th>\
                                         <th>自有條碼</th>\
-                                        <th>' + '<%=Resources.MP.Unit%>' + '</th>\
                                         <th>英文說明一</th>\
                                         <th>英文說明二</th>\
                                         <th>英文ISP</th>\
                                         <th>' + '<%=Resources.MP.Supplier_No%>' + '</th>\
                                         <th>訂單號碼</th>\
                                         <th>頤坊條碼</th>\
+                                        <th>國際條碼</th>\
                                         <th>CP65</th>\
                                         <th>' + '<%=Resources.MP.SEQ%>' + '</th>\
                                         <th>' + '<%=Resources.MP.Update_User%>' + '</th>\
@@ -304,39 +335,42 @@
 
                                 Table_HTML +=
                                     '<tr>\
-                                    <td style="' + Class_Color + '">' + String(R[i].樣式 ?? "") + '</td>\
+                                    <td class="Print_Type" style="' + Class_Color + '">' + String(R[i].樣式 ?? "") + '</td>\
                                     <td>' + String(R[i].單據編號 ?? "") + '</td>\
                                     <td>' + String(R[i].廠商簡稱 ?? "") + '</td>\
                                     <td>\
                                         <input class="Call_Product_Tool" SUPLU_SEQ = "' + String(R[i].序號 ?? "") + '" \
-                                               type="button" value="' + String(R[i].頤坊型號 ?? "") + '" \
+                                               type="button" value="' + String(R[i].頤坊型號 ?? "").trim() + '" \
                                                style="text-align:left;width:100%;z-index:1000;' + ((R[i].Has_IMG) ? 'background: #90ee90;' : '') + '" />\
                                     </td>\
-                                    <td>' + String(R[i].銷售型號 ?? "").trim() + '</td>\
+                                    <td class="SM">' + String(R[i].銷售型號 ?? "").trim() + '</td>\
                                     <td class="DIMG" style="text-align:center; height:100px; vertical-align:middle;">'
                                     + ((R[i].Has_IMG) ? ('<img type="Product" SEQ="' + String(R[i].序號 ?? "") + '" />') : ('<%=Resources.MP.Image_NotExists%>')) +
                                     '</td>\
-                                    <td style="' + Remark_Color + '">' + String(R[i].簡短說明 ?? "") + '</td>\
-                                    <td>' + String(R[i].英文單位 ?? "") + '</td>\
+                                    <td class="SPI" style="' + Remark_Color + '">' + String(R[i].簡短說明 ?? "") + '</td>\
+                                    <td class="Unit">' + String(R[i].英文單位 ?? "") + '</td>\
                                     <td style="text-align:right;">' + String(R[i].數量 ?? "") + '</td>\
                                     <td class="Change_VE" colType="NUM_INT" colDB="列印數量" style="text-align:right;">' + String(R[i].數量 ?? "") + '</td>\
                                     <td>' + String(R[i].寄送袋子 ?? "") + '</td>\
                                     <td>' + String(R[i].寄送吊卡 ?? "") + '</td>\
-                                    <td>' + String(R[i].產地 ?? "") + '</td>\
+                                    <td class="Nation">' + String(R[i].產地 ?? "") + '</td>\
                                     <td style="text-align:center;' + BP_Color + '">\
-                                        <input type="checkbox" style="width: 1.15em;height: 1.15em;border: 0.15em solid currentColor;" ' + ((String(R[i].條碼印價 ?? "") == "true") ? 'checked="checked"' : '') + ' disabled />\
+                                        <input class="Print_Price" type="checkbox" style="width: 1.15em;height: 1.15em;border: 0.15em solid currentColor;" ' + ((String(R[i].條碼印價 ?? "") == "true") ? 'checked="checked"' : '') + ' disabled />\
+                                        <input class="P_TWD_1" type="hidden" value="' + String(R[i].台幣單價_1 ?? "") + '" />\
                                     </td>\
                                     <td style="text-align:center;">\
                                         <input type="checkbox" style="width: 1.15em;height: 1.15em;border: 0.15em solid currentColor;" ' + ((String(R[i].自有條碼 ?? "") == "true") ? 'checked="checked"' : '') + ' disabled />\
                                     </td>\
-                                    <td>' + String(R[i].單位 ?? "") + '</td>\
-                                    <td>' + String(R[i].英文說明一 ?? "") + '</td>\
-                                    <td>' + String(R[i].英文說明二 ?? "") + '</td>\
-                                    <td>' + String(R[i].英文ISP ?? "") + '</td>\
+                                    <td class="EN1">' + String(R[i].條碼英文一 ?? "").trim() + '</td>\
+                                    <td class="EN2">' + String(R[i].條碼英文二 ?? "").trim() + '</td>\
+                                    <td class="ENA">' + String(R[i].英文ISP ?? "").trim() + '</td>\
                                     <td>' + String(R[i].廠商編號 ?? "") + '</td>\
                                     <td>' + String(R[i].訂單號碼 ?? "") + '</td>\
-                                    <td>' + String(R[i].頤坊條碼 ?? "") + '</td>\
-                                    <td>' + String(R[i].CP65 ?? "") + '</td>\
+                                    <td class="IM_BC">' + String(R[i].頤坊條碼 ?? "").trim() + '</td>\
+                                    <td class="GL_BC">' + String(R[i].國際條碼 ?? "").trim() + '</td>\
+                                    <td class="CP65">' + String(R[i].CP65 ?? "").trim() +
+                                        '<input class="Age" type = "hidden" value = "' + String(R[i].年齡 ?? "") + '" />\
+                                    </td>\
                                     <td class="SEQ">' + String(R[i].序號 ?? "") + '</td>\
                                     <td>' + String(R[i].更新人員 ?? "") + '</td>\
                                     <td>' + String(R[i].更新日期 ?? "") + '</td>\
@@ -366,6 +400,74 @@
                     }
                 });
             };
+
+            $('#DPA_BT_Print').on('click', function () {
+                //var Check_Print = 0;
+                //switch ($('.DPA_V_BT[disabled]').prop('id')) {
+                //    case 'DPA_V_BT_Setup'://設定
+                //        Check_Print = 1;
+                //        break;
+                //}
+                if (Check()) {
+                    var E_Json = [];
+                    $('#Table_Exec_Data tbody tr').each(function () {
+                        var Exec_Obj = {};
+                        Exec_Obj["SUPLU_SEQ"] = $(this).find('.Call_Product_Tool').attr('SUPLU_SEQ');
+                        Exec_Obj["頤坊型號"] = $(this).find('.Call_Product_Tool').val();
+                        Exec_Obj["銷售型號"] = $(this).find('.SM').text();
+                        Exec_Obj["簡短說明"] = $(this).find('.SPI').text();
+                        Exec_Obj["EN1"] = $(this).find('.EN1').text();
+                        Exec_Obj["EN2"] = $(this).find('.EN2').text();
+                        Exec_Obj["ENA"] = $(this).find('.ENA').text();
+                        Exec_Obj["單位"] = $(this).find('.Unit').text();
+                        Exec_Obj["CP65"] = $(this).find('.CP65').text();
+                        Exec_Obj["年齡"] = $(this).find('.Age').val();
+                        Exec_Obj["頤坊條碼"] = $(this).find('.IM_BC').text();
+                        Exec_Obj["國際條碼"] = $(this).find('.GL_BC').text();
+                        Exec_Obj["產地"] = $(this).find('.Nation').text();
+                        Exec_Obj["條碼印價"] = $(this).find('.Print_Price').prop('checked');
+                        Exec_Obj["台幣單價"] = $(this).find('.P_TWD_1').val();
+                        //Add class=Request_Data to automatic?
+                        $(this).find('.Edit_Data').each(function () {
+                            switch ($(this).attr('type')) {
+                                case "number":
+                                    Exec_Obj[$(this).attr('Column_Name')] = parseFloat($(this).val()) || 0;
+                                    break;
+                                default:
+                                    Exec_Obj[$(this).attr('Column_Name')] = $(this).val();
+                                    break;
+                            }
+                        });
+                        E_Json.push(Exec_Obj);
+                        //console.warn(Exec_Obj);
+                    });
+                    $.ajax({
+                        url: "/Page/Base/Barcode/Ashx/Barcode_Print.ashx",
+                        data: {
+                            "Call_Type": "Barcode_Print",
+                            "Print_Destination": $('#DPAB_DDL_Print_Destination').val(),//送印對象
+                            "Check_Print": ($('.DPA_V_BT[disabled]').prop('id') == "DPA_V_BT_Setup" ? "1" : "0"),
+                            "Check_Print_Command": $('#DPAS_TB_Command').val(),
+                            "Print_Type": $('#DPAB_DDL_Barcode_Type').val(),
+                            "Print_Speed": $('#DPAB_TB_Speed').val(),
+                            "Print_Chroma": $('#DPAB_TB_Chroma').val(),
+                            "Exec_Data": JSON.stringify(E_Json)
+                            //"Search_Data": JSON.stringify(S_Json)
+                        },
+                        cache: false,
+                        async: false,
+                        type: "POST",
+                        datatype: "json",
+                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                        success: function (R) {
+                            console.warn(R);
+                        },
+                        error: function (ex) {
+                            console.warn(ex);
+                        }
+                    });
+                }
+            });
 
             $('input[type=radio][name=DIMG]').on('click', function () {
                 var Show_IMG = false;
@@ -418,31 +520,74 @@
 
             function Item_Move(click_tr, ToTable, FromTable, Full) {
                 if (Edit_Mode == "Can_Move") {
+                    var Right_Move = Boolean(ToTable.prop('id') == 'Table_Exec_Data');
+                    var Alert_Text="";
+                    var Print_Type = $('#Table_Exec_Data tbody tr td.Print_Type:eq(0)').text();
                     if (ToTable.find('tbody tr').length === 0) {
                         ToTable.html(FromTable.find('thead').clone());
                         ToTable.append('<tbody></tbody>');
                         ToTable.find('thead th').css('text-align', 'center');
                         ToTable.css('white-space', 'nowrap');
                     }
+
                     if (Full) {
-                        //For Price客製，Suplu_SEQ重複即刪除
-                        FromTable.find('.Call_Product_Tool').each(function () {
-                            var OT = $(this).attr('SUPLU_SEQ');
-                            if (ToTable.find('.Call_Product_Tool').filter(function () { return $(this).attr('SUPLU_SEQ') == OT; }).length === 0) {
-                                ToTable.append($(this).parents('tr').clone());
+                        //For Barcode客製-樣式檢查，先檢查序號，若通過，且本次為右移(To=Exec)，再檢查樣式，失敗Alert不刪除
+                        FromTable.find('tbody tr').each(function () {
+                            var O_SEQ = $(this).find('.SEQ').text();
+                            var O_PT = $(this).find('.Print_Type').text();
+
+                            if (ToTable.find('.SEQ').filter(function () { return $(this).text() === O_SEQ; }).length > 0) {//序號重複
+                                $(this).remove();
                             }
                             else {
-                                console.warn($(this));
+                                /* 右移檢查暫取消，以disable列印樣式控管
+                                if (Right_Move) {
+                                    if (Print_Type === O_PT || (Print_Type.length === 0 && $('#Table_Search_Barcode tbody tr td.Print_Type:eq(0)').text() === O_PT)) {//樣式相同時Move, Exec還無資料時，用Left第一筆當PT
+                                        ToTable.append($(this).clone());
+                                        $(this).remove();
+                                    }
+                                    else {
+                                        Alert_Text += $(this).find('.Call_Product_Tool').val();
+                                    }
+                                }
+                                else {
+                                    ToTable.append($(this).clone());
+                                    $(this).remove();
+                                }
+                                */
+                                ToTable.append($(this).clone());
+                                $(this).remove();
                             }
-                            $(this).parents('tr').remove();
                         });
+                        //if (Alert_Text.length > 0) {
+                        //    alert("部分型號條碼樣式不同，請分開列印");
+                        //}
                     }
                     else {
-                        if (ToTable.find('.Call_Product_Tool').filter(function () { return $(this).attr('SUPLU_SEQ') == click_tr.find('.Call_Product_Tool').attr('SUPLU_SEQ'); }).length === 0) {
-                            ToTable.append(click_tr.clone());
+                        if (ToTable.find('.SEQ').filter(function () { return $(this).text() == click_tr.find('.SEQ').text(); }).length > 0) {//序號重複
+                            click_tr.remove();
                         }
-                        click_tr.remove();
+                        else {
+                            if (Right_Move) {
+                                /* 右移檢查暫取消，以disable列印樣式控管
+                                    if (Print_Type === click_tr.find('.Print_Type').text() || Print_Type.length === 0) {//樣式相同
+                                        ToTable.append(click_tr.clone());
+                                        click_tr.remove();
+                                    }
+                                    else {
+                                        alert("選取型號條碼樣式不同，請分開列印");
+                                    }
+                                */
+                                ToTable.append(click_tr.clone());
+                                click_tr.remove();
+                            }
+                            else {
+                                ToTable.append(click_tr.clone());
+                                click_tr.remove();
+                            }
+                        }
                     }
+
                     if (FromTable.find('tbody tr').length === 0) {
                         FromTable.html('');
                     }
@@ -476,11 +621,15 @@
                 Item_Move($(this), $('#Table_Search_Barcode'), $('#Table_Exec_Data'), true);
             });
 
+            $('#DPAS_BT_Check').on('click', function () {
+                var CMD_Text = "^XA \n" + $('input[type=radio][name=DPAS_Check_Mode]:checked').val() + " \n~JC \n^XZ \n";
+                $('#DPAS_TB_Command').val(CMD_Text);
+            });
+
             $('#Table_Search_Barcode, #Table_Exec_Data').on('click', 'thead th', function () {
                 //If !Column is cannot sort
                 Table_Sort($(this));
             });
-
 
             function Table_Sort(Click_th) {
                 Click_th.siblings().removeClass('focus');
@@ -505,12 +654,12 @@
                 arrData.sort(function (a, b) {
                     var val1 = $(a).children('td').eq(IDX).text().trim();
                     if (val1.length == 0) {
-                        val1 = $(a).children('td').eq(IDX).find('input').val().trim();
+                        val1 = $(a).children('td').eq(IDX).find('input').val();
                     }
 
                     var val2 = $(b).children('td').eq(IDX).text().trim();
                     if (val2.length == 0) {
-                        val2 = $(b).children('td').eq(IDX).find('input').val().trim();
+                        val2 = $(b).children('td').eq(IDX).find('input').val();
                     }
 
                     if ($.isNumeric(val1) && $.isNumeric(val2))
@@ -535,7 +684,7 @@
                         var Json_Response = JSON.parse(data.d);
                         var DDL_Option = "<option></option>";
                         $.each(Json_Response, function (i, value) {
-                            DDL_Option += '<option value="' + value.val + '">' + value.txt + '</option>';
+                            DDL_Option += '<option value="' + String(value.val).substr(0,4) + '">' + value.txt + '</option>';
                         });
                         Bind_Element.html(DDL_Option);
                     },
@@ -735,53 +884,79 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:20%;text-align:right;">速度</td>
+                            <td style="width:10%;text-align:right;">速度</td>
                             <td style="width:30%;text-align:left;">
-                                <input />
+                                <input id="DPAB_TB_Speed" type="number" min="1" max="100" step="1" value="5" disabled />
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:20%;text-align:right;">濃暗</td>
+                            <td style="width:10%;text-align:right;">濃暗</td>
                             <td style="width:30%;text-align:left;">
-                                <input type="number" min="-10" max="10" step="1" value="0" />
+                                <input id="DPAB_TB_Chroma" type="number" min="-10" max="10" step="1" value="0" />
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:20%;text-align:right;">條碼樣式</td>
+                            <td style="width:10%;text-align:right;">條碼樣式</td>
                             <td style="width:30%;text-align:left;">
-                                <input />
+                                <select id="DPAB_DDL_Barcode_Type" style="width: 100%;height:28.5px;"></select>
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:20%;text-align:right;">印表機</td>
+                            <td style="width:10%;text-align:right;">標籤機IP</td>
                             <td style="width:30%;text-align:left;">
-                                <select>
+                                <select id="DPAB_DDL_Print_Destination" style="width:100%;height:28.5px;">
                                     <option value="192.168.1.31">192.168.1.31(內湖_IT)</option>
                                 </select>
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="2">
-                                <input type="checkbox" />
-                                <label>轉換成博客來條碼</label>
+                            <td></td>
+                            <td style="width:30%;text-align:left;">
+                                <input type="checkbox" id="DPAB_CB_Change_Books" />
+                                <label for="DPAB_CB_Change_Books">轉換成博客來條碼</label>
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="2">
-                                <input type="checkbox" />
-                                <label>印型號結束標籤</label>
+                            <td></td>
+                            <td style="width:30%;text-align:left;">
+                                <input type="checkbox" id="DPAB_CB_P_END" />
+                                <label for="DPAB_CB_P_END">印型號結束標籤</label>
                             </td>
                         </tr>
                     </table>
                 </div>
                 <div id="DPA_Div_Setup" dpa_control_by="DPA_V_BT_Setup" style="display:none;height: 60vh; overflow: auto; border-style: solid; border-width: 1px;">
-                    設定
+                    <table style="border-collapse: separate; border-spacing: 0px 8px; margin: 0 auto; width: 100%;">
+                        <tr>
+                            <td rowspan="6">
+                                <textarea id="DPAS_TB_Command" style="width:90%;height:50vh;"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="position: relative; border: 1px solid #111111; padding: 10px; box-sizing: border-box; margin: 30px auto; width: 90%;">
+                                    <span style="position: absolute; top: -1em; left: 10%; line-height: 2em; padding: 0 1em; background-color: #fff;">感應器</span>
+                                    <br />
+                                    <input type="radio" id="DPAS_CB_Gap" name="DPAS_Check_Mode" value="^MNY" checked />
+                                    <label for="DPAS_CB_Gap">間隙模式</label>
+                                    <br />
+                                    <input type="radio" id="DPAS_CB_BM" name="DPAS_Check_Mode" value="^MNM" />
+                                    <label for="DPAS_CB_BM">黑標模式</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="button" id="DPAS_BT_Check" value="檢測紙張" />
+                            </td>
+                        </tr>
+                    </table>
                 </div>
                 <div id="DPA_Div_Member" dpa_control_by="DPA_V_BT_Member" style="display:none;height: 60vh; overflow: auto; border-style: solid; border-width: 1px;">
                     會員條碼
                 </div>
                 <div style="width: 100%; text-align: center;">
-                    <input id="BT_Print" type="button" class="BTN" style="display: inline-block;" value="列印條碼" />
+                    <input id="DPA_BT_Print" type="button" class="BTN" style="display: inline-block;" value="列印條碼" />
                 </div>
             </div>
 

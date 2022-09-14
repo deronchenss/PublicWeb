@@ -1,4 +1,4 @@
- ^XA
- ^MNY
- ~JC
- ^XZ 
+^XA 
+^MNY 
+~JC 
+^XZ 

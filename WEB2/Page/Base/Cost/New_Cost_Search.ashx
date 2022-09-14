@@ -167,7 +167,7 @@ public class New_Cost_Search : IHttpHandler, IRequiresSessionState
                     {
                         case "V_BT_Report_1":
                             #region R1
-                            RPT_File = "~/Base/Cost/Rpt/Cost_Report_R1.rpt";
+                            RPT_File = "~/Page/Base/Cost/Rpt/Cost_Report_R1.rpt";
                             SQL_Str = @" 
                         DECLARE @PUR_RATE DECIMAL(9,2) = (SELECT [內容] FROM Dc2..REFDATA WHERE [代碼] = 'PUR_Rate');
                         DECLARE @SUPLU_SEQ INT = '2990';--WD
@@ -334,11 +334,11 @@ public class New_Cost_Search : IHttpHandler, IRequiresSessionState
                             switch (context.Request["R2_Type"])
                             {
                                 case "R2_RB_Report_TypeC":
-                                    RPT_File = "~/Base/Cost/Rpt/Cost_Report_R2_C.rpt";
+                                    RPT_File = "~/Page/Base/Cost/Rpt/Cost_Report_R2_C.rpt";
                                     SP = 7;
                                     break;
                                 case "R2_RB_Report_TypeD":
-                                    RPT_File = "~/Base/Cost/Rpt/Cost_Report_R2_D.rpt";
+                                    RPT_File = "~/Page/Base/Cost/Rpt/Cost_Report_R2_D.rpt";
                                     SP = 2;
                                     break;
                             }
@@ -376,17 +376,17 @@ public class New_Cost_Search : IHttpHandler, IRequiresSessionState
                             switch (context.Request["R3_Type"])
                             {
                                 case "R3_RB_Report_TypeC":
-                                    RPT_File = "~/Base/Cost/Rpt/Cost_Report_R3_2C.rpt";
+                                    RPT_File = "~/Page/Base/Cost/Rpt/Cost_Report_R3_2C.rpt";
                                     SP = 7;
                                     break;
                                 case "R3_RB_Report_TypeD":
-                                    RPT_File = "~/Base/Cost/Rpt/Cost_Report_R3_2D.rpt";
+                                    RPT_File = "~/Page/Base/Cost/Rpt/Cost_Report_R3_2D.rpt";
                                     SP = 2;
                                     break;
                             }
                             break;
                         case "V_BT_Report_Package":
-                            RPT_File = "~/Base/Cost/Rpt/Cost_Report_Package.rpt";
+                            RPT_File = "~/Page/Base/Cost/Rpt/Cost_Report_Package.rpt";
                             SQL_Str = @" SELECT 
                                          	C.[序號], C.[頤坊型號], C.[廠商編號], C.[廠商簡稱], C.[銷售型號], C.[產品說明], C.[單位], C.[單位淨重] [淨重], C.[單位毛重] [毛重], 
                                          	C.[產品長度] [長], C.[產品寬度] [寬], C.[產品高度] [高], C.[包裝長度] [包裝長], C.[包裝寬度] [包裝寬], C.[包裝高度] [包裝高],
