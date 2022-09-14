@@ -64,6 +64,16 @@
 
                         V_BT_CHG($('#BT_S_BASE'));
                         break;
+                    case "RPT":
+                        $('.Div_D').css('display', 'none');
+                        $('#Div_DT_View').css('width', '60%');
+                        $('#Div_DT_View').css('display', '');
+                        $('#Div_Detail_View').css('display', 'none');
+                        $('#Div_IMG_DETAIL').css('display', 'none');
+                        $('#Div_RPT').css('display', '');
+
+                        V_BT_CHG($('#BT_S_RPT'));
+                        break;
                     case "IMG":
                         $('.Div_D').css('display', 'none');
                         $('#Div_DT_View').css('display', 'none');
@@ -387,6 +397,67 @@
                 });
             };             
 
+            //寫入 TABLE
+            function Print() {
+                if ($.trim($('#R_RPT_TYPE').val()) == '') {
+                    alert('請重新查詢!');
+                    return;
+                }
+
+                var obj = {};
+                obj['Call_Type'] = 'RPT';
+                obj['UPD_USER'] = "<%=(Session["Account"] == null) ? "IVAN10" : Session["Account"].ToString().Trim() %>";
+
+                var cnt = 0;
+                $('#Table_Search_Data').find('tbody tr[role=row]').each(function () {
+                    var rowData = $('#Table_Search_Data').DataTable().row($(this)).data();
+                    var orderNo = $.trim(rowData['訂單號碼']);
+                    obj['ORDER_NO' + cnt] = orderNo;
+                    cnt++;
+                });
+
+                $("body").loading(); // 遮罩開始
+                $.ajax({
+                    url: apiUrl,
+                    data: obj,
+                    cache: false,
+                    type: "POST",
+                    datatype: "json",
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    xhr: function () {// Seems like the only way to get access to the xhr object
+                        var xhr = new XMLHttpRequest();
+                        xhr.responseType = 'blob'
+                        return xhr;
+                    },
+                    success: function (response, status) {
+                        if (status === 'nocontent') {
+                            alert('查無資料!');
+                        }
+                        else if (status !== 'success') {
+                            alert(response);
+                        }
+                        else {
+                            var blob = new Blob([response], { type: "application/pdf" });
+                            var url = window.URL || window.webkitURL;
+                            link = url.createObjectURL(blob);
+                            var a = $("<a />");
+                            a.attr("download", $('#R_RPT_TYPE').val() + ".pdf");
+                            a.attr("href", link);
+                            $("body").append(a);
+                            a[0].click();
+                            $("body").remove(a);
+                        }
+                        $("body").loading("stop") // 遮罩停止
+                    },
+                    error: function (ex) {
+                        console.log(ex.responseText);
+                        $("body").loading("stop") // 遮罩停止
+                        alert('產生報表有誤請通知資訊人員');
+                        return;
+                    }
+                });
+            };         
+
             //TABLE 功能設定
             $('#Table_Search_Data').on('click', 'tbody tr', function () {
                 ClickToDetailEdit($(this));
@@ -419,6 +490,11 @@
                 }
             });
 
+            //RPT 頁
+            $('#BT_PRINT').on('click', function () {
+                Print();
+            });
+
             //功能選單
             $('#BT_S_BASE').on('click', function () {
                 if ($('#Table_Search_Data > tbody tr[role=row]').length > 0) {
@@ -429,6 +505,15 @@
                 }
             });
 
+            $('#BT_S_RPT').on('click', function () {
+                if ($('#Table_Search_Data > tbody tr[role=row]').length == 0) {
+                    alert('請先查詢!');
+                    return;
+                }
+
+                Form_Mode_Change("RPT");
+            });
+            
             $('#BT_S_IMG').on('click', function () {
                 Form_Mode_Change("IMG");
             });
@@ -526,6 +611,7 @@
         <div class="button_change_section">
             &nbsp;
             <input type="button" id="BT_S_BASE" class="V_BT" value="主檔"  disabled="disabled" />
+            <input type="button" id="BT_S_RPT" class="V_BT" value="報表"  />
             <input type="button" id="BT_S_IMG" class="V_BT" value="圖型" />
             <input type="button" id="BT_S_COLOR" class="V_BT" value="圖例" />
         </div>
@@ -571,6 +657,30 @@
                     </tr>
                 </table>
             </div>
+            <div id="Div_RPT" class=" Div_D" style="width:35%;height:71vh; border-style:solid;border-width:1px; float:right; overflow:auto ">
+                <table class="search_section_control"style="width:80%">
+                    <tr class="trstyle"> 
+                        <td class="tdbstyle" style="height: 10vh; font-size: smaller;" >&nbsp</td>
+                    </tr>
+                    <tr class="trCenterstyle">
+                        <td class="tdhstyle" style="font-size:20px;">報表類型</td>
+                        <td class="tdbstyle" style="font-size:20px;">
+                            <select id="R_RPT_TYPE" >
+                                <option selected="selected" value="庫取跟催表-訂單排">庫取跟催表-訂單排</option>
+                            </select>
+                         </td>
+                    </tr>
+                     <tr class="trstyle"> 
+                        <td class="tdbstyle" style="height: 10vh; font-size: smaller;" >&nbsp</td>
+                    </tr>
+                     <tr class="trCenterstyle"> 
+                         <td colspan="2" style="text-align:center" >
+                            <input type="button" id="BT_PRINT" style="display:inline-block" class="BTN" value="列印"  />
+                         </td>
+                    </tr>
+
+                </table>
+            </div> 
             <div id="Div_IMG_DETAIL" class=" Div_D" style="width:35%;height:71vh; border-style:solid;border-width:1px; float:right; overflow:auto ">
                 <table class="edit_section_control">
                      <tr class="trstyle"> 

@@ -456,6 +456,92 @@ namespace Ivan_Dal
         }
 
         /// <summary>
+        /// 庫取跟催查詢 報表 Return DataTable
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public IDalBase StocTraceGetRptData(Dictionary<string, string> dic)
+        {
+            string sqlStr = "";
+
+            sqlStr = @" 
+                    SELECT  S.訂單號碼
+	                       ,S.廠商編號
+	                       ,S.廠商簡稱
+	                       ,S.頤坊型號
+	                       ,S.備註
+	                       ,SU.產品說明
+	                       ,SU.單位
+	                       ,P.採購日期
+	                       ,P.採購單號
+	                       ,S.出庫數-S.核銷數 AS 採購數量
+	                       ,P.採購交期
+	                       ,P.廠商型號
+	                       ,P.廠商交期
+	                       ,P.處置代碼
+	                       ,CASE WHEN P.處置代碼 = 'C' THEN '取' ELSE '' END 庫取
+	                       --庫存有25%以上可先出
+	                       ,CASE WHEN P.處置代碼 != 'C' AND SU.大貨庫存數 - (SELECT SUM(ISNULL(出庫數,0) - ISNULL(核銷數,0)) FROM stkio INS WHERE ISNULL(INS.已刪除,0) != 1 AND ISNULL(INS.已結案,0) != 1 AND INS.SUPLU_SEQ = S.SUPLU_SEQ) * 4 > 0  THEN '先' 
+			                     WHEN P.處置代碼 != 'C' AND S.廠商編號 IN ('00003', '03701', '03C34', '03H10', '03A02', '03835', '03A10') THEN '先'
+			                     WHEN P.處置代碼 != 'C' AND ((S.廠商編號 = '03A04' AND S.頤坊型號 LIKE '6%' AND O.客戶編號 LIKE '1505A%') OR S.廠商編號 = '15803' OR S.廠商編號 = '10805') THEN 'XX'
+			                     ELSE '' END 先出庫存
+	                       ,P.採購備註
+	                       ,O.港口
+	                       ,O.客戶要求
+	                       ,CASE WHEN S.訂單號碼 LIKE 'X%' THEN 'M01' 
+			                     WHEN O.客戶編號 LIKE '1525%' THEN O.客戶編號
+			                     WHEN O.麥頭檔名 = 'M99' THEN SUBSTRING(O.客戶編號,1,5)
+			                     WHEN ISNULL(O.麥頭檔名,'') = '' THEN 'M00'
+			                     ELSE O.麥頭檔名 END 麥頭檔名
+	                       ,P.材料合併
+	                       ,O.客戶編號
+	                       ,O.客戶簡稱
+	                       ,SU.大貨庫存數
+	                       ,SU.分配庫存數
+	                       ,SU.大貨庫位
+	                       ,SU.快取庫位
+	                       ,SU.備註給倉庫
+	                       ,B.客戶型號
+	                       ,bar.寄送袋子
+	                       ,bar.寄送吊卡 
+	                       ,ISNULL(O.客戶簡稱,'') + S.訂單號碼 群組一
+	                       ,SUBSTRING(ISNULL(SU.大貨庫位,'') ,1,1) 群組二
+	                       ,@UPD_USER 印表人員
+	                       ,'Y' 列印圖檔區段
+	                       ,(SELECT TOP 1 X.[圖檔] FROM [192.168.1.135].Pic.dbo.xpic X WHERE X.SUPLU_SEQ = SU.序號) 圖檔
+                    FROM Stkio S  
+                    INNER JOIN suplu SU On S.SUPLU_SEQ=SU.序號  
+                    LEFT JOIN orm O On S.訂單號碼=O.訂單號碼  
+                    LEFT JOIN PUD P On S.訂單號碼=P.訂單號碼 AND SU.序號=P.SUPLU_SEQ
+                    LEFT JOIN Byrlu B On SU.序號=B.SUPLU_SEQ AND O.客戶編號=B.客戶編號 
+                    LEFT JOIN Barcode bar On S.頤坊型號=bar.頤坊型號 AND SUBSTRING(O.客戶編號,1,5)=SUBSTRING(bar.客戶編號,1,5)  
+                    Where S.訂單號碼 IN ( {0} ) 
+                    AND S.庫區='大貨' 
+                    AND ISNULL(S.出庫數,0) <> 0  
+                    AND ISNULL(P.材料合併,0) = 0  
+                    AND ISNULL(S.已刪除,0) = 0  
+                    AND ISNULL(S.已結案,0) = 0  
+                    AND ISNULL(P.已刪除,0) = 0  
+                        ";
+
+            this.SetParameters("UPD_USER", dic["UPD_USER"]);
+
+            int i = 0;
+            string ordSql = "";
+            foreach (string orderNo in dic.Keys)
+            {
+                ordSql += ",@ORDER_NO" + i.ToString();
+                this.SetParameters("ORDER_NO" + i.ToString(), dic[orderNo]);
+                i++;
+            }
+
+            sqlStr = string.Format(sqlStr,ordSql.TrimStart(','));
+            sqlStr += @" ORDER BY S.頤坊型號  ";
+            this.SetSqlText(sqlStr);
+            return this;
+        }
+
+        /// <summary>
         /// 庫存入出報表 查詢 Return DataTable
         /// </summary>
         /// <param name="context"></param>

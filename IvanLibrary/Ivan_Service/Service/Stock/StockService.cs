@@ -181,6 +181,15 @@ namespace Ivan_Service
         }
 
         /// <summary>
+        /// 庫取跟催查詢 報表
+        /// </summary>
+        /// <returns></returns>
+        public DataTable StockIOTraceRptSearch(Dictionary<string, string> dic)
+        {
+            return this.GetDataTable(dalStk.StocTraceGetRptData(dic));
+        }
+
+        /// <summary>
         /// 庫存入出查詢 查詢
         /// </summary>
         /// <returns></returns>

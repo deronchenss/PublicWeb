@@ -30,6 +30,43 @@ public class Stock_Trace_Search : IHttpHandler, IRequiresSessionState
                     case "SEARCH_DETAIL":
                         result = JsonConvert.SerializeObject(service.StockIOTraceDetailSearch(ContextFN.ContextToDictionary(context)));
                         break;
+                    case "RPT":
+                        DataTable dt = service.StockIOTraceRptSearch(ContextFN.ContextToDictionary(context));
+                        string rptDir = "~/Page/Stock/Rpt/Stock_Trace_Order.rpt";
+                        //switch (context.Request["RPT_TYPE"])
+                        //{
+                        //    case "待入出庫輸入核對表-圖":
+                        //        rptDir = "~/Page/Stock/Rpt/Stock_IO_Img.rpt";
+                        //        break;
+                        //}
+
+                        //資料型別不同自己處理
+                        Log.InsertLog(context, context.Session["Account"], service.sqlLogModel);
+                        if (dt != null && dt.Rows.Count > 0)
+                        {
+                            ReportDocument rptDoc = new ReportDocument();
+                            rptDoc.Load(context.Server.MapPath(rptDir));
+                            rptDoc.SetDataSource(dt);
+                            System.IO.Stream stream = rptDoc.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+                            byte[] bytes = new byte[stream.Length];
+                            stream.Read(bytes, 0, bytes.Length);
+                            stream.Seek(0, System.IO.SeekOrigin.Begin);
+
+                            string filename = "庫存待入出報表.pdf";
+                            context.Response.ClearContent();
+                            context.Response.ClearHeaders();
+                            context.Response.AddHeader("content-disposition", "attachment;filename=" + filename);
+                            context.Response.ContentType = "application/pdf";
+                            context.Response.OutputStream.Write(bytes, 0, bytes.Length);
+                            context.Response.Flush();
+                            context.Response.End();
+                        }
+                        else
+                        {
+                            context.Response.StatusCode = 204;
+                            context.Response.End();
+                        }
+                        break;
                 }
 
                 Log.InsertLog(context, context.Session["Account"], service.sqlLogModel);
