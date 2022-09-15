@@ -611,8 +611,8 @@
         <div class="button_change_section">
             &nbsp;
             <input type="button" id="BT_S_BASE" class="V_BT" value="主檔"  disabled="disabled" />
-            <input type="button" id="BT_S_RPT" class="V_BT" value="報表"  />
             <input type="button" id="BT_S_IMG" class="V_BT" value="圖型" />
+            <input type="button" id="BT_S_RPT" class="V_BT" value="報表"  />
             <input type="button" id="BT_S_COLOR" class="V_BT" value="圖例" />
         </div>
 

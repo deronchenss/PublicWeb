@@ -555,6 +555,207 @@ namespace Ivan_Dal
         }
 
         /// <summary>
+        /// 庫存袋子彩卡 查詢 Return DataTable
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public IDalBase StockBagSearchTable(Dictionary<string, string> dic)
+        {
+            string sqlStr = "";
+            sqlStr = @" ;WITH DIS
+                        AS
+                        (
+	                        SELECT SUM(IIF(出庫數 > 0,ISNULL(出庫數,0) - ISNULL(核銷數,0),0)) 分配庫存數
+		                            ,SUPLU_SEQ
+	                        FROM Stkio A 
+	                        WHERE ISNULL(A.已刪除,0) = 0
+	                        AND ISNULL(A.已結案,0) = 0
+	                        GROUP BY SUPLU_SEQ
+                        ),
+                        BAR AS
+                        (
+	                        SELECT * FROM (
+		                        SELECT Round(convert(decimal(15,2),Sum(A.數量))/100,2) AS 數量_袋子
+			                            ,C.寄送袋子
+			                            ,0 數量_吊卡
+			                            ,'' 寄送吊卡
+		                        From BarCodeM A 
+		                        LEFT JOIN BarCode C ON A.客戶型號=C.客戶型號 AND A.客戶編號=C.客戶編號 
+		                        WHERE   1=1 
+		                        AND IsNull(A.條碼單號,'') <> '' 
+		                        AND A.客戶編號 Like '1505%' 
+		                        AND IsNull(A.已刪除,0)=0 
+		                        AND IsNull(A.寄送日期,'')='' 
+		                        AND IsNull(A.強制結案,0)=0 
+		                        AND IsNull(A.數量,0)+IsNull(A.標籤數量,0)>0 
+		                        AND (IsNull(C.自備袋子,0)=0 OR A.廠商簡稱='庫存取')  
+		                        GROUP BY C.寄送袋子
+		                        UNION ALL
+		                        SELECT 0 數量_袋子
+			                            ,'' 寄送袋子
+			                            ,Sum(A.數量) 數量_吊卡
+			                            ,C.寄送吊卡
+		                        From BarCodeM A 
+		                        LEFT JOIN BarCode C ON A.客戶型號=C.客戶型號 AND A.客戶編號=C.客戶編號 
+		                        WHERE   1=1 
+		                        AND IsNull(A.條碼單號,'') <> '' 
+		                        AND A.客戶編號 Like '1505%' 
+		                        AND IsNull(A.已刪除,0)=0 
+		                        AND IsNull(A.寄送日期,'')='' 
+		                        AND IsNull(A.強制結案,0)=0 
+		                        AND IsNull(A.數量,0)+IsNull(A.標籤數量,0)>0 
+		                        AND (IsNull(C.自備吊卡,0)=0 OR A.廠商簡稱='庫存取')  
+		                        GROUP BY C.寄送吊卡) B
+	                        WHERE ISNULL(B.寄送袋子,'') != '' 
+	                        OR ISNULL(B.寄送吊卡,'') != '' 
+                        )
+                        SELECT  Top 500 S.廠商簡稱
+			　                           ,S.頤坊型號
+			　                           ,S.單位
+			　                           ,S.大貨庫存數 AS 大貨庫存
+                                         ,DIS.分配庫存數 + CASE WHEN S.頤坊型號 LIKE 'BAG%' THEN BAR.數量_袋子 WHEN S.頤坊型號 LIKE 'CARD%' THEN BAR.數量_吊卡 ELSE 0 END 總分配QT
+                                         ,S.大貨庫存數 - (DIS.分配庫存數 + CASE WHEN S.頤坊型號 LIKE 'BAG%' THEN BAR.數量_袋子 WHEN S.頤坊型號 LIKE 'CARD%' THEN BAR.數量_吊卡 ELSE 0 END) 預估餘額
+			　                           ,DIS.分配庫存數 AS 分配IVAN
+				                         ,CASE WHEN S.頤坊型號 LIKE 'BAG%' THEN BAR.數量_袋子 WHEN S.頤坊型號 LIKE 'CARD%' THEN BAR.數量_吊卡 ELSE 0 END AS 分配CUST
+			　                           ,S.大貨庫位
+			　                           ,RTRIM(S.產品說明) As 產品說明
+			　                           ,S.廠商編號
+			　                           ,CASE WHEN (SELECT TOP 1 1 FROM [192.168.1.135].pic.dbo.xpic X WHERE X.[SUPLU_SEQ] = S.序號) = 1 THEN 'Y' ELSE 'N' END [Has_IMG]
+			　                           ,S.序號
+			　                           ,S.更新人員
+			　                           ,CONVERT(VARCHAR,S.更新日期,23)   更新日期
+                        FROM SUPLU S 
+                        LEFT JOIN DIS ON S.序號 = DIS.SUPLU_SEQ
+                        LEFT JOIN BAR ON (CASE WHEN S.頤坊型號 LIKE 'BAG%' OR S.頤坊型號 LIKE '1463C%' THEN BAR.寄送袋子 ELSE BAR.寄送吊卡 END) = S.頤坊型號
+                        WHERE 1=1
+                         ";
+
+            //共用function 需調整日期名稱,form !=, 簡稱類, 串TABLE 簡稱 
+            foreach (string form in dic.Keys)
+            {
+                if (!string.IsNullOrEmpty(dic[form]) && form != "Account")
+                {
+                    string debug = dic[form];
+                    switch (form)
+                    {
+                        case "客戶簡稱":
+                        case "廠商簡稱":
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE '%' + @" + form + " + '%' ";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "TYPE":
+                            switch (dic[form])
+                            {
+                                case "BAG":
+                                    sqlStr += " AND S.頤坊型號 LIKE @" + form + " + '%' ";
+                                    sqlStr += " AND S.廠商編號 = '09808' ";
+                                    break;
+                                case "CARD":
+                                case "ICARD":
+                                    sqlStr += " AND S.頤坊型號 LIKE @" + form + " + '%' ";
+                                    sqlStr += " AND S.廠商編號 = '09D07' ";
+                                    break;
+                                case "SLOJD":
+                                    sqlStr += " AND S.頤坊型號 LIKE @" + form + " + '%' ";
+                                    sqlStr += " AND S.廠商編號 = '20037' ";
+                                    break;
+                            }
+                            this.SetParameters(form, dic[form]);
+                            break;
+                        case "EXCLUDE_CANCEL":
+                            if("1".Equals(dic[form]))
+                            {
+                                sqlStr += " AND ISNULL(S.停用日期,'')='' ";
+                                this.SetParameters(form, dic[form]);
+                            }
+                            break;
+                        default:
+                            sqlStr += " AND ISNULL(S.[" + form + "],'') LIKE @" + form + " + '%'";
+                            this.SetParameters(form, dic[form]);
+                            break;
+                    }
+                }
+            }
+
+            sqlStr += @" ORDER BY S.頤坊型號  ";
+            this.SetSqlText(sqlStr);
+            return this;
+        }
+
+        /// <summary>
+        /// 庫存袋子彩卡 點擊 GridView GridView1 Return DataTable
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public IDalBase StockBagDetail1SearchTable(Dictionary<string, string> dic)
+        {
+            string sqlStr = "";
+
+            sqlStr = @" 
+                            SELECT  S.訂單號碼
+                                   ,'' 裝配單號 --暫時的 後續再看如何調整
+                                   ,S.出庫數 數量
+                                   ,CONVERT(VARCHAR,S.更新日期,23) 日期
+                                   ,S.客戶簡稱
+                                   ,S.備註
+                                   ,'庫取' 狀態 --暫時的 後續再看如何調整
+	                        FROM Stkio S 
+	                        WHERE ISNULL(S.已刪除,0) = 0
+	                        AND ISNULL(S.已結案,0) = 0
+                            AND SUPLU_SEQ = @SUPLU_SEQ
+                            AND ISNULL(S.出庫數,0) - ISNULL(S.核銷數,0) > 0
+                        ";
+
+            this.SetParameters("SUPLU_SEQ", dic["SUPLU_SEQ"]);
+
+            sqlStr += @" ORDER BY S.頤坊型號  ";
+            this.SetSqlText(sqlStr);
+            return this;
+        }
+
+        /// <summary>
+        /// 庫存袋子彩卡 點擊 GridView GridView2 Return DataTable
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public IDalBase StockBagDetail2SearchTable(Dictionary<string, string> dic)
+        {
+            string sqlStr = "";
+
+            sqlStr = @" 
+                             SELECT A.訂單號碼
+			                       ,A.條碼單號
+                                   ,CASE WHEN C.寄送袋子 = @頤坊型號 THEN Round(convert(decimal(15,2),A.數量)/100,2)
+                                         ELSE A.數量 END AS 數量
+                                   ,Case When IsNull(A.數量,0)+IsNull(A.標籤數量,0)>IsNull(A.列印數量,0)+IsNull(A.列印標籤,0) Then 'Y' 
+                                         Else '' End 待印
+			                       ,CONVERT(VARCHAR,A.條碼日期,23) 條碼日期
+                                   ,A.客戶編號
+                                   ,A.廠商簡稱
+                                   ,C.寄送袋子
+                                   ,'待寄條碼' AS 狀態
+		                     From BarCodeM A 
+		                     LEFT JOIN BarCode C ON A.客戶型號=C.客戶型號 AND A.客戶編號=C.客戶編號 
+		                     WHERE   1=1 
+		                     AND IsNull(A.條碼單號,'') <> '' 
+		                     AND A.客戶編號 Like '1505%' 
+		                     AND IsNull(A.已刪除,0)=0 
+		                     AND IsNull(A.寄送日期,'')='' 
+		                     AND IsNull(A.強制結案,0)=0 
+		                     AND IsNull(A.數量,0)+IsNull(A.標籤數量,0)>0 
+                             AND (C.寄送袋子 = @頤坊型號 AND (ISNULL(C.自備袋子,0)=0 OR A.廠商簡稱='庫存取'))
+		                         OR (C.寄送吊卡 = @頤坊型號 AND (ISNULL(C.自備吊卡,0)=0 OR A.廠商簡稱='庫存取'))
+                            -- AND (C.寄送吊卡 = @頤坊型號 OR C.寄送袋子 = @頤坊型號)
+                        ";
+
+            this.SetParameters("頤坊型號", dic["頤坊型號"]);
+
+            sqlStr += @" ORDER BY A.訂單號碼  ";
+            this.SetSqlText(sqlStr);
+            return this;
+        }
+
+        /// <summary>
         /// 門市庫取申請 查詢 Return DataTable
         /// </summary>
         /// <param name="context"></param>

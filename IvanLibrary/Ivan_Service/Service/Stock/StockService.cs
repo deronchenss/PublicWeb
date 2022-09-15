@@ -163,6 +163,27 @@ namespace Ivan_Service
         }
 
         /// <summary>
+        /// 庫存袋子彩卡 查詢
+        /// </summary>
+        /// <returns></returns>
+        public DataTable StockBagSearch(Dictionary<string, string> dic)
+        {
+            return this.GetDataTable(dalSup.StockBagSearchTable(dic));
+        }
+
+        /// <summary>
+        /// 庫存袋子彩卡 點擊Grid
+        /// </summary>
+        /// <returns></returns>
+        public DataTable[] StockBagDetailSearch(Dictionary<string, string> dic)
+        {
+            DataTable[] dts = new DataTable[2];
+            dts[0] = this.GetDataTable(dalSup.StockBagDetail1SearchTable(dic));
+            dts[1] = this.GetDataTable(dalSup.StockBagDetail2SearchTable(dic));
+            return dts;
+        }
+
+        /// <summary>
         /// 庫取跟催查詢 查詢
         /// </summary>
         /// <returns></returns>
